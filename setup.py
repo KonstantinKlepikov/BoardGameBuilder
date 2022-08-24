@@ -1,4 +1,5 @@
 from setuptools import setup
+from typing import List
 import os
 
 
@@ -26,6 +27,30 @@ def read_md(path: str):
     with open(path, 'r') as f:
         return f.read()
 
+def strip_comments(string: str) -> str:
+    """Remove comments string
+
+    Args:
+        string (str): some string
+
+    Returns:
+        str: striped string
+    """
+    return string.split('#', 1)[0].strip()
+
+def get_dependencies(*req: str) -> List[str]:
+    """Get dependencies from requirements.txt
+
+    Returns:
+        List[str]: list of dependencies strings
+    """
+    return list(filter(
+        None,
+        [strip_comments(l) for l in open(
+            os.path.join(os.getcwd(), *req)
+        ).readlines()]
+    ))
+
 
 path_to_init = os.path.join(
     os.path.dirname(__file__), 'src', '__init__.py'
@@ -42,6 +67,7 @@ README=os.path.join(
 setup(
     name='bgb',
     version=PKG_VERSION,
+    install_requires=get_dependencies('requirements.txt'),
     description='Board Game Builder',
     long_description=read_md(README),
     long_description_content_type='text/markdown',
