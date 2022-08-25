@@ -1,2 +1,3 @@
 include CHANGELOG.md
-recursive-exclude venv
+exclude requirements-dev.txt
+exclude Makefile
