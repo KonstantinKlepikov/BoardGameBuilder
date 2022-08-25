@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from typing import List
 import os
 
@@ -18,11 +18,11 @@ def get_version(ver: str) -> str:
         )
     return '.'.join(map(str, ver))
 
-def read_md(path: str):
-    """Read markdown for README.md
+def read(path: str):
+    """Read textual data
 
     Args:
-        path (str): path to README.md
+        path (str): path to file
     """
     with open(path, 'r') as f:
         return f.read()
@@ -51,7 +51,6 @@ def get_dependencies(*req: str) -> List[str]:
         ).readlines()]
     ))
 
-
 path_to_init = os.path.join(
     os.path.dirname(__file__), 'src', '__init__.py'
 )
@@ -59,20 +58,21 @@ version_line = list(
     filter(lambda l: l.startswith('VERSION'), open(path_to_init))
 )[0]
 PKG_VERSION = get_version(eval(version_line.split('=')[-1]))
-README=os.path.join(
+README = os.path.join(
     os.path.dirname(__file__), 'README.md'
 )
 
-
 setup(
-    name='bgb',
+    name='bgameb',
     version=PKG_VERSION,
     install_requires=get_dependencies('requirements.txt'),
     description='Board Game Builder',
-    long_description=read_md(README),
+    long_description=read(README),
     long_description_content_type='text/markdown',
     author='Konstantin Klepikov',
     author_email='oformleno@gmail.com',
     url='https://github.com/KonstantinKlepikov/BoardGameBuilder',
     license='MIT',
+    python_requires='>=3.8.10',
+    packages=find_packages(),
 )
