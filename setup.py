@@ -52,7 +52,7 @@ def get_dependencies(*req: str) -> List[str]:
     ))
 
 path_to_init = os.path.join(
-    os.path.dirname(__file__), 'src', '__init__.py'
+    os.path.dirname(__file__), 'bgameb', '__init__.py'
 )
 version_line = list(
     filter(lambda l: l.startswith('VERSION'), open(path_to_init))
