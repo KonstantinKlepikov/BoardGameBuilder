@@ -52,4 +52,5 @@ setup(
     python_requires='>=3.8.10',
     packages=find_packages(),
     use_incremental=True,
+    setup_requires=["incremental==21.3.0"],
 )
