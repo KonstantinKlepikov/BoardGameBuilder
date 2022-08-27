@@ -1,31 +1,7 @@
 from setuptools import setup, find_packages
 from typing import List
-import os
+import os, pathlib
 
-
-def get_version(ver: str) -> str:
-    """Get version of package
-
-    Args:
-        ver (str): version string
-
-    Returns:
-        str: version string
-    """
-    if not isinstance(ver[-1], int):
-        return '.'.join(
-            map(str, ver[:-1]) + ver[-1]
-        )
-    return '.'.join(map(str, ver))
-
-def read(path: str):
-    """Read textual data
-
-    Args:
-        path (str): path to file
-    """
-    with open(path, 'r') as f:
-        return f.read()
 
 def strip_comments(string: str) -> str:
     """Remove comments string
@@ -51,28 +27,29 @@ def get_dependencies(*req: str) -> List[str]:
         ).readlines()]
     ))
 
-path_to_init = os.path.join(
-    os.path.dirname(__file__), 'bgameb', '__init__.py'
-)
-version_line = list(
-    filter(lambda l: l.startswith('VERSION'), open(path_to_init))
-)[0]
-PKG_VERSION = get_version(eval(version_line.split('=')[-1]))
-README = os.path.join(
-    os.path.dirname(__file__), 'README.md'
-)
+here = pathlib.Path(__file__).parent.resolve()
+long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name='bgameb',
-    version=PKG_VERSION,
     install_requires=get_dependencies('requirements.txt'),
+    extras_require={
+        "dev": get_dependencies('requirements-dev.txt'),
+    },
     description='Board Game Builder',
-    long_description=read(README),
+    long_description=long_description,
     long_description_content_type='text/markdown',
     author='Konstantin Klepikov',
     author_email='oformleno@gmail.com',
     url='https://github.com/KonstantinKlepikov/BoardGameBuilder',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    keywords="framework",
     license='MIT',
     python_requires='>=3.8.10',
     packages=find_packages(),
+    use_incremental=True,
 )

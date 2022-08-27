@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=65.3.0", "wheel>=0.37.1", "incremental==21.3.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.towncrier]
+package = "bgameb"
+package_dir = "."
+single_file = true  # if false, filename is formatted like `title_format`.
+filename = "CHANGELOG.rst"
+directory = "bgameb/newsfragments/"
+title_format = "Release v{version} ({project_date})"
+start_string = ".. release notes"
+issue_format = "#[{issue}](https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/{issue})"
+underlines = "=-~"
+wrap = false  # Wrap text to 79 characters
+all_bullets = true  # make all fragments bullet points
+
+[tool.towncrier.cicd]
+    name = "Integration tasks"
