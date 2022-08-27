@@ -9,8 +9,6 @@ jobs:
 
   deploy-to-pypi:
 
-    needs: create-build-push
-
     runs-on: ubuntu-latest
 
     steps:
