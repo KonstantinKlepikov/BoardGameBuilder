@@ -19,6 +19,4 @@ release:
 	@read -p "Enter final version as X.Y.Z:" bump; \
 	python -m incremental.update bgameb --newversion=$$bump; \
 	towncrier build --yes; \
-	git add . \
-	git commit -m "Create release $$bump"; \
 	git status
