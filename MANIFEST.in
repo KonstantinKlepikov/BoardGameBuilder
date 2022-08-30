@@ -1,3 +1,4 @@
 include CHANGELOG.md
 include requirements-dev.txt
 include Makefile
+recursive-exclude docs
