@@ -29,6 +29,8 @@ def get_dependencies(*req: str) -> List[str]:
 
 here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
+SOURCE_URL = 'https://github.com/KonstantinKlepikov/BoardGameBuilder'
+DOCS = 'https://konstantinklepikov.github.io/BoardGameBuilder/'
 
 setup(
     name='bgameb',
@@ -41,7 +43,11 @@ setup(
     long_description_content_type='text/markdown',
     author='Konstantin Klepikov',
     author_email='oformleno@gmail.com',
-    url='https://github.com/KonstantinKlepikov/BoardGameBuilder',
+    url=SOURCE_URL,
+    project_urls={
+        'Docs': DOCS,
+        'Source': SOURCE_URL,
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
