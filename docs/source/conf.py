@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath('.../bgameb'))
 
 import bgameb
 
-project = 'BoardGameBuild'
+project = 'BoardGameBuilder'
 copyright = '2022, Konstantin Klepikov'
 author = 'Konstantin Klepikov'
 version = bgameb.PUB_VERSION
@@ -22,6 +22,7 @@ master_doc = "index"
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode',
     ]
 
 # Templates

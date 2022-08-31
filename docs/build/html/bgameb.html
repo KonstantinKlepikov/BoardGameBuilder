@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb package &mdash; BoardGameBuild 0.0.4 documentation</title>
+  <title>bgameb package &mdash; BoardGameBuilder 0.0.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,6 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage" href="usage.html" />
     <link rel="prev" title="bgameb" href="modules.html" /> 
 </head>
 
@@ -27,10 +28,10 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> BoardGameBuild
+            <a href="index.html" class="icon icon-home"> BoardGameBuilder
           </a>
               <div class="version">
-                0.0.4
+                0.0.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -57,6 +58,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
 
         </div>
@@ -65,7 +67,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">BoardGameBuild</a>
+          <a href="index.html">BoardGameBuilder</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -98,14 +100,14 @@
 <span id="bgameb-dices-module"></span><h2>bgameb.dices module<a class="headerlink" href="#module-bgameb.dices" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.dices.Dice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">Dice</span></span><a class="headerlink" href="#bgameb.dices.Dice" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">Dice</span></span><a class="reference internal" href="_modules/bgameb/dices.html#Dice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.Dice" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class to create the dice</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.dices.DiceTower">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">DiceTower</span></span><a class="headerlink" href="#bgameb.dices.DiceTower" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">DiceTower</span></span><a class="reference internal" href="_modules/bgameb/dices.html#DiceTower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.DiceTower" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class to create dice towers</p>
 </dd></dl>
@@ -115,7 +117,7 @@
 <span id="bgameb-games-module"></span><h2>bgameb.games module<a class="headerlink" href="#module-bgameb.games" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.games.Game">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><a class="headerlink" href="#bgameb.games.Game" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><a class="reference internal" href="_modules/bgameb/games.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class to create the game</p>
 </dd></dl>
@@ -128,21 +130,21 @@
 <span id="bgameb-players-module"></span><h2>bgameb.players module<a class="headerlink" href="#module-bgameb.players" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.players.Bot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.players.</span></span><span class="sig-name descname"><span class="pre">Bot</span></span><a class="headerlink" href="#bgameb.players.Bot" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.players.</span></span><span class="sig-name descname"><span class="pre">Bot</span></span><a class="reference internal" href="_modules/bgameb/players.html#Bot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.players.Bot" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bgameb.players.Player" title="bgameb.players.Player"><code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code></a></p>
 <p>Base class to create a bot player</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.players.Human">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.players.</span></span><span class="sig-name descname"><span class="pre">Human</span></span><a class="headerlink" href="#bgameb.players.Human" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.players.</span></span><span class="sig-name descname"><span class="pre">Human</span></span><a class="reference internal" href="_modules/bgameb/players.html#Human"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.players.Human" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bgameb.players.Player" title="bgameb.players.Player"><code class="xref py py-class docutils literal notranslate"><span class="pre">Player</span></code></a></p>
 <p>Base class to create a human palyer</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.players.Player">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.players.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><a class="headerlink" href="#bgameb.players.Player" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.players.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><a class="reference internal" href="_modules/bgameb/players.html#Player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.players.Player" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class to create a player</p>
 </dd></dl>
@@ -161,6 +163,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="modules.html" class="btn btn-neutral float-left" title="bgameb" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
