@@ -11,7 +11,7 @@ class Game(DataClassJsonMixin):
     """Base class for creation of the game
     """
 
-    name: str = 'Game'
+    name: str = 'game'
     dices: List[Dice]  = field(default_factory=list)
 
     def add_component(self, component) -> None:

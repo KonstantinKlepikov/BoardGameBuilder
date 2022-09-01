@@ -69,17 +69,117 @@
            <div itemprop="articleBody">
              
   <h1>Source code for bgameb.dices</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span></span><span class="sd">&quot;&quot;&quot;Classes taht implements game dices and coins</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span>
+<span class="kn">from</span> <span class="nn">bgameb.utils</span> <span class="kn">import</span> <span class="n">DiceWithoutSidesError</span>
 
 
 <div class="viewcode-block" id="Dice"><a class="viewcode-back" href="../../bgameb.html#bgameb.dices.Dice">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Dice</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">Dice</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class to create the dice</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<span class="sd">    Define name to identify later Dice object by unique name.</span>
+<span class="sd">    For example: &#39;six_side_dice&#39;</span>
+
+<span class="sd">    Colors is a list of unique colors that can be used for</span>
+<span class="sd">    separate dices by colors if you roll ,many in dice tower.</span>
+<span class="sd">    You can implenemt it with pythonic set API.</span>
+
+<span class="sd">    .. code-block::</span>
+<span class="sd">        :caption: Example of colors usage</span>
+
+<span class="sd">            dice = Dice(name=&#39;six_side_dice&#39;)</span>
+<span class="sd">            dice.colors.update([&#39;red&#39;, &#39;green&#39;])</span>
+<span class="sd">            dice.add(&#39;white&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default_dice&#39;</span>
+    <span class="n">sides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">colors</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_range_to_roll</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set class attributes after initialiusation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Dice.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.dices.Dice.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return result of roll</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            DiceWithoutSidesError: is not defined number of sides</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: result of roll</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_range_to_roll</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DiceWithoutSidesError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Is not defined number of sizes for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TrueDice"><a class="viewcode-back" href="../../bgameb.html#bgameb.dices.TrueDice">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrueDice</span><span class="p">(</span><span class="n">Dice</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class to create true dices with sides</span>
+
+<span class="sd">    With sides you can define number of sides for dice.</span>
+<span class="sd">    Default 6</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DiceWithoutSidesError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Is not defined number of sizes for dice </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_range_to_roll</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span></div>
+
+    <span class="c1"># def roll(self) -&gt; int:</span>
+    <span class="c1">#     &quot;&quot;&quot;Return result of roll</span>
+
+    <span class="c1">#     Raises:</span>
+    <span class="c1">#         NotImplementedError: _description_</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         int: result of roll</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if self.sides:</span>
+    <span class="c1">#         return random.choices(self._range_to_roll, k=1)[0]</span>
+
+    <span class="c1">#     else:</span>
+    <span class="c1">#         raise DiceWithoutSidesError(</span>
+    <span class="c1">#             f&#39;Is not defined number of sizes for {self.name}&#39;</span>
+    <span class="c1">#             )</span>
+
+
+<div class="viewcode-block" id="Coin"><a class="viewcode-back" href="../../bgameb.html#bgameb.dices.Coin">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Coin</span><span class="p">(</span><span class="n">Dice</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;_summary_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_range_to_roll</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Coin.flip_coin"><a class="viewcode-back" href="../../bgameb.html#bgameb.dices.Coin.flip_coin">[docs]</a>    <span class="k">def</span> <span class="nf">flip_coin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
 
 
 <div class="viewcode-block" id="DiceTower"><a class="viewcode-back" href="../../bgameb.html#bgameb.dices.DiceTower">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">DiceTower</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">DiceTower</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class to create dice towers</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 </pre></div>

@@ -4,14 +4,6 @@ bgameb package
 Submodules
 ----------
 
-bgameb.coins module
--------------------
-
-.. automodule:: bgameb.coins
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 bgameb.counters module
 ----------------------
 
