@@ -69,13 +69,21 @@
            <div itemprop="articleBody">
              
   <h1>Source code for bgameb.games</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span></span><span class="sd">&quot;&quot;&quot;Main engine to create game object</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span>
+<span class="kn">from</span> <span class="nn">bgameb.dices</span> <span class="kn">import</span> <span class="n">Dice</span><span class="p">,</span> <span class="n">DiceTower</span>
 
 
 <div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.games.Game">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Game</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Base class to create the game</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for creation of the game</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Game&#39;</span>
+    <span class="n">dices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dice</span><span class="p">]</span>  <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

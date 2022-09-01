@@ -56,7 +56,7 @@ setup(
     keywords="framework",
     license='MIT',
     python_requires='>=3.8.10',
-    packages=find_packages(),
+    packages=find_packages(exclude=('tests*',)),
     use_incremental=True,
     setup_requires=["incremental==21.3.0"],
 )

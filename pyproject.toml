@@ -17,3 +17,12 @@ all_bullets = true  # make all fragments bullet points
 
 [tool.towncrier.cicd]
     name = "Integration tasks"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "tests",
+]
+pythonpath = [
+  "."
+]

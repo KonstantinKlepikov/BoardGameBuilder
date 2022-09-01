@@ -115,11 +115,22 @@
 </section>
 <section id="module-bgameb.games">
 <span id="bgameb-games-module"></span><h2>bgameb.games module<a class="headerlink" href="#module-bgameb.games" title="Permalink to this heading"></a></h2>
+<p>Main engine to create game object</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.games.Game">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><a class="reference internal" href="_modules/bgameb/games.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Base class to create the game</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Game'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dices:</span> <span class="pre">~typing.List[~bgameb.dices.Dice]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/games.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
+<p>Base class for creation of the game</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.games.Game.dices">
+<span class="sig-name descname"><span class="pre">dices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bgameb.dices.Dice" title="bgameb.dices.Dice"><span class="pre">Dice</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.games.Game.dices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.games.Game.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Game'</span></em><a class="headerlink" href="#bgameb.games.Game.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
