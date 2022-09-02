@@ -1,4 +1,5 @@
-Minor changes wit docs headers.
-Add usage page.
-Add sphinx.ext.viewcode.
-Add documentation links to project setup().
+#22:
+    * Minor changes wit docs headers.
+    * Add usage page.
+    * Add sphinx.ext.viewcode.
+    * Add documentation links to project setup().

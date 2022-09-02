@@ -1,3 +1,4 @@
-Add dataclass_json package.
-Add name attr. Test name for instance.
-Minor changes for pytest implementation.
+#13:
+    * Add dataclass_json package.
+    * Add name attr. Test name for instance.
+    * Minor changes for pytest implementation.

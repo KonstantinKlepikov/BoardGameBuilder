@@ -4,11 +4,9 @@ Object-oriented framework for build boardgame logic on python
 
 `pip install bgameb`
 
-for dev `pip install -e .[dev]`
-
 ## Development
 
-`pip install bgameb[dev]`. Use ipython for development from env: `python -m IPython`
+`pip install -e .[dev]`. Use ipython for development from env: `python -m IPython`
 
 ### Build the docs
 

@@ -46,12 +46,11 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">bgameb</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">bgameb package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.counters">bgameb.counters module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.dices">bgameb.dices module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.games">bgameb.games module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.markers">bgameb.markers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.players">bgameb.players module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.rules">bgameb.rules module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.rolled">bgameb.rolled module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.spaces">bgameb.spaces module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.utils">bgameb.utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb">Module contents</a></li>
 </ul>
 </li>
@@ -89,111 +88,14 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-bgameb.counters">
-<span id="bgameb-counters-module"></span><h2>bgameb.counters module<a class="headerlink" href="#module-bgameb.counters" title="Permalink to this heading"></a></h2>
-</section>
-<section id="module-bgameb.dices">
-<span id="bgameb-dices-module"></span><h2>bgameb.dices module<a class="headerlink" href="#module-bgameb.dices" title="Permalink to this heading"></a></h2>
-<p>Classes taht implements game dices and coins</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="bgameb.dices.Coin">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">Coin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default_dice'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/dices.html#Coin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.Coin" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bgameb.dices.Dice" title="bgameb.dices.Dice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dice</span></code></a></p>
-<p>_summary_</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bgameb.dices.Coin.colors">
-<span class="sig-name descname"><span class="pre">colors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.dices.Coin.colors" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bgameb.dices.Coin.flip_coin">
-<span class="sig-name descname"><span class="pre">flip_coin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/dices.html#Coin.flip_coin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.Coin.flip_coin" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="bgameb.dices.Dice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">Dice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default_dice'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/dices.html#Dice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.Dice" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
-<p>Base class to create the dice</p>
-<p>Define name to identify later Dice object by unique name.
-For example: ‘six_side_dice’</p>
-<p>Colors is a list of unique colors that can be used for
-separate dices by colors if you roll ,many in dice tower.
-You can implenemt it with pythonic set API.</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Example of colors usage</span><a class="headerlink" href="#id1" title="Permalink to this code"></a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">dice</span> <span class="o">=</span> <span class="n">Dice</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;six_side_dice&#39;</span><span class="p">)</span>
-    <span class="n">dice</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">])</span>
-    <span class="n">dice</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bgameb.dices.Dice.colors">
-<span class="sig-name descname"><span class="pre">colors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.dices.Dice.colors" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bgameb.dices.Dice.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'default_dice'</span></em><a class="headerlink" href="#bgameb.dices.Dice.name" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bgameb.dices.Dice.roll">
-<span class="sig-name descname"><span class="pre">roll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/bgameb/dices.html#Dice.roll"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.Dice.roll" title="Permalink to this definition"></a></dt>
-<dd><p>Return result of roll</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>DiceWithoutSidesError</strong> – is not defined number of sides</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>result of roll</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bgameb.dices.Dice.sides">
-<span class="sig-name descname"><span class="pre">sides</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bgameb.dices.Dice.sides" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="bgameb.dices.DiceTower">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">DiceTower</span></span><a class="reference internal" href="_modules/bgameb/dices.html#DiceTower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.DiceTower" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
-<p>Base class to create dice towers</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="bgameb.dices.TrueDice">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.dices.</span></span><span class="sig-name descname"><span class="pre">TrueDice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default_dice'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/dices.html#TrueDice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.dices.TrueDice" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bgameb.dices.Dice" title="bgameb.dices.Dice"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dice</span></code></a></p>
-<p>Class to create true dices with sides</p>
-<p>With sides you can define number of sides for dice.
-Default 6</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="bgameb.dices.TrueDice.sides">
-<span class="sig-name descname"><span class="pre">sides</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#bgameb.dices.TrueDice.sides" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
 <section id="module-bgameb.games">
 <span id="bgameb-games-module"></span><h2>bgameb.games module<a class="headerlink" href="#module-bgameb.games" title="Permalink to this heading"></a></h2>
 <p>Main engine to create game object</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.games.Game">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'game'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dices:</span> <span class="pre">~typing.List[~bgameb.dices.Dice]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/games.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'game'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/games.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
-<p>Base class for creation of the game</p>
+<p>Create the game object</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.games.Game.add_component">
 <span class="sig-name descname"><span class="pre">add_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/games.html#Game.add_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game.add_component" title="Permalink to this definition"></a></dt>
@@ -206,7 +108,7 @@ Default 6</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bgameb.games.Game.dices">
-<span class="sig-name descname"><span class="pre">dices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bgameb.dices.Dice" title="bgameb.dices.Dice"><span class="pre">Dice</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.games.Game.dices" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bgameb.rolled.Dice" title="bgameb.rolled.Dice"><span class="pre">Dice</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.games.Game.dices" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -216,9 +118,6 @@ Default 6</p>
 
 </dd></dl>
 
-</section>
-<section id="module-bgameb.markers">
-<span id="bgameb-markers-module"></span><h2>bgameb.markers module<a class="headerlink" href="#module-bgameb.markers" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-bgameb.players">
 <span id="bgameb-players-module"></span><h2>bgameb.players module<a class="headerlink" href="#module-bgameb.players" title="Permalink to this heading"></a></h2>
@@ -244,8 +143,125 @@ Default 6</p>
 </dd></dl>
 
 </section>
-<section id="module-bgameb.rules">
-<span id="bgameb-rules-module"></span><h2>bgameb.rules module<a class="headerlink" href="#module-bgameb.rules" title="Permalink to this heading"></a></h2>
+<section id="module-bgameb.rolled">
+<span id="bgameb-rolled-module"></span><h2>bgameb.rolled module<a class="headerlink" href="#module-bgameb.rolled" title="Permalink to this heading"></a></h2>
+<p>Classes taht implements game dices and coins</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bgameb.rolled.Coin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.rolled.</span></span><span class="sig-name descname"><span class="pre">Coin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'coin'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/rolled.html#Coin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.rolled.Coin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bgameb.rolled.RollOrFlip" title="bgameb.rolled.RollOrFlip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RollOrFlip</span></code></a></p>
+<p>Create coin like a dice with two sides</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.rolled.Coin.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'coin'</span></em><a class="headerlink" href="#bgameb.rolled.Coin.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bgameb.rolled.Dice">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.rolled.</span></span><span class="sig-name descname"><span class="pre">Dice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dice'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/rolled.html#Dice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.rolled.Dice" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bgameb.rolled.RollOrFlip" title="bgameb.rolled.RollOrFlip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RollOrFlip</span></code></a></p>
+<p>Create dice</p>
+<p>You can define number of sides for dice.
+Default 6</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.rolled.Dice.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dice'</span></em><a class="headerlink" href="#bgameb.rolled.Dice.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.rolled.Dice.sides">
+<span class="sig-name descname"><span class="pre">sides</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#bgameb.rolled.Dice.sides" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bgameb.rolled.RollOrFlip">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.rolled.</span></span><span class="sig-name descname"><span class="pre">RollOrFlip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/rolled.html#RollOrFlip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.rolled.RollOrFlip" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
+<p>Base class to create the rolled or fliped object</p>
+<p>Define name to identify later RollOrFlip object by unique name.
+For example: ‘six_side_dice’</p>
+<p># Colors is a list of unique colors that can be used for
+# separate dices by colors if you roll ,many in dice tower.
+# You can implenemt it with pythonic set API.</p>
+<p># .. code-block::
+#     :caption: Example of colors usage</p>
+<p>#         dice = Dice(name=’six_side_dice’)
+#         dice.colors.update([‘red’, ‘green’])
+#         dice.add(‘white’)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.rolled.RollOrFlip.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'default'</span></em><a class="headerlink" href="#bgameb.rolled.RollOrFlip.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.rolled.RollOrFlip.roll">
+<span class="sig-name descname"><span class="pre">roll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/bgameb/rolled.html#RollOrFlip.roll"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.rolled.RollOrFlip.roll" title="Permalink to this definition"></a></dt>
+<dd><p>Roll or flip and return result</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bgameb.utils.RolledWithoutSidesError" title="bgameb.utils.RolledWithoutSidesError"><strong>RolledWithoutSidesError</strong></a> – is not defined number of sides</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result of roll</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.rolled.RollOrFlip.sides">
+<span class="sig-name descname"><span class="pre">sides</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bgameb.rolled.RollOrFlip.sides" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bgameb.spaces">
+<span id="bgameb-spaces-module"></span><h2>bgameb.spaces module<a class="headerlink" href="#module-bgameb.spaces" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bgameb.spaces.DiceTower">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.spaces.</span></span><span class="sig-name descname"><span class="pre">DiceTower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dice_tower'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/spaces.html#DiceTower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.spaces.DiceTower" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
+<p>Create dice tower</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.spaces.DiceTower.add_dices">
+<span class="sig-name descname"><span class="pre">add_dices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/spaces.html#DiceTower.add_dices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.spaces.DiceTower.add_dices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bgameb.spaces.DiceTower.last_roll">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_roll</span></span><a class="headerlink" href="#bgameb.spaces.DiceTower.last_roll" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.spaces.DiceTower.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dice_tower'</span></em><a class="headerlink" href="#bgameb.spaces.DiceTower.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.spaces.DiceTower.roll_dices">
+<span class="sig-name descname"><span class="pre">roll_dices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/spaces.html#DiceTower.roll_dices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.spaces.DiceTower.roll_dices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bgameb.utils">
+<span id="bgameb-utils-module"></span><h2>bgameb.utils module<a class="headerlink" href="#module-bgameb.utils" title="Permalink to this heading"></a></h2>
+<p>Support functions and custom errors</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="bgameb.utils.RolledWithoutSidesError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.utils.</span></span><span class="sig-name descname"><span class="pre">RolledWithoutSidesError</span></span><a class="reference internal" href="_modules/bgameb/utils.html#RolledWithoutSidesError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.utils.RolledWithoutSidesError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>Side not defined for this dice</p>
+</dd></dl>
+
 </section>
 <section id="module-bgameb">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bgameb" title="Permalink to this heading"></a></h2>

@@ -75,15 +75,14 @@
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
- | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
+ | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
- | <a href="#T"><strong>T</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -94,6 +93,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.games.Game.add_components">add_components() (bgameb.games.Game method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.spaces.DiceTower.add_dices">add_dices() (bgameb.spaces.DiceTower method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -109,33 +110,10 @@
 </li>
       </ul></li>
       <li>
-    bgameb.counters
-
-      <ul>
-        <li><a href="bgameb.html#module-bgameb.counters">module</a>
-</li>
-      </ul></li>
-      <li>
-    bgameb.dices
-
-      <ul>
-        <li><a href="bgameb.html#module-bgameb.dices">module</a>
-</li>
-      </ul></li>
-      <li>
     bgameb.games
 
       <ul>
         <li><a href="bgameb.html#module-bgameb.games">module</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    bgameb.markers
-
-      <ul>
-        <li><a href="bgameb.html#module-bgameb.markers">module</a>
 </li>
       </ul></li>
       <li>
@@ -145,11 +123,27 @@
         <li><a href="bgameb.html#module-bgameb.players">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    bgameb.rules
+    bgameb.rolled
 
       <ul>
-        <li><a href="bgameb.html#module-bgameb.rules">module</a>
+        <li><a href="bgameb.html#module-bgameb.rolled">module</a>
+</li>
+      </ul></li>
+      <li>
+    bgameb.spaces
+
+      <ul>
+        <li><a href="bgameb.html#module-bgameb.spaces">module</a>
+</li>
+      </ul></li>
+      <li>
+    bgameb.utils
+
+      <ul>
+        <li><a href="bgameb.html#module-bgameb.utils">module</a>
 </li>
       </ul></li>
       <li><a href="bgameb.html#bgameb.players.Bot">Bot (class in bgameb.players)</a>
@@ -160,37 +154,21 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.Coin">Coin (class in bgameb.dices)</a>
+      <li><a href="bgameb.html#bgameb.rolled.Coin">Coin (class in bgameb.rolled)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.Coin.colors">colors (bgameb.dices.Coin attribute)</a>
-
-      <ul>
-        <li><a href="bgameb.html#bgameb.dices.Dice.colors">(bgameb.dices.Dice attribute)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.Dice">Dice (class in bgameb.dices)</a>
+      <li><a href="bgameb.html#bgameb.rolled.Dice">Dice (class in bgameb.rolled)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.games.Game.dices">dices (bgameb.games.Game attribute)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.dices.DiceTower">DiceTower (class in bgameb.dices)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="F">F</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.Coin.flip_coin">flip_coin() (bgameb.dices.Coin method)</a>
+      <li><a href="bgameb.html#bgameb.spaces.DiceTower">DiceTower (class in bgameb.spaces)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -211,6 +189,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.spaces.DiceTower.last_roll">last_roll (bgameb.spaces.DiceTower property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -220,17 +206,15 @@
       <ul>
         <li><a href="bgameb.html#module-bgameb">bgameb</a>
 </li>
-        <li><a href="bgameb.html#module-bgameb.counters">bgameb.counters</a>
-</li>
-        <li><a href="bgameb.html#module-bgameb.dices">bgameb.dices</a>
-</li>
         <li><a href="bgameb.html#module-bgameb.games">bgameb.games</a>
-</li>
-        <li><a href="bgameb.html#module-bgameb.markers">bgameb.markers</a>
 </li>
         <li><a href="bgameb.html#module-bgameb.players">bgameb.players</a>
 </li>
-        <li><a href="bgameb.html#module-bgameb.rules">bgameb.rules</a>
+        <li><a href="bgameb.html#module-bgameb.rolled">bgameb.rolled</a>
+</li>
+        <li><a href="bgameb.html#module-bgameb.spaces">bgameb.spaces</a>
+</li>
+        <li><a href="bgameb.html#module-bgameb.utils">bgameb.utils</a>
 </li>
       </ul></li>
   </ul></td>
@@ -239,10 +223,16 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.Dice.name">name (bgameb.dices.Dice attribute)</a>
+      <li><a href="bgameb.html#bgameb.games.Game.name">name (bgameb.games.Game attribute)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.games.Game.name">(bgameb.games.Game attribute)</a>
+        <li><a href="bgameb.html#bgameb.rolled.Coin.name">(bgameb.rolled.Coin attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.rolled.Dice.name">(bgameb.rolled.Dice attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.rolled.RollOrFlip.name">(bgameb.rolled.RollOrFlip attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.spaces.DiceTower.name">(bgameb.spaces.DiceTower attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -259,7 +249,15 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.Dice.roll">roll() (bgameb.dices.Dice method)</a>
+      <li><a href="bgameb.html#bgameb.rolled.RollOrFlip.roll">roll() (bgameb.rolled.RollOrFlip method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.spaces.DiceTower.roll_dices">roll_dices() (bgameb.spaces.DiceTower method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.utils.RolledWithoutSidesError">RolledWithoutSidesError</a>
+</li>
+      <li><a href="bgameb.html#bgameb.rolled.RollOrFlip">RollOrFlip (class in bgameb.rolled)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -267,20 +265,12 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.Dice.sides">sides (bgameb.dices.Dice attribute)</a>
+      <li><a href="bgameb.html#bgameb.rolled.Dice.sides">sides (bgameb.rolled.Dice attribute)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.dices.TrueDice.sides">(bgameb.dices.TrueDice attribute)</a>
+        <li><a href="bgameb.html#bgameb.rolled.RollOrFlip.sides">(bgameb.rolled.RollOrFlip attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="T">T</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.dices.TrueDice">TrueDice (class in bgameb.dices)</a>
-</li>
   </ul></td>
 </tr></table>
 

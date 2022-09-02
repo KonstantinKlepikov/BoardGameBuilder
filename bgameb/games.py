@@ -3,16 +3,16 @@
 from typing import List, Any
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
-from bgameb.dices import Dice, DiceTower
+from bgameb.rolled import Dice, Coin
 
 
 @dataclass
 class Game(DataClassJsonMixin):
-    """Base class for creation of the game
+    """Create the game object
     """
 
     name: str = 'game'
-    dices: List[Dice]  = field(default_factory=list)
+    dices: List[Dice]  = field(default_factory=list, init=False)
 
     def add_component(self, component) -> None:
         raise NotImplementedError
