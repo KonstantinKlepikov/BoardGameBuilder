@@ -20,26 +20,18 @@ bgameb.players module
    :undoc-members:
    :show-inheritance:
 
-bgameb.rolled module
---------------------
+bgameb.rollers module
+---------------------
 
-.. automodule:: bgameb.rolled
+.. automodule:: bgameb.rollers
    :members:
    :undoc-members:
    :show-inheritance:
 
-bgameb.spaces module
---------------------
+bgameb.shakers module
+---------------------
 
-.. automodule:: bgameb.spaces
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bgameb.utils module
--------------------
-
-.. automodule:: bgameb.utils
+.. automodule:: bgameb.shakers
    :members:
    :undoc-members:
    :show-inheritance:

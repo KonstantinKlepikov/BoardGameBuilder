@@ -1,14 +1,13 @@
 import json, pytest
 import bgameb
-from bgameb.rolled import RollOrFlip
-from bgameb.utils import RolledWithoutSidesError
+from bgameb.rollers import BaseRoller, RollerSidesError
 
 
 class TestNameAndJson:
     """Test creation with names and json schemes
     """
     params = [
-        (RollOrFlip, 'default'),
+        (BaseRoller, 'base_roller'),
         (bgameb.Dice, 'dice'),
         (bgameb.Coin, 'coin'),
     ]
@@ -22,7 +21,6 @@ class TestNameAndJson:
         rolled = _class(name='This Rolled')
         assert rolled.name == 'This Rolled', 'not set name for instance'
 
-
     @pytest.mark.parametrize("_class, name", params)
     def test_rolled_classes_are_converted_to_json(self, _class, name: str) -> None:
         """Test to json convertatrion
@@ -32,38 +30,22 @@ class TestNameAndJson:
         assert j['name'] == name, 'not converted to json'
 
 
-class TestRollOrFlip:
-    """Test RollOrFlip class
+class TestBaseRoller:
+    """Test BaseRoller class
     """
 
-    # def test_rolled_append_available_colors(self) -> None:
-    #     """Test we can set colors to rolled object
-    #     """
-    #     with pytest.raises(TypeError, match="unexpected keyword argument"):
-    #         dice = Dice(colors = set(['green', 'red']))
-    #     dice = Dice()
-    #     assert dice.colors == set(), 'wrong empty init of colors'
-    #     dice.colors.update(['green', 'red'])
-    #     assert dice.colors == set(['green', 'red']), 'colors not set'
-    #     dice.colors.update(['green', 'yellow'])
-    #     assert dice.colors == set(['green', 'red', 'yellow']), 'colors not unique'
-    #     dice.colors.add('white')
-    #     assert 'white' in dice.colors, 'single color not appended'
-
-
-    def test_rolled_hase_sides_defined_as_none(self) -> None:
-        """Dise class initialised with None sides
+    def test_rolled_have_sides_defined_as_none(self) -> None:
+        """Rolled class initialised with None sides
         """
-        rolled = RollOrFlip()
+        rolled = BaseRoller()
         assert rolled.sides == None, 'wrong init of sides'
 
-
     def test_roll_rolled_raise_error(self) -> None:
-        """We cant roll dice from base class
+        """We cant use roll() method from base class
         """
-        rolled = RollOrFlip()
+        rolled = BaseRoller()
         with pytest.raises(
-            RolledWithoutSidesError,
+            RollerSidesError,
             match='Is not defined number of sizes'
             ):
             rolled.roll()
@@ -85,18 +67,16 @@ class TestDice:
         dice.sides = 2
         assert dice.sides == 2, 'cant change number of sides'
 
-
     def test_roll_dice_without_sides_raise_error(self) -> None:
         """We cant roll dice if sides not defined
         """
         dice = bgameb.Dice()
         dice.sides = None
         with pytest.raises(
-            RolledWithoutSidesError,
+            RollerSidesError,
             match='Is not defined number of sizes'
             ):
             dice.roll()
-
 
     def test_dice_has_correct_range_to_roll(self) -> None:
         """Range to roll dice is correct
@@ -104,7 +84,6 @@ class TestDice:
         dice = bgameb.Dice()
         assert dice._range_to_roll == [1, 2, 3, 4, 5, 6], \
             'wrong range to roll'
-
 
     def test_dice_return_roll_result(self) -> None:
         """Test dice roll return result
@@ -124,14 +103,12 @@ class TestCoin:
         coin = bgameb.Coin()
         assert coin.sides == 2, 'wrong init of sides'
 
-
     def test_coin_has_correct_range_to_roll(self) -> None:
         """Range to roll coin is correct
         """
         coin = bgameb.Coin()
         assert coin._range_to_roll == [1, 2], \
             'wrong range to roll'
-
 
     def test_coin_return_roll_result(self) -> None:
         """Test coin roll return result
