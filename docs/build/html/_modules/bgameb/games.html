@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.games &mdash; BoardGameBuilder 0.0.5 documentation</title>
+  <title>bgameb.games &mdash; BoardGameBuilder 0.0.6 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> BoardGameBuilder
           </a>
               <div class="version">
-                0.0.5
+                0.0.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -96,14 +96,13 @@
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shakers</span> <span class="o">=</span> <span class="n">GameShakers</span><span class="p">()</span>
 
-
 <div class="viewcode-block" id="Game.add_component"><a class="viewcode-back" href="../../bgameb.html#bgameb.games.Game.add_component">[docs]</a>    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add game component to game</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            component (Component): any class instance of components</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1">#TODO: separate by type without if&#39;s, remove tuple</span>
+        <span class="c1"># TODO: separate by type without if&#39;s, remove tuple</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">Shaker</span><span class="p">):</span>
 
             <span class="n">sh_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shakers</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span>

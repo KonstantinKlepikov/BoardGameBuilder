@@ -68,7 +68,7 @@ class Coin(BaseRoller):
     name: str = 'coin'
 
     def __post_init__(self):
-        self.sides= 2
+        self.sides = 2
         self._range_to_roll = list(range(1, 3))
 
 
