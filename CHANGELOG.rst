@@ -3,6 +3,50 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.6 (2022-09-03)
+===========================
+
+Features
+--------
+
+- #13:
+      * Add dataclass_json package.
+      * Add name attr. Test name for instance.
+      * Minor changes for pytest implementation. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/13)
+- #14:
+      * Add BaseRoller class and base attributes.
+      * Add Dice class for true dices.
+      * Add Coin class.
+      * Implement number of sides.
+      * Implement range of rolls.
+      * Add roll method to rollers.
+      * Add error to roll without sizes.
+      * Test Dice and Coin.
+      * Namespaces refactoring.
+      * Remove colors from rolled.
+      * Add shakers module for shakers.
+      * Add shaker class.
+      * Implement add, remove, roll and last_roll for Shaker.
+      * Add error for define roller for Shaker.
+      * Implement of roll method and last_roll for shaker
+      * Add shakers as NamedTuple to Game (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
+
+
+Improved Documentation
+----------------------
+
+- #14:
+      * Add documentation for Dice class.
+      * Add documentation for Coin class.
+      * Add documentation for Shakers.
+      * Docs refactoring. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
+- #22:
+      * Minor changes wit docs headers.
+      * Add usage page.
+      * Add sphinx.ext.viewcode.
+      * Add documentation links to project setup. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/22)
+
+
 Release v0.0.5 (2022-08-30)
 ===========================
 
