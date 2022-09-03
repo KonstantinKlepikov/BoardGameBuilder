@@ -3,4 +3,5 @@ PUB_VERSION = __version__.public()
 
 from bgameb.games import Game
 from bgameb.players import Human, Bot
-from bgameb.dices import Dice, DiceTower
+from bgameb.rollers import Dice, Coin
+from bgameb.shakers import Shaker

@@ -4,42 +4,10 @@ bgameb package
 Submodules
 ----------
 
-bgameb.coins module
--------------------
-
-.. automodule:: bgameb.coins
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bgameb.counters module
-----------------------
-
-.. automodule:: bgameb.counters
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bgameb.dices module
--------------------
-
-.. automodule:: bgameb.dices
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 bgameb.games module
 -------------------
 
 .. automodule:: bgameb.games
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bgameb.markers module
----------------------
-
-.. automodule:: bgameb.markers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -52,10 +20,18 @@ bgameb.players module
    :undoc-members:
    :show-inheritance:
 
-bgameb.rules module
--------------------
+bgameb.rollers module
+---------------------
 
-.. automodule:: bgameb.rules
+.. automodule:: bgameb.rollers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bgameb.shakers module
+---------------------
+
+.. automodule:: bgameb.shakers
    :members:
    :undoc-members:
    :show-inheritance:

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.players &mdash; BoardGameBuilder 0.0.5 documentation</title>
+  <title>bgameb.spaces &mdash; BoardGameBuilder 0.0.5 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -59,7 +59,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>bgameb.players</li>
+      <li>bgameb.spaces</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -68,28 +68,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for bgameb.players</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Game players</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+  <h1>Source code for bgameb.spaces</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span>
 
 
-<div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Player">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Player</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Base class to create a player</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="DiceTower"><a class="viewcode-back" href="../../bgameb.html#bgameb.spaces.DiceTower">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DiceTower</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create dice tower</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;dice_tower&#39;</span>
 
+<div class="viewcode-block" id="DiceTower.add_dices"><a class="viewcode-back" href="../../bgameb.html#bgameb.spaces.DiceTower.add_dices">[docs]</a>    <span class="k">def</span> <span class="nf">add_dices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Human"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Human">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Human</span><span class="p">(</span><span class="n">Player</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class to create a human palyer</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="DiceTower.roll_dices"><a class="viewcode-back" href="../../bgameb.html#bgameb.spaces.DiceTower.roll_dices">[docs]</a>    <span class="k">def</span> <span class="nf">roll_dices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
-<div class="viewcode-block" id="Bot"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Bot">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Bot</span><span class="p">(</span><span class="n">Player</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class to create a bot player</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">last_roll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </pre></div>
 
            </div>

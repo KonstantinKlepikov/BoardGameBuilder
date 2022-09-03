@@ -10,7 +10,7 @@ filename = "CHANGELOG.rst"
 directory = "bgameb/newsfragments/"
 title_format = "Release v{version} ({project_date})"
 start_string = ".. release notes"
-issue_format = "#[{issue}](https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/{issue})"
+issue_format = "https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/{issue}"
 underlines = "=-~"
 wrap = false  # Wrap text to 79 characters
 all_bullets = true  # make all fragments bullet points

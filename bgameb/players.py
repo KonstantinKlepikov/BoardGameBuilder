@@ -1,3 +1,5 @@
+"""Game players
+"""
 from dataclasses import dataclass
 
 

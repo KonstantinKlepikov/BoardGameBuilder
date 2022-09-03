@@ -1,21 +1,44 @@
 """Main engine to create game object
 """
-from typing import List, Any
+from typing import Union, NamedTuple, TypeVar
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
-from bgameb.dices import Dice, DiceTower
+from bgameb.rollers import BaseRoller
+from bgameb.shakers import Shaker
+
+
+Component = TypeVar('Component', bound=Union[Shaker, BaseRoller])
+
+
+class GameShakers(NamedTuple):
+    name: str = 'game_shakers'
 
 
 @dataclass
 class Game(DataClassJsonMixin):
-    """Base class for creation of the game
+    """Create the game object
     """
 
-    name: str = 'Game'
-    dices: List[Dice]  = field(default_factory=list)
+    name: str = 'game'
+    shakers: NamedTuple = field(default_factory=tuple, init=False)
 
-    def add_component(self, component) -> None:
-        raise NotImplementedError
+    def __post_init__(self):
+        self.shakers = GameShakers()
 
-    def add_components(self, component: List[Any]) -> None:
-        raise NotImplementedError
+
+    def add_component(self, component: Component) -> None:
+        """Add game component to game
+
+        Args:
+            component (Component): any class instance of components
+        """
+        #TODO: separate by type without if's, remove tuple
+        if isinstance(component, Shaker):
+
+            sh_dict = self.shakers._asdict()
+            sh_dict[component.name] = component
+            sh_types = self.shakers.__annotations__
+            sh_types[component.name] = type(component)
+
+            GameShakers = NamedTuple('GameShakers', sh_types.items())
+            self.shakers = GameShakers(**sh_dict)

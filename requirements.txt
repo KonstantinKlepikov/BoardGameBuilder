@@ -1,1 +1,2 @@
 incremental==21.3.0
+dataclasses-json==0.5.7
