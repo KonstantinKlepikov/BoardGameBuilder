@@ -25,14 +25,13 @@ class Game(DataClassJsonMixin):
     def __post_init__(self):
         self.shakers = GameShakers()
 
-
     def add_component(self, component: Component) -> None:
         """Add game component to game
 
         Args:
             component (Component): any class instance of components
         """
-        #TODO: separate by type without if's, remove tuple
+        # TODO: separate by type without if's, remove tuple
         if isinstance(component, Shaker):
 
             sh_dict = self.shakers._asdict()

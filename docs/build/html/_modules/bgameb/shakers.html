@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.shakers &mdash; BoardGameBuilder 0.0.5 documentation</title>
+  <title>bgameb.shakers &mdash; BoardGameBuilder 0.0.6 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> BoardGameBuilder
           </a>
               <div class="version">
-                0.0.5
+                0.0.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -87,14 +87,16 @@
     <span class="sd">&quot;&quot;&quot;Create shaker for roll dices or flip coins</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;shaker&#39;</span>
-    <span class="n">rollers</span><span class="p">:</span> <span class="n">ShakerRollers</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1">#TODO: use namedtuple or dataclass</span>
-    <span class="n">last_roll</span><span class="p">:</span> <span class="n">ShakerResult</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1">#TODO: use namedtuple or dataclass</span>
+    <span class="c1"># TODO: use namedtuple or dataclass</span>
+    <span class="n">rollers</span><span class="p">:</span> <span class="n">ShakerRollers</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">last_roll</span><span class="p">:</span> <span class="n">ShakerResult</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_roll</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Shaker.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.shakers.Shaker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roller</span><span class="p">:</span> <span class="n">RollerCls</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Shaker.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.shakers.Shaker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roller</span><span class="p">:</span> <span class="n">RollerCls</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span>
+            <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add roller to shaker</span>
 
 <span class="sd">        Args:</span>
@@ -103,21 +105,29 @@
 <span class="sd">            count (int, optional): count of rollers copy. Defaults to 1.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            RollerDefineError: counts not set or are different rollers with same names</span>
+<span class="sd">            RollerDefineError: counts not set or are different</span>
+<span class="sd">                               rollers with same names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span><span class="s1">&#39;Need at least one roller&#39;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="n">roller</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;roller&#39;</span><span class="p">:</span> <span class="n">roller</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">count</span><span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;roller&#39;</span><span class="p">:</span> <span class="n">roller</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">count</span>
+                    <span class="p">}</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;roller&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">roller</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Different instances of roller class with same name </span><span class="si">{</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;Different instances of roller class </span><span class="se">\</span>
+<span class="s1">                        with same name </span><span class="si">{</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">count</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;roller&#39;</span><span class="p">:</span> <span class="n">roller</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">count</span><span class="p">}}</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;roller&#39;</span><span class="p">:</span> <span class="n">roller</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">count</span><span class="p">}</span>
+                <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Shaker.remove"><a class="viewcode-back" href="../../bgameb.html#bgameb.shakers.Shaker.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove any kind of roller copy from shaker by name and color</span>
@@ -128,12 +138,16 @@
 <span class="sd">            color (str): color froup of rollers</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            RollerDefineError: name, color not match or count of rollers not defined</span>
+<span class="sd">            RollerDefineError: name, color not match or</span>
+<span class="sd">                               count of rollers not defined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span><span class="s1">&#39;Need at least one roller&#39;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">count</span><span class="p">:</span>
                     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">]</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -169,8 +183,10 @@
         <span class="n">to_del</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">to_del</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">to_del</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_empty_colors</span><span class="p">(</span><span class="n">to_del</span><span class="p">)</span></div>
 

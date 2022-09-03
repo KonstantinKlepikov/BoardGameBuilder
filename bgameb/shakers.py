@@ -16,14 +16,16 @@ class Shaker(DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
     """
     name: str = 'shaker'
-    rollers: ShakerRollers = field(default_factory=dict, init=False) #TODO: use namedtuple or dataclass
-    last_roll: ShakerResult = field(default_factory=dict, init=False) #TODO: use namedtuple or dataclass
+    # TODO: use namedtuple or dataclass
+    rollers: ShakerRollers = field(default_factory=dict, init=False)
+    last_roll: ShakerResult = field(default_factory=dict, init=False)
 
     def __post_init__(self):
         self.rollers = {}
         self.last_roll = {}
 
-    def add(self, roller: RollerCls, color: str = 'white', count: int = 1) -> None:
+    def add(self, roller: RollerCls, color: str = 'white',
+            count: int = 1) -> None:
         """Add roller to shaker
 
         Args:
@@ -32,21 +34,29 @@ class Shaker(DataClassJsonMixin):
             count (int, optional): count of rollers copy. Defaults to 1.
 
         Raises:
-            RollerDefineError: counts not set or are different rollers with same names
+            RollerDefineError: counts not set or are different
+                               rollers with same names
         """
         if count < 1:
             raise RollerDefineError('Need at least one roller')
+
         if self.rollers.get(color):
+
             if roller.name not in self.rollers[color].keys():
-                self.rollers[color][roller.name] = {'roller': roller, 'count': count}
+                self.rollers[color][roller.name] = {
+                    'roller': roller, 'count': count
+                    }
             elif self.rollers[color][roller.name]['roller'] is not roller:
                 raise RollerDefineError(
-                    f'Different instances of roller class with same name {roller.name}'
+                    f'Different instances of roller class \
+                        with same name {roller.name}'
                     )
             else:
                 self.rollers[color][roller.name]['count'] += count
         else:
-            self.rollers[color] = {roller.name: {'roller': roller, 'count': count}}
+            self.rollers[color] = {
+                roller.name: {'roller': roller, 'count': count}
+                }
 
     def remove(self, name: str, count: int, color: str) -> None:
         """Remove any kind of roller copy from shaker by name and color
@@ -57,12 +67,16 @@ class Shaker(DataClassJsonMixin):
             color (str): color froup of rollers
 
         Raises:
-            RollerDefineError: name, color not match or count of rollers not defined
+            RollerDefineError: name, color not match or
+                               count of rollers not defined
         """
         if count < 1:
             raise RollerDefineError('Need at least one roller')
+
         if self.rollers.get(color):
+
             if self.rollers[color].get(name):
+
                 if self.rollers[color][name]['count'] <= count:
                     del self.rollers[color][name]
                     if len(self.rollers[color]) == 0:
@@ -98,8 +112,10 @@ class Shaker(DataClassJsonMixin):
         to_del = []
         for color in self.rollers.keys():
             self.rollers[color].pop(name, None)
+
             if len(self.rollers[color]) == 0:
                 to_del.append(color)
+
         if to_del:
             self._remove_empty_colors(to_del)
 
