@@ -4,6 +4,7 @@ from typing import Dict, Tuple, TypeVar, List, Union
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
 from bgameb.rollers import BaseRoller
+from bgameb.utils import logger
 
 
 RollerCls = TypeVar('RollerCls', bound=BaseRoller)
@@ -48,8 +49,8 @@ class Shaker(DataClassJsonMixin):
                     }
             elif self.rollers[color][roller.name]['roller'] is not roller:
                 raise RollerDefineError(
-                    f'Different instances of roller class \
-                        with same name {roller.name}'
+                    'Different instances of roller class '
+                    f'with the same name {roller.name}'
                     )
             else:
                 self.rollers[color][roller.name]['count'] += count
