@@ -4,7 +4,7 @@ from typing import Dict, Tuple, TypeVar, List, Union
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
 from bgameb.rollers import BaseRoller
-from bgameb.utils import logger
+from bgameb.utils import log_me
 
 
 RollerCls = TypeVar('RollerCls', bound=BaseRoller)
@@ -21,9 +21,15 @@ class Shaker(DataClassJsonMixin):
     rollers: ShakerRollers = field(default_factory=dict, init=False)
     last_roll: ShakerResult = field(default_factory=dict, init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.rollers = {}
         self.last_roll = {}
+
+        # set logger
+        self.logger = log_me.bind(
+            classname=self.__class__.__name__,
+            name=self.name)
+        self.logger.info(f'Shaker created.')
 
     def add(self, roller: RollerCls, color: str = 'white',
             count: int = 1) -> None:
@@ -39,6 +45,7 @@ class Shaker(DataClassJsonMixin):
                                rollers with same names
         """
         if count < 1:
+            self.logger.debug(f"Can't add 0 rollers.")
             raise RollerDefineError('Need at least one roller')
 
         if self.rollers.get(color):
@@ -48,6 +55,7 @@ class Shaker(DataClassJsonMixin):
                     'roller': roller, 'count': count
                     }
             elif self.rollers[color][roller.name]['roller'] is not roller:
+                self.logger.debug("Can't add different rollers with the same name.")
                 raise RollerDefineError(
                     'Different instances of roller class '
                     f'with the same name {roller.name}'

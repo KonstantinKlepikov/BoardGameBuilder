@@ -4,6 +4,7 @@ import random
 from typing import List, Optional
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
+from bgameb.utils import log_me
 
 
 @dataclass
@@ -52,13 +53,19 @@ class Dice(BaseRoller):
     name: str = 'dice'
     sides: int = 6
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not isinstance(self.sides, int):
             raise RollerSidesError(
                 f'Is not defined number of sizes for dice {self.name}'
                 )
         else:
             self._range_to_roll = list(range(1, self.sides + 1))
+
+        # set logger
+        self.logger = log_me.bind(
+            classname=self.__class__.__name__,
+            name=self.name)
+        self.logger.info(f'Dice created.')
 
 
 @dataclass
@@ -67,9 +74,15 @@ class Coin(BaseRoller):
     """
     name: str = 'coin'
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.sides = 2
         self._range_to_roll = list(range(1, 3))
+
+        # set logger
+        self.logger = log_me.bind(
+            classname=self.__class__.__name__,
+            name=self.name)
+        self.logger.info(f'Coin created.')
 
 
 class RollerSidesError(RuntimeError):

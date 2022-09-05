@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
 from bgameb.rollers import BaseRoller
 from bgameb.shakers import Shaker
-from bgameb.utils import logger
+from bgameb.utils import log_me
 
 
 Component = TypeVar('Component', bound=Union[Shaker, BaseRoller])
@@ -22,23 +22,12 @@ class Game(DataClassJsonMixin):
 
     name: str = 'game'
     shakers: NamedTuple = field(default_factory=tuple, init=False)
-    # logging: bool = False
-    # log_level: str = 'INFO'
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.shakers = GameShakers()
 
         # set logger
-        # if self.logging:
-        #     logger.enable('bgameb')
-        #     my_filter.level = self.log_level
-            # self.logger = logger.bind(
-            #     game_name=self.name,
-            #     classname=self.__class__.__name__,
-            #     name=self.name)
-            # self.logger.info(f'Game created. Logging level="{self.log_level}"')
-        self.logger = logger.bind(
-            game_name=self.name,
+        self.logger = log_me.bind(
             classname=self.__class__.__name__,
             name=self.name)
         self.logger.info(f'Game created.')
@@ -59,3 +48,5 @@ class Game(DataClassJsonMixin):
 
             GameShakers = NamedTuple('GameShakers', sh_types.items())
             self.shakers = GameShakers(**sh_dict)
+
+            self.logger.info(f'Added {self.shakers}.')
