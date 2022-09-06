@@ -36,6 +36,14 @@ bgameb.shakers module
    :undoc-members:
    :show-inheritance:
 
+bgameb.cards module
+---------------------
+
+.. automodule:: bgameb.cards
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

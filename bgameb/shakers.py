@@ -1,4 +1,4 @@
-"""Game shakers - dice towers, bags and etc
+"""Game shakers - dice towers, bags, decks and etc
 """
 from typing import Dict, Tuple, TypeVar, List, Union
 from dataclasses import dataclass, field
