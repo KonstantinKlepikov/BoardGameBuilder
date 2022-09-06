@@ -83,3 +83,4 @@ wcwidth==0.2.5
 webencodings==0.5.1
 zipp==3.8.1
 zope.interface==5.4.0
+loguru==0.6.0

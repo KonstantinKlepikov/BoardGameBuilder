@@ -3,6 +3,32 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.7 (2022-09-06)
+===========================
+
+Features
+--------
+
+- #15:
+      * Add loguru.
+      * Add logging to utils.py.
+      * Add loggers to Game, Shaker and rollers.
+      * Configure log format.
+      * Add log_enable() method. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/15)
+- #32:
+      * add_component() -> add().
+      * _range_roll -> _range.
+      * last_roll() -> last()
+      * remove name from shakers named tuple (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/32)
+- Add flake8 support. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/37)
+
+
+Bugfixes
+--------
+
+- Fix release run if closed pullrequest without merge. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/40)
+
+
 Release v0.0.6 (2022-09-03)
 ===========================
 
@@ -26,9 +52,9 @@ Features
       * Remove colors from rolled.
       * Add shakers module for shakers.
       * Add shaker class.
-      * Implement add, remove, roll and last_roll for Shaker.
+      * Implement add, remove, roll and last for Shaker.
       * Add error for define roller for Shaker.
-      * Implement of roll method and last_roll for shaker
+      * Implement of roll method and last for shaker
       * Add shakers as NamedTuple to Game (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
 
 
