@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb package &mdash; BoardGameBuilder 0.0.6 documentation</title>
+  <title>bgameb package &mdash; BoardGameBuilder 0.0.7 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> BoardGameBuilder
           </a>
               <div class="version">
-                0.0.6
+                0.0.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -50,6 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.players">bgameb.players module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.rollers">bgameb.rollers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.shakers">bgameb.shakers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.cards">bgameb.cards module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb">Module contents</a></li>
 </ul>
 </li>
@@ -237,7 +238,7 @@ Default 6</p>
 </section>
 <section id="module-bgameb.shakers">
 <span id="bgameb-shakers-module"></span><h2>bgameb.shakers module<a class="headerlink" href="#module-bgameb.shakers" title="Permalink to this heading"></a></h2>
-<p>Game shakers - dice towers, bags and etc</p>
+<p>Game shakers - dice towers, bags, decks and etc</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="bgameb.shakers.RollerDefineError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.shakers.</span></span><span class="sig-name descname"><span class="pre">RollerDefineError</span></span><a class="reference internal" href="_modules/bgameb/shakers.html#RollerDefineError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.shakers.RollerDefineError" title="Permalink to this definition"></a></dt>
@@ -353,6 +354,90 @@ If no any name is match, nothing happens.</p>
 <span class="sig-name descname"><span class="pre">rollers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">RollerCls</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.shakers.Shaker.rollers" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="module-bgameb.cards">
+<span id="bgameb-cards-module"></span><h2>bgameb.cards module<a class="headerlink" href="#module-bgameb.cards" title="Permalink to this heading"></a></h2>
+<p>Game cards</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bgameb.cards.Card">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.cards.</span></span><span class="sig-name descname"><span class="pre">Card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'card'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">open</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">side</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/cards.html#Card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.Card" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
+<p>Create the card</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.cards.Card.alter">
+<span class="sig-name descname"><span class="pre">alter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/cards.html#Card.alter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.Card.alter" title="Permalink to this definition"></a></dt>
+<dd><p>Many cards have alter views. For example
+card can have main view, that apply most time of the game
+and second view, that apply only if card played as
+that alternative. For ease of understanding, consider that
+different views of the same card are not related directly
+to each other.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.cards.Card.face_down">
+<span class="sig-name descname"><span class="pre">face_down</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/cards.html#Card.face_down"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.Card.face_down" title="Permalink to this definition"></a></dt>
+<dd><p>Face down the card</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.cards.Card.face_up">
+<span class="sig-name descname"><span class="pre">face_up</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bgameb.cards.CardTexts" title="bgameb.cards.CardTexts"><span class="pre">CardTexts</span></a></span></span><a class="reference internal" href="_modules/bgameb/cards.html#Card.face_up"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.Card.face_up" title="Permalink to this definition"></a></dt>
+<dd><p>Face up the card and return text</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.cards.Card.flip">
+<span class="sig-name descname"><span class="pre">flip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/cards.html#Card.flip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.Card.flip" title="Permalink to this definition"></a></dt>
+<dd><p>Face up or face down the card regardles of it condition</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.cards.Card.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'card'</span></em><a class="headerlink" href="#bgameb.cards.Card.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.cards.Card.open">
+<span class="sig-name descname"><span class="pre">open</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#bgameb.cards.Card.open" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.cards.Card.side">
+<span class="sig-name descname"><span class="pre">side</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bgameb.cards.Card.side" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.cards.Card.tap">
+<span class="sig-name descname"><span class="pre">tap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/cards.html#Card.tap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.Card.tap" title="Permalink to this definition"></a></dt>
+<dd><p>Tap the card to the given side</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.cards.Card.tapped">
+<span class="sig-name descname"><span class="pre">tapped</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#bgameb.cards.Card.tapped" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.cards.Card.text">
+<span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#bgameb.cards.CardTexts" title="bgameb.cards.CardTexts"><span class="pre">CardTexts</span></a></em><a class="headerlink" href="#bgameb.cards.Card.text" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.cards.Card.untap">
+<span class="sig-name descname"><span class="pre">untap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/cards.html#Card.untap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.Card.untap" title="Permalink to this definition"></a></dt>
+<dd><p>Untap the card</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bgameb.cards.CardTexts">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.cards.</span></span><span class="sig-name descname"><span class="pre">CardTexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/cards.html#CardTexts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.cards.CardTexts" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Cards texts collection</p>
 </dd></dl>
 
 </section>
