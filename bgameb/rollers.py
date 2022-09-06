@@ -4,6 +4,7 @@ import random
 from typing import List, Optional
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
+from bgameb.utils import log_me
 
 
 @dataclass
@@ -22,6 +23,12 @@ class BaseRoller(DataClassJsonMixin):
     sides: Optional[int] = field(default=None, init=False)
     _range_to_roll: List[int] = field(default_factory=list, init=False)
 
+    def __post_init__(self) -> None:
+        # set logger
+        self.logger = log_me.bind(
+            classname=self.__class__.__name__,
+            name=self.name)
+
     def roll(self) -> int:
         """Roll or flip and return result
 
@@ -32,11 +39,16 @@ class BaseRoller(DataClassJsonMixin):
             int: result of roll
         """
         if self.sides:
-            return random.choices(self._range_to_roll, k=1)[0]
+            choice = random.choices(self._range_to_roll, k=1)[0]
+            self.logger.debug(f'Is rolled {choice=}')
+            return choice
             # TODO: add weights
             # https://docs.python.org/dev/library/random.html#random.choices
 
         else:
+            self.logger.debug(
+                f'Is not defined number of sizes for {self.name}'
+                )
             raise RollerSidesError(
                 f'Is not defined number of sizes for {self.name}'
                 )
@@ -52,13 +64,20 @@ class Dice(BaseRoller):
     name: str = 'dice'
     sides: int = 6
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
         if not isinstance(self.sides, int):
+            self.logger.debug(
+                f'Is not defined number of sizes for {self.name}'
+                )
             raise RollerSidesError(
                 f'Is not defined number of sizes for dice {self.name}'
                 )
         else:
             self._range_to_roll = list(range(1, self.sides + 1))
+
+        self.logger.info(f'Dice created with {self.sides} sides.')
 
 
 @dataclass
@@ -67,9 +86,13 @@ class Coin(BaseRoller):
     """
     name: str = 'coin'
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
         self.sides = 2
         self._range_to_roll = list(range(1, 3))
+
+        self.logger.info(f'Coin created with {self.sides} sides.')
 
 
 class RollerSidesError(RuntimeError):

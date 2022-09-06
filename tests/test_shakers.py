@@ -51,7 +51,7 @@ class TestShaker:
             }, 'roller added wrong'
 
     def test_cant_be_added_different_instancers_with_same_names(self) -> None:
-        """To chsker cant be added different instances with same name
+        """To chsker cant be added different instances with the same name
         """
         shaker = Shaker()
         roller1 = Dice()
@@ -61,12 +61,12 @@ class TestShaker:
         shaker.add(roller1)
         with pytest.raises(
             RollerDefineError,
-            match="Different instances of roller class with same name"
+            match="Different instances of roller class"
         ):
             shaker.add(roller2)
         with pytest.raises(
             RollerDefineError,
-            match="Different instances of roller class with same name"
+            match="Different instances of roller class"
         ):
             shaker.add(roller3, count=3)
 

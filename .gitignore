@@ -152,5 +152,5 @@ docker-stack.yml
 !docs/build
 doctrees
 
-# remove ipython research folder
-research
+# logs
+logs
