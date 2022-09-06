@@ -1,4 +1,3 @@
-import functools
 from loguru import logger
 from loguru._logger import Logger
 
