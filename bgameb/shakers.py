@@ -19,11 +19,11 @@ class Shaker(DataClassJsonMixin):
     name: str = 'shaker'
     # TODO: use namedtuple or dataclass
     rollers: ShakerRollers = field(default_factory=dict, init=False)
-    last_roll: ShakerResult = field(default_factory=dict, init=False)
+    last: ShakerResult = field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
         self.rollers = {}
-        self.last_roll = {}
+        self.last = {}
 
         # set logger
         self.logger = log_me.bind(
@@ -191,9 +191,9 @@ class Shaker(DataClassJsonMixin):
                     obj['roller'].roll() for _ in range(obj['count'])
                     )
         if roll:
-            self.last_roll = roll
+            self.last = roll
             self.logger.debug(f'Rolled: {roll}')
-            return self.last_roll
+            return self.last
         else:
             self.logger.debug(f'No one roller rolled.')
             return {}

@@ -12,7 +12,8 @@ Component = TypeVar('Component', bound=Union[Shaker, BaseRoller])
 
 
 class GameShakers(NamedTuple):
-    name: str = 'game_shakers'
+    """Game shakers collection
+    """
 
 
 @dataclass
@@ -32,7 +33,7 @@ class Game(DataClassJsonMixin):
             name=self.name)
         self.logger.info(f'Game created.')
 
-    def add_component(self, component: Component) -> None:
+    def add(self, component: Component) -> None:
         """Add game component to game
 
         Args:
@@ -46,7 +47,7 @@ class Game(DataClassJsonMixin):
             sh_types = self.shakers.__annotations__
             sh_types[component.name] = type(component)
 
-            GameShakers = NamedTuple('GameShakers', sh_types.items())
-            self.shakers = GameShakers(**sh_dict)
+            gsh = NamedTuple('GameShakers', sh_types.items())
+            self.shakers = gsh(**sh_dict)
 
             self.logger.info(f'Added {self.shakers}.')
