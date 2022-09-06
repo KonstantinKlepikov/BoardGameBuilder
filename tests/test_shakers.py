@@ -13,7 +13,7 @@ class TestShaker:
         """
         shaker = Shaker()
         assert shaker.name == 'shaker', 'wrong name'
-        assert isinstance(shaker.last_roll, dict), 'nondict last_roll'
+        assert isinstance(shaker.last, dict), 'nondict last'
         assert isinstance(shaker.rollers, dict), 'nondict rollers'
         assert len(shaker.rollers) == 0, 'nonempty rollers'
 
@@ -78,7 +78,7 @@ class TestShaker:
         shaker.add(roller)
         j = json.loads(shaker.to_json())
         assert j['name'] == 'shaker', 'wrong name'
-        assert j['last_roll'] == {}, 'wrong name'
+        assert j['last'] == {}, 'wrong name'
         assert j['rollers']['white']['dice']['count'] == 1, 'wrong count'
 
     def test_remove_all(self) -> None:
@@ -162,7 +162,7 @@ class TestShaker:
         assert len(roll['red']['that']) == 2, 'wrong roll result'
         assert len(roll['white']) == 2, 'wrong roll result'
         assert isinstance(roll['white']['some'][0], int), 'wrong roll result'
-        assert len(shaker.last_roll) == 2, 'wrong last_roll'
+        assert len(shaker.last) == 2, 'wrong last'
 
     def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
@@ -170,4 +170,4 @@ class TestShaker:
         shaker = Shaker()
         roll = shaker.roll()
         assert roll == {}, 'wrong roll result'
-        assert shaker.last_roll == {}, 'wrong last_roll'
+        assert shaker.last == {}, 'wrong last'

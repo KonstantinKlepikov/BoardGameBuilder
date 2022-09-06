@@ -49,7 +49,7 @@ class TestBaseRoller:
             match='Is not defined number of sizes'
             ):
             rolled.roll()
-        assert rolled._range_to_roll == [], 'range to roll isnt empty'
+        assert rolled._range == [], 'range to roll isnt empty'
 
 
 class TestDice:
@@ -78,11 +78,11 @@ class TestDice:
             ):
             dice.roll()
 
-    def test_dice_has_correct_range_to_roll(self) -> None:
+    def test_dice_has_correct_range(self) -> None:
         """Range to roll dice is correct
         """
         dice = bgameb.Dice()
-        assert dice._range_to_roll == [1, 2, 3, 4, 5, 6], \
+        assert dice._range == [1, 2, 3, 4, 5, 6], \
             'wrong range to roll'
 
     def test_dice_return_roll_result(self) -> None:
@@ -103,11 +103,11 @@ class TestCoin:
         coin = bgameb.Coin()
         assert coin.sides == 2, 'wrong init of sides'
 
-    def test_coin_has_correct_range_to_roll(self) -> None:
+    def test_coin_has_correct_range(self) -> None:
         """Range to roll coin is correct
         """
         coin = bgameb.Coin()
-        assert coin._range_to_roll == [1, 2], \
+        assert coin._range == [1, 2], \
             'wrong range to roll'
 
     def test_coin_return_roll_result(self) -> None:

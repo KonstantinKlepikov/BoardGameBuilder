@@ -21,7 +21,7 @@ class BaseRoller(DataClassJsonMixin):
     """
     name: str = 'base_roller'
     sides: Optional[int] = field(default=None, init=False)
-    _range_to_roll: List[int] = field(default_factory=list, init=False)
+    _range: List[int] = field(default_factory=list, init=False)
 
     def __post_init__(self) -> None:
         # set logger
@@ -39,7 +39,7 @@ class BaseRoller(DataClassJsonMixin):
             int: result of roll
         """
         if self.sides:
-            choice = random.choices(self._range_to_roll, k=1)[0]
+            choice = random.choices(self._range, k=1)[0]
             self.logger.debug(f'Is rolled {choice=}')
             return choice
             # TODO: add weights
@@ -75,7 +75,7 @@ class Dice(BaseRoller):
                 f'Is not defined number of sizes for dice {self.name}'
                 )
         else:
-            self._range_to_roll = list(range(1, self.sides + 1))
+            self._range = list(range(1, self.sides + 1))
 
         self.logger.info(f'Dice created with {self.sides} sides.')
 
@@ -90,7 +90,7 @@ class Coin(BaseRoller):
         super().__post_init__()
 
         self.sides = 2
-        self._range_to_roll = list(range(1, 3))
+        self._range = list(range(1, 3))
 
         self.logger.info(f'Coin created with {self.sides} sides.')
 

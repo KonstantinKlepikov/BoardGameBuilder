@@ -26,9 +26,9 @@ Features
       * Remove colors from rolled.
       * Add shakers module for shakers.
       * Add shaker class.
-      * Implement add, remove, roll and last_roll for Shaker.
+      * Implement add, remove, roll and last for Shaker.
       * Add error for define roller for Shaker.
-      * Implement of roll method and last_roll for shaker
+      * Implement of roll method and last for shaker
       * Add shakers as NamedTuple to Game (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
 
 

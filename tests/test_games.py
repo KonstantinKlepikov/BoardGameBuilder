@@ -30,6 +30,6 @@ class TestGame:
         """
         game = bgameb.Game()
         shaker = Shaker(name='greate_shaker')
-        game.add_component(shaker)
+        game.add(shaker)
         assert game.shakers.greate_shaker.name == 'greate_shaker', 'shaker not added'
-        assert game.shakers.greate_shaker.last_roll == {}, 'wrong last roll'
+        assert game.shakers.greate_shaker.last == {}, 'wrong last roll'
