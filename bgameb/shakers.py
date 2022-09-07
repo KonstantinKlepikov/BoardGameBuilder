@@ -4,6 +4,7 @@ from typing import Dict, Tuple, TypeVar, List, Union
 from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
 from bgameb.rollers import BaseRoller
+from bgameb.errors import RollerDefineError
 from bgameb.utils import log_me
 
 
@@ -197,8 +198,3 @@ class Shaker(DataClassJsonMixin):
         else:
             self.logger.debug(f'No one roller rolled.')
             return {}
-
-
-class RollerDefineError(AttributeError):
-    """Count of rollers not defined
-    """

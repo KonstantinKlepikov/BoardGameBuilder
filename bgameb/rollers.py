@@ -3,12 +3,14 @@
 import random
 from typing import List, Optional
 from dataclasses import dataclass, field
+from abc import ABC
 from dataclasses_json import DataClassJsonMixin
+from bgameb.errors import RollerSidesError
 from bgameb.utils import log_me
 
 
 @dataclass
-class BaseRoller(DataClassJsonMixin):
+class BaseRoller(DataClassJsonMixin, ABC):
     """Base class to create the rolled or fliped object
 
     Define name to identify later BaseRoller object by unique name.
@@ -93,9 +95,3 @@ class Coin(BaseRoller):
         self._range = list(range(1, 3))
 
         self.logger.info(f'Coin created with {self.sides} sides.')
-
-
-class RollerSidesError(RuntimeError):
-    """Count of sides not defined for this rolled object
-    """
-    pass
