@@ -1,1 +1,0 @@
-Parametrize shaker tests with Dice, Coin objects.
