@@ -9,13 +9,13 @@ from bgameb.utils import log_me
 class CardTexts(dict):
     """Cards texts collection
     """
-    def __init__(self, /, **kwargs):
+    def __init__(self, /, **kwargs) -> None:
         self.__dict__.update(kwargs)
 
     def __getattr__(self, attr: str) -> str:
         try:
             return self[attr]
-        except:
+        except KeyError:
             raise AttributeError(attr)
 
     def __setattr__(self, attr: str, value: str) -> None:
@@ -30,7 +30,7 @@ class CardTexts(dict):
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(self, dict) and isinstance(other, dict):
-           return self.__dict__ == other.__dict__
+            return self.__dict__ == other.__dict__
         return NotImplemented
 
 
