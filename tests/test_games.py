@@ -1,5 +1,4 @@
 import json
-from typing import NamedTuple
 import bgameb
 from bgameb.shakers import Shaker
 from bgameb.games import GameShakers

@@ -3,6 +3,21 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.8 (2022-09-07)
+===========================
+
+Features
+--------
+
+- Parametrize shaker tests with Dice, Coin objects. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/30)
+- #33:
+      * Add cards.py
+      * Add class Cards
+      * Add CardText class
+      * Add methods flip(), face_up(), face_down(), tap(), untap()
+      * Add CardText dict-like class dot-access (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/33)
+
+
 Release v0.0.7 (2022-09-06)
 ===========================
 
