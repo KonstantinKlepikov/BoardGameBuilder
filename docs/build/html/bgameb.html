@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb package &mdash; BoardGameBuilder 0.0.7 documentation</title>
+  <title>bgameb package &mdash; BoardGameBuilder 0.0.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> BoardGameBuilder
           </a>
               <div class="version">
-                0.0.7
+                0.0.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -92,20 +92,52 @@
 <span id="bgameb-games-module"></span><h2>bgameb.games module<a class="headerlink" href="#module-bgameb.games" title="Permalink to this heading"></a></h2>
 <p>Main engine to create game object</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="bgameb.games.Components">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Component</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Component</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/games.html#Components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Components" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></p>
+<p>Components mapping.</p>
+<p>This class inherit from dict and not implemets
+__setattr__ and __setitems__. Class represents
+additional dot-acces for attributes of dict</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.games.Components.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bgameb.shakers.Shaker" title="bgameb.shakers.Shaker"><span class="pre">Shaker</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#bgameb.rollers.BaseRoller" title="bgameb.rollers.BaseRoller"><span class="pre">BaseRoller</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#bgameb.cards.Card" title="bgameb.cards.Card"><span class="pre">Card</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/games.html#Components.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Components.add" title="Permalink to this definition"></a></dt>
+<dd><p>Add component to Components dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>component</strong> (<em>Component</em>) – component class</p></li>
+<li><p><strong>kwargs</strong> – aditional args</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="bgameb.games.Game">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'game'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/games.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
 <p>Create the game object</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.games.Game.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/games.html#Game.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game.add" title="Permalink to this definition"></a></dt>
-<dd><p>Add game component to game</p>
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/games.html#Game.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.Game.add" title="Permalink to this definition"></a></dt>
+<dd><p>Add component to game</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>component</strong> (<em>Component</em>) – any class instance of components</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>component</strong> (<em>Component</em>) – any class instance of components</p></li>
+<li><p><strong>kwargs</strong> – additional arguments of component</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.games.Game.cards">
+<span class="sig-name descname"><span class="pre">cards</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#bgameb.games.Components" title="bgameb.games.Components"><span class="pre">Components</span></a></em><a class="headerlink" href="#bgameb.games.Game.cards" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bgameb.games.Game.name">
@@ -113,17 +145,15 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="bgameb.games.Game.shakers">
-<span class="sig-name descname"><span class="pre">shakers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">NamedTuple</span></em><a class="headerlink" href="#bgameb.games.Game.shakers" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="bgameb.games.Game.rollers">
+<span class="sig-name descname"><span class="pre">rollers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#bgameb.games.Components" title="bgameb.games.Components"><span class="pre">Components</span></a></em><a class="headerlink" href="#bgameb.games.Game.rollers" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.games.Game.shakers">
+<span class="sig-name descname"><span class="pre">shakers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#bgameb.games.Components" title="bgameb.games.Components"><span class="pre">Components</span></a></em><a class="headerlink" href="#bgameb.games.Game.shakers" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="bgameb.games.GameShakers">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.games.</span></span><span class="sig-name descname"><span class="pre">GameShakers</span></span><a class="reference internal" href="_modules/bgameb/games.html#GameShakers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.games.GameShakers" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
-<p>Game shakers collection</p>
 </dd></dl>
 
 </section>
@@ -158,7 +188,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.rollers.BaseRoller">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.rollers.</span></span><span class="sig-name descname"><span class="pre">BaseRoller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'base_roller'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/rollers.html#BaseRoller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.rollers.BaseRoller" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassJsonMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Base class to create the rolled or fliped object</p>
 <p>Define name to identify later BaseRoller object by unique name.
 For example: ‘six_side_dice’</p>
@@ -179,7 +209,7 @@ For example: ‘six_side_dice’</p>
 <dd><p>Roll or flip and return result</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#bgameb.rollers.RollerSidesError" title="bgameb.rollers.RollerSidesError"><strong>RollerSidesError</strong></a> – is not defined number of sides</p>
+<dd class="field-odd"><p><strong>RollerSidesError</strong> – is not defined number of sides</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>result of roll</p>
@@ -228,24 +258,10 @@ Default 6</p>
 
 </dd></dl>
 
-<dl class="py exception">
-<dt class="sig sig-object py" id="bgameb.rollers.RollerSidesError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.rollers.</span></span><span class="sig-name descname"><span class="pre">RollerSidesError</span></span><a class="reference internal" href="_modules/bgameb/rollers.html#RollerSidesError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.rollers.RollerSidesError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
-<p>Count of sides not defined for this rolled object</p>
-</dd></dl>
-
 </section>
 <section id="module-bgameb.shakers">
 <span id="bgameb-shakers-module"></span><h2>bgameb.shakers module<a class="headerlink" href="#module-bgameb.shakers" title="Permalink to this heading"></a></h2>
 <p>Game shakers - dice towers, bags, decks and etc</p>
-<dl class="py exception">
-<dt class="sig sig-object py" id="bgameb.shakers.RollerDefineError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.shakers.</span></span><span class="sig-name descname"><span class="pre">RollerDefineError</span></span><a class="reference internal" href="_modules/bgameb/shakers.html#RollerDefineError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.shakers.RollerDefineError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeError</span></code></p>
-<p>Count of rollers not defined</p>
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.shakers.Shaker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.shakers.</span></span><span class="sig-name descname"><span class="pre">Shaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'shaker'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/shakers.html#Shaker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.shakers.Shaker" title="Permalink to this definition"></a></dt>
@@ -264,7 +280,7 @@ Default 6</p>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="#bgameb.shakers.RollerDefineError" title="bgameb.shakers.RollerDefineError"><strong>RollerDefineError</strong></a> – counts not set or are different
+<dd class="field-even"><p><strong>RollerDefineError</strong> – counts not set or are different
     rollers with same names</p>
 </dd>
 </dl>
@@ -293,7 +309,7 @@ Default 6</p>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="#bgameb.shakers.RollerDefineError" title="bgameb.shakers.RollerDefineError"><strong>RollerDefineError</strong></a> – name, color not match or
+<dd class="field-even"><p><strong>RollerDefineError</strong> – name, color not match or
     count of rollers not defined</p>
 </dd>
 </dl>

@@ -1,26 +1,23 @@
 """Main engine to create game object
 """
 from typing import (
-    Union, NamedTuple, TypeVar, Dict, List, Optional, Type
+    Union, TypeVar, Dict, List, Optional, Type, Any
     )
 from dataclasses import dataclass, field
+from collections.abc import Mapping
 from dataclasses_json import DataClassJsonMixin
 from bgameb.rollers import BaseRoller
 from bgameb.shakers import Shaker
-from bgameb.errors import ComponentNameError
+from bgameb.cards import Card
+from bgameb.errors import ComponentNameError, ComponentClassError
 from bgameb.utils import log_me
 
 
-comp_bounds = Union[Shaker, BaseRoller]
+comp_bounds = Union[Shaker, BaseRoller, Card]
 Component = TypeVar('Component', bound=comp_bounds)
 
 
-class GameShakers(NamedTuple):
-    """Game shakers collection
-    """
-
-
-class Components(dict):
+class Components(Mapping):
     """Components mapping.
 
     This class inherit from dict and not implemets
@@ -42,6 +39,9 @@ class Components(dict):
                 raise AttributeError('Args must be a dicts')
         if kwargs:
             self.__dict__.update(kwargs)
+
+    def __iter__(self):
+        return iter(self.__dict__)
 
     def __getattr__(self, attr: str) -> Component:
         try:
@@ -90,27 +90,38 @@ class Components(dict):
             raise ComponentNameError(name=name)
         return True
 
+    def _update(
+        self,
+        component: Type[comp_bounds],
+        kwargs: Dict[str, Any]
+            ) -> None:
+        """Update components dict
+
+        Args:
+            component (Type[comp_bounds]): component class
+            kwargs (Dict[str, Any]): aditional args
+        """
+        self.__dict__.update(
+            {kwargs['name']: component(**kwargs)}
+            )
+
     def add(
         self,
         component: Type[comp_bounds],
-        name: Optional[str] = None,
         **kwargs
         ) -> None:
         """Add component to Components dict
 
         Args:
             component (Component): component class
-            name (Optional[str]): Name for component instance.
-                                  If None - used default for class.
-                                  Defaults to None.
+            kwargs: aditional args
         """
-        if name:
-            self._chek_in(name)
-            self.__dict__.update({name: component(name=name, **kwargs)})
+        if kwargs.get('name'):
+            self._chek_in(kwargs['name'])
         else:
             self._chek_in(component.name)
-            self.__dict__.update({component.name: component(**kwargs)})
-
+            kwargs['name'] = component.name
+        self._update(component, kwargs)
 
 @dataclass
 class Game(DataClassJsonMixin):
@@ -118,10 +129,14 @@ class Game(DataClassJsonMixin):
     """
 
     name: str = 'game'
-    shakers: NamedTuple = field(default_factory=tuple, init=False)
+    shakers: Components = field(default_factory=dict, init=False)
+    rollers: Components = field(default_factory=dict, init=False)
+    cards: Components = field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
-        self.shakers = GameShakers()
+        self.shakers = Components()
+        self.rollers = Components()
+        self.cards = Components()
 
         # set logger
         self.logger = log_me.bind(
@@ -129,21 +144,21 @@ class Game(DataClassJsonMixin):
             name=self.name)
         self.logger.info(f'Game created.')
 
-    def add(self, component: Component) -> None:
-        """Add game component to game
+    def add(self, component: Component, **kwargs) -> None:
+        """Add component to game
 
         Args:
             component (Component): any class instance of components
+            kwargs: additional arguments of component
         """
-        # TODO: separate by type without if's, remove tuple
-        if isinstance(component, Shaker):
-
-            sh_dict = self.shakers._asdict()
-            sh_dict[component.name] = component
-            sh_types = self.shakers.__annotations__
-            sh_types[component.name] = type(component)
-
-            gsh = NamedTuple('GameShakers', sh_types.items())
-            self.shakers = gsh(**sh_dict)
-
-            self.logger.info(f'Added {self.shakers}.')
+        if issubclass(component, BaseRoller):
+            self.rollers.add(component, **kwargs)
+            self.logger.info(f'Roller added: {self.rollers=}.')
+        elif component in Shaker.__mro__:
+            self.shakers.add(component, **kwargs)
+            self.logger.info(f'Shaker added: {self.shakers=}.')
+        elif component in Card.__mro__:
+            self.cards.add(component, **kwargs)
+            self.logger.info(f'Card added: {self.cards=}.')
+        else:
+            raise ComponentClassError(class_=component)

@@ -1,5 +1,5 @@
 import json, pytest
-import bgameb
+from bgameb.rollers import Dice, Coin
 from bgameb.rollers import BaseRoller, RollerSidesError
 
 
@@ -7,9 +7,9 @@ class TestNameAndJson:
     """Test creation with names and json schemes
     """
     params = [
-        (BaseRoller, 'base_roller'),
-        (bgameb.Dice, 'dice'),
-        (bgameb.Coin, 'coin'),
+        (BaseRoller, BaseRoller.name),
+        (Dice, Dice.name),
+        (Coin, Coin.name),
     ]
 
     @pytest.mark.parametrize("_class, name", params)
@@ -59,18 +59,18 @@ class TestDice:
     def test_dice_init_sides(self) -> None:
         """Test sides attribute initialisation for dice
         """
-        dice = bgameb.Dice()
+        dice = Dice()
         assert dice.sides == 6, 'wrong number of sides after empty init'
-        dice = bgameb.Dice(sides=2)
+        dice = Dice(sides=2)
         assert dice.sides == 2, 'wrong number of sidesafter init'
-        dice = bgameb.Dice()
+        dice = Dice()
         dice.sides = 2
         assert dice.sides == 2, 'cant change number of sides'
 
     def test_roll_dice_without_sides_raise_error(self) -> None:
         """We cant roll dice if sides not defined
         """
-        dice = bgameb.Dice()
+        dice = Dice()
         dice.sides = None
         with pytest.raises(
             RollerSidesError,
@@ -81,14 +81,14 @@ class TestDice:
     def test_dice_has_correct_range(self) -> None:
         """Range to roll dice is correct
         """
-        dice = bgameb.Dice()
+        dice = Dice()
         assert dice._range == [1, 2, 3, 4, 5, 6], \
             'wrong range to roll'
 
     def test_dice_return_roll_result(self) -> None:
         """Test dice roll return result
         """
-        dice = bgameb.Dice()
+        dice = Dice()
         roll = dice.roll()
         assert isinstance(roll, int), 'dice roll returns not int'
 
@@ -100,19 +100,19 @@ class TestCoin:
     def test_coin_hase_sides_defined_as_two(self) -> None:
         """Coin class initialised with 2 sides
         """
-        coin = bgameb.Coin()
+        coin = Coin()
         assert coin.sides == 2, 'wrong init of sides'
 
     def test_coin_has_correct_range(self) -> None:
         """Range to roll coin is correct
         """
-        coin = bgameb.Coin()
+        coin = Coin()
         assert coin._range == [1, 2], \
             'wrong range to roll'
 
     def test_coin_return_roll_result(self) -> None:
         """Test coin roll return result
         """
-        coin = bgameb.Coin()
+        coin = Coin()
         roll = coin.roll()
         assert isinstance(roll, int), 'coin roll returns not int'

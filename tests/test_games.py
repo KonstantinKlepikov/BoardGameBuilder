@@ -1,9 +1,10 @@
 import json, pytest
-import bgameb
+from bgameb.games import Game
 from bgameb.shakers import Shaker
 from bgameb.rollers import Dice, Coin
-from bgameb.errors import ComponentNameError
-from bgameb.games import GameShakers, Components
+from bgameb.cards import Card
+from bgameb.errors import ComponentNameError, ComponentClassError
+from bgameb.games import Components
 
 
 class TestComponents:
@@ -57,6 +58,15 @@ class TestComponents:
         assert len(comp1) == 1, 'wrong len'
         assert len(comp2) == 0, 'wrong len'
 
+    def test_components_items(self) -> None:
+        """Test components items access
+        """
+        comp = Components()
+        comp.__dict__.update({'some': Dice()})
+        assert len(comp.items()) == 1, 'items not accessed'
+        assert len(comp.keys()) == 1, 'keys not accessed'
+        assert len(comp.values()) == 1, 'values not accessed'
+
     def test_add_component(self) -> None:
         """Test add component with add() method
         """
@@ -76,34 +86,70 @@ class TestComponents:
         ):
             comp.add(Dice, name='this_is')
         comp.add(Dice, name='this_is_five', sides=5)
-        print(comp)
         assert comp.this_is_five.sides == 5, 'component not added'
 
 class TestGame:
     """Test Game class
     """
 
+    rollers = [
+        (Dice, Dice.name),
+        (Coin, Coin.name),
+    ]
+    shakers = [
+        (Shaker, Shaker.name),
+    ]
+    cards = [
+        (Card, Card.name),
+    ]
+
     def test_game_class_created_with_name(self) -> None:
         """Test Game name instancing
         """
-        game = bgameb.Game()
+        game = Game()
         assert game.name == 'game', 'wrong default name'
-        game = bgameb.Game(name='This Game')
+        game = Game(name='This Game')
         assert game.name == 'This Game', 'not set name for instance'
-        assert isinstance(game.shakers, GameShakers), 'wrong shakers'
+        assert isinstance(game.rollers, Components), 'wrong rollers'
+        assert isinstance(game.shakers, Components), 'wrong shakers'
 
     def test_game_class_is_converted_to_json(self) -> None:
         """Test to json convertatrion
         """
-        game = bgameb.Game()
+        game = Game()
         j = json.loads(game.to_json())
         assert j['name'] == 'game', 'not converted to json'
 
-    def test_add_shaker_to_game(self) -> None:
+    @pytest.mark.parametrize("_class, name", shakers)
+    def test_add_shakers_to_game(self, _class, name: str) -> None:
         """Test add component shaker to game
         """
-        game = bgameb.Game()
-        shaker = Shaker(name='greate_shaker')
-        game.add(shaker)
-        assert game.shakers.greate_shaker.name == 'greate_shaker', 'shaker not added'
-        assert game.shakers.greate_shaker.last == {}, 'wrong last roll'
+        game = Game()
+        game.add(_class)
+        assert game.shakers[name].name == name, 'shakers not added'
+
+    @pytest.mark.parametrize("_class, name", rollers)
+    def test_add_rollers_to_game(self, _class, name: str) -> None:
+        """Test we can add rollers to game
+        """
+        game = Game()
+        game.add(_class)
+        assert game.rollers[name].name == name, 'roller not added'
+
+    @pytest.mark.parametrize("_class, name", cards)
+    def test_add_cards_to_game(self, _class, name: str) -> None:
+        """Test we can add rollers to game
+        """
+        game = Game()
+        game.add(_class)
+        assert game.cards[name].name == name, 'card not added'
+
+    def test_add_noncomponent_class(self) -> None:
+        """Test add noncomponent class
+        """
+        game = Game()
+        with pytest.raises(
+            ComponentClassError,
+            match="Given class"
+            ):
+            game.add(Game)
