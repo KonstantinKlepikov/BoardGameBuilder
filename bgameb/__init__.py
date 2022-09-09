@@ -1,8 +1,6 @@
-from bgameb.games import Game
+from bgameb.game import Game
 from bgameb.players import Human, Bot
-from bgameb.rollers import Dice, Coin
-from bgameb.cards import Card
-from bgameb.shakers import Shaker
+from bgameb.stuff import Dice, Coin, Card
 from bgameb.utils import log_enable
 from bgameb._version import __version__
 

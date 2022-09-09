@@ -92,17 +92,19 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.games.Components.add">add() (bgameb.games.Components method)</a>
+      <li><a href="bgameb.html#bgameb.game.Components.add">add() (bgameb.game.Components method)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.games.Game.add">(bgameb.games.Game method)</a>
-</li>
-        <li><a href="bgameb.html#bgameb.shakers.Shaker.add">(bgameb.shakers.Shaker method)</a>
+        <li><a href="bgameb.html#bgameb.game.Shaker.add">(bgameb.game.Shaker method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.alter">alter() (bgameb.cards.Card method)</a>
+      <li><a href="bgameb.html#bgameb.game.Game.add_shaker">add_shaker() (bgameb.game.Game method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.game.Game.add_stuff">add_stuff() (bgameb.game.Game method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.stuff.Card.alter">alter() (bgameb.stuff.Card method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -110,7 +112,11 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.rollers.BaseRoller">BaseRoller (class in bgameb.rollers)</a>
+      <li><a href="bgameb.html#bgameb.stuff.BaseCard">BaseCard (class in bgameb.stuff)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.stuff.BaseRoller">BaseRoller (class in bgameb.stuff)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.stuff.BaseStuff">BaseStuff (class in bgameb.stuff)</a>
 </li>
       <li>
     bgameb
@@ -120,17 +126,17 @@
 </li>
       </ul></li>
       <li>
-    bgameb.cards
+    bgameb.errors
 
       <ul>
-        <li><a href="bgameb.html#module-bgameb.cards">module</a>
+        <li><a href="bgameb.html#module-bgameb.errors">module</a>
 </li>
       </ul></li>
       <li>
-    bgameb.games
+    bgameb.game
 
       <ul>
-        <li><a href="bgameb.html#module-bgameb.games">module</a>
+        <li><a href="bgameb.html#module-bgameb.game">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -143,17 +149,17 @@
 </li>
       </ul></li>
       <li>
-    bgameb.rollers
+    bgameb.stuff
 
       <ul>
-        <li><a href="bgameb.html#module-bgameb.rollers">module</a>
+        <li><a href="bgameb.html#module-bgameb.stuff">module</a>
 </li>
       </ul></li>
       <li>
-    bgameb.shakers
+    bgameb.utils
 
       <ul>
-        <li><a href="bgameb.html#module-bgameb.shakers">module</a>
+        <li><a href="bgameb.html#module-bgameb.utils">module</a>
 </li>
       </ul></li>
       <li><a href="bgameb.html#bgameb.players.Bot">Bot (class in bgameb.players)</a>
@@ -164,17 +170,23 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card">Card (class in bgameb.cards)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card">Card (class in bgameb.stuff)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.games.Game.cards">cards (bgameb.games.Game attribute)</a>
+      <li><a href="bgameb.html#bgameb.game.Game.cards_type">cards_type (bgameb.game.Game attribute)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.stuff.CardTexts">CardTexts (class in bgameb.stuff)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.stuff.Coin">Coin (class in bgameb.stuff)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.CardTexts">CardTexts (class in bgameb.cards)</a>
+      <li><a href="bgameb.html#bgameb.errors.ComponentClassError">ComponentClassError</a>
 </li>
-      <li><a href="bgameb.html#bgameb.rollers.Coin">Coin (class in bgameb.rollers)</a>
+      <li><a href="bgameb.html#bgameb.errors.ComponentNameError">ComponentNameError</a>
 </li>
-      <li><a href="bgameb.html#bgameb.games.Components">Components (class in bgameb.games)</a>
+      <li><a href="bgameb.html#bgameb.game.Components">Components (class in bgameb.game)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.errors.CustomRuntimeError">CustomRuntimeError</a>
 </li>
   </ul></td>
 </tr></table>
@@ -182,7 +194,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.rollers.Dice">Dice (class in bgameb.rollers)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Dice">Dice (class in bgameb.stuff)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -190,13 +202,13 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.face_down">face_down() (bgameb.cards.Card method)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.face_down">face_down() (bgameb.stuff.Card method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.face_up">face_up() (bgameb.cards.Card method)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.face_up">face_up() (bgameb.stuff.Card method)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.cards.Card.flip">flip() (bgameb.cards.Card method)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.flip">flip() (bgameb.stuff.Card method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -204,7 +216,7 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.games.Game">Game (class in bgameb.games)</a>
+      <li><a href="bgameb.html#bgameb.game.Game">Game (class in bgameb.game)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -220,7 +232,11 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.shakers.Shaker.last">last (bgameb.shakers.Shaker attribute)</a>
+      <li><a href="bgameb.html#bgameb.game.Shaker.last">last (bgameb.game.Shaker attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.utils.log_enable">log_enable() (in module bgameb.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -234,15 +250,15 @@
       <ul>
         <li><a href="bgameb.html#module-bgameb">bgameb</a>
 </li>
-        <li><a href="bgameb.html#module-bgameb.cards">bgameb.cards</a>
+        <li><a href="bgameb.html#module-bgameb.errors">bgameb.errors</a>
 </li>
-        <li><a href="bgameb.html#module-bgameb.games">bgameb.games</a>
+        <li><a href="bgameb.html#module-bgameb.game">bgameb.game</a>
 </li>
         <li><a href="bgameb.html#module-bgameb.players">bgameb.players</a>
 </li>
-        <li><a href="bgameb.html#module-bgameb.rollers">bgameb.rollers</a>
+        <li><a href="bgameb.html#module-bgameb.stuff">bgameb.stuff</a>
 </li>
-        <li><a href="bgameb.html#module-bgameb.shakers">bgameb.shakers</a>
+        <li><a href="bgameb.html#module-bgameb.utils">bgameb.utils</a>
 </li>
       </ul></li>
   </ul></td>
@@ -251,18 +267,18 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.name">name (bgameb.cards.Card attribute)</a>
+      <li><a href="bgameb.html#bgameb.game.Game.name">name (bgameb.game.Game attribute)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.games.Game.name">(bgameb.games.Game attribute)</a>
+        <li><a href="bgameb.html#bgameb.game.Shaker.name">(bgameb.game.Shaker attribute)</a>
 </li>
-        <li><a href="bgameb.html#bgameb.rollers.BaseRoller.name">(bgameb.rollers.BaseRoller attribute)</a>
+        <li><a href="bgameb.html#bgameb.stuff.BaseRoller.name">(bgameb.stuff.BaseRoller attribute)</a>
 </li>
-        <li><a href="bgameb.html#bgameb.rollers.Coin.name">(bgameb.rollers.Coin attribute)</a>
+        <li><a href="bgameb.html#bgameb.stuff.Card.name">(bgameb.stuff.Card attribute)</a>
 </li>
-        <li><a href="bgameb.html#bgameb.rollers.Dice.name">(bgameb.rollers.Dice attribute)</a>
+        <li><a href="bgameb.html#bgameb.stuff.Coin.name">(bgameb.stuff.Coin attribute)</a>
 </li>
-        <li><a href="bgameb.html#bgameb.shakers.Shaker.name">(bgameb.shakers.Shaker attribute)</a>
+        <li><a href="bgameb.html#bgameb.stuff.Dice.name">(bgameb.stuff.Dice attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -271,7 +287,7 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.open">open (bgameb.cards.Card attribute)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.open">open (bgameb.stuff.Card attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -287,46 +303,52 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.shakers.Shaker.remove">remove() (bgameb.shakers.Shaker method)</a>
+      <li><a href="bgameb.html#bgameb.game.Shaker.remove">remove() (bgameb.game.Shaker method)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.shakers.Shaker.remove_all">remove_all() (bgameb.shakers.Shaker method)</a>
+      <li><a href="bgameb.html#bgameb.game.Shaker.remove_all">remove_all() (bgameb.game.Shaker method)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.shakers.Shaker.remove_all_by_color">remove_all_by_color() (bgameb.shakers.Shaker method)</a>
+      <li><a href="bgameb.html#bgameb.game.Shaker.remove_all_by_color">remove_all_by_color() (bgameb.game.Shaker method)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.shakers.Shaker.remove_all_by_name">remove_all_by_name() (bgameb.shakers.Shaker method)</a>
+      <li><a href="bgameb.html#bgameb.game.Shaker.remove_all_by_name">remove_all_by_name() (bgameb.game.Shaker method)</a>
 </li>
+      <li><a href="bgameb.html#bgameb.game.Shaker.roll">roll() (bgameb.game.Shaker method)</a>
+
+      <ul>
+        <li><a href="bgameb.html#bgameb.stuff.BaseRoller.roll">(bgameb.stuff.BaseRoller method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.rollers.BaseRoller.roll">roll() (bgameb.rollers.BaseRoller method)</a>
+      <li><a href="bgameb.html#bgameb.errors.RollerDefineError">RollerDefineError</a>
+</li>
+      <li><a href="bgameb.html#bgameb.game.Shaker.rollers">rollers (bgameb.game.Shaker attribute)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.game.Game.rollers_type">rollers_type (bgameb.game.Game attribute)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.shakers.Shaker.roll">(bgameb.shakers.Shaker method)</a>
+        <li><a href="bgameb.html#bgameb.game.Shaker.rollers_type">(bgameb.game.Shaker attribute)</a>
 </li>
       </ul></li>
-      <li><a href="bgameb.html#bgameb.games.Game.rollers">rollers (bgameb.games.Game attribute)</a>
-
-      <ul>
-        <li><a href="bgameb.html#bgameb.shakers.Shaker.rollers">(bgameb.shakers.Shaker attribute)</a>
+      <li><a href="bgameb.html#bgameb.errors.RollerSidesError">RollerSidesError</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.shakers.Shaker">Shaker (class in bgameb.shakers)</a>
+      <li><a href="bgameb.html#bgameb.game.Shaker">Shaker (class in bgameb.game)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.games.Game.shakers">shakers (bgameb.games.Game attribute)</a>
+      <li><a href="bgameb.html#bgameb.game.Game.shakers">shakers (bgameb.game.Game attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.side">side (bgameb.cards.Card attribute)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.side">side (bgameb.stuff.Card attribute)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.rollers.BaseRoller.sides">sides (bgameb.rollers.BaseRoller attribute)</a>
+      <li><a href="bgameb.html#bgameb.stuff.BaseRoller.sides">sides (bgameb.stuff.BaseRoller attribute)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.rollers.Dice.sides">(bgameb.rollers.Dice attribute)</a>
+        <li><a href="bgameb.html#bgameb.stuff.Dice.sides">(bgameb.stuff.Dice attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -335,13 +357,13 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.tap">tap() (bgameb.cards.Card method)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.tap">tap() (bgameb.stuff.Card method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.tapped">tapped (bgameb.cards.Card attribute)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.tapped">tapped (bgameb.stuff.Card attribute)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.cards.Card.text">text (bgameb.cards.Card attribute)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.text">text (bgameb.stuff.Card attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -349,7 +371,7 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.cards.Card.untap">untap() (bgameb.cards.Card method)</a>
+      <li><a href="bgameb.html#bgameb.stuff.Card.untap">untap() (bgameb.stuff.Card method)</a>
 </li>
   </ul></td>
 </tr></table>
