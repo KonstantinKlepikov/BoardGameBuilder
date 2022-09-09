@@ -126,7 +126,7 @@ class Components(Mapping):
 class Shaker(DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
     """
-    rollers_type: Components
+    game_rollers: Components
     name: str = 'shaker'
     rollers: shake_roller = field(default_factory=dict, init=False)
     last: shake_result= field(default_factory=dict, init=False)
@@ -172,7 +172,7 @@ class Shaker(DataClassJsonMixin):
                                rollers with same names
         """
 
-        if not self._chek_roller(name, self.rollers_type.keys()):
+        if not self._chek_roller(name, self.game_rollers.keys()):
             raise RollerDefineError(
                 f"Roller with {name=} not exist in a game."
                 )
@@ -315,7 +315,7 @@ class Shaker(DataClassJsonMixin):
             roll[color] = {}
             for name, count in rollers.items():
                 roll[color][name] = tuple(
-                    self.rollers_type[name].roll() for _ in range(count)
+                    self.game_rollers[name].roll() for _ in range(count)
                     )
         if roll:
             self.last = roll
@@ -333,13 +333,13 @@ class Game(DataClassJsonMixin):
 
     name: str = 'game'
     shakers: Components = field(default_factory=dict, init=False)
-    rollers_type: Components = field(default_factory=dict, init=False)
-    cards_type: Components = field(default_factory=dict, init=False)
+    game_rollers: Components = field(default_factory=dict, init=False)
+    game_cards: Components = field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
         self.shakers = Components()
-        self.rollers_type = Components()
-        self.cards_type = Components()
+        self.game_rollers = Components()
+        self.game_cards = Components()
 
         # set logger
         self.logger = log_me.bind(
@@ -356,11 +356,11 @@ class Game(DataClassJsonMixin):
             kwargs: additional arguments of component
         """
         if issubclass(stuff, BaseRoller):
-            self.rollers_type.add(stuff, **kwargs)
-            self.logger.info(f'Roller added: {self.rollers_type=}.')
+            self.game_rollers.add(stuff, **kwargs)
+            self.logger.info(f'Roller added: {self.game_rollers=}.')
         elif issubclass(stuff, BaseCard):
-            self.cards_type.add(stuff, **kwargs)
-            self.logger.info(f'Card added: {self.cards_type=}.')
+            self.game_cards.add(stuff, **kwargs)
+            self.logger.info(f'Card added: {self.game_cards=}.')
         else:
             raise ComponentClassError(class_=stuff)
 
@@ -372,9 +372,9 @@ class Game(DataClassJsonMixin):
         """
         if name:
             self.shakers.add(
-                Shaker, name=name, rollers_type=self.rollers_type
+                Shaker, name=name, game_rollers=self.game_rollers
                 )
         else:
             self.shakers.add(
-                Shaker, name=Shaker.name, rollers_type=self.rollers_type
+                Shaker, name=Shaker.name, game_rollers=self.game_rollers
                 )

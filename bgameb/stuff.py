@@ -4,7 +4,7 @@ import random
 from typing import List, Optional, Any
 from dataclasses import dataclass, field
 from abc import ABC
-from dataclasses_json import DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin, config
 from bgameb.errors import RollerSidesError
 from bgameb.utils import log_me
 
@@ -29,7 +29,9 @@ class BaseRoller(BaseStuff, ABC):
     """
     name: str = 'base_roller'
     sides: Optional[int] = field(default=None, init=False)
-    _range: List[int] = field(default_factory=list, init=False)
+    _range: List[int] = field(
+        default_factory=list, init=False, metadata=config(exclude=lambda x:True)
+        )
 
     def __post_init__(self) -> None:
         # set logger
