@@ -121,6 +121,14 @@ class Components(Mapping):
             kwargs['name'] = component.name
         self._update(component, kwargs)
 
+    def get_names(self) -> List[str]:
+        """Get names of all components of class
+
+        Returns:
+            List[str]: lisct of names of conatined components
+        """
+        return list(self.__dict__)
+
 
 @dataclass
 class Shaker(DataClassJsonMixin):

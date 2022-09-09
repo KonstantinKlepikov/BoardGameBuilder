@@ -88,6 +88,16 @@ class TestComponents:
         comp.add(Dice, name='this_is_five', sides=5)
         assert comp.this_is_five.sides == 5, 'component not added'
 
+    def test_get_names(self) -> None:
+        """Test get_names() method
+        """
+        comp = Components()
+        assert comp.get_names() == [], 'nonempty list of names'
+        comp.add(Dice)
+        assert comp.get_names() == ['dice'], 'empty list of names'
+        comp.add(Dice, name='this')
+        assert comp.get_names() == ['dice', 'this'], 'empty list of names'
+
 class TestGame:
     """Test Game class
     """

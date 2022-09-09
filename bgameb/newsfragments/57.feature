@@ -1,0 +1,1 @@
+Add get_names() method to Components class.
