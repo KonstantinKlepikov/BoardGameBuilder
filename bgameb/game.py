@@ -11,7 +11,7 @@ from bgameb.stuff import BaseRoller, BaseCard
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, RollerDefineError
     )
-from bgameb.utils import log_me
+from bgameb.utils import log_me, get_random_name
 
 
 game_stuff = Union[BaseRoller, BaseCard]
@@ -152,13 +152,17 @@ class Shaker(DataClassJsonMixin):
     game_rollers: Components = field(
         metadata=config(exclude=lambda x:True)
         )
-    name: str = 'shaker'
+    name: Optional[str] = None
     rollers: shake_roller = field(default_factory=dict, init=False)
     last: shake_result= field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
         self.rollers = {}
         self.last = {}
+
+        # set random name
+        if not self.name:
+            self.name = get_random_name()
 
         # set logger
         self.logger = log_me.bind(
@@ -354,7 +358,7 @@ class Shaker(DataClassJsonMixin):
 class Game(DataClassJsonMixin):
     """Create the game object
     """
-    name: str = 'game'
+    name: Optional[str] = None
     shakers: Components = field(default_factory=dict, init=False)
     game_rollers: Components = field(default_factory=dict, init=False)
     game_cards: Components = field(default_factory=dict, init=False)
@@ -363,6 +367,10 @@ class Game(DataClassJsonMixin):
         self.shakers = Components()
         self.game_rollers = Components()
         self.game_cards = Components()
+
+        # set random name
+        if not self.name:
+            self.name = get_random_name()
 
         # set logger
         self.logger = log_me.bind(
