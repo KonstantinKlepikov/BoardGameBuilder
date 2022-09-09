@@ -108,7 +108,11 @@ class Components(Mapping):
             )
 
     def add(self, component, **kwargs) -> None:
-        """Add component to Components dict
+        """Add component to Components dict. Components with
+        same names as existed cant be added.
+
+        Raises:
+            ComponentNameError: name id not unique
 
         Args:
             component (Component): component class
@@ -118,6 +122,17 @@ class Components(Mapping):
             self._chek_in(kwargs['name'])
         else:
             self._chek_in(component.name)
+            kwargs['name'] = component.name
+        self._update(component, kwargs)
+
+    def add_replace(self, component, **kwargs) -> None:
+        """Add or replace component in Components dict.
+
+        Args:
+            component (Component): component class
+            kwargs: aditional args
+        """
+        if not kwargs.get('name'):
             kwargs['name'] = component.name
         self._update(component, kwargs)
 

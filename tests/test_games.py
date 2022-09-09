@@ -1,7 +1,7 @@
 import json, pytest
 from typing import Tuple
 from bgameb.game import Game, Shaker, Components
-from bgameb.stuff import Dice, Coin, Card
+from bgameb.stuff import Dice, Coin, Card, BaseRoller
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, RollerDefineError
 )
@@ -11,25 +11,32 @@ class TestComponents:
     """Test CardText class
     """
 
-    def test_components_access_to_attr(self) -> None:
+    components = [
+        (Dice, Dice.name),
+        (Coin, Coin.name),
+        (Card, Card.name),
+    ]
+
+    @pytest.mark.parametrize("_class, name", components)
+    def test_components_access_to_attr(self, _class, name: str) -> None:
         """Test components acces to attrs
         """
         comp = Components()
-        comp.__dict__.update({'some': Dice(), 'many': Dice()})
+        comp.__dict__.update({'some': _class(), 'many': _class()})
 
-        assert comp.some.name == 'dice', 'not set or cant get'
-        assert comp['some'].name == 'dice', 'not set or cant get'
+        assert comp.some.name == name, 'not set or cant get'
+        assert comp['some'].name == name, 'not set or cant get'
 
         with pytest.raises(
             NotImplementedError,
             match='This method not implementd for Components',
             ):
-            comp.this = Dice()
+            comp.this = _class()
         with pytest.raises(
             NotImplementedError,
             match='This method not implementd for Components',
             ):
-            comp['that'] = Dice()
+            comp['that'] = _class()
 
         del comp.some
         with pytest.raises(AttributeError, match='some'):
@@ -42,61 +49,83 @@ class TestComponents:
         with pytest.raises(KeyError, match='newer'):
             del comp['newer']
 
-    def test_components_repr(self) -> None:
+    @pytest.mark.parametrize("_class, name", components)
+    def test_components_repr(self, _class, name: str) -> None:
         """Test components repr
         """
         comp = Components()
-        comp.__dict__.update({'some': Dice()})
+        comp.__dict__.update({'some': _class()})
         assert "Components(some=" in comp.__repr__(), 'wrong repr'
 
-    def test_components_len(self) -> None:
+    @pytest.mark.parametrize("_class, name", components)
+    def test_components_len(self, _class, name: str) -> None:
         """Test equal of CardTexts
         """
         comp1 = Components()
         comp2 = Components()
-        comp1.__dict__.update({'some': Dice()})
+        comp1.__dict__.update({'some':_class()})
         assert len(comp1) == 1, 'wrong len'
         assert len(comp2) == 0, 'wrong len'
 
-    def test_components_items(self) -> None:
+    @pytest.mark.parametrize("_class, name", components)
+    def test_components_items(self, _class, name: str) -> None:
         """Test components items access
         """
         comp = Components()
-        comp.__dict__.update({'some': Dice()})
+        comp.__dict__.update({'some': _class()})
         assert len(comp.items()) == 1, 'items not accessed'
         assert len(comp.keys()) == 1, 'keys not accessed'
         assert len(comp.values()) == 1, 'values not accessed'
 
-    def test_add_component(self) -> None:
+    @pytest.mark.parametrize("_class, name", components)
+    def test_add_component(self, _class, name: str) -> None:
         """Test add component with add() method
         """
         comp = Components()
-        comp.add(Dice)
-        assert comp[Dice.name], 'component not added'
+        comp.add(_class)
+        assert comp[name], 'component not added'
         with pytest.raises(
             ComponentNameError,
-            match=Dice.name
+            match=name
         ):
-            comp.add(Dice)
+            comp.add(_class)
         comp.add(Dice, name='this_is')
         assert comp.this_is, 'component not added'
         with pytest.raises(
             ComponentNameError,
             match='this_is'
         ):
-            comp.add(Dice, name='this_is')
-        comp.add(Dice, name='this_is_five', sides=5)
-        assert comp.this_is_five.sides == 5, 'component not added'
+            comp.add(_class, name='this_is')
+        if isinstance(_class, BaseRoller):
+            comp.add(_class, name='this_is_five', sides=5)
+            assert comp.this_is_five.sides == 5, 'component not added'
 
-    def test_get_names(self) -> None:
+    @pytest.mark.parametrize("_class, name", components)
+    def test_add_replace_component(self, _class, name: str) -> None:
+        """Test add_replace() method
+        """
+        comp = Components()
+        comp.add_replace(_class)
+        add1 = id(comp[name])
+        assert comp[name], 'component not added'
+        comp.add_replace(_class)
+        assert id(comp[name]) != add1, 'not replaced'
+        comp.add(_class, name='this_is')
+        assert comp.this_is, 'component not added'
+        if isinstance(_class, BaseRoller):
+            comp.add(_class, name='this_is_five', sides=5)
+            assert comp.this_is_five.sides == 5, 'component not added'
+
+    @pytest.mark.parametrize("_class, name", components)
+    def test_get_names(self, _class, name: str) -> None:
         """Test get_names() method
         """
         comp = Components()
         assert comp.get_names() == [], 'nonempty list of names'
-        comp.add(Dice)
-        assert comp.get_names() == ['dice'], 'empty list of names'
-        comp.add(Dice, name='this')
-        assert comp.get_names() == ['dice', 'this'], 'empty list of names'
+        comp.add(_class)
+        assert comp.get_names() == [name], 'empty list of names'
+        comp.add(_class, name='this')
+        assert comp.get_names() == [name, 'this'], 'empty list of names'
 
 class TestGame:
     """Test Game class
