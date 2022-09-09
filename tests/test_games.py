@@ -107,7 +107,7 @@ class TestGame:
         assert game.name == 'game', 'wrong default name'
         game = Game(name='This Game')
         assert game.name == 'This Game', 'not set name for instance'
-        assert isinstance(game.rollers_type, Components), 'wrong rollers'
+        assert isinstance(game.game_rollers, Components), 'wrong rollers'
         assert isinstance(game.shakers, Components), 'wrong shakers'
 
     def test_game_class_is_converted_to_json(self) -> None:
@@ -123,7 +123,7 @@ class TestGame:
         """
         game = Game()
         game.add_stuff(_class)
-        assert game.rollers_type[name].name == name, 'roller not added'
+        assert game.game_rollers[name].name == name, 'roller not added'
 
     @pytest.mark.parametrize("_class, name", cards)
     def testadd_stuff_cards_to_game(self, _class, name: str) -> None:
@@ -131,7 +131,7 @@ class TestGame:
         """
         game = Game()
         game.add_stuff(_class)
-        assert game.cards_type[name].name == name, 'card not added'
+        assert game.game_cards[name].name == name, 'card not added'
 
     def testadd_stuff_noncomponent_class(self) -> None:
         """Test add noncomponent class
@@ -164,7 +164,7 @@ class TestGameShaker:
     def rollers(self, request) -> Tuple[Components, str]:
         game = Game()
         game.add_stuff(request.param[0])
-        return game.rollers_type, request.param[1]
+        return game.game_rollers, request.param[1]
 
     def test_shaker_instanciation(self, rollers: Tuple[Components, str]) -> None:
         """Test shaker correct created
