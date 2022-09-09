@@ -6,7 +6,7 @@ from typing import (
     )
 from dataclasses import dataclass, field
 from collections.abc import Mapping
-from dataclasses_json import DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin, config
 from bgameb.stuff import BaseRoller, BaseCard
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, RollerDefineError
@@ -126,7 +126,9 @@ class Components(Mapping):
 class Shaker(DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
     """
-    game_rollers: Components
+    game_rollers: Components = field(
+        metadata=config(exclude=lambda x:True)
+        )
     name: str = 'shaker'
     rollers: shake_roller = field(default_factory=dict, init=False)
     last: shake_result= field(default_factory=dict, init=False)
@@ -182,7 +184,6 @@ class Shaker(DataClassJsonMixin):
             raise RollerDefineError(
                 "Need at least one roller. Can't add 0 rollers."
                 )
-
         if self.rollers.get(color):
 
             if name not in self.rollers[color].keys():
@@ -330,7 +331,6 @@ class Shaker(DataClassJsonMixin):
 class Game(DataClassJsonMixin):
     """Create the game object
     """
-
     name: str = 'game'
     shakers: Components = field(default_factory=dict, init=False)
     game_rollers: Components = field(default_factory=dict, init=False)

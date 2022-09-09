@@ -67,7 +67,7 @@ class TestComponents:
         assert len(comp.keys()) == 1, 'keys not accessed'
         assert len(comp.values()) == 1, 'values not accessed'
 
-    def testadd_component(self) -> None:
+    def test_add_component(self) -> None:
         """Test add component with add() method
         """
         comp = Components()
@@ -118,7 +118,7 @@ class TestGame:
         assert j['name'] == 'game', 'not converted to json'
 
     @pytest.mark.parametrize("_class, name", rollers)
-    def testadd_stuff_rollers_to_game(self, _class, name: str) -> None:
+    def test_add_stuff_rollers_to_game(self, _class, name: str) -> None:
         """Test we can add rollers to game
         """
         game = Game()
@@ -126,14 +126,14 @@ class TestGame:
         assert game.game_rollers[name].name == name, 'roller not added'
 
     @pytest.mark.parametrize("_class, name", cards)
-    def testadd_stuff_cards_to_game(self, _class, name: str) -> None:
+    def test_add_stuff_cards_to_game(self, _class, name: str) -> None:
         """Test we can add rollers to game
         """
         game = Game()
         game.add_stuff(_class)
         assert game.game_cards[name].name == name, 'card not added'
 
-    def testadd_stuff_noncomponent_class(self) -> None:
+    def test_add_stuff_noncomponent_class(self) -> None:
         """Test add noncomponent class
         """
         game = Game()
@@ -143,7 +143,7 @@ class TestGame:
             ):
             game.add_stuff(Game)
 
-    def testadd_shaker(self) -> None:
+    def test_add_shaker(self) -> None:
         """Test add shaker to game
         """
         game = Game()
