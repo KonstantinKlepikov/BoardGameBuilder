@@ -1,2 +1,0 @@
-#51:
-    * Fixed isinstance check for component classes - now is used issubclas and __mro__
