@@ -6,13 +6,19 @@ from dataclasses import dataclass, field
 from abc import ABC
 from dataclasses_json import DataClassJsonMixin, config
 from bgameb.errors import RollerSidesError
-from bgameb.utils import log_me
+from bgameb.utils import log_me, get_random_name
 
 
 @dataclass
 class BaseStuff(DataClassJsonMixin, ABC):
     """Base class for stuff
     """
+    name: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        # set random name
+        if not self.name:
+            self.name = get_random_name()
 
 
 @dataclass
@@ -27,13 +33,15 @@ class BaseRoller(BaseStuff, ABC):
 
             dice = Dice(name='six_side_dice', sides=12)
     """
-    name: str = 'base_roller'
+    name: Optional[str] = None
     sides: Optional[int] = field(default=None, init=False)
     _range: List[int] = field(
         default_factory=list, init=False, metadata=config(exclude=lambda x:True)
         )
 
     def __post_init__(self) -> None:
+        super().__post_init__()
+
         # set logger
         self.logger = log_me.bind(
             classname=self.__class__.__name__,
@@ -71,7 +79,6 @@ class Dice(BaseRoller):
     You can define number of sides for dice.
     Default 6
     """
-    name: str = 'dice'
     sides: int = 6
 
     def __post_init__(self) -> None:
@@ -94,7 +101,6 @@ class Dice(BaseRoller):
 class Coin(BaseRoller):
     """Create coin like a dice with two sides
     """
-    name: str = 'coin'
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -143,13 +149,14 @@ class BaseCard(BaseStuff, ABC):
 class Card(BaseCard):
     """Create the card
     """
-    name: str = 'card'
     open: bool = False
     tapped: bool = False
     side: Optional[str] = None
     text: CardTexts = field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
+        super().__post_init__()
+
         self.text = CardTexts()
 
         # set logger
