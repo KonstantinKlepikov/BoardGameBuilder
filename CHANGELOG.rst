@@ -3,6 +3,31 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.10 (2022-09-10)
+============================
+
+Features
+--------
+
+- Add get_names() method to Components class. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/57)
+- #58:
+      * Add random-word package
+      * Add function to word generating
+      * function can return None object - use recursion
+      * Add `slow` marker for pytest
+      * Use random names for Game and Shaker
+      * Use random name for Dice, Coin Card
+      * tests (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/58)
+- #59:
+      * Add add_replace() method to Components
+      * parametrize Components tests (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/59)
+- #62:
+      * game_cards -> game_cards
+      * game_rollers -> game_rollers
+      * exclude fields fro json/dict by using `metadata=config(exclude=lambda x:True)` (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/62)
+- Hide rollers field for json/dict from shaker instance. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/64)
+
+
 Release v0.0.9 (2022-09-09)
 ===========================
 

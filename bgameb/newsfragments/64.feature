@@ -1,1 +1,0 @@
-Hide rollers field for json/dict from shaker instance.
