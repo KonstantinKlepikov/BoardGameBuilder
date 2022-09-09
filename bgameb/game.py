@@ -6,12 +6,12 @@ from typing import (
     )
 from dataclasses import dataclass, field
 from collections.abc import Mapping
-from dataclasses_json import DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin, config
 from bgameb.stuff import BaseRoller, BaseCard
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, RollerDefineError
     )
-from bgameb.utils import log_me
+from bgameb.utils import log_me, get_random_name
 
 
 game_stuff = Union[BaseRoller, BaseCard]
@@ -108,7 +108,11 @@ class Components(Mapping):
             )
 
     def add(self, component, **kwargs) -> None:
-        """Add component to Components dict
+        """Add component to Components dict. Components with
+        same names as existed cant be added.
+
+        Raises:
+            ComponentNameError: name id not unique
 
         Args:
             component (Component): component class
@@ -121,19 +125,44 @@ class Components(Mapping):
             kwargs['name'] = component.name
         self._update(component, kwargs)
 
+    def add_replace(self, component, **kwargs) -> None:
+        """Add or replace component in Components dict.
+
+        Args:
+            component (Component): component class
+            kwargs: aditional args
+        """
+        if not kwargs.get('name'):
+            kwargs['name'] = component.name
+        self._update(component, kwargs)
+
+    def get_names(self) -> List[str]:
+        """Get names of all components of class
+
+        Returns:
+            List[str]: lisct of names of conatined components
+        """
+        return list(self.__dict__)
+
 
 @dataclass
 class Shaker(DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
     """
-    rollers_type: Components
-    name: str = 'shaker'
+    game_rollers: Components = field(
+        metadata=config(exclude=lambda x:True)
+        )
+    name: Optional[str] = None
     rollers: shake_roller = field(default_factory=dict, init=False)
     last: shake_result= field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
         self.rollers = {}
         self.last = {}
+
+        # set random name
+        if not self.name:
+            self.name = get_random_name()
 
         # set logger
         self.logger = log_me.bind(
@@ -172,7 +201,7 @@ class Shaker(DataClassJsonMixin):
                                rollers with same names
         """
 
-        if not self._chek_roller(name, self.rollers_type.keys()):
+        if not self._chek_roller(name, self.game_rollers.keys()):
             raise RollerDefineError(
                 f"Roller with {name=} not exist in a game."
                 )
@@ -182,7 +211,6 @@ class Shaker(DataClassJsonMixin):
             raise RollerDefineError(
                 "Need at least one roller. Can't add 0 rollers."
                 )
-
         if self.rollers.get(color):
 
             if name not in self.rollers[color].keys():
@@ -315,7 +343,7 @@ class Shaker(DataClassJsonMixin):
             roll[color] = {}
             for name, count in rollers.items():
                 roll[color][name] = tuple(
-                    self.rollers_type[name].roll() for _ in range(count)
+                    self.game_rollers[name].roll() for _ in range(count)
                     )
         if roll:
             self.last = roll
@@ -330,16 +358,19 @@ class Shaker(DataClassJsonMixin):
 class Game(DataClassJsonMixin):
     """Create the game object
     """
-
-    name: str = 'game'
+    name: Optional[str] = None
     shakers: Components = field(default_factory=dict, init=False)
-    rollers_type: Components = field(default_factory=dict, init=False)
-    cards_type: Components = field(default_factory=dict, init=False)
+    game_rollers: Components = field(default_factory=dict, init=False)
+    game_cards: Components = field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
         self.shakers = Components()
-        self.rollers_type = Components()
-        self.cards_type = Components()
+        self.game_rollers = Components()
+        self.game_cards = Components()
+
+        # set random name
+        if not self.name:
+            self.name = get_random_name()
 
         # set logger
         self.logger = log_me.bind(
@@ -356,11 +387,11 @@ class Game(DataClassJsonMixin):
             kwargs: additional arguments of component
         """
         if issubclass(stuff, BaseRoller):
-            self.rollers_type.add(stuff, **kwargs)
-            self.logger.info(f'Roller added: {self.rollers_type=}.')
+            self.game_rollers.add(stuff, **kwargs)
+            self.logger.info(f'Roller added: {self.game_rollers=}.')
         elif issubclass(stuff, BaseCard):
-            self.cards_type.add(stuff, **kwargs)
-            self.logger.info(f'Card added: {self.cards_type=}.')
+            self.game_cards.add(stuff, **kwargs)
+            self.logger.info(f'Card added: {self.game_cards=}.')
         else:
             raise ComponentClassError(class_=stuff)
 
@@ -372,9 +403,9 @@ class Game(DataClassJsonMixin):
         """
         if name:
             self.shakers.add(
-                Shaker, name=name, rollers_type=self.rollers_type
+                Shaker, name=name, game_rollers=self.game_rollers
                 )
         else:
             self.shakers.add(
-                Shaker, name=Shaker.name, rollers_type=self.rollers_type
+                Shaker, name=Shaker.name, game_rollers=self.game_rollers
                 )

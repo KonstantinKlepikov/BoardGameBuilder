@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; BoardGameBuilder 0.0.8 documentation</title>
+  <title>Index &mdash; BoardGameBuilder 0.0.9 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> BoardGameBuilder
           </a>
               <div class="version">
-                0.0.8
+                0.0.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -98,6 +98,8 @@
         <li><a href="bgameb.html#bgameb.game.Shaker.add">(bgameb.game.Shaker method)</a>
 </li>
       </ul></li>
+      <li><a href="bgameb.html#bgameb.game.Components.add_replace">add_replace() (bgameb.game.Components method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.game.Game.add_shaker">add_shaker() (bgameb.game.Game method)</a>
@@ -172,8 +174,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.stuff.Card">Card (class in bgameb.stuff)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.game.Game.cards_type">cards_type (bgameb.game.Game attribute)</a>
-</li>
       <li><a href="bgameb.html#bgameb.stuff.CardTexts">CardTexts (class in bgameb.stuff)</a>
 </li>
       <li><a href="bgameb.html#bgameb.stuff.Coin">Coin (class in bgameb.stuff)</a>
@@ -217,6 +217,20 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.game.Game">Game (class in bgameb.game)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.game.Game.game_cards">game_cards (bgameb.game.Game attribute)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.game.Game.game_rollers">game_rollers (bgameb.game.Game attribute)</a>
+
+      <ul>
+        <li><a href="bgameb.html#bgameb.game.Shaker.game_rollers">(bgameb.game.Shaker attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.game.Components.get_names">get_names() (bgameb.game.Components method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.utils.get_random_name">get_random_name() (in module bgameb.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -274,11 +288,7 @@
 </li>
         <li><a href="bgameb.html#bgameb.stuff.BaseRoller.name">(bgameb.stuff.BaseRoller attribute)</a>
 </li>
-        <li><a href="bgameb.html#bgameb.stuff.Card.name">(bgameb.stuff.Card attribute)</a>
-</li>
-        <li><a href="bgameb.html#bgameb.stuff.Coin.name">(bgameb.stuff.Coin attribute)</a>
-</li>
-        <li><a href="bgameb.html#bgameb.stuff.Dice.name">(bgameb.stuff.Dice attribute)</a>
+        <li><a href="bgameb.html#bgameb.stuff.BaseStuff.name">(bgameb.stuff.BaseStuff attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -311,24 +321,18 @@
 </li>
       <li><a href="bgameb.html#bgameb.game.Shaker.remove_all_by_name">remove_all_by_name() (bgameb.game.Shaker method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.game.Shaker.roll">roll() (bgameb.game.Shaker method)</a>
 
       <ul>
         <li><a href="bgameb.html#bgameb.stuff.BaseRoller.roll">(bgameb.stuff.BaseRoller method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.errors.RollerDefineError">RollerDefineError</a>
 </li>
       <li><a href="bgameb.html#bgameb.game.Shaker.rollers">rollers (bgameb.game.Shaker attribute)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.game.Game.rollers_type">rollers_type (bgameb.game.Game attribute)</a>
-
-      <ul>
-        <li><a href="bgameb.html#bgameb.game.Shaker.rollers_type">(bgameb.game.Shaker attribute)</a>
-</li>
-      </ul></li>
       <li><a href="bgameb.html#bgameb.errors.RollerSidesError">RollerSidesError</a>
 </li>
   </ul></td>

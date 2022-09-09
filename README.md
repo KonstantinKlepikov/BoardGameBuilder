@@ -14,7 +14,7 @@ Object-oriented framework for build boardgame logic on python
 
 ### Run tests
 
-`python -m pytest -x -s -v`
+`python -m pytest -x -s -v -m "not slow"`
 
 ### Changelog
 
