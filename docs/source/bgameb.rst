@@ -4,10 +4,10 @@ bgameb package
 Submodules
 ----------
 
-bgameb.games module
--------------------
+bgameb.game module
+------------------
 
-.. automodule:: bgameb.games
+.. automodule:: bgameb.game
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,26 +20,26 @@ bgameb.players module
    :undoc-members:
    :show-inheritance:
 
-bgameb.rollers module
----------------------
+bgameb.stuff module
+-------------------
 
-.. automodule:: bgameb.rollers
+.. automodule:: bgameb.stuff
    :members:
    :undoc-members:
    :show-inheritance:
 
-bgameb.shakers module
----------------------
+bgameb.errors module
+--------------------
 
-.. automodule:: bgameb.shakers
+.. automodule:: bgameb.errors
    :members:
    :undoc-members:
    :show-inheritance:
 
-bgameb.cards module
----------------------
+bgameb.utils module
+-------------------
 
-.. automodule:: bgameb.cards
+.. automodule:: bgameb.utils
    :members:
    :undoc-members:
    :show-inheritance:
