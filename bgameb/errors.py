@@ -27,6 +27,6 @@ class RollerSidesError(RuntimeError):
     pass
 
 
-class RollerDefineError(AttributeError):
-    """Count of rollers not defined
+class StuffDefineError(AttributeError):
+    """Count of stuff not defined or stuff not exist
     """

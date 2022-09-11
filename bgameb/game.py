@@ -6,17 +6,20 @@ from typing import (
     )
 from dataclasses import dataclass, field
 from collections.abc import Mapping
+from abc import ABC, abstractmethod
 from dataclasses_json import DataClassJsonMixin, config
 from bgameb.stuff import BaseRoller, BaseCard
 from bgameb.errors import (
-    ComponentNameError, ComponentClassError, RollerDefineError
+    ComponentNameError, ComponentClassError, StuffDefineError
     )
 from bgameb.utils import log_me, get_random_name
 
 
 game_stuff = Union[BaseRoller, BaseCard]
-shake_roller = Dict[str, Dict[str, int]]
-shake_result = Dict[str, Dict[str, Tuple[int]]]
+shaker_rollers = Dict[str, Dict[str, int]]
+shaker_result = Dict[str, Dict[str, Tuple[int]]]
+deck_cards = Dict[str, int]
+deck_result = Tuple[Optional[BaseCard]]
 
 
 class Components(Mapping):
@@ -146,20 +149,13 @@ class Components(Mapping):
 
 
 @dataclass
-class Shaker(DataClassJsonMixin):
-    """Create shaker for roll dices or flip coins
+class BaseGame(DataClassJsonMixin, ABC):
+    """Base game class
+
+    Inherited classes needs attr name implementation
     """
-    game_rollers: Components = field(
-        metadata=config(exclude=lambda x:True)
-        )
-    name: Optional[str] = None
-    rollers: shake_roller = field(default_factory=dict, init=False)
-    last: shake_result= field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
-        self.rollers = {}
-        self.last = {}
-
         # set random name
         if not self.name:
             self.name = get_random_name()
@@ -168,26 +164,68 @@ class Shaker(DataClassJsonMixin):
         self.logger = log_me.bind(
             classname=self.__class__.__name__,
             name=self.name)
-        self.logger.info(f'Shaker created.')
+        self.logger.info(f'{self.__class__.__name__} created with {self.name=}.')
 
-    def _chek_roller(self, name: str, chek: Sequence[str]) -> bool:
+
+@dataclass
+class BaseGameTools(BaseGame):
+    """Base game tools (like Decs or Shakers) class
+
+    Inherited classes needs attr name implementation
+    """
+
+    def _chek(self, name: str, chek: Sequence[str]) -> bool:
         """Chek exist roller in game
 
         Args:
-            name (str): roller name
+            name (str): stuff name
             check (Sequence[str]): cheked collection
 
         Returns:
-            bool: roller is exist or not
+            bool: stuff is exist or not in collection
         """
         if name in chek:
             return True
         return False
 
-    def add(self,
-            name: str,
-            color: str = 'colorless',
-            count: int = 1
+    @abstractmethod
+    def add(self) -> None:
+        """Add stuff to tool
+        """
+
+    @abstractmethod
+    def remove_all(self) -> None:
+        """Remove all stuff from tool
+        """
+
+    @abstractmethod
+    def remove_all(self) -> None:
+        """Remove stuff from tool
+        """
+
+
+@dataclass
+class Shaker(BaseGameTools):
+    """Create shaker for roll dices or flip coins
+    """
+    _game_rollers: Components = field(
+        metadata=config(exclude=lambda x:True),
+        repr=False
+        )
+    name: Optional[str] = None
+    rollers: shaker_rollers = field(default_factory=dict, init=False)
+    last: shaker_result= field(default_factory=dict, init=False)
+
+    def __post_init__(self) -> None:
+        self.rollers = {}
+        self.last = {}
+        super().__post_init__()
+
+    def add(
+        self,
+        name: str,
+        color: str = 'colorless',
+        count: int = 1
             ) -> None:
         """Add roller to shaker
 
@@ -197,33 +235,30 @@ class Shaker(DataClassJsonMixin):
             count (int, optional): count of rollers copy. Defaults to 1.
 
         Raises:
-            RollerDefineError: counts not set or are different
-                               rollers with same names
+            StuffDefineError: coutn of stuff not defined
+                              or stuff not exist
         """
 
-        if not self._chek_roller(name, self.game_rollers.keys()):
-            raise RollerDefineError(
+        if not self._chek(name, self._game_rollers.keys()):
+            raise StuffDefineError(
                 f"Roller with {name=} not exist in a game."
                 )
 
         if count < 1:
             self.logger.debug(f"Can't add 0 rollers.")
-            raise RollerDefineError(
+            raise StuffDefineError(
                 "Need at least one roller. Can't add 0 rollers."
                 )
         if self.rollers.get(color):
 
             if name not in self.rollers[color].keys():
-                self.rollers[color][name] = count
-                self.logger.debug(f'Number of rollers named' +
-                                  f'"{name}" increased by {count}')
+                self.rollers[color][name] = 0
 
-            else:
-                self.rollers[color][name] += count
-                self.logger.debug(
-                    f'Number of rollers with "{name=}" increased by {count}. ' +
-                    f'Result count is {self.rollers[color][name]}'
-                    )
+            self.rollers[color][name] += count
+            self.logger.debug(
+                f'Number of rollers with "{name=}" increased by {count}. ' +
+                f'Result count is {self.rollers[color][name]}'
+                )
 
         else:
             self.rollers[color] = {name: count}
@@ -240,16 +275,16 @@ class Shaker(DataClassJsonMixin):
             color (str): color froup of rollers
 
         Raises:
-            RollerDefineError: name, color not match or
-                               count of rollers not defined
+            StuffDefineError: name or color not match or
+                              count of rollers not defined
         """
-        if not self._chek_roller(color, self.rollers.keys()):
-            raise RollerDefineError(
+        if not self._chek(color, self.rollers.keys()):
+            raise StuffDefineError(
                 f"Roller with {color=} not exist in a shaker."
                 )
 
-        if not self._chek_roller(name, self.rollers[color].keys()):
-            raise RollerDefineError(
+        if not self._chek(name, self.rollers[color].keys()):
+            raise StuffDefineError(
                 f"Roller with {name=} not exist in a shaker."
                 )
 
@@ -257,7 +292,7 @@ class Shaker(DataClassJsonMixin):
             self.logger.debug(
                 "Can't remove 0 rollers. Need at least one roller."
                 )
-            raise RollerDefineError(
+            raise StuffDefineError(
                 "Can't remove 0 rollers. Need at least one roller."
                 )
 
@@ -327,7 +362,7 @@ class Shaker(DataClassJsonMixin):
             del self.rollers[color]
             self.logger.debug(f'Removed empty {color=} from shaker')
 
-    def roll(self) -> shake_result:
+    def roll(self) -> shaker_result:
         """Roll all rollers with shaker and return results
 
         Return:
@@ -343,7 +378,7 @@ class Shaker(DataClassJsonMixin):
             roll[color] = {}
             for name, count in rollers.items():
                 roll[color][name] = tuple(
-                    self.game_rollers[name].roll() for _ in range(count)
+                    self._game_rollers[name].roll() for _ in range(count)
                     )
         if roll:
             self.last = roll
@@ -355,28 +390,131 @@ class Shaker(DataClassJsonMixin):
 
 
 @dataclass
-class Game(DataClassJsonMixin):
+class Deck(BaseGameTools):
+    """Create deck for cards
+    """
+    _game_cards: Components = field(
+        default_factory=Components,
+        repr=False
+        )
+    name: Optional[str] = None
+    cards: deck_cards = field(default_factory=dict, init=False)
+    dealt: deck_cards = field(default_factory=dict, init=False) # TODO: this is stack
+
+    def __post_init__(self) -> None:
+        self.cards = {}
+        self.dealt = {}
+        super().__post_init__()
+
+    def add(self, name: str, count: int = 1) -> None:
+        """Add card to the deck collection
+
+        Args:
+            name (str): name of card
+            count (int, optional): count of cards copy Defaults to 1.
+
+        Raises:
+            StuffDefineError: count of stuff not defined
+                              or stuff not exist
+        """
+        if not self._chek(name, self._game_cards.keys()):
+            raise StuffDefineError(
+                f"Card with {name=} not exist in a game."
+                )
+
+        if count < 1:
+            self.logger.debug(
+                f"Need at least one card. Can't add 0 cards."
+                )
+            raise StuffDefineError(
+                "Need at least one card. Can't add 0 cards."
+                )
+
+        if not self.cards.get(name):
+            self.cards[name] = 0
+
+        self.cards[name] += count
+        self.logger.debug(
+            f'Number of cards with "{name=}" increased by {count}. ' +
+            f'Result count is {self.cards[name]}'
+            )
+
+    def remove_all(self) -> None:
+        """Remove all cards from deck
+        """
+        self.cards = {}
+        self.logger.debug('Removed all cards from deck')
+
+
+    def remove(self, name: str, count: int) -> None:
+        """_summary_
+
+        Args:
+            name (str): _description_
+            count (int): _description_
+
+        Raises:
+            ComponentClassError: _description_
+        """
+
+    def deal(self) -> None:
+        """_summary_
+
+        Raises:
+            ComponentClassError: _description_
+        """
+
+    def shuffle(self) -> None:
+        """
+        """
+
+    def reveal(self, start_from: int = 1, count: int = 1) -> deck_result:
+        """_summary_
+        """
+
+    def draw(self, start_from: int = 1, count: int = 1) -> deck_result:
+        """_summary_
+        """
+
+    def search(
+        self, name: str, all: bool = False, count: int = 1
+        ) -> deck_result:
+        """_summary_
+
+        Args:
+            name (str): _description_
+
+        Returns:
+            Optional[BaseCard]: _description_
+        """
+
+    def __len__(self) -> int:
+        """_summary_
+
+        Raises:
+            ComponentClassError: _description_
+
+        Returns:
+            int: _description_
+        """
+
+
+@dataclass
+class Game(BaseGame):
     """Create the game object
     """
     name: Optional[str] = None
-    shakers: Components = field(default_factory=dict, init=False)
-    game_rollers: Components = field(default_factory=dict, init=False)
-    game_cards: Components = field(default_factory=dict, init=False)
+    shakers: Components = field(default_factory=Components, init=False)
+    decks: Components = field(default_factory=Components, init=False)
+    game_rollers: Components = field(default_factory=Components, init=False)
+    game_cards: Components = field(default_factory=Components, init=False)
 
     def __post_init__(self) -> None:
         self.shakers = Components()
+        self.decks = Components()
         self.game_rollers = Components()
         self.game_cards = Components()
-
-        # set random name
-        if not self.name:
-            self.name = get_random_name()
-
-        # set logger
-        self.logger = log_me.bind(
-            classname=self.__class__.__name__,
-            name=self.name)
-        self.logger.info(f'Game created.')
+        super().__post_init__()
 
     def add_stuff(self, stuff: Type[game_stuff], **kwargs) -> None:
         """Add component to game
@@ -403,9 +541,9 @@ class Game(DataClassJsonMixin):
         """
         if name:
             self.shakers.add(
-                Shaker, name=name, game_rollers=self.game_rollers
+                Shaker, name=name, _game_rollers=self.game_rollers
                 )
         else:
             self.shakers.add(
-                Shaker, name=Shaker.name, game_rollers=self.game_rollers
+                Shaker, name=Shaker.name, _game_rollers=self.game_rollers
                 )
