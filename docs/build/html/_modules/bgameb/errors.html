@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.errors &mdash; BoardGameBuilder 0.0.8 documentation</title>
+  <title>bgameb.errors &mdash; BoardGameBuilder 0.0.10 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> BoardGameBuilder
           </a>
               <div class="version">
-                0.0.8
+                0.0.10
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,8 +71,7 @@
   <h1>Source code for bgameb.errors</h1><div class="highlight"><pre>
 <div class="viewcode-block" id="CustomRuntimeError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.CustomRuntimeError">[docs]</a><span></span><span class="k">class</span> <span class="nc">CustomRuntimeError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for other runtime exceptions</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="ComponentNameError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.ComponentNameError">[docs]</a><span class="k">class</span> <span class="nc">ComponentNameError</span><span class="p">(</span><span class="n">CustomRuntimeError</span><span class="p">):</span>
@@ -80,11 +79,12 @@
 <span class="sd">    class instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Component with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1"> is in Components class instance&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Component with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1"> is in &#39;</span> <span class="o">+</span> \
+                        <span class="s1">&#39;Components class instance&#39;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ComponentClassError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.ComponentClassError">[docs]</a><span class="k">class</span> <span class="nc">ComponentClassError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<div class="viewcode-block" id="ComponentClassError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.ComponentClassError">[docs]</a><span class="k">class</span> <span class="nc">ComponentClassError</span><span class="p">(</span><span class="n">CustomRuntimeError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Given class isnt component</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -92,15 +92,13 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="RollerSidesError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.RollerSidesError">[docs]</a><span class="k">class</span> <span class="nc">RollerSidesError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Count of sides not defined for this rolled object</span>
+<div class="viewcode-block" id="StuffDefineError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.StuffDefineError">[docs]</a><span class="k">class</span> <span class="nc">StuffDefineError</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defining stuff error</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="RollerDefineError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.RollerDefineError">[docs]</a><span class="k">class</span> <span class="nc">RollerDefineError</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Count of rollers not defined</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
