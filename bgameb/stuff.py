@@ -5,7 +5,7 @@ from typing import List, Optional, Any
 from dataclasses import dataclass, field
 from abc import ABC
 from dataclasses_json import DataClassJsonMixin, config
-from bgameb.errors import RollerSidesError
+from bgameb.errors import StuffDefineError
 from bgameb.utils import log_me, get_random_name
 
 
@@ -25,7 +25,9 @@ class BaseStuff(DataClassJsonMixin, ABC):
         self.logger = log_me.bind(
             classname=self.__class__.__name__,
             name=self.name)
-        self.logger.info(f'{self.__class__.__name__} created with {self.name=}.')
+        self.logger.info(
+            f'{self.__class__.__name__} created with {self.name=}.'
+            )
 
 
 @dataclass
@@ -47,18 +49,16 @@ class BaseRoller(BaseStuff, ABC):
     _range: List[int] = field(
         default_factory=list,
         init=False,
-        metadata=config(exclude=lambda x:True),
+        metadata=config(exclude=lambda x: True),
         repr=False
         )
 
     def __post_init__(self) -> None:
         super().__post_init__()
         if self.sides <= 0:
-            self.logger.debug(
-                f'Number {self.sides=} for {self.name}. Needed > 0.'
-                )
-            raise RollerSidesError(
-                f'Number {self.sides=} for {self.name}. Needed > 0.'
+            raise StuffDefineError(
+                message=f'Number {self.sides=} for {self.name}. Needed > 0.',
+                logger=self.logger
                 )
         else:
             self._range = list(range(1, self.sides + 1))
@@ -67,7 +67,7 @@ class BaseRoller(BaseStuff, ABC):
         """Roll or flip and return result
 
         Raises:
-            RollerSidesError: is not defined number of sides
+            StuffDefineError: is not defined number of sides
 
         Returns:
             int: result of roll
@@ -78,11 +78,9 @@ class BaseRoller(BaseStuff, ABC):
             return choice
 
         else:
-            self.logger.debug(
-                f'Number {self.sides=} for {self.name}. Needed > 0.'
-                )
-            raise RollerSidesError(
-                f'Number {self.sides=} for {self.name}. Needed > 0.'
+            raise StuffDefineError(
+                message=f'Number {self.sides=} for {self.name}. Needed > 0.',
+                logger=self.logger
                 )
 
 
@@ -118,7 +116,7 @@ class Coin(BaseRoller):
 class CardTexts(dict):
     """Cards texts collection
     """
-    def __init__(self, /, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         self.__dict__.update(kwargs)
 
     def __getattr__(self, attr: str) -> str:
@@ -209,3 +207,7 @@ class Card(BaseCard):
         """
         raise NotImplementedError
 
+    def attach(self) -> None:
+        """Some rules can attach any stuff to card
+        """
+        raise NotImplementedError

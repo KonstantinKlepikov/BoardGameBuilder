@@ -225,7 +225,7 @@ class TestShaker:
         """
         shaker = Shaker(rollers[0], name='shaker')
         with pytest.raises(
-            StuffDefineError, match='Need at least one roller'
+            StuffDefineError, match="Can't add"
             ):
             shaker.add(rollers[1], count=0)
 
@@ -280,7 +280,7 @@ class TestShaker:
         for i in ['white', 'red', 'green']:
             shaker.add(rollers[1], color=i)
         assert len(shaker.rollers) == 3, 'wrong number of rollers'
-        shaker.remove_all()
+        shaker.remove()
         assert len(shaker.rollers) == 0, 'wrong number of rollers'
         assert isinstance(shaker.rollers, dict), 'wrong type os rollers attr'
 
@@ -291,7 +291,7 @@ class TestShaker:
         for i in ['white', 'red', 'green']:
             shaker.add(rollers[1], color=i)
         assert len(shaker.rollers) == 3, 'wrong number of rollers'
-        shaker.remove_all_by_color(color='white')
+        shaker.remove(color='white')
         assert len(shaker.rollers) == 2, 'wrong number of rollers'
 
     def test_remove_by_name(self, rollers: Tuple[Components, str]) -> None:
@@ -304,10 +304,10 @@ class TestShaker:
             shaker.add(rollers[1], color=i)
         assert len(shaker.rollers) == 3, 'wrong number of rollers'
         assert len(shaker.rollers['white']) == 2, 'wrong number of rollers'
-        shaker.remove_all_by_name(name='this')
+        shaker.remove(name='this')
         assert len(shaker.rollers) == 3, 'wrong number of rollers'
         assert len(shaker.rollers['white']) == 1, 'wrong number of rollers'
-        shaker.remove_all_by_name(name=rollers[1])
+        shaker.remove(name=rollers[1])
         assert len(shaker.rollers) == 0, 'wrong number of rollers'
 
     def test_remove_rollers(self, rollers: Tuple[Components, str]) -> None:
@@ -327,21 +327,15 @@ class TestShaker:
         shaker.remove(rollers[1], color="red", count=50)
         assert len(shaker.rollers) == 2, 'wrong number of rollers'
         with pytest.raises(
-            StuffDefineError, match="Need at least one roller"
+            StuffDefineError, match="Count must be a positive"
         ):
             shaker.remove(rollers[1], color="white", count=0)
         with pytest.raises(
-            StuffDefineError, match="Roller with color"
+            StuffDefineError, match="not exist in shaker"
         ):
             shaker.remove(rollers[1], color="black", count=1)
-        with pytest.raises(
-            StuffDefineError, match="Roller with name"
-        ):
-            shaker.remove('who', color="white", count=1)
-        with pytest.raises(
-            StuffDefineError, match="Roller with name"
-        ):
-            shaker.remove('this', color="green", count=50)
+        shaker.remove(count=50)
+        assert shaker.rollers == {}, 'rollers not removed'
 
     def test_roll_shaker(self, rollers: Tuple[Components, str]) -> None:
         """Test roll shaker
@@ -382,9 +376,9 @@ class TestDeck:
         assert not Deck.name, 'Deck class has name'
         deck = Deck(cards[0])
         assert isinstance(deck.name, str), 'wrong name'
-        assert isinstance(deck.cards, dict), 'nondict cards'
-        assert isinstance(deck.dealt, dict), 'nondict dealt cards'
-        assert len(deck.cards) == 0, 'nonempty cards'
+        assert isinstance(deck.deck_cards, dict), 'nondict cards'
+        assert isinstance(deck.dealt_cards, tuple), 'nondict dealt cards'
+        assert len(deck.deck_cards) == 0, 'nonempty cards'
 
     def test_add_cards_to_deck_raise_errors_if_wrong_count(
         self, cards: Tuple[Components, List[str]]
@@ -393,7 +387,7 @@ class TestDeck:
         """
         deck = Deck(cards[0], name='deck')
         with pytest.raises(
-            StuffDefineError, match='Need at least one card'
+            StuffDefineError, match="Can't add"
             ):
             deck.add('this', count=0)
 
@@ -416,13 +410,13 @@ class TestDeck:
         deck = Deck(cards[0], name='deck')
         names = cards[1]
         deck.add(names[0])
-        assert deck.cards == {names[0]: 1}, 'wrong card added'
+        assert deck.deck_cards == {names[0]: 1}, 'wrong card added'
         deck.add(names[1])
-        assert deck.cards == {names[0]: 1, names[1]: 1}, 'wrong card added'
+        assert deck.deck_cards == {names[0]: 1, names[1]: 1}, 'wrong card added'
         deck.add(names[1], count=50)
-        assert deck.cards == {names[0]: 1, names[1]: 51}, 'wrong card added'
+        assert deck.deck_cards == {names[0]: 1, names[1]: 51}, 'wrong card added'
         deck.add(names[2], count=50)
-        assert deck.cards == {
+        assert deck.deck_cards == {
             names[0]: 1,
             names[1]: 51,
             names[2]: 50,
@@ -437,15 +431,59 @@ class TestDeck:
         deck.add(cards[1][0])
         j = json.loads(deck.to_json())
         assert j['name'] == 'deck', 'wrong name'
-        assert len(j['cards']) == 1, 'wrong num of cards'
+        assert len(j['deck_cards']) == 1, 'wrong num of cards'
 
-    def test_remove_all(self, cards: Tuple[Components, List[str]]) -> None:
+    def test_remove_all_cards(self, cards: Tuple[Components, List[str]]) -> None:
         """Test remove all cards from deck
         """
         deck = Deck(cards[0], name='deck')
         for i in cards[1]:
             deck.add(i)
-        assert len(deck.cards) == 3, 'wrong number of cards'
-        deck.remove_all()
-        assert len(deck.cards) == 0, 'wrong number of cards'
-        assert isinstance(deck.cards, dict), 'wrong type os cards attr'
+        assert len(deck.deck_cards) == 3, 'wrong number of cards'
+        deck.remove()
+        assert len(deck.deck_cards) == 0, 'wrong number of cards'
+        assert isinstance(deck.deck_cards, dict), 'wrong type os cards attr'
+
+    def test_remove_cards_by_name(self, cards: Tuple[Components, List[str]]) -> None:
+        """Test remove cards by name from shaker
+        """
+        deck = Deck(cards[0], name='deck')
+        deck.add('this')
+        for i in cards[1]:
+            deck.add(i)
+        assert len(deck.deck_cards) == 3, 'wrong number of cards'
+        assert deck.deck_cards['this'] == 2, 'wrong number of cards'
+        deck.remove(name='this')
+        assert len(deck.deck_cards) == 2, 'wrong number of cards'
+        assert 'this' not in deck.deck_cards.keys(), 'cards not removed'
+        deck.remove(name='that')
+        assert len(deck.deck_cards) == 1, 'wrong number of cards'
+
+    def test_remove_cards(self, cards: Tuple[Components, List[str]]) -> None:
+        """Test remove cards
+        """
+        deck = Deck(cards[0], name='deck')
+        for i in cards[1]:
+            deck.add(i, count=5)
+        assert len(deck.deck_cards) == 3, 'wrong number of cards'
+        deck.remove(cards[1][0], count=3)
+        assert len(deck.deck_cards) == 3, 'wrong number of cards'
+        assert deck.deck_cards[cards[1][0]] == 2, \
+            'wrong count of cards'
+        deck.remove(cards[1][0], count=50)
+        assert len(deck.deck_cards) == 2, 'wrong number of cards'
+        with pytest.raises(
+            StuffDefineError, match="Count must be a positive"
+        ):
+            deck.remove(cards[1][0], count=0)
+        with pytest.raises(
+            StuffDefineError, match="not exist in dec"
+        ):
+            deck.remove('hocho', count=1)
+        deck.remove(count=3)
+        assert len(deck.deck_cards) == 2, 'wrong count of cards'
+        assert deck.deck_cards[cards[1][1]] == 2, \
+            'wrong count of cards'
+        deck.remove(count=50)
+        assert deck.deck_cards == {}, 'cards not removed'
+

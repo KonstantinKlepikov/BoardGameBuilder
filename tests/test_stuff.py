@@ -2,7 +2,7 @@ import json, pytest
 from bgameb.stuff import (
     Dice, Coin, BaseRoller, Card, CardTexts
 )
-from bgameb.errors import RollerSidesError
+from bgameb.errors import StuffDefineError
 
 
 class TestNameAndJson:
@@ -46,7 +46,7 @@ class TestBaseRoller:
         """Rolled class initialised with None sides
         """
         with pytest.raises(
-            RollerSidesError,
+            StuffDefineError,
             match='Needed > 0'
             ):
             BaseRoller(name='base')
@@ -57,7 +57,7 @@ class TestBaseRoller:
         roller = BaseRoller(name='base', sides=1)
         roller.sides = 0
         with pytest.raises(
-            RollerSidesError,
+            StuffDefineError,
             match='Needed > 0'
             ):
             roller.roll()
@@ -83,7 +83,7 @@ class TestDice:
         """We cant roll dice if sides not defined
         """
         with pytest.raises(
-            RollerSidesError,
+            StuffDefineError,
             match='Needed > 0'
             ):
             Dice(name='dice', sides=0)

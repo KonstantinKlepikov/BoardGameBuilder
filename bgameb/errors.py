@@ -1,7 +1,6 @@
 class CustomRuntimeError(RuntimeError):
     """Base class for other runtime exceptions
     """
-    pass
 
 
 class ComponentNameError(CustomRuntimeError):
@@ -9,11 +8,12 @@ class ComponentNameError(CustomRuntimeError):
     class instance.
     """
     def __init__(self, name) -> None:
-        self.message = f'Component with {name=} is in Components class instance'
+        self.message = f'Component with {name=} is in ' + \
+                        'Components class instance'
         super().__init__(self.message)
 
 
-class ComponentClassError(RuntimeError):
+class ComponentClassError(CustomRuntimeError):
     """Given class isnt component
     """
     def __init__(self, class_) -> None:
@@ -21,12 +21,10 @@ class ComponentClassError(RuntimeError):
         super().__init__(self.message)
 
 
-class RollerSidesError(RuntimeError):
-    """Count of sides not defined for this rolled object
-    """
-    pass
-
-
 class StuffDefineError(AttributeError):
-    """Count of stuff not defined or stuff not exist
+    """Defining stuff error
     """
+    def __init__(self, message, logger) -> None:
+        self.message = message
+        logger.exception(self.message)
+        super().__init__(self.message)
