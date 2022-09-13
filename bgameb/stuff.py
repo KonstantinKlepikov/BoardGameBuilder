@@ -5,25 +5,36 @@ from typing import List, Optional, Any
 from dataclasses import dataclass, field
 from abc import ABC
 from dataclasses_json import DataClassJsonMixin, config
-from bgameb.errors import RollerSidesError
+from bgameb.errors import StuffDefineError
 from bgameb.utils import log_me, get_random_name
 
 
 @dataclass
 class BaseStuff(DataClassJsonMixin, ABC):
     """Base class for stuff
+
+    Inherited classes needs attr name implementation
     """
-    name: Optional[str] = None
 
     def __post_init__(self) -> None:
         # set random name
         if not self.name:
             self.name = get_random_name()
 
+        # set logger
+        self.logger = log_me.bind(
+            classname=self.__class__.__name__,
+            name=self.name)
+        self.logger.info(
+            f'{self.__class__.__name__} created with {self.name=}.'
+            )
+
 
 @dataclass
 class BaseRoller(BaseStuff, ABC):
     """Base class for rollers or fliped objects
+
+    Inherited classes needs attr name implementation
 
     Define name to identify later BaseRoller object by unique name.
     For example: 'six_side_dice'
@@ -34,24 +45,29 @@ class BaseRoller(BaseStuff, ABC):
             dice = Dice(name='six_side_dice', sides=12)
     """
     name: Optional[str] = None
-    sides: Optional[int] = field(default=None, init=False)
+    sides: int = 0
     _range: List[int] = field(
-        default_factory=list, init=False, metadata=config(exclude=lambda x:True)
+        default_factory=list,
+        init=False,
+        metadata=config(exclude=lambda x: True),
+        repr=False
         )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-
-        # set logger
-        self.logger = log_me.bind(
-            classname=self.__class__.__name__,
-            name=self.name)
+        if self.sides <= 0:
+            raise StuffDefineError(
+                message=f'Number {self.sides=} for {self.name}. Needed > 0.',
+                logger=self.logger
+                )
+        else:
+            self._range = list(range(1, self.sides + 1))
 
     def roll(self) -> int:
         """Roll or flip and return result
 
         Raises:
-            RollerSidesError: is not defined number of sides
+            StuffDefineError: is not defined number of sides
 
         Returns:
             int: result of roll
@@ -60,15 +76,11 @@ class BaseRoller(BaseStuff, ABC):
             choice = random.choices(self._range, k=1)[0]
             self.logger.debug(f'Is rolled {choice=}')
             return choice
-            # TODO: add weights
-            # https://docs.python.org/dev/library/random.html#random.choices
 
         else:
-            self.logger.debug(
-                f'Is not defined number of sizes for {self.name}'
-                )
-            raise RollerSidesError(
-                f'Is not defined number of sizes for {self.name}'
+            raise StuffDefineError(
+                message=f'Number {self.sides=} for {self.name}. Needed > 0.',
+                logger=self.logger
                 )
 
 
@@ -79,42 +91,32 @@ class Dice(BaseRoller):
     You can define number of sides for dice.
     Default 6
     """
+    name: Optional[str] = None
     sides: int = 6
 
     def __post_init__(self) -> None:
         super().__post_init__()
-
-        if not isinstance(self.sides, int):
-            self.logger.debug(
-                f'Is not defined number of sizes for {self.name}'
-                )
-            raise RollerSidesError(
-                f'Is not defined number of sizes for dice {self.name}'
-                )
-        else:
-            self._range = list(range(1, self.sides + 1))
-
-        self.logger.info(f'Dice created with {self.sides} sides.')
+        self.logger.info(f'Dice {self.sides=}.')
 
 
 @dataclass
 class Coin(BaseRoller):
     """Create coin like a dice with two sides
     """
+    name: Optional[str] = None
 
     def __post_init__(self) -> None:
-        super().__post_init__()
-
         self.sides = 2
         self._range = list(range(1, 3))
 
-        self.logger.info(f'Coin created with {self.sides} sides.')
+        super().__post_init__()
+        self.logger.info(f'Coin {self.sides=}.')
 
 
 class CardTexts(dict):
     """Cards texts collection
     """
-    def __init__(self, /, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         self.__dict__.update(kwargs)
 
     def __getattr__(self, attr: str) -> str:
@@ -149,21 +151,15 @@ class BaseCard(BaseStuff, ABC):
 class Card(BaseCard):
     """Create the card
     """
+    name: Optional[str] = None
     open: bool = False
     tapped: bool = False
     side: Optional[str] = None
-    text: CardTexts = field(default_factory=dict, init=False)
+    text: CardTexts = field(default_factory=CardTexts, init=False)
 
     def __post_init__(self) -> None:
-        super().__post_init__()
-
         self.text = CardTexts()
-
-        # set logger
-        self.logger = log_me.bind(
-            classname=self.__class__.__name__,
-            name=self.name)
-        self.logger.info(f'Card created.')
+        super().__post_init__()
 
     def flip(self) -> None:
         """Face up or face down the card regardles of it condition
@@ -211,3 +207,7 @@ class Card(BaseCard):
         """
         raise NotImplementedError
 
+    def attach(self) -> None:
+        """Some rules can attach any stuff to card
+        """
+        raise NotImplementedError

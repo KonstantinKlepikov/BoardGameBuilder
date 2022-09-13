@@ -2,7 +2,7 @@ import json, pytest
 from bgameb.stuff import (
     Dice, Coin, BaseRoller, Card, CardTexts
 )
-from bgameb.errors import RollerSidesError
+from bgameb.errors import StuffDefineError
 
 
 class TestNameAndJson:
@@ -45,19 +45,23 @@ class TestBaseRoller:
     def test_rolled_have_sides_defined_as_none(self) -> None:
         """Rolled class initialised with None sides
         """
-        rolled = BaseRoller(name='base')
-        assert rolled.sides == None, 'wrong init of sides'
+        with pytest.raises(
+            StuffDefineError,
+            match='Needed > 0'
+            ):
+            BaseRoller(name='base')
 
     def test_roll_rolled_raise_error(self) -> None:
         """We cant use roll() method from base class
         """
-        rolled = BaseRoller(name='base')
+        roller = BaseRoller(name='base', sides=1)
+        roller.sides = 0
         with pytest.raises(
-            RollerSidesError,
-            match='Is not defined number of sizes'
+            StuffDefineError,
+            match='Needed > 0'
             ):
-            rolled.roll()
-        assert rolled._range == [], 'range to roll isnt empty'
+            roller.roll()
+        # assert roller._range == [], 'range to roll isnt empty' # FIXME: range is fixed on init
 
 
 class TestDice:
@@ -75,16 +79,14 @@ class TestDice:
         dice.sides = 2
         assert dice.sides == 2, 'cant change number of sides'
 
-    def test_roll_dice_without_sides_raise_error(self) -> None:
+    def test_create_dice_without_sides_raise_error(self) -> None:
         """We cant roll dice if sides not defined
         """
-        dice = Dice(name='dice')
-        dice.sides = None
         with pytest.raises(
-            RollerSidesError,
-            match='Is not defined number of sizes'
+            StuffDefineError,
+            match='Needed > 0'
             ):
-            dice.roll()
+            Dice(name='dice', sides=0)
 
     def test_dice_has_correct_range(self) -> None:
         """Range to roll dice is correct
@@ -109,6 +111,12 @@ class TestCoin:
         """Coin class initialised with 2 sides
         """
         coin = Coin(name='coin')
+        assert coin.sides == 2, 'wrong init of sides'
+
+    def test_create_coin_with_zero_sides(self) -> None:
+        """Test is created 2-sides coin if sides=0
+        """
+        coin = Coin(name='coin', sides=0)
         assert coin.sides == 2, 'wrong init of sides'
 
     def test_coin_has_correct_range(self) -> None:

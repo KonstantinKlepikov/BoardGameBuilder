@@ -75,7 +75,7 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span>
 <span class="kn">from</span> <span class="nn">bgameb.rollers</span> <span class="kn">import</span> <span class="n">BaseRoller</span>
-<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">RollerDefineError</span>
+<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">StuffDefineError</span>
 <span class="kn">from</span> <span class="nn">bgameb.utils</span> <span class="kn">import</span> <span class="n">log_me</span>
 
 
@@ -113,12 +113,12 @@
 <span class="sd">            count (int, optional): count of rollers copy. Defaults to 1.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            RollerDefineError: counts not set or are different</span>
+<span class="sd">            StuffDefineError: counts not set or are different</span>
 <span class="sd">                               rollers with same names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t add 0 rollers.&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span><span class="s1">&#39;Need at least one roller&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span><span class="s1">&#39;Need at least one roller&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
 
@@ -131,7 +131,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="s2">&quot;Can&#39;t add different rollers with the same name.&quot;</span>
                     <span class="p">)</span>
-                <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span>
+                <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
                     <span class="s1">&#39;Different instances of roller class &#39;</span>
                     <span class="sa">f</span><span class="s1">&#39;with the same name </span><span class="si">{</span><span class="n">roller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="p">)</span>
@@ -158,12 +158,12 @@
 <span class="sd">            color (str): color froup of rollers</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            RollerDefineError: name, color not match or</span>
+<span class="sd">            StuffDefineError: name, color not match or</span>
 <span class="sd">                               count of rollers not defined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t remove 0 rollers.&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span><span class="s1">&#39;Need at least one roller&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span><span class="s1">&#39;Need at least one roller&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
 
@@ -188,13 +188,13 @@
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cant find roller with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span>
+                <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;Cant find roller with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cant find roller with collor </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">RollerDefineError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;Cant find roller with collor </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span></div>
 

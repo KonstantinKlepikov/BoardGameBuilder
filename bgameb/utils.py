@@ -32,6 +32,7 @@ def log_enable(
     )
     log_me.enable('bgameb')
 
+
 def get_random_name(max_lenght: int = 10) -> str:
     """Get english word of given len
 
