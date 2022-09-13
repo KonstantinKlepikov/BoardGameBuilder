@@ -3,6 +3,27 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.11 (2022-09-13)
+============================
+
+Features
+--------
+
+- #34:
+      * Add ABC BaseGameTools class
+      * Exclude some data of classes from repr
+      * _post_init_ for all classes refactoring
+      * sides attr for rollers refactoring
+      * Add decks attr to Game class
+      * Deck class implementation
+      * Add add() deck methods
+      * Add remove() deck methods
+      * BaseGameTools refactoring -> split to BaseGame and child BaseGameTools. Add abstarct methods add(), remove(), remove_all() for BaseGameTools
+      * refactoring of Shaker methods - remove() now is one method for all remove operation
+      * tests all (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/34)
+- Move logging errors inside StuffDefineError. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/47)
+
+
 Release v0.0.10 (2022-09-10)
 ============================
 

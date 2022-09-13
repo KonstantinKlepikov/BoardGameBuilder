@@ -1,1 +1,0 @@
-Move logging errors inside StuffDefineError.
