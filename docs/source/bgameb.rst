@@ -43,11 +43,3 @@ bgameb.utils module
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: bgameb
-   :members:
-   :undoc-members:
-   :show-inheritance:
