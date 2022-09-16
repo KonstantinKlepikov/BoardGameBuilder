@@ -1,6 +1,9 @@
-from setuptools import setup, find_packages
 from typing import List
-import os, pathlib
+import os, pathlib, datetime
+from setuptools import setup, find_packages
+from sphinx.setup_command import BuildDoc
+cmdclass = {'build_sphinx': BuildDoc}
+from bgameb import PUB_VERSION
 
 
 def strip_comments(string: str) -> str:
@@ -29,11 +32,15 @@ def get_dependencies(*req: str) -> List[str]:
 
 here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
+NAME = 'bgameb'
+AUTHOR = 'Konstantin Klepikov'
+CURRENT_YEAR = datetime.datetime.now().year
+COPYRIGHT = str(CURRENT_YEAR) + ', ' + AUTHOR
 SOURCE_URL = 'https://github.com/KonstantinKlepikov/BoardGameBuilder'
 DOCS = 'https://konstantinklepikov.github.io/BoardGameBuilder/'
 
 setup(
-    name='bgameb',
+    name=NAME,
     install_requires=get_dependencies('requirements.txt'),
     extras_require={
         "dev": get_dependencies('requirements-dev.txt'),
@@ -41,7 +48,7 @@ setup(
     description='Board Game Builder',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='Konstantin Klepikov',
+    author=AUTHOR,
     author_email='oformleno@gmail.com',
     url=SOURCE_URL,
     project_urls={
@@ -59,4 +66,14 @@ setup(
     packages=find_packages(exclude=('tests*',)),
     use_incremental=True,
     setup_requires=["incremental==21.3.0"],
+    cmdclass=cmdclass,
+    command_options={
+        'build_sphinx': {
+            'project': ('setup.py', NAME),
+            'version': ('setup.py', PUB_VERSION),
+            'release': ('setup.py', PUB_VERSION),
+            'source_dir': ('setup.py', 'docs/source'),
+            'build_dir': ('setup.py', 'docs/build'),
+            'copyright': ('setup.py', COPYRIGHT),
+            }},
 )
