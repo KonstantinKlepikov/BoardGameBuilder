@@ -3,6 +3,7 @@
 from loguru import logger
 from loguru._logger import Logger
 from random_word import RandomWords
+from dataclasses import is_dataclass
 
 
 global log_me
@@ -52,3 +53,21 @@ def get_random_name(max_lenght: int = 10) -> str:
         return result
 
     return roll()
+
+
+def fill_dataclass(source_instance, filled_class):
+    """Fill one dataclass from another
+
+    Args:
+        source_class (type(dataclass)): dataclass instance source
+        filled_class (dataclass): dataclass for fiel
+
+    Returns:
+        type(dataclass): filled dataclass instance
+    """
+    if not is_dataclass(source_instance):
+        raise ValueError(
+            f"'{source_instance.__class__.__name__}' is not a dataclass!"
+            )
+    from_ = source_instance.to_dict()
+    return filled_class.from_dict(from_)

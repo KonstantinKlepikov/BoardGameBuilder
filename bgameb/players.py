@@ -1,21 +1,16 @@
-"""Game players
+"""Game players classes
 """
 from dataclasses import dataclass
+from bgameb.constructs import BasePlayer
 
 
 @dataclass
-class Player:
-    """Base class to create a player
-    """
-
-
-@dataclass
-class Human(Player):
+class Human(BasePlayer):
     """Base class to create a human palyer
     """
 
 
 @dataclass
-class Bot(Player):
+class Bot(BasePlayer):
     """Base class to create a bot player
     """
