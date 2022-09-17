@@ -2,7 +2,7 @@
 """
 import random
 from abc import ABC
-from typing import List, Optional
+from typing import List, Optional, Literal
 from dataclasses import dataclass, field
 from dataclasses_json import config
 from bgameb.constructs import BaseStuff, CardTexts
@@ -299,12 +299,11 @@ class _Card(CardType):
             self.open = True
             self.logger.debug(f'Card face up.')
 
-    def face_up(self) -> CardTexts:
+    def face_up(self) -> None:
         """Face up the card and return text
         """
         self.open = True
         self.logger.debug(f'Card face up.')
-        return self.text
 
     def face_down(self) -> None:
         """Face down the card
@@ -339,3 +338,10 @@ class _Card(CardType):
         """Some rules can attach any stuff to card
         """
         raise NotImplementedError
+
+
+STUFF = {
+    'roller': RollerType,
+    'card': CardType,
+}
+STUFF_TYPES = Literal['roller', 'card']

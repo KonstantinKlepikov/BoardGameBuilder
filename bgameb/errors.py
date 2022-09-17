@@ -16,8 +16,9 @@ class ComponentNameError(CustomRuntimeError):
 class ComponentClassError(CustomRuntimeError):
     """Given class isnt component
     """
-    def __init__(self, class_) -> None:
-        self.message = f'Given class: {class_} not a component.'
+    def __init__(self, obj_, logger) -> None:
+        self.message = f'Given: {obj_} not a component.'
+        logger.exception(self.message)
         super().__init__(self.message)
 
 

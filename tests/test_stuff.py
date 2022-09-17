@@ -1,8 +1,5 @@
 import json, pytest
-from bgameb.stuff import (
-    Dice, Coin, Card, CardTexts,
-    RollerType, Roller, _Card
-)
+from bgameb.stuff import RollerType, Roller, CardType, _Card
 from bgameb.errors import StuffDefineError
 from bgameb.utils import fill_dataclass
 
@@ -11,9 +8,10 @@ class TestNameAndJson:
     """Test creation with names and json schemes
     """
     params = [
-        (Dice, 'dice'),
-        (Coin, 'coin'),
-        (Card, 'card'),
+        (Roller, 'roller'),
+        (_Card, 'card'),
+        (RollerType, 'roller_type'),
+        (CardType, 'card_type'),
     ]
 
     @pytest.mark.parametrize("_class, name", params)
@@ -282,53 +280,32 @@ class TestCard:
     def test_card_instanciation(self) -> None:
         """Test card correct created
         """
-        card = Card(name='card')
+        card = CardType(name='card')
         assert card.name == 'card', 'wrong name'
         assert card.open == False, 'card is open'
         assert card.tapped == False, 'card is tapped'
         assert card.side == None, 'defined wrong side'
-        assert isinstance(card.text, CardTexts), 'texts not seted'
-
-    def test_card_class_is_converted_to_json(self) -> None:
-        """Test to json convertatrion
-        """
-        card = Card(name='card')
-        j = json.loads(card.to_json())
-        assert j['name'] == 'card', 'not converted to json'
-
-    def test_card_texts(self) -> None:
-        """Test card text can be set, get, delete
-        """
-        card = Card(name='card')
-        card.text.this = 'this'
-        assert card.text.this == 'this', 'not set or cant get'
-        del card.text.this
-        with pytest.raises(
-            AttributeError, match='this'
-            ):
-            card.text.this
 
     def test_flip(self) -> None:
         """Test flip card
         """
-        card = Card(name='card')
+        card = _Card(name='card')
         card.flip()
         assert card.open, 'card not oppened'
         card.flip()
         assert not card.open, 'card oppened'
 
     def test_fase_up(self) -> None:
-        """Test face up open card and return text
+        """Test face up open card
         """
-        card = Card(name='card')
-        texts = card.face_up()
+        card = _Card(name='card')
+        card.face_up()
         assert card.open, 'card not open'
-        assert isinstance(texts, CardTexts), 'wrong text'
 
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
-        card = Card(name='card')
+        card = _Card(name='card')
         card.open = True
         card.face_down()
         assert not card.open, 'card not open'
@@ -336,7 +313,7 @@ class TestCard:
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
         """
-        card = Card(name='card')
+        card = _Card(name='card')
         card.tap(side='left')
         assert card.tapped, 'card not tapped'
         assert card.side == 'left', 'wrong side'
@@ -344,7 +321,7 @@ class TestCard:
     def test_untap_card(self) -> None:
         """Test tap card tap and set side
         """
-        card = Card(name='card')
+        card = _Card(name='card')
         card.tapped = True
         assert card.tapped, 'card not tapped'
         card.untap()

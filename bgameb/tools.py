@@ -1,6 +1,6 @@
 """Game tools classes like shakers or decks
 """
-from typing import Optional, Tuple, List, Dict
+from typing import Optional, Tuple, List, Dict, Literal
 from dataclasses import dataclass, field
 from dataclasses_json import config
 from bgameb.errors import StuffDefineError
@@ -369,3 +369,10 @@ class Deck(BaseTool):
             name (str): name of card
         """
         raise NotImplementedError
+
+
+TOOLS = {
+    'shaker': Shaker,
+    'deck': Deck,
+}
+TOOLS_TYPES = Literal['roller', 'card']

@@ -8,14 +8,18 @@ Object-oriented framework for build board game logic in python
 
 ```python
 # create the game
-game = Game('some_board_game')
+game = Game('one_board_game')
 
-# add dicec type to game
-game.add_stuff('dice', name='six_dice', sides=6)
-game.add_stuff('dice', name='twenty_dice', sides=20)
+# add dices types to game
+game.add('dice', name='six_dice')
+game.add('dice', name='twenty_dice')
+
+# define dices types sides
+game.stuff.six_dice.sides = 6
+game.stuff.six_dice.twenty_dice = 20
 
 # add shakers for roll daces and add count of dices to shaker
-game.add_tools('shaker', name='dicer')
+game.add('shaker', name='dicer')
 game.tools.dicer.add('six_dice', count=50, color='white')
 game.tools.dicer.add('six_dice', count=30, color='red')
 game.tools.dicer.add('twenty_dice', count=10, color='red')

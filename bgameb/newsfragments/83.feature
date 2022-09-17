@@ -6,4 +6,5 @@
     * add fill_dataclass() method to fill stuff class from stufftype class
     * add CardType and Card classes
     * temporaly move CardText to constructs.py
+    * add add() and self.stuff, self.tools to Game class
     * test all
