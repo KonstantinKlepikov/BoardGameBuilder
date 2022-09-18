@@ -5,8 +5,8 @@ from typing import (
     )
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from dataclasses import dataclass, field
-from dataclasses_json import DataClassJsonMixin, config
+from dataclasses import dataclass
+from dataclasses_json import DataClassJsonMixin
 from bgameb.errors import ComponentNameError
 from bgameb.utils import log_me, get_random_name
 
@@ -200,6 +200,24 @@ class Base(DataClassJsonMixin, ABC):
         if name in chek:
             return True
         return False
+
+
+@dataclass
+class BaseGame(Base, ABC):
+    """Base class for game
+
+    Inherited classes needs attr name implementation
+    """
+
+    @abstractmethod
+    def add(self, component: str, name: Optional[str] = None) -> None:
+        """Add stuff or tools to game
+
+        Args:
+            component (str): stuff or tool type
+            name (str, optional): name of added component.
+                                  Defaults to None.
+        """
 
 
 @dataclass

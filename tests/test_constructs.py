@@ -1,6 +1,6 @@
 import pytest
-from bgameb.constructs import Components, CardTexts
-from bgameb.stuff import Dice, Coin, Card, BaseRoller
+from bgameb.constructs import Components, BaseStuff, CardTexts
+from bgameb.stuff import RollerType, CardType, Roller, Card
 from bgameb.errors import ComponentNameError
 
 
@@ -9,8 +9,9 @@ class TestComponents:
     """
 
     components = [
-        (Dice, 'dice'),
-        (Coin, 'coin'),
+        (RollerType, 'dice'),
+        (CardType, 'card'),
+        (Roller, 'dice'),
         (Card, 'card'),
     ]
 
@@ -83,17 +84,17 @@ class TestComponents:
         assert comp[name], 'component not added'
         with pytest.raises(
             ComponentNameError,
-            match=name
+            match='is exist in'
         ):
             comp.add(_class, name=name)
-        comp.add(Dice, name='this_is')
+        comp.add(RollerType, name='this_is')
         assert comp.this_is, 'component not added'
         with pytest.raises(
             ComponentNameError,
-            match='this_is'
+            match='is exist in'
         ):
             comp.add(_class, name='this_is')
-        if isinstance(_class, BaseRoller):
+        if isinstance(_class, BaseStuff):
             comp.add(_class, name='this_is_five', sides=5)
             assert comp.this_is_five.sides == 5, 'component not added'
 
@@ -109,7 +110,7 @@ class TestComponents:
         assert id(comp[name]) != add1, 'not replaced'
         comp.add(_class, name='this_is')
         assert comp.this_is, 'component not added'
-        if isinstance(_class, BaseRoller):
+        if isinstance(_class, BaseStuff):
             comp.add(_class, name='this_is_five', sides=5)
             assert comp.this_is_five.sides == 5, 'component not added'
 

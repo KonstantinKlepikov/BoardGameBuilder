@@ -3,12 +3,11 @@
 from typing import Optional, Tuple, List, Dict, Literal
 from dataclasses import dataclass, field
 from dataclasses_json import config
+from bgameb.stuff import Roller
 from bgameb.errors import StuffDefineError
-from bgameb.constructs import Components, BaseTool, BaseStuff
+from bgameb.constructs import Components, BaseTool, BaseStuff, BaseGame
 
 
-shaker_rollers_type = Dict[str, Dict[str, int]]
-shaker_result_type = Dict[str, Dict[str, Tuple[int]]]
 deck_cards_type = Dict[str, int]
 deck_result_type = Tuple[Optional[BaseStuff]]
 dealt_cards_type = Tuple[List[str]]
@@ -18,38 +17,36 @@ dealt_cards_type = Tuple[List[str]]
 class Shaker(BaseTool):
     """Create shaker for roll dices or flip coins
     """
-    _game_rollers: Components = field(
+    _game: BaseGame = field(
         metadata=config(exclude=lambda x: True),
         repr=False
         )
     name: Optional[str] = None
-    rollers: shaker_rollers_type = field(default_factory=dict, init=False)
-    last: shaker_result_type = field(default_factory=dict, init=False)
+    stuff: Components = field(default_factory=Components, init=False)
+    last: Dict[str, Tuple[int]] = field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
-        self.rollers = {}
+        self.stuff = Components()
         self.last = {}
         super().__post_init__()
 
     def add(
         self,
         name: str,
-        color: str = 'colorless',
         count: int = 1
             ) -> None:
         """Add roller to shaker
 
         Args:
-            roller (str): roller name
-            color (str, optional): color groupe. Defaults to 'colorless'.
-            count (int, optional): count of rollers copy. Defaults to 1.
+            name (str): roller name
+            count (int, optional): count of stuff copy. Defaults to 1.
 
         Raises:
             StuffDefineError: coutn of stuff not defined
                               or stuff not exist
         """
 
-        if not self._chek_name(name, self._game_rollers.keys()):
+        if not self._chek_name(name, self._game.stuff.keys()):
             raise StuffDefineError(
                 message=f"Roller with {name=} not exist in a game.",
                 logger=self.logger
@@ -57,179 +54,124 @@ class Shaker(BaseTool):
 
         if count < 1:
             raise StuffDefineError(
-                message=f"Can't add {count} rollers.",
+                message=f"Can't add {count} stuff.",
                 logger=self.logger
                 )
-        if self.rollers.get(color):
 
-            if name not in self.rollers[color].keys():
-                self.rollers[color][name] = 0
-
-            self.rollers[color][name] += count
+        # add roller and set a count
+        if name not in self.stuff.get_names():
+            self.stuff.add(component=Roller, **self._game.stuff[name].to_dict())
+            self.stuff[name].count = count
             self.logger.debug(
-                f'Number of rollers with "{name=}" increased by {count}. ' +
-                f'Result count is {self.rollers[color][name]}'
+                f'Added roller with "{name=}" and {count=}.'
                 )
 
+        # if exist increase a count
         else:
-            self.rollers[color] = {name: count}
+            self.stuff[name].count += count
             self.logger.debug(
-                f'Added {count} rollers with "{name=}" and {color=}.'
+                f'Number of stuff with "{name=}" increased by {count}. ' +
+                f'Result count is {self.stuff[name].count}'
                 )
 
-    def _decrease(self, name: str, color: str, count: int) -> None:
-        """Decrease number of rollers by count
+    def _decrease(self, name: str, count: int) -> None:
+        """Decrease number of stuff by count
         # TODO: test me
 
         Args:
-            name (str): name of rollers
-            color (str): color group
+            name (str): name of stuff
             count (int): count
         """
-        self.rollers[color][name] -= count
+        self.stuff[name].count -= count
         self.logger.debug(
-            f'Removed {count} rollers with {name=} and {color=}. ' +
-            f'Result count is {self.rollers[color].get(name, 0)}'
+            f'Removed {count} stuff with {name=}. ' +
+            f'Result count is {self.stuff.get(name, 0)}'
             )
-        if self.rollers[color][name] <= 0:
-            self._remove_by_name(name, color)
-
-    def _remove_by_name(self, name: str, color: str) -> None:
-        """Remove rollers by name
-        # TODO: test me
-        Args:
-            name (str): name of roller
-            color (str): color group
-        """
-
-        self.rollers[color].pop(name, 0)
-        self.logger.debug(
-            f'Remove all rollers with {name=} and {color=}'
-            )
-
-    def _remove_empry_color(self) -> None:
-        """Check mapping object and delete all colors if empty
-        # TODO: test me
-        """
-        colors = {
-            color: self.rollers.pop(color)
-            for color in list(self.rollers.keys())
-            if not self.rollers[color]
-            }
-        self.logger.debug(
-            f'Is removed empty colors={list(colors.keys())} from shaker'
-            )
+        if self.stuff[name].count <= 0:
+            del self.stuff[name]
 
     def remove(
         self,
         name: Optional[str] = None,
         count: Optional[int] = None,
-        color: Optional[str] = None
             ) -> None:
         """Remove any kind of roller copy from shaker by name and color
 
         Args:
             name (str, optional): name of removed stuff. Defaults to None.
             count (int, optional): count removed stuf. Defaults to None.
-            color (str, optional): color froup of rollers. Defaults to None.
 
-        You can use any combination for colors, names and counts to remove all
-        rollers, all by color or by name or by count or rollers vit given count
-        of choosen color or/and name.
+        You can use any combination for names and counts to remove all
+        stuff, all or any by name or by count.
 
 
         Raises:
-            StuffDefineError: nopositive integer for count
+            StuffDefineError: nonpositive integer for count
         """
 
         if count is not None and count <= 0:
             raise StuffDefineError(
-                f"Count must be a positive integer greater than 0.",
+                f"Count must be a integer greater than 0.",
                 logger=self.logger
                 )
 
-        col_keys = list(self.rollers.keys())
+        if name is None:
 
-        if color is None:
-
-            if name is None:
-
-                if count is None:
-                    self.rollers = {}
-                    self.logger.debug('Removed all rollers from shaker')
-                    return
-                else:
-                    for col in col_keys:
-                        for na in list(self.rollers[col].keys()):
-                            self._decrease(na, col, count)
-
+            if count is None:
+                self.stuff = Components()
+                self.logger.debug('Removed all stuff')
             else:
+                for stuff in list(self.stuff.keys()):
+                    self._decrease(stuff, count)
 
-                if count is None:
-                    for col in col_keys:
-                        self._remove_by_name(name, col)
-                else:
-                    for col in col_keys:
-                        if self.rollers[col].get(name):
-                            self._decrease(name, col, count)
-
-        elif color not in col_keys:
-
-            raise StuffDefineError(
-                message=f"{color=} not exist in shaker.",
-                logger=self.logger
-                )
+        elif self.stuff.get(name):
+            if count is None:
+                del self.stuff[name]
+                self.logger.debug(
+                    f'Removed all stuff with {name=}.'
+                    )
+            else:
+                self._decrease(name, count)
 
         else:
+            raise StuffDefineError(
+                message=f"Stuff with {name=} not exist in shaker.",
+                logger=self.logger
+                )
 
-            if name is None:
-
-                if count is None:
-                    del self.rollers[color]
-                else:
-                    for na in list(self.rollers[color].keys()):
-                        self._decrease(na, color, count)
-
-            elif name in self.rollers[color].keys():
-
-                if count is None:
-                    self._remove_by_name(name, color)
-                else:
-                    self._decrease(name, color, count)
-
-        self._remove_empry_color()
-
-    def roll(self) -> shaker_result_type:
-        """Roll all rollers with shaker and return results
+    def roll(self) -> Dict[str, Tuple[int]]:
+        """Roll all stuff with shaker and return results
 
         Return:
-            Dict[str, Dict[str, Tuple[int]]]: result of roll
+            Dict[str, Tuple[int]]: result of roll
 
         .. code-block::
             :caption: Example:
 
-                {"white": {"six_dice": (5, 3, 2, 5)}}
+                {
+                    "six_dice": (5, 3, 2, 5),
+                    "twenty_dice": {2, 12, 4},
+                }
         """
         roll = {}
-        for color, rollers in self.rollers.items():
-            roll[color] = {}
-            for name, count in rollers.items():
-                roll[color][name] = tuple(
-                    self._game_rollers[name].roll() for _ in range(count)
-                    )
-        if roll:
-            self.last = roll
-            self.logger.debug(f'Rolled: {roll}')
-            return self.last
-        else:
-            self.logger.debug(f'No one roller rolled.')
-            return {}
+
+        for name, roller in self.stuff.items():
+            roll[name] = roller.roll()
+
+        self.last = roll
+        self.logger.debug(f'Result of roll: {roll}')
+
+        return self.last
 
 
 @dataclass
 class Deck(BaseTool):
     """Create deck for cards
     """
+    _game: BaseGame = field(
+        metadata=config(exclude=lambda x: True),
+        repr=False
+        )
     _game_cards: Components = field(
         default_factory=Components,
         repr=False
@@ -280,7 +222,7 @@ class Deck(BaseTool):
         # TODO: test me
 
         Args:
-            name (str): name of rollers
+            name (str): name of stuff
             count (int): count
         """
         self.deck_cards[name] -= count
@@ -317,7 +259,7 @@ class Deck(BaseTool):
 
             if count is None:
                 self.deck_cards = {}
-                self.logger.debug('Removed all rollers from shaker')
+                self.logger.debug('Removed all stuff from shaker')
                 return
             else:
                 for na in keys:

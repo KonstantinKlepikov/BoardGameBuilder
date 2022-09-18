@@ -2,8 +2,8 @@ import json, pytest
 from typing import Tuple, List
 from bgameb.game import Game
 from bgameb.tools import Shaker, Deck
-from bgameb.stuff import Dice, Coin, Card
-from bgameb.constructs import Components
+from bgameb.stuff import Card
+from bgameb.constructs import Components, BaseGame
 from bgameb.errors import StuffDefineError
 
 
@@ -11,160 +11,140 @@ class TestShaker:
     """Test Shaker class
     """
 
-    @pytest.fixture(params=[
-        (Dice, 'dice'),
-        (Coin, 'coin'),
-        ])
-    def rollers(self, request) -> Tuple[Components, str]:
+    @pytest.fixture
+    def game_inst(self) -> BaseGame:
         game = Game(name='game')
-        game.add_stuff(request.param[0], name=request.param[1])
-        return game.game_rollers, request.param[1]
+        game.add('roller', name='dice')
+        game.add('roller', name='dice_nice')
+        return game
 
-    def test_shaker_instanciation(self, rollers: Tuple[Components, str]) -> None:
+    def test_shaker_instanciation(self, game_inst: BaseGame) -> None:
         """Test shaker correct created
         """
         assert not Shaker.name, 'Shaker class has name'
-        shaker = Shaker(rollers[0])
-        assert isinstance(shaker.name, str), 'wrong name'
+        shaker = Shaker(name='shaker', _game=game_inst)
+        assert shaker.name == 'shaker', 'wrong name'
         assert isinstance(shaker.last, dict), 'nondict last'
-        assert isinstance(shaker.rollers, dict), 'nondict rollers'
-        assert len(shaker.rollers) == 0, 'nonempty rollers'
+        assert isinstance(shaker.stuff, Components), 'wrong type of stuff'
+        assert len(shaker.stuff) == 0, 'nonempty stuff'
 
-    def test_add_rollers_to_shaker_raise_errors_if_wrong_count(
-        self, rollers: Tuple[Components, str]
+    def test_add_stuff_to_shaker_raise_errors_if_wrong_count(
+        self, game_inst: BaseGame
             ) -> None:
-        """Test need count of rollers no less than 1
+        """Test need count of stuff no less than 1
         """
-        shaker = Shaker(rollers[0], name='shaker')
+        shaker = Shaker(name='shaker', _game=game_inst)
         with pytest.raises(
             StuffDefineError, match="Can't add"
             ):
-            shaker.add(rollers[1], count=0)
+            shaker.add('dice', count=0)
 
-    def test_add_rollers_to_shaker_raise_errors_if_wrong_name(
-        self, rollers: Tuple[Components, str]
+    def test_add_stuff_to_shaker_raise_errors_if_wrong_name(
+        self, game_inst: BaseGame
             ) -> None:
         """Test need exist roller
         """
-        shaker = Shaker(rollers[0], name='shaker')
+        shaker = Shaker(name='shaker', _game=game_inst)
         with pytest.raises(
             StuffDefineError, match="'somestuff' not exist in a game"
             ):
             shaker.add('somestuff')
 
-    def test_add_rollers_to_shaker(self, rollers: Tuple[Components, str]) -> None:
+    def test_double_add_stuff_to_shaker_encrease_count(
+        self, game_inst: BaseGame
+            ) -> None:
+        """Test double add roller with same name increase count,
+        not raises error
+        """
+        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker.add('dice')
+        shaker.add('dice')
+        assert shaker.stuff.dice.count == 2, 'not increased'
+
+    def test_add_stuff_to_shaker(self, game_inst: BaseGame) -> None:
         """Test shaker add()
         """
-        shaker = Shaker(rollers[0], name='shaker')
-        shaker.add(rollers[1])
-        assert shaker.rollers == {'colorless': {rollers[1]: 1}}, 'wrong roller added'
-        shaker.add(rollers[1], color="white")
-        assert shaker.rollers == {
-            'colorless': {rollers[1]: 1},
-            'white': {rollers[1]: 1},
-            }, 'wrong roller added'
-        shaker.add(rollers[1], count=50)
-        assert shaker.rollers == {
-            'colorless': {rollers[1]: 51},
-            'white': {rollers[1]: 1},
-            }, 'wrong roller added'
-        shaker.add(rollers[1], color='red', count=50)
-        assert shaker.rollers == {
-            'colorless': {rollers[1]: 51},
-            'white': {rollers[1]: 1},
-            'red': {rollers[1]: 50},
-            }, 'wrong roller added'
+        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker.add('dice')
+        assert shaker.stuff.dice.count == 1, 'wrong count added'
+        shaker.add('dice', count=10)
+        assert shaker.stuff.dice.count == 11, 'wrong count added'
+        shaker.add('dice_nice')
+        assert len(shaker.stuff) == 2, 'wrong count of stuff'
 
-    def test_shaker_are_converted_to_json(self, rollers: Tuple[Components, str]) -> None:
+    def test_shaker_are_converted_to_json(self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
         """
-        shaker = Shaker(rollers[0], name='shaker')
-        shaker.add(rollers[1])
+        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker.add('dice')
         j = json.loads(shaker.to_json())
         assert j['name'] == 'shaker', 'wrong name'
         assert j['last'] == {}, 'wrong last result'
-        assert len(j['rollers']['colorless']) == 1, 'wrong num of rollers'
+        assert len(j['stuff']) == 1, 'wrong num of stuff'
 
-    def test_remove_all(self, rollers: Tuple[Components, str]) -> None:
-        """Test remove all rollers from shaker
+    def test_remove_all(self, game_inst: BaseGame) -> None:
+        """Test remove all stuff from shaker
         """
-        shaker = Shaker(rollers[0], name='shaker')
-        for i in ['white', 'red', 'green']:
-            shaker.add(rollers[1], color=i)
-        assert len(shaker.rollers) == 3, 'wrong number of rollers'
+        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker.add('dice')
+        shaker.add('dice_nice')
+        assert len(shaker.stuff) == 2, 'wrong number of stuff'
         shaker.remove()
-        assert len(shaker.rollers) == 0, 'wrong number of rollers'
-        assert isinstance(shaker.rollers, dict), 'wrong type os rollers attr'
+        assert len(shaker.stuff) == 0, 'wrong number of stuff'
+        assert isinstance(shaker.stuff, Components), 'wrong type os stuff attr'
 
-    def test_remove_by_colors(self, rollers: Tuple[Components, str]) -> None:
-        """Test remove rollers by color from shaker
+    def test_remove_by_name(self, game_inst: BaseGame) -> None:
+        """Test remove stuff by name from shaker
         """
-        shaker = Shaker(rollers[0], name='shaker')
-        for i in ['white', 'red', 'green']:
-            shaker.add(rollers[1], color=i)
-        assert len(shaker.rollers) == 3, 'wrong number of rollers'
-        shaker.remove(color='white')
-        assert len(shaker.rollers) == 2, 'wrong number of rollers'
+        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker.add('dice')
+        shaker.add('dice_nice')
+        assert len(shaker.stuff) == 2, 'wrong number of stuff'
+        shaker.remove(name='dice')
+        assert len(shaker.stuff) == 1, 'wrong number of stuff'
+        shaker.remove(name='dice_nice')
+        assert len(shaker.stuff) == 0, 'wrong number of stuff'
 
-    def test_remove_by_name(self, rollers: Tuple[Components, str]) -> None:
-        """Test remove rollers by name from shaker
+    def test_remove_stuff(self, game_inst: BaseGame) -> None:
+        """Test remove stuff
         """
-        shaker = Shaker(rollers[0], name='shaker')
-        rollers[0].__dict__.update({'this': Dice(name='this')})
-        shaker.add('this', color='white')
-        for i in ['white', 'red', 'green']:
-            shaker.add(rollers[1], color=i)
-        assert len(shaker.rollers) == 3, 'wrong number of rollers'
-        assert len(shaker.rollers['white']) == 2, 'wrong number of rollers'
-        shaker.remove(name='this')
-        assert len(shaker.rollers) == 3, 'wrong number of rollers'
-        assert len(shaker.rollers['white']) == 1, 'wrong number of rollers'
-        shaker.remove(name=rollers[1])
-        assert len(shaker.rollers) == 0, 'wrong number of rollers'
+        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker.add('dice', count=5)
+        shaker.add('dice_nice', count=5)
 
-    def test_remove_rollers(self, rollers: Tuple[Components, str]) -> None:
-        """Test remove rollers
-        """
-        shaker = Shaker(rollers[0], name='shaker')
-        rollers[0].__dict__.update({'this': Dice(name='this')})
-        shaker.add('this', color='white')
-        for i in ['white', 'red', 'green']:
-            shaker.add(rollers[1], color=i, count=5)
-
-        assert len(shaker.rollers) == 3, 'wrong number of rollers'
-        shaker.remove(rollers[1], color="red", count=3)
-        assert len(shaker.rollers) == 3, 'wrong number of rollers'
-        assert shaker.rollers['red'][rollers[1]] == 2, \
-            'wrong count of rollers'
-        shaker.remove(rollers[1], color="red", count=50)
-        assert len(shaker.rollers) == 2, 'wrong number of rollers'
+        assert len(shaker.stuff) == 2, 'wrong number of stuff'
+        shaker.remove('dice', count=3)
+        assert len(shaker.stuff) == 2, 'wrong number of stuff'
+        assert shaker.stuff['dice'].count == 2, 'wrong count of stuff'
+        shaker.remove('dice', count=50)
+        assert len(shaker.stuff) == 1, 'wrong number of stuff'
         with pytest.raises(
             StuffDefineError, match="Count must be a positive"
         ):
-            shaker.remove(rollers[1], color="white", count=0)
+            shaker.remove('dice_nice', count=0)
+        print(shaker.stuff)
         with pytest.raises(
             StuffDefineError, match="not exist in shaker"
         ):
-            shaker.remove(rollers[1], color="black", count=1)
+            shaker.remove('dice', count=1)
         shaker.remove(count=50)
-        assert shaker.rollers == {}, 'rollers not removed'
+        assert len(shaker.stuff) == 0, 'stuff not removed'
 
-    def test_roll_shaker(self, rollers: Tuple[Components, str]) -> None:
+    def test_roll_shaker(self, game_inst: BaseGame) -> None:
         """Test roll shaker
         """
-        shaker = Shaker(rollers[0], name='shaker')
-        for i in ['white', 'red', 'white']:
-            shaker.add(rollers[1], color=i)
+        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker.add('dice', count=5)
+        shaker.add('dice_nice', count=5)
         roll = shaker.roll()
-        assert len(roll['red'][rollers[1]]) == 1, 'wrong roll result'
-        assert len(roll['white'][rollers[1]]) == 2, 'wrong roll result'
-        assert isinstance(roll['white'][rollers[1]][0], int), 'wrong roll result'
+        assert len(roll) == 2, 'wrong roll result'
+        assert len(roll['dice']) == 5, 'wrong roll result'
         assert len(shaker.last) == 2, 'wrong last'
 
-    def test_roll_empty_shaker(self, rollers: Tuple[Components, str]) -> None:
+    def test_roll_empty_shaker(self, game_inst: BaseGame) -> None:
         """Test roll empty shaker
         """
-        shaker = Shaker(rollers[0], name='shaker')
+        shaker = Shaker(name='shaker', _game=game_inst)
         roll = shaker.roll()
         assert roll == {}, 'wrong roll result'
         assert shaker.last == {}, 'wrong last'

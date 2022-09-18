@@ -13,31 +13,46 @@ game = Game('one_board_game')
 # add dices types to game
 game.add('dice', name='six_dice')
 game.add('dice', name='twenty_dice')
+game.add('dice', name='hundred_dice')
 
 # define dices types sides
 game.stuff.six_dice.sides = 6
 game.stuff.six_dice.twenty_dice = 20
+game.stuff.six_dice.hundred_dice = 100
 
-# add shakers for roll daces and add count of dices to shaker
-game.add('shaker', name='dicer')
-game.tools.dicer.add('six_dice', count=50, color='white')
-game.tools.dicer.add('six_dice', count=30, color='red')
-game.tools.dicer.add('twenty_dice', count=10, color='red')
+# add shakers for roll dices and add count of dices to shaker
+game.add('shaker', name='red_dicer')
+game.tools.red_dicer.add('six_dice', count=50)
+game.tools.red_dicer.add('twenty_dice', count=10)
+game.tools.red_dicer.add('hundred_dice', count=42)
 
-# rol dices and get result
-result = game.tools.dicer.roll()
+# roll all dices and get result
+result = game.tools.red_dicer.roll()
 
-# get full public json data of any object, for examle of Game
+# or define new shaker with default count and roll each dice separatly
+game.add('shaker', name='blue_dicer')
+game.tools.blue_dicer.add('six_dice')
+game.tools.blue_dicer.add('twenty_dice')
+game.tools.blue_dicer.add('hundred_dice')
+
+result = game.tools.blue_dicer.six_dice.roll()
+result = game.tools.blue_dicer.hundred_dice.roll()
+
+# you can use dict notation offcourse
+result = game['tools']['blue_dicer']['hundred_dice'].roll()
+
+# get full public json data of any object, for examle of game object
 schema = game.to_json()
 ```
 
 ## Documentation
 
-[docs](https://konstantinklepikov.github.io/BoardGameBuilder/)
+- [docs](https://konstantinklepikov.github.io/BoardGameBuilder/)
+- [pypi](https://pypi.org/project/bgameb/)
 
 ## Development
 
-[dev install](https://konstantinklepikov.github.io/BoardGameBuilder/usage.html)
+[how install project for development](https://konstantinklepikov.github.io/BoardGameBuilder/usage.html)
 
 ### Available cli
 
@@ -60,4 +75,4 @@ Available fragmet naming:
 
 `make release` - to bump version and build changelog. You can use `towncrier build --draft` to check changelog output
 
-\* for version are used [incremental](https://github.com/twisted/incremental) and [towncrier](https://pypi.org/project/towncrier/) for changelog
+\* for version management are used [incremental](https://github.com/twisted/incremental) and [towncrier](https://pypi.org/project/towncrier/) for changelog

@@ -8,7 +8,7 @@ class ComponentNameError(CustomRuntimeError):
     class instance.
     """
     def __init__(self, name) -> None:
-        self.message = f'Component with {name=} is in ' + \
+        self.message = f'Component with {name=} is exist in ' + \
                         'Components class instance'
         super().__init__(self.message)
 
