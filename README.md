@@ -40,9 +40,6 @@ result = game.tools.blue_dicer.hundred_dice.roll()
 
 # you can use dict notation offcourse
 result = game['tools']['blue_dicer']['hundred_dice'].roll()
-
-# get full public json data of any object, for examle of game object
-schema = game.to_json()
 ```
 
 ## Documentation

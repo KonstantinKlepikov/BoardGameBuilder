@@ -5,9 +5,9 @@ from typing import (
     )
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from dataclasses import dataclass
-from dataclasses_json import DataClassJsonMixin
-from bgameb.errors import ComponentNameError
+from dataclasses import dataclass, field
+from dataclasses_json import DataClassJsonMixin, config
+from bgameb.errors import ComponentNameError, StuffDefineError
 from bgameb.utils import log_me, get_random_name
 
 
@@ -222,7 +222,7 @@ class BaseGame(Base, ABC):
 
 @dataclass
 class BaseStuff(Base, ABC):
-    """Base class for game stuff (like dices and cards)
+    """Base class for game stuff (like dices or cards)
 
     Inherited classes needs attr name implementation
     """
@@ -230,35 +230,131 @@ class BaseStuff(Base, ABC):
 
 @dataclass
 class BaseTool(Base, ABC):
-    """Base class for game tools (like decs and shakers)
+    """Base class for game tools (like decks or shakers)
+    # TODO: test me
 
     Inherited classes needs attr name implementation
     """
+    _game: BaseGame = field(
+        metadata=config(exclude=lambda x: True),
+        repr=False
+        )
+    _stuff_to_add: BaseStuff = field(
+        metadata=config(exclude=lambda x: True),
+        repr=False,
+        init=False
+        )
+    stuff: Components = field(default_factory=Components, init=False)
 
-    @abstractmethod
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self.stuff = Components()
+
     def add(self, name: str, count: int = 1) -> None:
-        """Add stuff to tool
-        Args:
-            name (str): name of added stuff
-            count (int, optional): count added stuf. Defaults to 1.
-        """
+        """Add stuff to the tool stuff collection
 
-    @abstractmethod
+        Args:
+            name (str): name of stuff
+            count (int, optional): count of stuff copy Defaults to 1.
+
+        Raises:
+            StuffDefineError: count of stuff nonpositive
+                              or stuff not exist
+        """
+        if not self._chek_name(name, self._game.stuff.keys()):
+            raise StuffDefineError(
+                message=f"Stuff with {name=} not exist in a game.",
+                logger=self.logger
+                )
+
+        if count < 1:
+            raise StuffDefineError(
+                message=f"Can't add {count} stuff.",
+                logger=self.logger
+                )
+
+        # add roller and set a count
+        if name not in self.stuff.get_names():
+            self.stuff.add(self._stuff_to_add, **self._game.stuff[name].to_dict())
+            self.stuff[name].count = count
+            self.logger.debug(
+                f'Added stuff with "{name=}" and {count=}.'
+                )
+
+        # if exist increase a count
+        else:
+            self.stuff[name].count += count
+            self.logger.debug(
+                f'Number of stuff with "{name=}" increased by {count}. ' +
+                f'Result count is {self.stuff[name].count}'
+                )
+
+    def _decrease(self, name: str, count: int) -> None:
+        """Decrease number of stuff by count
+
+        Args:
+            name (str): name of stuff
+            count (int): count
+        """
+        self.stuff[name].count -= count
+        self.logger.debug(
+            f'Removed {count} stuff with {name=}. ' +
+            f'Result count is {self.stuff.get(name, 0)}'
+            )
+        if self.stuff[name].count <= 0:
+            del self.stuff[name]
+
     def remove(
         self,
         name: Optional[str] = None,
         count: Optional[int] = None
             ) -> None:
-        """Remove stuff from tool
+        """Remove any kind of stuff copy from tool by its name and count
 
         Args:
-            name (str, optional): name of removed stuff. Defaults to None.
-            count (int, optional): count removed stuf. Defaults to None.
+            name (str, optional): name of stuff. Defaults to None.
+            count (int, optional): count of stuff. Defaults to None.
+
+        You can use any combination for names and counts to remove all
+        stuff, all or any by name or by count.
+
+
+        Raises:
+            StuffDefineError: nonpositive integer for count
         """
+        if count is not None and count <= 0:
+            raise StuffDefineError(
+                f"Count must be a integer greater than 0.",
+                logger=self.logger
+                )
+
+        if name is None:
+
+            if count is None:
+                self.stuff = Components()
+                self.logger.debug('Removed all stuff')
+            else:
+                for stuff in list(self.stuff.keys()):
+                    self._decrease(stuff, count)
+
+        elif self.stuff.get(name):
+            if count is None:
+                del self.stuff[name]
+                self.logger.debug(
+                    f'Removed all stuff with {name=}.'
+                    )
+            else:
+                self._decrease(name, count)
+
+        else:
+            raise StuffDefineError(
+                message=f"Stuff with {name=} not exist in tool.",
+                logger=self.logger
+                )
 
 
 @dataclass
-class BasePlayer(Base, ABC):
+class BasePlayer(Base):
     """Base class for game players and bots
 
     Inherited classes needs attr name implementation

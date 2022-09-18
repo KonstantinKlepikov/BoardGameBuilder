@@ -119,12 +119,12 @@ class TestShaker:
         shaker.remove('dice', count=50)
         assert len(shaker.stuff) == 1, 'wrong number of stuff'
         with pytest.raises(
-            StuffDefineError, match="Count must be a positive"
+            StuffDefineError, match="Count must be a integer"
         ):
             shaker.remove('dice_nice', count=0)
         print(shaker.stuff)
         with pytest.raises(
-            StuffDefineError, match="not exist in shaker"
+            StuffDefineError, match="not exist in tool"
         ):
             shaker.remove('dice', count=1)
         shaker.remove(count=50)

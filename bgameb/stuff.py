@@ -1,91 +1,11 @@
 """Game dices, coins, cards and other stuffs
 """
 import random
-from abc import ABC
 from typing import List, Optional, Literal
 from dataclasses import dataclass, field
 from dataclasses_json import config
-from bgameb.constructs import BaseStuff, CardTexts
+from bgameb.constructs import BaseStuff
 from bgameb.errors import StuffDefineError
-
-
-@dataclass
-class BaseCard(BaseStuff, ABC):
-    """Base class for cards
-    """
-
-
-@dataclass
-class Card(BaseCard):
-    """Create the card
-    """
-    name: Optional[str] = None
-    open: bool = False
-    tapped: bool = False
-    side: Optional[str] = None
-    text: CardTexts = field(default_factory=CardTexts, init=False)
-
-    def __post_init__(self) -> None:
-        self.text = CardTexts()
-        super().__post_init__()
-
-    def flip(self) -> None:
-        """Face up or face down the card regardles of it condition
-        """
-        if self.open:
-            self.open = False
-            self.logger.debug(f'Card face down.')
-        else:
-            self.open = True
-            self.logger.debug(f'Card face up.')
-
-    def face_up(self) -> CardTexts:
-        """Face up the card and return text
-        """
-        self.open = True
-        self.logger.debug(f'Card face up.')
-        return self.text
-
-    def face_down(self) -> None:
-        """Face down the card
-        """
-        self.open = False
-        self.logger.debug(f'Card face down.')
-
-    def tap(self, side='right') -> None:
-        """Tap the card to the given side
-        """
-        self.tapped = True
-        self.side = side
-        self.logger.debug(f'Card taped to side {side}.')
-
-    def untap(self) -> None:
-        """Untap the card
-        """
-        self.tapped = False
-        self.logger.debug(f'Card untaped.')
-
-    def alter(self) -> None:
-        """Many cards have alter views. For example
-        card can have main view, that apply most time of the game
-        and second view, that apply only if card played as
-        that alternative. For ease of understanding, consider that
-        different views of the same card are not related directly
-        to each other.
-        """
-        raise NotImplementedError
-
-    def attach(self) -> None:
-        """Some rules can attach any stuff to card
-        """
-        raise NotImplementedError
-
-
-
-
-
-
-
 
 
 @dataclass
@@ -172,7 +92,7 @@ class CardType(BaseStuff):
 
 
 @dataclass
-class _Card(CardType):
+class Card(CardType):
     """Create the card
     """
 

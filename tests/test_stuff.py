@@ -1,5 +1,5 @@
 import json, pytest
-from bgameb.stuff import RollerType, Roller, CardType, _Card
+from bgameb.stuff import RollerType, Roller, CardType, Card
 from bgameb.errors import StuffDefineError
 
 
@@ -8,7 +8,7 @@ class TestNameAndJson:
     """
     params = [
         (Roller, 'roller'),
-        (_Card, 'card'),
+        (Card, 'card'),
         (RollerType, 'roller_type'),
         (CardType, 'card_type'),
     ]
@@ -164,7 +164,7 @@ class TestCard:
     def test_flip(self) -> None:
         """Test flip card
         """
-        card = _Card(name='card')
+        card = Card(name='card')
         card.flip()
         assert card.open, 'card not oppened'
         card.flip()
@@ -173,14 +173,14 @@ class TestCard:
     def test_fase_up(self) -> None:
         """Test face up open card
         """
-        card = _Card(name='card')
+        card = Card(name='card')
         card.face_up()
         assert card.open, 'card not open'
 
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
-        card = _Card(name='card')
+        card = Card(name='card')
         card.open = True
         card.face_down()
         assert not card.open, 'card not open'
@@ -188,7 +188,7 @@ class TestCard:
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
         """
-        card = _Card(name='card')
+        card = Card(name='card')
         card.tap(side='left')
         assert card.tapped, 'card not tapped'
         assert card.side == 'left', 'wrong side'
@@ -196,7 +196,7 @@ class TestCard:
     def test_untap_card(self) -> None:
         """Test tap card tap and set side
         """
-        card = _Card(name='card')
+        card = Card(name='card')
         card.tapped = True
         assert card.tapped, 'card not tapped'
         card.untap()
