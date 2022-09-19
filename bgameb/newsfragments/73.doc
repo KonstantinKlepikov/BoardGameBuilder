@@ -1,5 +1,0 @@
-#73:
-    * Add mystparser for .md parsing and include dependencies to sphynx
-    * README changes
-    * Add setuptools support
-    * Add example to readme
