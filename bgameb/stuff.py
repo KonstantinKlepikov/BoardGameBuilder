@@ -44,7 +44,8 @@ class RollerType(BaseStuff):
 
 @dataclass
 class Roller(RollerType):
-
+    """Creare the roller (like dice or coin)
+    """
     _range: List[int] = field(
         default_factory=list,
         init=False,

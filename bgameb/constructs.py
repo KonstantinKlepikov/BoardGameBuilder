@@ -231,7 +231,6 @@ class BaseStuff(Base, ABC):
 @dataclass
 class BaseTool(Base, ABC):
     """Base class for game tools (like decks or shakers)
-    # TODO: test me
 
     Inherited classes needs attr name implementation
     """

@@ -10,4 +10,5 @@
     * result of roll() for Roller now is a list of roll, defined by count attr
     * stuff classes get game() object to operate by game components types
     * remove old stuff classes - Card, Dice, Coin. Remove stuff and tools classes from __init__
+    * move all similar methods of tools to BaseTool
     * test all

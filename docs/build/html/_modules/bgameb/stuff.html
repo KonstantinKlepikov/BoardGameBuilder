@@ -72,164 +72,103 @@
 <span></span><span class="sd">&quot;&quot;&quot;Game dices, coins, cards and other stuffs</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span><span class="p">,</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">BaseStuff</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">StuffDefineError</span>
-<span class="kn">from</span> <span class="nn">bgameb.utils</span> <span class="kn">import</span> <span class="n">log_me</span><span class="p">,</span> <span class="n">get_random_name</span>
 
 
-<div class="viewcode-block" id="BaseStuff"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.BaseStuff">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseStuff</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for stuff</span>
+<div class="viewcode-block" id="RollerType"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.RollerType">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RollerType</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for define types of rollers or fliped objects</span>
 
-<span class="sd">    Inherited classes needs attr name implementation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    If name isn&#39;t given - it is randomly generated.</span>
 
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># set random name</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">get_random_name</span><span class="p">()</span>
-
-        <span class="c1"># set logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">log_me</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-            <span class="n">classname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> created with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">=}</span><span class="s1">.&#39;</span>
-            <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="BaseRoller"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.BaseRoller">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseRoller</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for rollers or fliped objects</span>
-
-<span class="sd">    Inherited classes needs attr name implementation</span>
-
-<span class="sd">    Define name to identify later BaseRoller object by unique name.</span>
+<span class="sd">    Define name to identify later this object by unique name.</span>
 <span class="sd">    For example: &#39;six_side_dice&#39;</span>
+
+<span class="sd">    Sides attr define number of sides of roller. Default to 2.</span>
+<span class="sd">    Sides can&#39;t be less than 2, because one-sided roller is</span>
+<span class="sd">    strongly determined and 0zero-sided is imposible.</span>
 
 <span class="sd">    .. code-block::</span>
 <span class="sd">        :caption: Example:</span>
 
-<span class="sd">            dice = Dice(name=&#39;six_side_dice&#39;, sides=12)</span>
+<span class="sd">            dice = RollerType(name=&#39;coin&#39;, sides=2)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        StuffDefineError: number of sides less than 2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Number of sides=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="si">}</span><span class="s1"> &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">. Needed &gt;= 2.&#39;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Roller"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Roller">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Roller</span><span class="p">(</span><span class="n">RollerType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creare the roller (like dice or coin)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_range</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
         <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Number </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="si">=}</span><span class="s1"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">. Needed &gt; 0.&#39;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
-<div class="viewcode-block" id="BaseRoller.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.BaseRoller.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Roll or flip and return result</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            StuffDefineError: is not defined number of sides</span>
+<div class="viewcode-block" id="Roller.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Roller.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Roll and return result</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            int: result of roll</span>
+<span class="sd">            List[int]: result of roll</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="p">:</span>
-            <span class="n">choice</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is rolled </span><span class="si">{</span><span class="n">choice</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">choice</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Number </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="si">=}</span><span class="s1"> for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">. Needed &gt; 0.&#39;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span></div></div>
+        <span class="n">roll</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is rolled </span><span class="si">{</span><span class="n">roll</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">roll</span></div></div>
 
 
-<div class="viewcode-block" id="Dice"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Dice">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Dice</span><span class="p">(</span><span class="n">BaseRoller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create dice</span>
-
-<span class="sd">    You can define number of sides for dice.</span>
-<span class="sd">    Default 6</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Dice </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="si">=}</span><span class="s1">.&#39;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Coin"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Coin">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Coin</span><span class="p">(</span><span class="n">BaseRoller</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create coin like a dice with two sides</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Coin </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="si">=}</span><span class="s1">.&#39;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="CardTexts"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.CardTexts">[docs]</a><span class="k">class</span> <span class="nc">CardTexts</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Cards texts collection</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="vm">__dict__</span>
-        <span class="k">return</span> <span class="bp">NotImplemented</span></div>
-
-
-<div class="viewcode-block" id="BaseCard"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.BaseCard">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseCard</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for cards</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
-
-
-<div class="viewcode-block" id="Card"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">BaseCard</span><span class="p">):</span>
+<div class="viewcode-block" id="CardType"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.CardType">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CardType</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the card</span>
+
+<span class="sd">    If name isn&#39;t given - it is randomly generated.</span>
+
+<span class="sd">    Define name to identify later this object by unique name.</span>
+<span class="sd">    For example: &#39;unique_card&#39;</span>
+
+<span class="sd">    .. code-block::</span>
+<span class="sd">        :caption: Example:</span>
+
+<span class="sd">            card = CardType(name=&#39;unique_card&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="nb">open</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">tapped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">side</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">text</span><span class="p">:</span> <span class="n">CardTexts</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">CardTexts</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">CardTexts</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Card"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">CardType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create the card</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Card.flip"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card.flip">[docs]</a>    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -242,12 +181,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">open</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Card face up.&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Card.face_up"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card.face_up">[docs]</a>    <span class="k">def</span> <span class="nf">face_up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CardTexts</span><span class="p">:</span>
+<div class="viewcode-block" id="Card.face_up"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card.face_up">[docs]</a>    <span class="k">def</span> <span class="nf">face_up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Face up the card and return text</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Card face up.&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Card face up.&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Card.face_down"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card.face_down">[docs]</a>    <span class="k">def</span> <span class="nf">face_down</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Face down the card</span>
@@ -282,6 +220,13 @@
         <span class="sd">&quot;&quot;&quot;Some rules can attach any stuff to card</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<span class="n">STUFF</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;roller&#39;</span><span class="p">:</span> <span class="n">RollerType</span><span class="p">,</span>
+    <span class="s1">&#39;card&#39;</span><span class="p">:</span> <span class="n">CardType</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">STUFF_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;roller&#39;</span><span class="p">,</span> <span class="s1">&#39;card&#39;</span><span class="p">]</span>
 </pre></div>
 
            </div>

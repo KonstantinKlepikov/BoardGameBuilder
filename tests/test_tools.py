@@ -1,76 +1,150 @@
 import json, pytest
-from typing import Tuple, List
+from typing import Tuple
 from bgameb.game import Game
-from bgameb.tools import Shaker, Deck
-from bgameb.stuff import Card
+from bgameb.tools import Shaker, Deck, BaseTool
+from bgameb.stuff import BaseStuff
 from bgameb.constructs import Components, BaseGame
 from bgameb.errors import StuffDefineError
+
+
+@pytest.fixture
+def game_inst() -> BaseGame:
+    game = Game(name='game')
+    game.add('roller', name='dice')
+    game.add('roller', name='dice_nice')
+    game.add('card', name='card')
+    game.add('card', name='card_nice')
+    return game
+
+
+class TestTool:
+    """Test tools classes
+    """
+    params = [
+        (Deck, 'deck', ('card', 'card_nice')),
+        (Shaker, 'shaker', ('dice', 'dice_nice')),
+    ]
+
+    @pytest.mark.parametrize("_class, name, stuff", params)
+    def test_add_stuff_to_tool_raise_errors_if_wrong_count(
+        self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
+            ) -> None:
+        """Test need count of stuff no less than 1
+        """
+        tool = _class(name=name, _game=game_inst)
+        with pytest.raises(
+            StuffDefineError, match="Can't add"
+            ):
+            tool.add(stuff[0], count=0)
+
+    @pytest.mark.parametrize("_class, name, stuff", params)
+    def test_add_stuff_to_tool_raise_errors_if_wrong_name(
+        self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
+            ) -> None:
+        """Test need exist stuff
+        """
+        tool = _class(name=name, _game=game_inst)
+        with pytest.raises(
+            StuffDefineError, match="'somestuff' not exist in a game"
+            ):
+            tool.add('somestuff')
+
+    @pytest.mark.parametrize("_class, name, stuff", params)
+    def test_double_add_stuff_to_tool_encrease_count(
+        self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
+            ) -> None:
+        """Test double add roller with same name increase count,
+        not raises error
+        """
+        tool = _class(name=name, _game=game_inst)
+        tool.add(stuff[0])
+        tool.add(stuff[0])
+        assert tool.stuff[stuff[0]].count == 2, 'not increased'
+
+    @pytest.mark.parametrize("_class, name, stuff", params)
+    def test_add_stuff_to_shaker(
+        self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
+            ) -> None:
+        """Test shaker add()
+        """
+        tool = _class(name=name, _game=game_inst)
+        tool.add(stuff[0])
+        assert tool.stuff[stuff[0]].count == 1, 'wrong count added'
+        tool.add(stuff[0], count=10)
+        assert tool.stuff[stuff[0]].count == 11, 'wrong count added'
+        tool.add(stuff[1])
+        assert len(tool.stuff) == 2, 'wrong count of stuff'
+
+    @pytest.mark.parametrize("_class, name, stuff", params)
+    def test_remove_all(
+        self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
+            ) -> None:
+        """Test remove all stuff from shaker
+        """
+        tool = _class(name=name, _game=game_inst)
+        tool.add(stuff[0])
+        tool.add(stuff[1])
+        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        tool.remove()
+        assert len(tool.stuff) == 0, 'wrong number of stuff'
+        assert isinstance(tool.stuff, Components), 'wrong type os stuff attr'
+
+    @pytest.mark.parametrize("_class, name, stuff", params)
+    def test_remove_by_name(
+        self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
+            ) -> None:
+        """Test remove stuff by name from shaker
+        """
+        tool = _class(name=name, _game=game_inst)
+        tool.add(stuff[0])
+        tool.add(stuff[1])
+        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        tool.remove(name=stuff[0])
+        assert len(tool.stuff) == 1, 'wrong number of stuff'
+        tool.remove(name=stuff[1])
+        assert len(tool.stuff) == 0, 'wrong number of stuff'
+
+    @pytest.mark.parametrize("_class, name, stuff", params)
+    def test_remove_stuff(
+        self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
+            ) -> None:
+        """Test remove stuff
+        """
+        tool = _class(name=name, _game=game_inst)
+        tool.add(stuff[0], count=5)
+        tool.add(stuff[1], count=5)
+
+        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        tool.remove(stuff[0], count=3)
+        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        assert tool.stuff[stuff[0]].count == 2, 'wrong count of stuff'
+        tool.remove(stuff[0], count=50)
+        assert len(tool.stuff) == 1, 'wrong number of stuff'
+        with pytest.raises(
+            StuffDefineError, match="Count must be a integer"
+        ):
+            tool.remove(stuff[1], count=0)
+        with pytest.raises(
+            StuffDefineError, match="not exist in tool"
+        ):
+            tool.remove(stuff[0], count=1)
+        tool.remove(count=50)
+        assert len(tool.stuff) == 0, 'stuff not removed'
 
 
 class TestShaker:
     """Test Shaker class
     """
 
-    @pytest.fixture
-    def game_inst(self) -> BaseGame:
-        game = Game(name='game')
-        game.add('roller', name='dice')
-        game.add('roller', name='dice_nice')
-        return game
-
     def test_shaker_instanciation(self, game_inst: BaseGame) -> None:
         """Test shaker correct created
         """
-        assert not Shaker.name, 'Shaker class has name'
         shaker = Shaker(name='shaker', _game=game_inst)
         assert shaker.name == 'shaker', 'wrong name'
         assert isinstance(shaker.last, dict), 'nondict last'
         assert isinstance(shaker.stuff, Components), 'wrong type of stuff'
         assert len(shaker.stuff) == 0, 'nonempty stuff'
-
-    def test_add_stuff_to_shaker_raise_errors_if_wrong_count(
-        self, game_inst: BaseGame
-            ) -> None:
-        """Test need count of stuff no less than 1
-        """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        with pytest.raises(
-            StuffDefineError, match="Can't add"
-            ):
-            shaker.add('dice', count=0)
-
-    def test_add_stuff_to_shaker_raise_errors_if_wrong_name(
-        self, game_inst: BaseGame
-            ) -> None:
-        """Test need exist roller
-        """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        with pytest.raises(
-            StuffDefineError, match="'somestuff' not exist in a game"
-            ):
-            shaker.add('somestuff')
-
-    def test_double_add_stuff_to_shaker_encrease_count(
-        self, game_inst: BaseGame
-            ) -> None:
-        """Test double add roller with same name increase count,
-        not raises error
-        """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        shaker.add('dice')
-        shaker.add('dice')
-        assert shaker.stuff.dice.count == 2, 'not increased'
-
-    def test_add_stuff_to_shaker(self, game_inst: BaseGame) -> None:
-        """Test shaker add()
-        """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        shaker.add('dice')
-        assert shaker.stuff.dice.count == 1, 'wrong count added'
-        shaker.add('dice', count=10)
-        assert shaker.stuff.dice.count == 11, 'wrong count added'
-        shaker.add('dice_nice')
-        assert len(shaker.stuff) == 2, 'wrong count of stuff'
+        assert issubclass(shaker._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
 
     def test_shaker_are_converted_to_json(self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
@@ -81,54 +155,6 @@ class TestShaker:
         assert j['name'] == 'shaker', 'wrong name'
         assert j['last'] == {}, 'wrong last result'
         assert len(j['stuff']) == 1, 'wrong num of stuff'
-
-    def test_remove_all(self, game_inst: BaseGame) -> None:
-        """Test remove all stuff from shaker
-        """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        shaker.add('dice')
-        shaker.add('dice_nice')
-        assert len(shaker.stuff) == 2, 'wrong number of stuff'
-        shaker.remove()
-        assert len(shaker.stuff) == 0, 'wrong number of stuff'
-        assert isinstance(shaker.stuff, Components), 'wrong type os stuff attr'
-
-    def test_remove_by_name(self, game_inst: BaseGame) -> None:
-        """Test remove stuff by name from shaker
-        """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        shaker.add('dice')
-        shaker.add('dice_nice')
-        assert len(shaker.stuff) == 2, 'wrong number of stuff'
-        shaker.remove(name='dice')
-        assert len(shaker.stuff) == 1, 'wrong number of stuff'
-        shaker.remove(name='dice_nice')
-        assert len(shaker.stuff) == 0, 'wrong number of stuff'
-
-    def test_remove_stuff(self, game_inst: BaseGame) -> None:
-        """Test remove stuff
-        """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        shaker.add('dice', count=5)
-        shaker.add('dice_nice', count=5)
-
-        assert len(shaker.stuff) == 2, 'wrong number of stuff'
-        shaker.remove('dice', count=3)
-        assert len(shaker.stuff) == 2, 'wrong number of stuff'
-        assert shaker.stuff['dice'].count == 2, 'wrong count of stuff'
-        shaker.remove('dice', count=50)
-        assert len(shaker.stuff) == 1, 'wrong number of stuff'
-        with pytest.raises(
-            StuffDefineError, match="Count must be a integer"
-        ):
-            shaker.remove('dice_nice', count=0)
-        print(shaker.stuff)
-        with pytest.raises(
-            StuffDefineError, match="not exist in tool"
-        ):
-            shaker.remove('dice', count=1)
-        shaker.remove(count=50)
-        assert len(shaker.stuff) == 0, 'stuff not removed'
 
     def test_roll_shaker(self, game_inst: BaseGame) -> None:
         """Test roll shaker
@@ -154,127 +180,21 @@ class TestDeck:
     """Test Deck class
     """
 
-    @pytest.fixture
-    def cards(self) -> Tuple[Components, List[str]]:
-        game = Game(name='game')
-        names = ['this', 'that', 'some']
-        for name in names:
-            game.add_stuff(Card, name=name)
-        return game.game_cards, names
-
-    def test_shaker_instanciation(self, cards: Tuple[Components, List[str]]) -> None:
+    def test_shaker_instanciation(self, game_inst: BaseGame) -> None:
         """Test sdeck correct created
         """
-        assert not Deck.name, 'Deck class has name'
-        deck = Deck(cards[0])
-        assert isinstance(deck.name, str), 'wrong name'
-        assert isinstance(deck.deck_cards, dict), 'nondict cards'
-        assert isinstance(deck.dealt_cards, tuple), 'nondict dealt cards'
-        assert len(deck.deck_cards) == 0, 'nonempty cards'
-
-    def test_add_cards_to_deck_raise_errors_if_wrong_count(
-        self, cards: Tuple[Components, List[str]]
-            ) -> None:
-        """Test need count of cards no less than 1
-        """
-        deck = Deck(cards[0], name='deck')
-        with pytest.raises(
-            StuffDefineError, match="Can't add"
-            ):
-            deck.add('this', count=0)
-
-    def test_add_cards_to_deck_raise_raise_errors_if_wrong_name(
-        self, cards: Tuple[Components, List[str]]
-            ) -> None:
-        """Test need exist card
-        """
-        deck = Deck(cards[0], name='deck')
-        with pytest.raises(
-            StuffDefineError, match="'stuff' not exist in a game"
-            ):
-            deck.add('stuff')
-
-    def test_add_card_to_deck(
-        self, cards: Tuple[Components, List[str]]
-            ) -> None:
-        """Test deck add()
-        """
-        deck = Deck(cards[0], name='deck')
-        names = cards[1]
-        deck.add(names[0])
-        assert deck.deck_cards == {names[0]: 1}, 'wrong card added'
-        deck.add(names[1])
-        assert deck.deck_cards == {names[0]: 1, names[1]: 1}, 'wrong card added'
-        deck.add(names[1], count=50)
-        assert deck.deck_cards == {names[0]: 1, names[1]: 51}, 'wrong card added'
-        deck.add(names[2], count=50)
-        assert deck.deck_cards == {
-            names[0]: 1,
-            names[1]: 51,
-            names[2]: 50,
-            }, 'wrong card added'
+        deck = Deck(name='deck', _game=game_inst)
+        assert deck.name == 'deck', 'wrong name'
+        assert isinstance(deck.stuff, Components), 'wrong type of stuff'
+        assert len(deck.stuff) == 0, 'nonempty stuff'
+        assert issubclass(deck._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
 
     def test_deck_are_converted_to_json(
-        self, cards: Tuple[Components, List[str]]
-        ) -> None:
+        self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
         """
-        deck = Deck(cards[0], name='deck')
-        deck.add(cards[1][0])
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card')
         j = json.loads(deck.to_json())
         assert j['name'] == 'deck', 'wrong name'
-        assert len(j['deck_cards']) == 1, 'wrong num of cards'
-
-    def test_remove_all_cards(self, cards: Tuple[Components, List[str]]) -> None:
-        """Test remove all cards from deck
-        """
-        deck = Deck(cards[0], name='deck')
-        for i in cards[1]:
-            deck.add(i)
-        assert len(deck.deck_cards) == 3, 'wrong number of cards'
-        deck.remove()
-        assert len(deck.deck_cards) == 0, 'wrong number of cards'
-        assert isinstance(deck.deck_cards, dict), 'wrong type os cards attr'
-
-    def test_remove_cards_by_name(self, cards: Tuple[Components, List[str]]) -> None:
-        """Test remove cards by name from shaker
-        """
-        deck = Deck(cards[0], name='deck')
-        deck.add('this')
-        for i in cards[1]:
-            deck.add(i)
-        assert len(deck.deck_cards) == 3, 'wrong number of cards'
-        assert deck.deck_cards['this'] == 2, 'wrong number of cards'
-        deck.remove(name='this')
-        assert len(deck.deck_cards) == 2, 'wrong number of cards'
-        assert 'this' not in deck.deck_cards.keys(), 'cards not removed'
-        deck.remove(name='that')
-        assert len(deck.deck_cards) == 1, 'wrong number of cards'
-
-    def test_remove_cards(self, cards: Tuple[Components, List[str]]) -> None:
-        """Test remove cards
-        """
-        deck = Deck(cards[0], name='deck')
-        for i in cards[1]:
-            deck.add(i, count=5)
-        assert len(deck.deck_cards) == 3, 'wrong number of cards'
-        deck.remove(cards[1][0], count=3)
-        assert len(deck.deck_cards) == 3, 'wrong number of cards'
-        assert deck.deck_cards[cards[1][0]] == 2, \
-            'wrong count of cards'
-        deck.remove(cards[1][0], count=50)
-        assert len(deck.deck_cards) == 2, 'wrong number of cards'
-        with pytest.raises(
-            StuffDefineError, match="Count must be a positive"
-        ):
-            deck.remove(cards[1][0], count=0)
-        with pytest.raises(
-            StuffDefineError, match="not exist in dec"
-        ):
-            deck.remove('hocho', count=1)
-        deck.remove(count=3)
-        assert len(deck.deck_cards) == 2, 'wrong count of cards'
-        assert deck.deck_cards[cards[1][1]] == 2, \
-            'wrong count of cards'
-        deck.remove(count=50)
-        assert deck.deck_cards == {}, 'cards not removed'
+        assert len(j['stuff']) == 1, 'wrong num of cards'

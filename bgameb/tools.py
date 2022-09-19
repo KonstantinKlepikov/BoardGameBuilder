@@ -1,14 +1,9 @@
 """Game tools classes like shakers or decks
 """
-from typing import Optional, Tuple, List, Dict, Literal
+from typing import Optional, Tuple, Dict, Literal
 from dataclasses import dataclass, field
 from bgameb.stuff import Roller, Card
-from bgameb.constructs import BaseTool, BaseStuff
-
-
-deck_cards_type = Dict[str, int]
-deck_result_type = Tuple[Optional[BaseStuff]]
-dealt_cards_type = Tuple[List[str]]
+from bgameb.constructs import BaseTool
 
 
 @dataclass
@@ -72,21 +67,26 @@ class Deck(BaseTool):
         """Arrange in/out deal_cards
         """
 
-    def look(self) -> deck_result_type:
+    def look(self) -> None:
         """Look cards in in/out deal_cards
         """
         raise NotImplementedError
 
-    def pop(self) -> deck_result_type:
+    def pop(self) -> None:
         """Pop cards from in to out or visa versa
         """
         raise NotImplementedError
 
-    def search(self, name: str) -> deck_result_type:
+    def search(self, name: str) -> None:
         """Search for cards in in/out deal_cards
 
         Args:
             name (str): name of card
+        """
+        raise NotImplementedError
+
+    def move(self) -> None:
+        """Move stuffs from this deck toi another
         """
         raise NotImplementedError
 

@@ -7,7 +7,6 @@ from bgameb.errors import ComponentNameError
 class TestComponents:
     """Test CardText class
     """
-
     components = [
         (RollerType, 'dice'),
         (CardType, 'card'),

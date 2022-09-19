@@ -40,6 +40,11 @@ result = game.tools.blue_dicer.hundred_dice.roll()
 
 # you can use dict notation offcourse
 result = game['tools']['blue_dicer']['hundred_dice'].roll()
+
+# delete components from any collections
+del game.tools.blue_dicer
+del game.stuff.six_dice
+
 ```
 
 ## Documentation

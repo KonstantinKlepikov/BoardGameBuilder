@@ -1,3 +1,6 @@
+"""Custom error classes
+"""
+
 class CustomRuntimeError(RuntimeError):
     """Base class for other runtime exceptions
     """

@@ -69,25 +69,20 @@
            <div itemprop="articleBody">
              
   <h1>Source code for bgameb.players</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Game players</span>
+<span></span><span class="sd">&quot;&quot;&quot;Game players classes</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-
-
-<div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Player">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Player</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Base class to create a player</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">BasePlayer</span>
 
 
 <div class="viewcode-block" id="Human"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Human">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Human</span><span class="p">(</span><span class="n">Player</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Human</span><span class="p">(</span><span class="n">BasePlayer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class to create a human palyer</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Bot"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Bot">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Bot</span><span class="p">(</span><span class="n">Player</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Bot</span><span class="p">(</span><span class="n">BasePlayer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class to create a bot player</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 </pre></div>
