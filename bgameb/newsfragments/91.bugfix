@@ -1,0 +1,6 @@
+#91:
+    * Remove from sphinx.setup_command import BuildDoc from setup.py
+    * Add project variavles to conf.py of docs
+    * Add importlib.metadata to import project metadata for docs
+    * Change command for build docs in Makefile - now ``make proj-doc``
+    * ->

@@ -1,10 +1,23 @@
 # Configuration file for the Sphinx documentation builder.
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-import sys, os
+import sys, os, datetime
 
 # Insert Requests' path into the system.
 sys.path.insert(0, os.path.abspath("..."))
 sys.path.insert(0, os.path.abspath('.../bgameb'))
+
+# Project metadata
+from importlib.metadata import metadata
+meta = metadata('bgameb')
+
+project = meta['Name']
+author = meta['Author']
+
+CURRENT_YEAR = datetime.datetime.now().year
+copyright = str(CURRENT_YEAR) + ', ' + author
+
+version = meta['Version']
+release = meta['Version']
 
 # The master toctree document.
 master_doc = "index"
@@ -53,7 +66,6 @@ add_function_parentheses = False
 add_module_names = True
 
 # Autodock config
-
 # Both the class’ and the __init__ method’s docstring are concatenated and inserted.
 autoclass_content = 'both'
 

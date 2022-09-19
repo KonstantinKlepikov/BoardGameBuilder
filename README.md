@@ -54,11 +54,11 @@ del game.stuff.six_dice
 
 ## Development
 
-[how install project for development](https://konstantinklepikov.github.io/BoardGameBuilder/usage.html)
+[how install project for development](https://konstantinklepikov.github.io/BoardGameBuilder/usage.html). Use IPython for dev mode `python -m IPython`.
 
 ### Available cli
 
-`make create-docs`
+`make proj-doc`
 
 `make test`
 
