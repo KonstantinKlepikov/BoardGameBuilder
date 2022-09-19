@@ -6,13 +6,28 @@ BoardGameBuilder changelog
 Release v0.0.12 (2022-09-19)
 ============================
 
+Bugfixes
+--------
+
+- #91:
+      * Remove from sphinx.setup_command import BuildDoc from setup.py
+      * Add project variavles to conf.py of docs
+      * Add importlib.metadata to import project metadata for docs
+      * Change command for build docs in Makefile - now ``make proj-doc``
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/91)
+
+
+Release v0.0.12 (2022-09-19)
+============================
+
 Features
 --------
 
 - #73:
       * make log
       * make test
-      * remove make deploy (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/73)
+      * remove make deploy
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/73)
 - #83:
       * add new structure of modules to project
       * move Component class to constructs.py and add test_constructs.py
@@ -26,7 +41,8 @@ Features
       * stuff classes get game() object to operate by game components types
       * remove old stuff classes - Card, Dice, Coin. Remove stuff and tools classes from __init__
       * move all similar methods of tools to BaseTool
-      * test all (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/83)
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/83)
 
 
 Improved Documentation
@@ -36,7 +52,8 @@ Improved Documentation
       * Add mystparser for .md parsing and include dependencies to sphynx
       * README changes
       * Add setuptools support
-      * Add example to readme (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/73)
+      * Add example to readme
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/73)
 
 
 Release v0.0.11 (2022-09-13)
@@ -56,7 +73,8 @@ Features
       * Add remove() deck methods
       * BaseGameTools refactoring -> split to BaseGame and child BaseGameTools. Add abstarct methods add(), remove(), remove_all() for BaseGameTools
       * refactoring of Shaker methods - remove() now is one method for all remove operation
-      * tests all (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/34)
+      * tests all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/34)
 - Move logging errors inside StuffDefineError. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/47)
 
 
@@ -74,14 +92,17 @@ Features
       * Add `slow` marker for pytest
       * Use random names for Game and Shaker
       * Use random name for Dice, Coin Card
-      * tests (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/58)
+      * tests
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/58)
 - #59:
       * Add add_replace() method to Components
-      * parametrize Components tests (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/59)
+      * parametrize Components tests
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/59)
 - #62:
       * game_cards -> game_cards
       * game_rollers -> game_rollers
-      * exclude fields fro json/dict by using `metadata=config(exclude=lambda x:True)` (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/62)
+      * exclude fields fro json/dict by using `metadata=config(exclude=lambda x:True)`
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/62)
 - Hide rollers field for json/dict from shaker instance. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/64)
 
 
@@ -106,14 +127,16 @@ Features
       * Add stuff.py and move all stuff components (dices, coins, etc) to stuff.py
       * Remove rollers.py, cards.py. shkers.py
       * namespaces refactoring
-      * Tests all changes (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/51)
+      * Tests all changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/51)
 
 
 Bugfixes
 --------
 
 - #51:
-      * Fixed isinstance check for component classes - now is used issubclas and __mro__ (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/51)
+      * Fixed isinstance check for component classes - now is used issubclas and __mro__
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/51)
 
 
 Release v0.0.8 (2022-09-07)
@@ -128,7 +151,8 @@ Features
       * Add class Cards
       * Add CardText class
       * Add methods flip(), face_up(), face_down(), tap(), untap()
-      * Add CardText dict-like class dot-access (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/33)
+      * Add CardText dict-like class dot-access
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/33)
 
 
 Release v0.0.7 (2022-09-06)
@@ -142,19 +166,22 @@ Features
       * Add logging to utils.py.
       * Add loggers to Game, Shaker and rollers.
       * Configure log format.
-      * Add log_enable() method. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/15)
+      * Add log_enable() method.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/15)
 - #32:
       * add_component() -> add().
       * _range_roll -> _range.
       * last_roll() -> last()
-      * remove name from shakers named tuple (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/32)
+      * remove name from shakers named tuple
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/32)
 - Add flake8 support. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/37)
 
 
 Bugfixes
 --------
 
-- Fix release run if closed pullrequest without merge. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/40)
+- Fix release run if closed pullrequest without merge.
+* -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/40)
 
 
 Release v0.0.6 (2022-09-03)
@@ -166,7 +193,8 @@ Features
 - #13:
       * Add dataclass_json package.
       * Add name attr. Test name for instance.
-      * Minor changes for pytest implementation. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/13)
+      * Minor changes for pytest implementation.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/13)
 - #14:
       * Add BaseRoller class and base attributes.
       * Add Dice class for true dices.
@@ -183,7 +211,8 @@ Features
       * Implement add, remove, roll and last for Shaker.
       * Add error for define roller for Shaker.
       * Implement of roll method and last for shaker
-      * Add shakers as NamedTuple to Game (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
+      * Add shakers as NamedTuple to Game
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
 
 
 Improved Documentation
@@ -193,12 +222,14 @@ Improved Documentation
       * Add documentation for Dice class.
       * Add documentation for Coin class.
       * Add documentation for Shakers.
-      * Docs refactoring. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
+      * Docs refactoring.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/14)
 - #22:
       * Minor changes wit docs headers.
       * Add usage page.
       * Add sphinx.ext.viewcode.
-      * Add documentation links to project setup. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/22)
+      * Add documentation links to project setup.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/22)
 
 
 Release v0.0.5 (2022-08-30)
@@ -207,11 +238,15 @@ Release v0.0.5 (2022-08-30)
 Features
 --------
 
-- Add Sphynx docs builder
-  Add custom theme to builder (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/12)
-- Add flow to public docs on github pages
-  Change manifest and makefile for xreate release
-  Change readme (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/19)
+- #12:
+      * Add Sphynx docs builder
+      * Add custom theme to builder
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/12)
+- #19:
+      * Add flow to public docs on github pages
+      * Change manifest and makefile for xreate release
+      * Change readme
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/19)
 
 
 Release v0.0.4 (2022-08-27)
@@ -220,8 +255,9 @@ Release v0.0.4 (2022-08-27)
 Features
 --------
 
-- add towncrier to create changelog
-  add incremental to autobump version
-  add pytproject.toml to specify towncrier
-  add release workflow
-  (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/3)
+- #3:
+      * add towncrier to create changelog
+      * add incremental to autobump version
+      * add pytproject.toml to specify towncrier
+      * add release workflow
+      * ->  (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/3)
