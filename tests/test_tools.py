@@ -212,6 +212,18 @@ class TestDeck:
         assert len(deck.dealt) == 35, 'wrong dealt len'
         assert 'card' in deck.dealt, 'wrong cards names inside dealt'
         assert 'card_nice' in deck.dealt, 'wrong cards names inside dealt'
-        dealt0 = deck.dealt
+        dealt0 = deck.dealt.copy()
         deck.deal()
         assert deck.dealt != dealt0, 'not random order'
+
+    def test_deck_shuffle(
+        self, game_inst: BaseGame) -> None:
+        """Test deck shuffle()
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=5)
+        deck.add('card_nice', count=5)
+        deck.deal()
+        dealt0 = deck.dealt.copy()
+        deck.shuffle()
+        assert deck.dealt != dealt0, 'not changed order'

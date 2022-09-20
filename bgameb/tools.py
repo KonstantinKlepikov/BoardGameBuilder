@@ -81,9 +81,10 @@ class Deck(BaseTool):
         self.logger.debug(f'Is dealt cards: {self.dealt}')
 
     def shuffle(self) -> None:
-        """Shuffle in/out deal_cards
+        """Shuffle deal deck
         """
-        raise NotImplementedError
+        random.shuffle(self.dealt)
+        self.logger.debug(f'Is shuffled: {self.dealt}')
 
     def arrange(self) -> None:
         """Arrange in/out deal_cards
