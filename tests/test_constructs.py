@@ -75,6 +75,16 @@ class TestComponents:
         assert len(comp.values()) == 1, 'values not accessed'
 
     @pytest.mark.parametrize("_class, name", components)
+    def test_update_component(self, _class, name: str) -> None:
+        """Test update component
+        """
+        comp = Components()
+        comp._update(_class, {'name': name})
+        comp[name].name == name, 'wrong name'
+        comp._update(_class, {'name': None})
+        assert None not in comp.keys(), 'is added None'
+
+    @pytest.mark.parametrize("_class, name", components)
     def test_add_component(self, _class, name: str) -> None:
         """Test add component with add() method
         """

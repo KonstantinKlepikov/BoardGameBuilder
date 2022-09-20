@@ -95,9 +95,12 @@ class Components(Mapping):
             component: component class
             kwargs (Dict[str, Any]): aditional args
         """
-        self.__dict__.update(
-            {kwargs['name']: component(**kwargs)}
-            )
+        comp = component(**kwargs)
+
+        if kwargs['name'] is None:
+            kwargs['name'] = comp.name
+
+        self.__dict__.update({kwargs['name']: comp})
 
     def add(self, component, **kwargs) -> None:
         """Add component to Components dict. Components with
@@ -115,6 +118,7 @@ class Components(Mapping):
         else:
             self._chek_in(component.name)
             kwargs['name'] = component.name
+
         self._update(component, kwargs)
 
     def add_replace(self, component, **kwargs) -> None:
@@ -174,7 +178,7 @@ class Base(DataClassJsonMixin, ABC):
 
     def __post_init__(self) -> None:
         # set random name
-        if not self.name:
+        if self.name is None:
             self.name = get_random_name()
 
         # set logger

@@ -1,0 +1,1 @@
+Changed method _update() of Components class to check - is None name of added component.
