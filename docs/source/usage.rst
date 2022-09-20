@@ -4,7 +4,7 @@ Usage
 Installation
 ------------
 
-To use `bgameb`, first install it using pip:
+To use ``bgameb``, first install it using pip:
 
 .. code-block:: console
 
@@ -13,9 +13,19 @@ To use `bgameb`, first install it using pip:
 Dev installation
 ----------------
 
+Create virtual environment for project and activate it:
+
 .. code-block:: console
 
+   virualenv -p python3.8 venv
+
    pip install bgameb[dev]
+
+Or install from local source:
+
+.. code-block:: console
+
+   pip install -e .[dev]
 
 Use ipython for development from env:
 

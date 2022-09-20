@@ -1,3 +1,6 @@
+"""Custom error classes
+"""
+
 class CustomRuntimeError(RuntimeError):
     """Base class for other runtime exceptions
     """
@@ -8,7 +11,7 @@ class ComponentNameError(CustomRuntimeError):
     class instance.
     """
     def __init__(self, name) -> None:
-        self.message = f'Component with {name=} is in ' + \
+        self.message = f'Component with {name=} is exist in ' + \
                         'Components class instance'
         super().__init__(self.message)
 
@@ -16,8 +19,9 @@ class ComponentNameError(CustomRuntimeError):
 class ComponentClassError(CustomRuntimeError):
     """Given class isnt component
     """
-    def __init__(self, class_) -> None:
-        self.message = f'Given class: {class_} not a component.'
+    def __init__(self, obj_, logger) -> None:
+        self.message = f'Given: {obj_} not a component.'
+        logger.exception(self.message)
         super().__init__(self.message)
 
 

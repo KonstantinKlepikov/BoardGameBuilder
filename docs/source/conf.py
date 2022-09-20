@@ -1,19 +1,23 @@
 # Configuration file for the Sphinx documentation builder.
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-import sys, os
+import sys, os, datetime
 
 # Insert Requests' path into the system.
 sys.path.insert(0, os.path.abspath("..."))
 sys.path.insert(0, os.path.abspath('.../bgameb'))
 
-import bgameb
+# Project metadata
+from importlib.metadata import metadata
+meta = metadata('bgameb')
 
-project = 'BoardGameBuilder'
-copyright = '2022, Konstantin Klepikov'
-author = 'Konstantin Klepikov'
-version = bgameb.PUB_VERSION
-release = bgameb.PUB_VERSION
+project = meta['Name']
+author = meta['Author']
 
+CURRENT_YEAR = datetime.datetime.now().year
+copyright = str(CURRENT_YEAR) + ', ' + author
+
+version = meta['Version']
+release = meta['Version']
 
 # The master toctree document.
 master_doc = "index"
@@ -23,6 +27,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
+    'myst_parser',
     ]
 
 # Templates
@@ -34,7 +39,11 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 # The suffix(es) of source filenames.
-source_suffix = ['.rst', '.md']
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
+    }
 
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = False
@@ -55,3 +64,10 @@ add_function_parentheses = False
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
 add_module_names = True
+
+# Autodock config
+# Both the class’ and the __init__ method’s docstring are concatenated and inserted.
+autoclass_content = 'both'
+
+# mthod sorting
+autodoc_member_order = 'bysource'

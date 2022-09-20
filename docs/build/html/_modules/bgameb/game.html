@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.game &mdash; BoardGameBuilder 0.0.10 documentation</title>
+  <title>bgameb.game &mdash; bgameb 0.0.11 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -25,10 +25,10 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> BoardGameBuilder
+            <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.10
+                0.0.11
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -50,7 +50,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">BoardGameBuilder</a>
+          <a href="../../index.html">bgameb</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -71,576 +71,12 @@
   <h1>Source code for bgameb.game</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Main engine to create games</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Type</span>
-    <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span><span class="p">,</span> <span class="n">config</span>
-<span class="kn">from</span> <span class="nn">bgameb.stuff</span> <span class="kn">import</span> <span class="n">BaseRoller</span><span class="p">,</span> <span class="n">BaseCard</span>
-<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ComponentNameError</span><span class="p">,</span> <span class="n">ComponentClassError</span><span class="p">,</span> <span class="n">StuffDefineError</span>
-    <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">bgameb.utils</span> <span class="kn">import</span> <span class="n">log_me</span><span class="p">,</span> <span class="n">get_random_name</span>
-
-
-<span class="n">game_stuff_type</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseRoller</span><span class="p">,</span> <span class="n">BaseCard</span><span class="p">]</span>
-<span class="n">shaker_rollers_type</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
-<span class="n">shaker_result_type</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span>
-<span class="n">deck_cards_type</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
-<span class="n">deck_result_type</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">BaseCard</span><span class="p">]]</span>
-<span class="n">dealt_cards_type</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
-
-
-<div class="viewcode-block" id="Components"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Components">[docs]</a><span class="k">class</span> <span class="nc">Components</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Components mapping.</span>
-
-<span class="sd">    This class inherit from dict and not implemets</span>
-<span class="sd">    __setattr__ and __setitems__. Class represents</span>
-<span class="sd">    additional dot-acces for attributes of dict</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Args must be a dicts</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Args must be a dicts&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This method not implementd for Components&#39;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This method not implementd for Components&#39;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_chek_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Chek is name of component is unique</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name for component</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ComponentNameError: name id not unique</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Optional[bool]: if it is in</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">ComponentNameError</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span>
-
-    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">component</span><span class="p">,</span>
-        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Update components dict</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            component: component class</span>
-<span class="sd">            kwargs (Dict[str, Any]): aditional args</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span> <span class="n">component</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)}</span>
-            <span class="p">)</span>
-
-<div class="viewcode-block" id="Components.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Components.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add component to Components dict. Components with</span>
-<span class="sd">        same names as existed cant be added.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ComponentNameError: name id not unique</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            component (Component): component class</span>
-<span class="sd">            kwargs: aditional args</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_chek_in</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_chek_in</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Components.add_replace"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Components.add_replace">[docs]</a>    <span class="k">def</span> <span class="nf">add_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add or replace component in Components dict.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            component (Component): component class</span>
-<span class="sd">            kwargs: aditional args</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">):</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Components.get_names"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Components.get_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get names of all components of class</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[str]: lisct of names of conatined components</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="BaseGame"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseGame</span><span class="p">(</span><span class="n">DataClassJsonMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base game class</span>
-
-<span class="sd">    Inherited classes needs attr name implementation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># set random name</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">get_random_name</span><span class="p">()</span>
-
-        <span class="c1"># set logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">log_me</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
-            <span class="n">classname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> created with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">=}</span><span class="s1">.&#39;</span>
-            <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="BaseGameTools"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGameTools">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseGameTools</span><span class="p">(</span><span class="n">BaseGame</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base game tools (like Decs or Shakers) class</span>
-
-<span class="sd">    Inherited classes needs attr name implementation</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_chek_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chek</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Chek exist roller in game</span>
-<span class="sd">        # TODO: test me</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): stuff name</span>
-<span class="sd">            check (Sequence[str]): cheked collection</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: stuff is exist or not in collection</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">chek</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-<div class="viewcode-block" id="BaseGameTools.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGameTools.add">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add stuff to tool</span>
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name of added stuff</span>
-<span class="sd">            count (int, optional): count added stuf. Defaults to 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-
-<div class="viewcode-block" id="BaseGameTools.remove"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGameTools.remove">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove stuff from tool</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str, optional): name of removed stuff. Defaults to None.</span>
-<span class="sd">            count (int, optional): count removed stuf. Defaults to None.</span>
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
-
-
-<div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Shaker">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Shaker</span><span class="p">(</span><span class="n">BaseGameTools</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create shaker for roll dices or flip coins</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_game_rollers</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">rollers</span><span class="p">:</span> <span class="n">shaker_rollers_type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">last</span><span class="p">:</span> <span class="n">shaker_result_type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Shaker.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Shaker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;colorless&#39;</span><span class="p">,</span>
-        <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add roller to shaker</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            roller (str): roller name</span>
-<span class="sd">            color (str, optional): color groupe. Defaults to &#39;colorless&#39;.</span>
-<span class="sd">            count (int, optional): count of rollers copy. Defaults to 1.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            StuffDefineError: coutn of stuff not defined</span>
-<span class="sd">                              or stuff not exist</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chek_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_game_rollers</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Roller with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s2"> not exist in a game.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t add </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> rollers.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
-
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">count</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Number of rollers with &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">&quot; increased by </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">. &#39;</span> <span class="o">+</span>
-                <span class="sa">f</span><span class="s1">&#39;Result count is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
-                <span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">count</span><span class="p">}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Added </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> rollers with &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">&quot; and </span><span class="si">{</span><span class="n">color</span><span class="si">=}</span><span class="s1">.&#39;</span>
-                <span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_decrease</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Decrease number of rollers by count</span>
-<span class="sd">        # TODO: test me</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name of rollers</span>
-<span class="sd">            color (str): color group</span>
-<span class="sd">            count (int): count</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">-=</span> <span class="n">count</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Removed </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> rollers with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1"> and </span><span class="si">{</span><span class="n">color</span><span class="si">=}</span><span class="s1">. &#39;</span> <span class="o">+</span>
-            <span class="sa">f</span><span class="s1">&#39;Result count is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_remove_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove rollers by name</span>
-<span class="sd">        # TODO: test me</span>
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name of roller</span>
-<span class="sd">            color (str): color group</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Remove all rollers with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1"> and </span><span class="si">{</span><span class="n">color</span><span class="si">=}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_remove_empry_color</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Check mapping object and delete all colors if empty</span>
-<span class="sd">        # TODO: test me</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">color</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span>
-            <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Is removed empty colors=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">colors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s1"> from shaker&#39;</span>
-            <span class="p">)</span>
-
-<div class="viewcode-block" id="Shaker.remove"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Shaker.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove any kind of roller copy from shaker by name and color</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str, optional): name of removed stuff. Defaults to None.</span>
-<span class="sd">            count (int, optional): count removed stuf. Defaults to None.</span>
-<span class="sd">            color (str, optional): color froup of rollers. Defaults to None.</span>
-
-<span class="sd">        You can use any combination for colors, names and counts to remove all</span>
-<span class="sd">        rollers, all by color or by name or by count or rollers vit given count</span>
-<span class="sd">        of choosen color or/and name.</span>
-
-
-<span class="sd">        Raises:</span>
-<span class="sd">            StuffDefineError: nopositive integer for count</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Count must be a positive integer greater than 0.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-
-        <span class="n">col_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-        <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-                <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span> <span class="o">=</span> <span class="p">{}</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removed all rollers from shaker&#39;</span><span class="p">)</span>
-                    <span class="k">return</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">col_keys</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">na</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">na</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-
-            <span class="k">else</span><span class="p">:</span>
-
-                <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">col_keys</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">col_keys</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">color</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col_keys</span><span class="p">:</span>
-
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">color</span><span class="si">=}</span><span class="s2"> not exist in shaker.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-                <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">na</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">na</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-
-            <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-
-                <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_remove_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_empry_color</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Shaker.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Shaker.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">shaker_result_type</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Roll all rollers with shaker and return results</span>
-
-<span class="sd">        Return:</span>
-<span class="sd">            Dict[str, Dict[str, Tuple[int]]]: result of roll</span>
-
-<span class="sd">        .. code-block::</span>
-<span class="sd">            :caption: Example:</span>
-
-<span class="sd">                {&quot;white&quot;: {&quot;six_dice&quot;: (5, 3, 2, 5)}}</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">roll</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">rollers</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rollers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">roll</span><span class="p">[</span><span class="n">color</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">rollers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">roll</span><span class="p">[</span><span class="n">color</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_game_rollers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
-                    <span class="p">)</span>
-        <span class="k">if</span> <span class="n">roll</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">roll</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Rolled: </span><span class="si">{</span><span class="n">roll</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No one roller rolled.&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">{}</span></div></div>
-
-
-<div class="viewcode-block" id="Deck"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Deck</span><span class="p">(</span><span class="n">BaseGameTools</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create deck for cards</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_game_cards</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Components</span><span class="p">,</span>
-        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">deck_cards</span><span class="p">:</span> <span class="n">deck_cards_type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">dealt_cards</span><span class="p">:</span> <span class="n">dealt_cards_type</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dealt_cards</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[])</span>  <span class="c1"># TODO: make named class</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Deck.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add card to the deck collection</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name of card</span>
-<span class="sd">            count (int, optional): count of cards copy Defaults to 1.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            StuffDefineError: count of stuff not defined</span>
-<span class="sd">                              or stuff not exist</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chek_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_game_cards</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Card with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s2"> not exist in a game.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t add </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> cards.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">count</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Number of cards with &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">&quot; increased by </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">. &#39;</span> <span class="o">+</span>
-            <span class="sa">f</span><span class="s1">&#39;Result count is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_decrease</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Decrease number of cards by count</span>
-<span class="sd">        # TODO: test me</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name of rollers</span>
-<span class="sd">            count (int): count</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">-=</span> <span class="n">count</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Removed </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> cards with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">. &#39;</span> <span class="o">+</span>
-            <span class="sa">f</span><span class="s1">&#39;Result count is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Removed all cards with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">.&#39;</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Deck.remove"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove all cards by cards name and count from Deck.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str, optional): name of removed stuff. Defaults to None.</span>
-<span class="sd">            count (int, optional): count removed stuf. Defaults to None.</span>
-<span class="sd">        Raises:</span>
-<span class="sd">            ComponentClassError: _description_</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Count must be a positive integer greater than 0.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-
-        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removed all rollers from shaker&#39;</span><span class="p">)</span>
-                <span class="k">return</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">na</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">na</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-
-            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s2"> not exist in deck.&quot;</span><span class="p">,</span>
-                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">deck_cards</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Removed all cards with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">.&#39;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Deck.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Deal deck for play from deck_cards</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Deck.shuffle"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.shuffle">[docs]</a>    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Shuffle in/out deal_cards</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Deck.arrange"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.arrange">[docs]</a>    <span class="k">def</span> <span class="nf">arrange</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Arrange in/out deal_cards</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-
-<div class="viewcode-block" id="Deck.look"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.look">[docs]</a>    <span class="k">def</span> <span class="nf">look</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">deck_result_type</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Look cards in in/out deal_cards</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Deck.pop"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">deck_result_type</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Pop cards from in to out or visa versa</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Deck.search"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Deck.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">deck_result_type</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Search for cards in in/out deal_cards</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name of card</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+<span class="kn">from</span> <span class="nn">bgameb.tools</span> <span class="kn">import</span> <span class="n">TOOLS</span><span class="p">,</span> <span class="n">TOOLS_TYPES</span>
+<span class="kn">from</span> <span class="nn">bgameb.stuff</span> <span class="kn">import</span> <span class="n">STUFF</span><span class="p">,</span> <span class="n">STUFF_TYPES</span>
+<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ComponentClassError</span>
+<span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">Components</span><span class="p">,</span> <span class="n">BaseGame</span>
 
 
 <div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game">[docs]</a><span class="nd">@dataclass</span>
@@ -648,49 +84,31 @@
     <span class="sd">&quot;&quot;&quot;Create the game object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">shakers</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Components</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">decks</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Components</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">game_rollers</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Components</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">game_cards</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Components</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">stuff</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Components</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tools</span><span class="p">:</span> <span class="n">Components</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Components</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">shakers</span> <span class="o">=</span> <span class="n">Components</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">decks</span> <span class="o">=</span> <span class="n">Components</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">game_rollers</span> <span class="o">=</span> <span class="n">Components</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">game_cards</span> <span class="o">=</span> <span class="n">Components</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span> <span class="o">=</span> <span class="n">Components</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="n">Components</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Game.add_stuff"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game.add_stuff">[docs]</a>    <span class="k">def</span> <span class="nf">add_stuff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">game_stuff_type</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add component to game</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (Type[game_stuff_type]): any class instance of game stuffs</span>
-<span class="sd">            like rollers, cards etc</span>
-<span class="sd">            kwargs: additional arguments of component</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="n">BaseRoller</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">game_rollers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Roller added: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game_rollers</span><span class="si">=}</span><span class="s1">.&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="n">BaseCard</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">game_cards</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Card added: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game_cards</span><span class="si">=}</span><span class="s1">.&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">class_</span><span class="o">=</span><span class="n">stuff</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Game.add_shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game.add_shaker">[docs]</a>    <span class="k">def</span> <span class="nf">add_shaker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add shaker to game shakers</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name for added shaker</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">shakers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                <span class="n">Shaker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">_game_rollers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_rollers</span>
+<div class="viewcode-block" id="Game.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">component</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">STUFF_TYPES</span><span class="p">,</span> <span class="n">TOOLS_TYPES</span><span class="p">],</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">STUFF</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">STUFF</span><span class="p">[</span><span class="n">component</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s1"> is added: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span><span class="si">}</span><span class="s1">.&#39;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">TOOLS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">TOOLS</span><span class="p">[</span><span class="n">component</span><span class="p">],</span> <span class="n">_game</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s1"> is added: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span><span class="si">}</span><span class="s1">.&#39;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">shakers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-                <span class="n">Shaker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">Shaker</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">_game_rollers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_rollers</span>
-                <span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

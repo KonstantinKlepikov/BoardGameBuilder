@@ -28,6 +28,22 @@ bgameb.stuff module
    :undoc-members:
    :show-inheritance:
 
+bgameb.tools module
+-------------------
+
+.. automodule:: bgameb.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bgameb.constructs module
+------------------------
+
+.. automodule:: bgameb.constructs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 bgameb.errors module
 --------------------
 
@@ -40,14 +56,6 @@ bgameb.utils module
 -------------------
 
 .. automodule:: bgameb.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: bgameb
    :members:
    :undoc-members:
    :show-inheritance:

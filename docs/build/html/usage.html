@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Usage &mdash; BoardGameBuilder 0.0.10 documentation</title>
+  <title>Usage &mdash; bgameb 0.0.12 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,10 +27,10 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> BoardGameBuilder
+            <a href="index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.10
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -56,7 +56,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">BoardGameBuilder</a>
+          <a href="index.html">bgameb</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -77,14 +77,21 @@
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h1>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
-<p>To use <cite>bgameb</cite>, first install it using pip:</p>
+<p>To use <code class="docutils literal notranslate"><span class="pre">bgameb</span></code>, first install it using pip:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install bgameb</span>
 </pre></div>
 </div>
 </section>
 <section id="dev-installation">
 <h2>Dev installation<a class="headerlink" href="#dev-installation" title="Permalink to this heading"></a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install bgameb[dev]</span>
+<p>Create virtual environment for project and activate it:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">virualenv -p python3.8 venv</span>
+
+<span class="go">pip install bgameb[dev]</span>
+</pre></div>
+</div>
+<p>Or install from local source:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install -e .[dev]</span>
 </pre></div>
 </div>
 <p>Use ipython for development from env:</p>
