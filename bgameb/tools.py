@@ -1,9 +1,10 @@
 """Game tools classes like shakers or decks
 """
 import random
-from typing import Optional, Tuple, Dict, Literal, List
+from collections import deque
+from typing import Optional, Tuple, Dict, Literal, List, Deque
 from dataclasses import dataclass, field
-from bgameb.stuff import Roller, Card
+from bgameb.stuff import Roller, Card, BaseStuff
 from bgameb.constructs import BaseTool
 
 
@@ -49,59 +50,56 @@ class Deck(BaseTool):
     """Create deck for cards
 
     You can add cards, define it counts and deal a deck.
-    Result is dstored in deaklt attr
+    Result is saved in dealt attr as deque object. This object
+    has all methods of
+    `python deque
+    <https://docs.python.org/3/library/collections.html#deque-objects>`_
 
     .. code-block::
         :caption: Example:
 
-            ['card1', 'card3', 'card2', 'card4']
+            deque(Card1, Card3, Card2, Card4)
 
     """
     name: Optional[str] = None
-    dealt: List[str] = field(
-        default_factory=list,
+    dealt: Deque[BaseStuff] = field(
+        default_factory=deque,
         init=False,
     )
 
     def __post_init__(self) -> None:
         super().__post_init__()
         self._stuff_to_add = Card
-        self.dealt = []
+        self.dealt = deque()
 
     def deal(self) -> List[str]:
         """Deal new random shuffled deck and save it to
         self.dealt: List[str]
         """
-        deal = []
-        for key, val in self.stuff.items():
+        self.clear()
+        for val in self.stuff.values():
             for _ in range(val.count):
-                deal.append(key)
-        random.shuffle(deal)
-        self.dealt = deal
+                self.dealt.append(self._stuff_to_add(**val.to_dict()))
+        self.shuffle()
         self.logger.debug(f'Is dealt cards: {self.dealt}')
 
     def shuffle(self) -> None:
-        """Shuffle deal deck
+        """Shuffle dealt deck
         """
         random.shuffle(self.dealt)
         self.logger.debug(f'Is shuffled: {self.dealt}')
 
     def arrange(self) -> None:
-        """Arrange in/out deal_cards
+        """Arrange  cards in dealt deck
         """
 
     def look(self) -> None:
-        """Look cards in in/out deal_cards
-        """
-        raise NotImplementedError
-
-    def pop(self) -> None:
-        """Pop cards from in to out or visa versa
+        """Look cards in dealt deck
         """
         raise NotImplementedError
 
     def search(self, name: str) -> None:
-        """Search for cards in in/out deal_cards
+        """Search for cards in dealt deck
 
         Args:
             name (str): name of card
@@ -109,9 +107,14 @@ class Deck(BaseTool):
         raise NotImplementedError
 
     def move(self) -> None:
-        """Move stuffs from this deck toi another
+        """Move stuff from this dealt deck to another
         """
         raise NotImplementedError
+
+    def clear(self) -> None:
+        """Clean dealt deack
+        """
+        self.dealt.clear()
 
 
 TOOLS = {

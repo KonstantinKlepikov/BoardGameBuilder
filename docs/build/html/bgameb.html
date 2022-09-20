@@ -351,10 +351,12 @@ to each other.</p>
 <dd><p>Bases: <a class="reference internal" href="#bgameb.constructs.BaseTool" title="bgameb.constructs.BaseTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTool</span></code></a></p>
 <p>Create deck for cards</p>
 <p>You can add cards, define it counts and deal a deck.
-Result is dstored in deaklt attr</p>
+Result is saved in dealt attr as deque object. This object
+has all methods of
+<a class="reference external" href="https://docs.python.org/3/library/collections.html#deque-objects">python deque</a></p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">Example:</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="p">[</span><span class="s1">&#39;card1&#39;</span><span class="p">,</span> <span class="s1">&#39;card3&#39;</span><span class="p">,</span> <span class="s1">&#39;card2&#39;</span><span class="p">,</span> <span class="s1">&#39;card4&#39;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">deque</span><span class="p">(</span><span class="n">Card1</span><span class="p">,</span> <span class="n">Card3</span><span class="p">,</span> <span class="n">Card2</span><span class="p">,</span> <span class="n">Card4</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -365,7 +367,7 @@ Result is dstored in deaklt attr</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.dealt">
-<span class="sig-name descname"><span class="pre">dealt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.tools.Deck.dealt" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dealt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Deque</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bgameb.constructs.BaseStuff" title="bgameb.constructs.BaseStuff"><span class="pre">BaseStuff</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.tools.Deck.dealt" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -378,31 +380,25 @@ self.dealt: List[str]</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.shuffle">
 <span class="sig-name descname"><span class="pre">shuffle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.shuffle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.shuffle" title="Permalink to this definition"></a></dt>
-<dd><p>Shuffle deal deck</p>
+<dd><p>Shuffle dealt deck</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.arrange">
 <span class="sig-name descname"><span class="pre">arrange</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.arrange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.arrange" title="Permalink to this definition"></a></dt>
-<dd><p>Arrange in/out deal_cards</p>
+<dd><p>Arrange  cards in dealt deck</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.look">
 <span class="sig-name descname"><span class="pre">look</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.look"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.look" title="Permalink to this definition"></a></dt>
-<dd><p>Look cards in in/out deal_cards</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bgameb.tools.Deck.pop">
-<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.pop" title="Permalink to this definition"></a></dt>
-<dd><p>Pop cards from in to out or visa versa</p>
+<dd><p>Look cards in dealt deck</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.search">
 <span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.search" title="Permalink to this definition"></a></dt>
-<dd><p>Search for cards in in/out deal_cards</p>
+<dd><p>Search for cards in dealt deck</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of card</p>
@@ -413,7 +409,13 @@ self.dealt: List[str]</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.move">
 <span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.move" title="Permalink to this definition"></a></dt>
-<dd><p>Move stuffs from this deck toi another</p>
+<dd><p>Move stuff from this dealt deck to another</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.tools.Deck.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.clear" title="Permalink to this definition"></a></dt>
+<dd><p>Clean dealt deack</p>
 </dd></dl>
 
 </dd></dl>
