@@ -93,11 +93,6 @@ class Deck(BaseTool):
         """Arrange  cards in dealt deck
         """
 
-    def look(self) -> None:
-        """Look cards in dealt deck
-        """
-        raise NotImplementedError
-
     def search(self, name: str) -> None:
         """Search for cards in dealt deck
 
