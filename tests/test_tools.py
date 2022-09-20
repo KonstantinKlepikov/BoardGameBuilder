@@ -1,5 +1,6 @@
 import json, pytest
 from typing import Tuple
+from collections import deque
 from bgameb.game import Game
 from bgameb.tools import Shaker, Deck, BaseTool
 from bgameb.stuff import BaseStuff
@@ -187,6 +188,8 @@ class TestDeck:
         assert deck.name == 'deck', 'wrong name'
         assert isinstance(deck.stuff, Components), 'wrong type of stuff'
         assert len(deck.stuff) == 0, 'nonempty stuff'
+        assert isinstance(deck.dealt, deque), 'wrong type of dealt'
+        assert len(deck.dealt) == 0, 'nonempty dealt'
         assert issubclass(deck._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
 
     def test_deck_are_converted_to_json(
@@ -198,3 +201,42 @@ class TestDeck:
         j = json.loads(deck.to_json())
         assert j['name'] == 'deck', 'wrong name'
         assert len(j['stuff']) == 1, 'wrong num of cards'
+
+    def test_deck_deal(
+        self, game_inst: BaseGame) -> None:
+        """Test deck deal()
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=5)
+        deck.add('card_nice', count=7)
+        deck.deal()
+        assert len(deck.dealt) == 12, 'wrong dealt len'
+        names = [stuff.name for stuff in deck.dealt]
+        assert 'card' in names, 'wrong cards names inside dealt'
+        assert 'card_nice' in names, 'wrong cards names inside dealt'
+        dealt0 = deck.dealt.copy()
+        deck.deal()
+        assert deck.dealt != dealt0, 'not random order'
+
+    def test_deck_shuffle(
+        self, game_inst: BaseGame) -> None:
+        """Test deck shuffle()
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=5)
+        deck.add('card_nice', count=5)
+        deck.deal()
+        dealt0 = deck.dealt.copy()
+        deck.shuffle()
+        assert deck.dealt != dealt0, 'not changed order'
+
+    def test_clear(
+        self, game_inst: BaseGame) -> None:
+        """Test deck clean()
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=5)
+        deck.add('card_nice', count=5)
+        deck.clear()
+        assert isinstance(deck.dealt, deque), 'nonempty dealt'
+        assert len(deck.dealt) == 0, 'nonempty dealt'

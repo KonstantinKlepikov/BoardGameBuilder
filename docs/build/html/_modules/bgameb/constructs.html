@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.constructs &mdash; bgameb 0.0.11 documentation</title>
+  <title>bgameb.constructs &mdash; bgameb 0.0.12 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.11
+                0.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -166,9 +166,12 @@
 <span class="sd">            component: component class</span>
 <span class="sd">            kwargs (Dict[str, Any]): aditional args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span> <span class="n">component</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)}</span>
-            <span class="p">)</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="n">component</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span> <span class="n">comp</span><span class="p">})</span>
 
 <div class="viewcode-block" id="Components.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.Components.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add component to Components dict. Components with</span>
@@ -186,6 +189,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_chek_in</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Components.add_replace"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.Components.add_replace">[docs]</a>    <span class="k">def</span> <span class="nf">add_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -245,7 +249,7 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># set random name</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">get_random_name</span><span class="p">()</span>
 
         <span class="c1"># set logger</span>
@@ -345,7 +349,10 @@
 
         <span class="c1"># add roller and set a count</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">get_names</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_game</span><span class="o">.</span><span class="n">stuff</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_game</span><span class="o">.</span><span class="n">stuff</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;Added stuff with &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">&quot; and </span><span class="si">{</span><span class="n">count</span><span class="si">=}</span><span class="s1">.&#39;</span>

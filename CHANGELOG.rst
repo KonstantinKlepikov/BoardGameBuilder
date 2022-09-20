@@ -3,6 +3,35 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.13 (2022-09-21)
+============================
+
+Features
+--------
+
+- #76:
+      * implenemt deal() method and add deal attr to Deck class. When we deal() the cards - the names of all cards in deck multiplied by its copies are random shuffled in to a list, saved in dealt attr
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/76)
+- Add shuffle() method of Deck class implenebtation. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/78)
+- #80:
+      * create copy of deck stuff cards to use in ``dealt``
+      * implement clean method - remove all dealt cards
+      * dealt now is deque and it has all methods of python deque
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/80)
+
+
+Bugfixes
+--------
+
+- Changed method _update() of Components class to check - is None name of added component. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/71)
+
+
+Improved Documentation
+----------------------
+
+- Fix example of usage in readme. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/76)
+
+
 Release v0.0.12 (2022-09-19)
 ============================
 
