@@ -1,6 +1,7 @@
 """Game tools classes like shakers or decks
 """
-from typing import Optional, Tuple, Dict, Literal
+import random
+from typing import Optional, Tuple, Dict, Literal, List
 from dataclasses import dataclass, field
 from bgameb.stuff import Roller, Card
 from bgameb.constructs import BaseTool
@@ -46,17 +47,38 @@ class Shaker(BaseTool):
 @dataclass
 class Deck(BaseTool):
     """Create deck for cards
+
+    You can add cards, define it counts and deal a deck.
+    Result is dstored in deaklt attr
+
+    .. code-block::
+        :caption: Example:
+
+            ['card1', 'card3', 'card2', 'card4']
+
     """
     name: Optional[str] = None
+    dealt: List[str] = field(
+        default_factory=list,
+        init=False,
+    )
 
     def __post_init__(self) -> None:
         super().__post_init__()
         self._stuff_to_add = Card
+        self.dealt = []
 
-    def deal(self) -> None:
-        """Deal deck for play from deck_cards
+    def deal(self) -> List[str]:
+        """Deal new random shuffled deck and save it to
+        self.dealt: List[str]
         """
-        raise NotImplementedError
+        deal = []
+        for key, val in self.stuff.items():
+            for _ in range(val.count):
+                deal.append(key)
+        random.shuffle(deal)
+        self.dealt = deal
+        self.logger.debug(f'Is dealt cards: {self.dealt}')
 
     def shuffle(self) -> None:
         """Shuffle in/out deal_cards

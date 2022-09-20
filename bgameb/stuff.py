@@ -64,7 +64,10 @@ class Roller(RollerType):
         Returns:
             List[int]: result of roll
         """
-        roll = [random.choices(self._range, k=1)[0] for _ in list(range(self.count))]
+        roll = [
+            random.choices(self._range, k=1)[0] for _
+            in list(range(self.count))
+            ]
         self.logger.debug(f'Is rolled {roll=}')
         return roll
 

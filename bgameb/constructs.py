@@ -274,7 +274,10 @@ class BaseTool(Base, ABC):
 
         # add roller and set a count
         if name not in self.stuff.get_names():
-            self.stuff.add(self._stuff_to_add, **self._game.stuff[name].to_dict())
+            self.stuff.add(
+                self._stuff_to_add,
+                **self._game.stuff[name].to_dict()
+                )
             self.stuff[name].count = count
             self.logger.debug(
                 f'Added stuff with "{name=}" and {count=}.'
