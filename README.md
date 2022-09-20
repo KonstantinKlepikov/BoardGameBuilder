@@ -10,39 +10,38 @@ Object-oriented framework for build board game logic in python
 # create the game
 game = Game('one_board_game')
 
-# add dices types to game
-game.add('dice', name='six_dice')
-game.add('dice', name='twenty_dice')
-game.add('dice', name='hundred_dice')
+# add dice and coin types to game
+game.add('roller', name='six_dice')
+game.add('roller', name='twenty_dice')
+game.add('roller', name='coin')
 
-# define dices types sides
+# define sides for dice and coin types
 game.stuff.six_dice.sides = 6
-game.stuff.six_dice.twenty_dice = 20
-game.stuff.six_dice.hundred_dice = 100
+game.stuff.six_dice.twenty_dice.sides = 20
+game.stuff.six_dice.coin.sides = 2
 
-# add shakers for roll dices and add count of dices to shaker
-game.add('shaker', name='red_dicer')
-game.tools.red_dicer.add('six_dice', count=50)
-game.tools.red_dicer.add('twenty_dice', count=10)
-game.tools.red_dicer.add('hundred_dice', count=42)
+# add shaker and add count of stuff to shaker
+game.add('shaker', name='red_shaker')
+game.tools.red_shaker.add('six_dice', count=50)
+game.tools.red_shaker.add('twenty_dice', count=10)
+game.tools.red_shaker.add('coin', count=42)
 
-# roll all dices and get result
-result = game.tools.red_dicer.roll()
+# roll all stuff and get result
+result = game.tools.red_shaker.roll()
 
-# or define new shaker with default count and roll each dice separatly
-game.add('shaker', name='blue_dicer')
-game.tools.blue_dicer.add('six_dice')
-game.tools.blue_dicer.add('twenty_dice')
-game.tools.blue_dicer.add('hundred_dice')
+# or define new shaker with default count == 1 and roll each stuff separatly
+game.add('shaker', name='blue_shaker')
+game.tools.blue_shaker.add('six_dice')
+game.tools.blue_shaker.add('coin')
 
-result = game.tools.blue_dicer.six_dice.roll()
-result = game.tools.blue_dicer.hundred_dice.roll()
+result = game.tools.blue_shaker.six_dice.roll()
+result = game.tools.blue_shaker.coin.roll()
 
 # you can use dict notation offcourse
-result = game['tools']['blue_dicer']['hundred_dice'].roll()
+result = game['tools']['blue_shaker']['coin'].roll()
 
 # delete components from any collections
-del game.tools.blue_dicer
+del game.tools.blue_shaker
 del game.stuff.six_dice
 
 ```

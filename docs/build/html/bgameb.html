@@ -350,15 +350,29 @@ to each other.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.tools.</span></span><span class="sig-name descname"><span class="pre">Deck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_game</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bgameb.constructs.BaseGame" title="bgameb.constructs.BaseGame"><span class="pre">BaseGame</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/tools.html#Deck"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bgameb.constructs.BaseTool" title="bgameb.constructs.BaseTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTool</span></code></a></p>
 <p>Create deck for cards</p>
+<p>You can add cards, define it counts and deal a deck.
+Result is dstored in deaklt attr</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Example:</span><a class="headerlink" href="#id4" title="Permalink to this code"></a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="p">[</span><span class="s1">&#39;card1&#39;</span><span class="p">,</span> <span class="s1">&#39;card3&#39;</span><span class="p">,</span> <span class="s1">&#39;card2&#39;</span><span class="p">,</span> <span class="s1">&#39;card4&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.name">
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bgameb.tools.Deck.name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.tools.Deck.dealt">
+<span class="sig-name descname"><span class="pre">dealt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#bgameb.tools.Deck.dealt" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="bgameb.tools.Deck.deal">
-<span class="sig-name descname"><span class="pre">deal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.deal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.deal" title="Permalink to this definition"></a></dt>
-<dd><p>Deal deck for play from deck_cards</p>
+<span class="sig-name descname"><span class="pre">deal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.deal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.deal" title="Permalink to this definition"></a></dt>
+<dd><p>Deal new random shuffled deck and save it to
+self.dealt: List[str]</p>
 </dd></dl>
 
 <dl class="py method">
