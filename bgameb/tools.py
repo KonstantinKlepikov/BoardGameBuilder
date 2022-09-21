@@ -93,13 +93,44 @@ class Deck(BaseTool):
         """Arrange  cards in dealt deck
         """
 
-    def search(self, name: str) -> None:
+    def search(self, query: Dict[str, int], remove: bool = True) -> List[Card]:
         """Search for cards in dealt deck
 
         Args:
-            name (str): name of card
+            query (Dict[str, int]): dict with name of searched
+                                    card and count of seartching
+            remove (bool): if True - remove cards from dealt deck.
+                           Default to True
+
+        Return:
+            List[Card]: list of finded cards
+
+        .. code-block::
+            :caption: Example:
+
+                game.tools.stuff.deck1.search(
+                    {'card1': 2,
+                     'card2': 1 },
+                    remove=False
+                    )
         """
-        raise NotImplementedError
+        for_deque = deque()
+        result = []
+
+        while True:
+            try:
+                card = self.dealt.popleft()
+                if card.name in query.keys() and query[card.name] > 0:
+                    result.append(card)
+                    query[card.name] -= 1
+                    if not remove:
+                        for_deque.append(card)
+                else:
+                    for_deque.append(card)
+            except IndexError:
+                break
+        self.dealt = for_deque
+        return result
 
     def move(self) -> None:
         """Move stuff from this dealt deck to another

@@ -1,0 +1,1 @@
+Add and test search() method to deck.
