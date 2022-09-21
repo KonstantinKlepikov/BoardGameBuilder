@@ -127,6 +127,9 @@ class Card(CardType):
 
     def tap(self, side='right') -> None:
         """Tap the card to the given side
+
+        Args:
+            side (str, optional): sifde to tap. Defaults to 'right'.
         """
         self.tapped = True
         self.side = side

@@ -164,13 +164,44 @@
         <span class="sd">&quot;&quot;&quot;Arrange  cards in dealt deck</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="Deck.search"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Deck.search"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Card</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Search for cards in dealt deck</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            name (str): name of card</span>
+<span class="sd">            query (Dict[str, int]): dict with name of searched</span>
+<span class="sd">                                    card and count of seartching</span>
+<span class="sd">            remove (bool): if True - remove cards from dealt deck.</span>
+<span class="sd">                           Default to True</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            List[Card]: list of finded cards</span>
+
+<span class="sd">        .. code-block::</span>
+<span class="sd">            :caption: Example:</span>
+
+<span class="sd">                game.tools.stuff.deck1.search(</span>
+<span class="sd">                    {&#39;card1&#39;: 2,</span>
+<span class="sd">                     &#39;card2&#39;: 1 },</span>
+<span class="sd">                    remove=False</span>
+<span class="sd">                    )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="n">for_deque</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">card</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">query</span><span class="p">[</span><span class="n">card</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+                    <span class="n">query</span><span class="p">[</span><span class="n">card</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">remove</span><span class="p">:</span>
+                        <span class="n">for_deque</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">for_deque</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span> <span class="o">=</span> <span class="n">for_deque</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Deck.move"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Move stuff from this dealt deck to another</span>

@@ -240,3 +240,35 @@ class TestDeck:
         deck.clear()
         assert isinstance(deck.dealt, deque), 'nonempty dealt'
         assert len(deck.dealt) == 0, 'nonempty dealt'
+
+    def test_search(
+        self, game_inst: BaseGame) -> None:
+        """Test deck search() one or many or no one cards
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=2)
+        deck.add('card_nice', count=2)
+        deck.deal()
+        search = deck.search(query={'card': 1})
+        assert len(search) == 1, 'wrong search len'
+        assert isinstance(search[0], BaseStuff), 'wrong search type'
+        assert search[0].name == 'card', 'wrong finded name'
+        assert len(deck.dealt) == 3, 'wrong dealt len'
+
+        search = deck.search(query={'card_nice': 2}, remove=False)
+        assert len(search) == 2, 'wrong search len'
+        assert search[0].name == 'card_nice', 'wrong finded name'
+        assert len(deck.dealt) == 3, 'wrong dealt len'
+
+        search = deck.search(query={'card': 1, 'card_nice': 1})
+        assert len(search) == 2, 'wrong search len'
+        assert len(deck.dealt) == 1, 'wrong dealt len'
+
+        search = deck.search(query={'card_nice': 50})
+        assert len(search) == 1, 'wrong search len'
+        assert len(deck.dealt) == 0, 'wrong dealt len'
+
+        deck.deal()
+        search = deck.search(query={'wrong_card': 1})
+        assert len(search) == 0, 'wrong search len'
+        assert len(deck.dealt) == 4, 'wrong dealt len'
