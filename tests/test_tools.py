@@ -5,7 +5,7 @@ from bgameb.game import Game
 from bgameb.tools import Shaker, Deck, BaseTool
 from bgameb.stuff import BaseStuff
 from bgameb.constructs import Components, BaseGame
-from bgameb.errors import StuffDefineError
+from bgameb.errors import StuffDefineError, ArrangeIndexError
 
 
 @pytest.fixture
@@ -218,6 +218,15 @@ class TestDeck:
         deck.deal()
         assert deck.dealt != dealt0, 'not random order'
 
+    def test_key_access_to_dealt(
+        self, game_inst: BaseGame) -> None:
+        """Key access to dealt attribute
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=3)
+        deck.deal()
+        assert deck[0].name == 'card', 'broken key access'
+
     def test_deck_shuffle(
         self, game_inst: BaseGame) -> None:
         """Test deck shuffle()
@@ -272,3 +281,71 @@ class TestDeck:
         search = deck.search(query={'wrong_card': 1})
         assert len(search) == 0, 'wrong search len'
         assert len(deck.dealt) == 4, 'wrong dealt len'
+
+    def test_to_arrange(
+        self, game_inst: BaseGame) -> None:
+        """Test to_arrange() deck
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=2)
+        deck.add('card_nice', count=2)
+        deck.deal()
+
+        arranged, last = deck.to_arrange(0, 1)
+        assert len(last) == 2, 'wrong last len'
+        assert isinstance(last[0], list), 'wrong left'
+        assert isinstance(last[1], list), 'wrong right'
+        assert isinstance(arranged, list), 'wrong center'
+        assert arranged[0].name == deck.dealt[0].name, 'wrong arranged'
+        assert last[0] == [], 'wrong split'
+        assert len(last[1]) == 3, 'wrong split'
+
+        arranged, last = deck.to_arrange(1, 2)
+        assert len(last[0]) == 1, 'wrong split'
+        assert len(last[1]) == 2, 'wrong split'
+        assert len(arranged) == 1, 'wrong center'
+
+        arranged, last = deck.to_arrange(1, 50)
+        assert len(last[0]) == 1, 'wrong split'
+        assert len(last[1]) == 0, 'wrong split'
+        assert len(arranged) == 3, 'wrong center'
+
+        with pytest.raises(
+            ArrangeIndexError,
+            match='Nonpositive or broken'
+            ):
+            arranged, last = deck.to_arrange(-3, 0)
+        with pytest.raises(
+            ArrangeIndexError,
+            match='Nonpositive or broken'
+            ):
+            arranged, last = deck.to_arrange(5, -55)
+        with pytest.raises(
+            ArrangeIndexError,
+            match='Nonpositive or broken'
+            ):
+            arranged, last = deck.to_arrange(5, 3)
+
+    def test_arrrange(
+        self, game_inst: BaseGame) -> None:
+        """Test arrange() deck
+        """
+        deck = Deck(name='deck', _game=game_inst)
+        deck.add('card', count=4)
+        deck.add('card_nice', count=2)
+
+        deck.deal()
+        arranged, last = deck.to_arrange(0, 5)
+        arranged.sort(key=lambda x: x.name)
+        before = deck.dealt.copy()
+        deck.arrange(arranged, last)
+        assert deck.dealt != before, 'not arranged'
+
+        deck.deal()
+        arranged, last = deck.to_arrange(0, 4)
+        arranged.pop()
+        with pytest.raises(
+            ArrangeIndexError,
+            match="Wrong to_arranged parts"
+            ):
+            deck.arrange(arranged, last)

@@ -6,6 +6,7 @@ from typing import Optional, Tuple, Dict, Literal, List, Deque
 from dataclasses import dataclass, field
 from bgameb.stuff import Roller, Card, BaseStuff
 from bgameb.constructs import BaseTool
+from bgameb.errors import ArrangeIndexError
 
 
 @dataclass
@@ -72,6 +73,17 @@ class Deck(BaseTool):
         self._stuff_to_add = Card
         self.dealt = deque()
 
+    def __getitem__(self, key: int) -> BaseStuff:
+        """Вefines access by key to dealt deck
+
+        Args:
+            key (int): index number
+
+        Returns:
+            BaseStuff: stuff from dealt object
+        """
+        return self.dealt[key]
+
     def deal(self) -> List[str]:
         """Deal new random shuffled deck and save it to
         self.dealt: List[str]
@@ -89,9 +101,55 @@ class Deck(BaseTool):
         random.shuffle(self.dealt)
         self.logger.debug(f'Is shuffled: {self.dealt}')
 
-    def arrange(self) -> None:
-        """Arrange  cards in dealt deck
+    def to_arrange(
+        self, start: int, end: int
+        ) -> Tuple[List[BaseStuff], Tuple[List[BaseStuff]]]:
+        """Prepare dealt deck to arrange
+
+        Args:
+            start (int): start of slice
+            end (int): end of slice
+
+        Start and end cant be less than 0 and end must be greater than start.
+        Arranged deck are splited to three part - left, center and right.
+        You can rearrange center part and concatenate that in new deque
+        by arrange() method.
+
+        Return:
+            Tuple[List[BaseStuff], Tuple[List[BaseStuff]]]: part to arrange
         """
+        if start < 0 or end < 0 or end < start:
+            raise ArrangeIndexError(
+                message=f'Nonpositive or broken {start=} or {end=}',
+                logger=self.logger
+                )
+        to_split = list(self.dealt)
+        return (to_split[start:end], (to_split[0:start], to_split[end:]))
+
+    def arrange(
+        self,
+        arranged: List[BaseStuff],
+        last: List[Deque[BaseStuff]]
+            ) -> None:
+        """Compone new dealt deck with given arranged list and
+        last of deck. Use to_arrange() method to get liat to arrange
+        and last of deck before arrange.
+
+        Args:
+            arranged (List[BaseStuff]): arranged list of cards
+            last: (Deque[BaseStuff]): last of deck deque
+        """
+        reorranged = deque()
+        reorranged.extend(last[0])
+        reorranged.extend(arranged)
+        reorranged.extend(last[1])
+        if len(reorranged) == len(self.dealt):
+            self.dealt = reorranged
+        else:
+            raise ArrangeIndexError(
+                f'Wrong to_arranged parts: {arranged=}, {last=}',
+                logger=self.logger
+                )
 
     def search(self, query: Dict[str, int], remove: bool = True) -> List[Card]:
         """Search for cards in dealt deck

@@ -77,6 +77,7 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">bgameb.stuff</span> <span class="kn">import</span> <span class="n">Roller</span><span class="p">,</span> <span class="n">Card</span><span class="p">,</span> <span class="n">BaseStuff</span>
 <span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">BaseTool</span>
+<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span>
 
 
 <div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker">[docs]</a><span class="nd">@dataclass</span>
@@ -143,6 +144,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">Card</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseStuff</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Вefines access by key to dealt deck</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (int): index number</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseStuff: stuff from dealt object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
 <div class="viewcode-block" id="Deck.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Deal new random shuffled deck and save it to</span>
 <span class="sd">        self.dealt: List[str]</span>
@@ -160,9 +172,55 @@
         <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is shuffled: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Deck.arrange"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.arrange">[docs]</a>    <span class="k">def</span> <span class="nf">arrange</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Arrange  cards in dealt deck</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="Deck.to_arrange"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.to_arrange">[docs]</a>    <span class="k">def</span> <span class="nf">to_arrange</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">]]]:</span>
+        <span class="sd">&quot;&quot;&quot;Prepare dealt deck to arrange</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start (int): start of slice</span>
+<span class="sd">            end (int): end of slice</span>
+
+<span class="sd">        Start and end cant be less than 0 and end must be greater than start.</span>
+<span class="sd">        Arranged deck are splited to three part - left, center and right.</span>
+<span class="sd">        You can rearrange center part and concatenate that in new deque</span>
+<span class="sd">        by arrange() method.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            Tuple[List[BaseStuff], Tuple[List[BaseStuff]]]: part to arrange</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="n">start</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ArrangeIndexError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Nonpositive or broken </span><span class="si">{</span><span class="n">start</span><span class="si">=}</span><span class="s1"> or </span><span class="si">{</span><span class="n">end</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="p">)</span>
+        <span class="n">to_split</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">to_split</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="p">(</span><span class="n">to_split</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">start</span><span class="p">],</span> <span class="n">to_split</span><span class="p">[</span><span class="n">end</span><span class="p">:]))</span></div>
+
+<div class="viewcode-block" id="Deck.arrange"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.arrange">[docs]</a>    <span class="k">def</span> <span class="nf">arrange</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">arranged</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">],</span>
+        <span class="n">last</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Deque</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">]]</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Compone new dealt deck with given arranged list and</span>
+<span class="sd">        last of deck. Use to_arrange() method to get liat to arrange</span>
+<span class="sd">        and last of deck before arrange.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arranged (List[BaseStuff]): arranged list of cards</span>
+<span class="sd">            last: (Deque[BaseStuff]): last of deck deque</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reorranged</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="n">reorranged</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">last</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">reorranged</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">arranged</span><span class="p">)</span>
+        <span class="n">reorranged</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">last</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">reorranged</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span> <span class="o">=</span> <span class="n">reorranged</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ArrangeIndexError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Wrong to_arranged parts: </span><span class="si">{</span><span class="n">arranged</span><span class="si">=}</span><span class="s1">, </span><span class="si">{</span><span class="n">last</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Deck.search"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Card</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Search for cards in dealt deck</span>
