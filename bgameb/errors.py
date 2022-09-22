@@ -33,3 +33,12 @@ class StuffDefineError(AttributeError):
         self.message = message
         logger.exception(self.message)
         super().__init__(self.message)
+
+
+class ArrangeIndexError(IndexError):
+    """Index error for arrange tool
+    """
+    def __init__(self, message, logger) -> None:
+        self.message = message
+        logger.exception(self.message)
+        super().__init__(self.message)

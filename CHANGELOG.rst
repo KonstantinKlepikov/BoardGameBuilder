@@ -3,6 +3,20 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.14 (2022-09-22)
+============================
+
+Features
+--------
+
+- #77:
+      * implement to_arrnaage() and arrange() methods
+      * add ArrangeIndexError
+      * add key access to self.dealt of Deck
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/77)
+- Add and test search() method to deck. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/81)
+
+
 Release v0.0.13 (2022-09-21)
 ============================
 
