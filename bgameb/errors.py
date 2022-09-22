@@ -42,4 +42,3 @@ class ArrangeIndexError(IndexError):
         self.message = message
         logger.exception(self.message)
         super().__init__(self.message)
-

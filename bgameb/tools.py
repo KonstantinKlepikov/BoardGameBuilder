@@ -60,7 +60,6 @@ class Deck(BaseTool):
         :caption: Example:
 
             deque(Card1, Card3, Card2, Card4)
-
     """
     name: Optional[str] = None
     dealt: Deque[BaseStuff] = field(
@@ -103,7 +102,7 @@ class Deck(BaseTool):
 
     def to_arrange(
         self, start: int, end: int
-        ) -> Tuple[List[BaseStuff], Tuple[List[BaseStuff]]]:
+            ) -> Tuple[List[BaseStuff], Tuple[List[BaseStuff]]]:
         """Prepare dealt deck to arrange
 
         Args:
@@ -124,7 +123,10 @@ class Deck(BaseTool):
                 logger=self.logger
                 )
         to_split = list(self.dealt)
-        return (to_split[start:end], (to_split[0:start], to_split[end:]))
+        splited = (to_split[start:end], (to_split[0:start], to_split[end:]))
+        self.logger.debug(f'To arrange result: {splited=}')
+
+        return splited
 
     def arrange(
         self,
@@ -143,8 +145,10 @@ class Deck(BaseTool):
         reorranged.extend(last[0])
         reorranged.extend(arranged)
         reorranged.extend(last[1])
+
         if len(reorranged) == len(self.dealt):
             self.dealt = reorranged
+            self.logger.debug(f'Arrange result: {reorranged=}')
         else:
             raise ArrangeIndexError(
                 f'Wrong to_arranged parts: {arranged=}, {last=}',
@@ -188,17 +192,15 @@ class Deck(BaseTool):
             except IndexError:
                 break
         self.dealt = for_deque
-        return result
+        self.logger.debug(f'Search result: {result}')
 
-    def move(self) -> None:
-        """Move stuff from this dealt deck to another
-        """
-        raise NotImplementedError
+        return result
 
     def clear(self) -> None:
         """Clean dealt deack
         """
         self.dealt.clear()
+        self.logger.debug(f'Dealt deck is clear')
 
 
 TOOLS = {
