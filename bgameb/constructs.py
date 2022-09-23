@@ -364,4 +364,22 @@ class BasePlayer(Base):
     """Base class for game players and bots
 
     Inherited classes needs attr name implementation
+
+    Attrs
+
+        - is_active (bool): Default to True.
+        - has_priority (bool): Default to False
+        - team (str, optioanl): team name for this player
+        - owner_of (List[str]): list of objects owned by player Default to []
+        - user_of (List[str]): list of objects used by player Default to []
     """
+    is_active: bool = True
+    has_priority: bool = False
+    team: Optional[str] = None
+    owner_of: List[str] = field(default_factory=list, init=False)
+    user_of: List[str] = field(default_factory=list, init=False)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        owner_of = []
+        user_of = []

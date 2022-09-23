@@ -4,6 +4,7 @@ from typing import Optional, Literal
 from dataclasses import dataclass, field
 from bgameb.tools import TOOLS, TOOLS_TYPES
 from bgameb.stuff import STUFF, STUFF_TYPES
+from bgameb.players import PLAYERS, PLAERS_TYPES
 from bgameb.errors import ComponentClassError
 from bgameb.constructs import Components, BaseGame
 
@@ -15,15 +16,17 @@ class Game(BaseGame):
     name: Optional[str] = None
     stuff: Components = field(default_factory=Components, init=False)
     tools: Components = field(default_factory=Components, init=False)
+    players: Components = field(default_factory=Components, init=False)
 
     def __post_init__(self) -> None:
         self.stuff = Components()
         self.tools = Components()
+        self.players = Components()
         super().__post_init__()
 
     def add(
         self,
-        component: Literal[STUFF_TYPES, TOOLS_TYPES],
+        component: Literal[STUFF_TYPES, TOOLS_TYPES, PLAERS_TYPES],
         name: Optional[str] = None,
             ) -> None:
         if component in STUFF.keys():
@@ -35,6 +38,11 @@ class Game(BaseGame):
             self.tools.add(TOOLS[component], _game=self, name=name)
             self.logger.info(
                 f'{component} is added: {self.tools.get_names()}.'
+                )
+        elif component in PLAYERS.keys():
+            self.players.add(PLAYERS[component], name=name)
+            self.logger.info(
+                f'{component} is added: {self.players.get_names()}.'
                 )
         else:
             raise ComponentClassError(component, self.logger)
