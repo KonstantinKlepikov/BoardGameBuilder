@@ -2,6 +2,7 @@ import json, pytest
 from bgameb.game import Game, Components
 from bgameb.stuff import STUFF
 from bgameb.tools import TOOLS
+from bgameb.players import PLAYERS
 from bgameb.errors import ComponentClassError
 
 
@@ -19,6 +20,7 @@ class TestGame:
         assert game.name == 'This Game', 'not set name for instance'
         assert isinstance(game.stuff, Components), 'wrong stuff'
         assert isinstance(game.tools, Components), 'wrong tools'
+        assert isinstance(game.players, Components), 'wrong players'
 
     def test_game_class_is_converted_to_json(self) -> None:
         """Test to json convertatrion
@@ -37,6 +39,9 @@ class TestGame:
         for n in TOOLS.keys():
             game.add(n, name=n)
             assert game.tools[n].name == n, 'tool not added'
+        for n in PLAYERS.keys():
+            game.add(n, name=n)
+            assert game.players[n].name == n, 'player not added'
 
     def test_add_wrong_component_to_game(self) -> None:
         """Test we cant add notexisted tool or stuff to game

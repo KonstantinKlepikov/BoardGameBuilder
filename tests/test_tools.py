@@ -331,11 +331,11 @@ class TestDeck:
         """Test arrange() deck
         """
         deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=4)
+        deck.add('card', count=10)
         deck.add('card_nice', count=2)
 
         deck.deal()
-        arranged, last = deck.to_arrange(0, 5)
+        arranged, last = deck.to_arrange(0, 9)
         arranged.sort(key=lambda x: x.name)
         before = deck.dealt.copy()
         deck.arrange(arranged, last)
