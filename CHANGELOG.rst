@@ -3,6 +3,18 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.15 (2022-09-24)
+============================
+
+Features
+--------
+
+- #41:
+      * Add Player class and methods for BasePlayer
+      * Add player to add() method of game. Add attr playrs to Game
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/41)
+
+
 Release v0.0.14 (2022-09-22)
 ============================
 
