@@ -3,7 +3,7 @@ from bgameb.stuff import RollerType, Roller, CardType, Card
 from bgameb.errors import StuffDefineError
 
 
-class TestNameAndJson:
+class TestBaseStuff:
     """Test creation with names and json schemes
     """
     params = [
@@ -14,21 +14,21 @@ class TestNameAndJson:
     ]
 
     @pytest.mark.parametrize("_class, name", params)
-    def test_rolled_classes_created_with_name(self, _class, name: str) -> None:
-        """Test rolled classes name instancing
+    def test_stuff_classes_created_with_name(self, _class, name: str) -> None:
+        """Test stuff classes instancing
         """
         assert not _class.name, 'class has name'
-        rolled = _class()
-        assert isinstance(rolled.name, str), 'wrong default name'
-        rolled = _class(name='This Rolled')
-        assert rolled.name == 'This Rolled', 'not set name for instance'
+        stuff = _class()
+        assert isinstance(stuff.name, str), 'wrong default name'
+        stuff = _class(name='This Rolled')
+        assert stuff.name == 'This Rolled', 'not set name for instance'
 
     @pytest.mark.parametrize("_class, name", params)
-    def test_rolled_classes_are_converted_to_json(self, _class, name: str) -> None:
+    def test_stuff_classes_are_converted_to_json(self, _class, name: str) -> None:
         """Test to json convertatrion
         """
-        rolled = _class(name=name)
-        j = json.loads(rolled.to_json())
+        stuff = _class(name=name)
+        j = json.loads(stuff.to_json())
         assert j['name'] == name, 'not converted to json'
         with pytest.raises(
             KeyError,
