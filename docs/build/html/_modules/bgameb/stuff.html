@@ -73,6 +73,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span>
 <span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">BaseStuff</span>
@@ -170,6 +171,10 @@
 <span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">CardType</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the card</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">Counter</span><span class="p">,</span>
+        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -219,11 +224,6 @@
 <span class="sd">        that alternative. For ease of understanding, consider that</span>
 <span class="sd">        different views of the same card are not related directly</span>
 <span class="sd">        to each other.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Card.attach"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card.attach">[docs]</a>    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Some rules can attach any stuff to card</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 

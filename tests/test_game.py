@@ -43,6 +43,13 @@ class TestGame:
             game.add(n, name=n)
             assert game.players[n].name == n, 'player not added'
 
+    def test_add_component_with_kwargs(self) -> None:
+        """Test add with kwargs
+        """
+        game = Game(name='game')
+        game.add('roller', name='dice', sides=42)
+        assert game.stuff.dice.sides == 42, 'wrong count'
+
     def test_add_wrong_component_to_game(self) -> None:
         """Test we cant add notexisted tool or stuff to game
         """

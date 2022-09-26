@@ -88,7 +88,7 @@ class Deck(BaseTool):
         self.clear()
         for val in self.stuff.values():
             for _ in range(val.count):
-                self.dealt.append(Card(**val.to_dict())) # NOTE: is added to make deal from cardtype
+                self.dealt.append(Card(**val.to_dict()))
         self.shuffle()
         self.logger.debug(f'Is dealt cards: {self.dealt}')
 

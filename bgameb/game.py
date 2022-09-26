@@ -25,12 +25,13 @@ class Game(BaseGame):
         self,
         component: Literal[STUFF_TYPES, TOOLS_TYPES, PLAERS_TYPES],
         name: Optional[str] = None,
+        **kwargs
             ) -> None:
         for source in [
             (STUFF, self.stuff), (TOOLS, self.tools), (PLAYERS, self.players)
             ]:
             if component in source[0].keys():
-                source[1].add(source[0][component], name=name)
+                source[1].add(source[0][component], name=name, **kwargs)
                 self.logger.info(f'{component} is added: {source[1].get_names()}.')
                 break
         else:
