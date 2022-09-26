@@ -2,6 +2,7 @@
 """
 import random
 from typing import List, Optional, Literal
+from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import config
 from bgameb.constructs import BaseStuff
@@ -99,6 +100,10 @@ class CardType(BaseStuff):
 class Card(CardType):
     """Create the card
     """
+    counter: Counter = field(
+        default_factory=Counter,
+        init=False,
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -148,11 +153,6 @@ class Card(CardType):
         that alternative. For ease of understanding, consider that
         different views of the same card are not related directly
         to each other.
-        """
-        raise NotImplementedError
-
-    def attach(self) -> None:
-        """Some rules can attach any stuff to card
         """
         raise NotImplementedError
 
