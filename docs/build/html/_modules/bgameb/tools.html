@@ -75,7 +75,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Deque</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">bgameb.stuff</span> <span class="kn">import</span> <span class="n">Roller</span><span class="p">,</span> <span class="n">Card</span><span class="p">,</span> <span class="n">BaseStuff</span>
+<span class="kn">from</span> <span class="nn">bgameb.stuff</span> <span class="kn">import</span> <span class="n">Roller</span><span class="p">,</span> <span class="n">Card</span><span class="p">,</span> <span class="n">CardType</span><span class="p">,</span> <span class="n">BaseStuff</span>
 <span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">BaseTool</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span>
 
@@ -89,7 +89,6 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">Roller</span>
 
 <div class="viewcode-block" id="Shaker.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
@@ -140,8 +139,7 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">Card</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">CardType</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseStuff</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Вefines access by key to dealt deck</span>
@@ -161,7 +159,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">count</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span><span class="p">(</span><span class="o">**</span><span class="n">val</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="o">**</span><span class="n">val</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is dealt cards: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
@@ -278,7 +276,7 @@
     <span class="s1">&#39;shaker&#39;</span><span class="p">:</span> <span class="n">Shaker</span><span class="p">,</span>
     <span class="s1">&#39;deck&#39;</span><span class="p">:</span> <span class="n">Deck</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="n">TOOLS_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;roller&#39;</span><span class="p">,</span> <span class="s1">&#39;card&#39;</span><span class="p">]</span>
+<span class="n">TOOLS_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;shaker&#39;</span><span class="p">,</span> <span class="s1">&#39;deck&#39;</span><span class="p">]</span>
 </pre></div>
 
            </div>

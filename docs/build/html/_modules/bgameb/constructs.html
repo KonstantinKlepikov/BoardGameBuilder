@@ -72,7 +72,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Base constructs for build package objects</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
+    <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span>
     <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
@@ -166,6 +166,7 @@
 <span class="sd">            component: component class</span>
 <span class="sd">            kwargs (Dict[str, Any]): aditional args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(f&#39;{kwargs=}&#39;)</span>
         <span class="n">comp</span> <span class="o">=</span> <span class="n">component</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -184,6 +185,7 @@
 <span class="sd">            component (Component): component class</span>
 <span class="sd">            kwargs: aditional args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(f&#39;Add {kwargs=}&#39;)</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_chek_in</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
@@ -258,24 +260,7 @@
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> created with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">=}</span><span class="s1">.&#39;</span>
-            <span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_chek_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chek</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Chek exist name string in seequence</span>
-<span class="sd">        # TODO: test me</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            name (str): name sting</span>
-<span class="sd">            check (Sequence[str]): cheked collection</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: name is exist or not in collection</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">chek</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
-
+            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseGame"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.BaseGame">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">BaseGame</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
@@ -285,18 +270,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BaseGame.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.BaseGame.add">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add stuff or tools to game</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            component (str): stuff or tool type</span>
 <span class="sd">            name (str, optional): name of added component.</span>
 <span class="sd">                                  Defaults to None.</span>
+<span class="sd">            **kwargs (any): dict of named args</span>
 <span class="sd">        &quot;&quot;&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="BaseStuff"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.BaseStuff">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseStuff</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">BaseStuff</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game stuff (like dices or cards)</span>
 
 <span class="sd">    Inherited classes needs attr name implementation</span>
@@ -304,15 +290,11 @@
 
 
 <div class="viewcode-block" id="BaseTool"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.BaseTool">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">BaseTool</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">BaseTool</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game tools (like decks or shakers)</span>
 
 <span class="sd">    Inherited classes needs attr name implementation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_game</span><span class="p">:</span> <span class="n">BaseGame</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
     <span class="n">_stuff_to_add</span><span class="p">:</span> <span class="n">BaseStuff</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -322,9 +304,8 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span> <span class="o">=</span> <span class="n">Components</span><span class="p">()</span>
 
-<div class="viewcode-block" id="BaseTool.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.BaseTool.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseTool.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.constructs.BaseTool.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">game</span><span class="p">:</span> <span class="n">BaseGame</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add stuff to the tool stuff collection</span>
 
 <span class="sd">        Args:</span>
@@ -335,7 +316,7 @@
 <span class="sd">            StuffDefineError: count of stuff nonpositive</span>
 <span class="sd">                              or stuff not exist</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chek_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_game</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
                 <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Stuff with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s2"> not exist in a game.&quot;</span><span class="p">,</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
@@ -347,11 +328,11 @@
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
                 <span class="p">)</span>
 
-        <span class="c1"># add roller and set a count</span>
+        <span class="c1"># add stuff and set a count</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">get_names</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span><span class="p">,</span>
-                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_game</span><span class="o">.</span><span class="n">stuff</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="o">**</span><span class="n">game</span><span class="o">.</span><span class="n">stuff</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
                 <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -443,6 +424,7 @@
 <span class="sd">        - team (str, optioanl): team name for this player</span>
 <span class="sd">        - owner_of (List[str]): list of objects owned by player Default to []</span>
 <span class="sd">        - user_of (List[str]): list of objects used by player Default to []</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">is_active</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">has_priority</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -451,9 +433,7 @@
     <span class="n">user_of</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="n">owner_of</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">user_of</span> <span class="o">=</span> <span class="p">[]</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
 </pre></div>
 
            </div>

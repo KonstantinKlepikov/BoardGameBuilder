@@ -199,13 +199,14 @@ class BaseGame(Base, ABC):
     """
 
     @abstractmethod
-    def add(self, component: str, name: Optional[str] = None) -> None:
+    def add(self, component: str, name: Optional[str] = None, **kwargs) -> None:
         """Add stuff or tools to game
 
         Args:
             component (str): stuff or tool type
             name (str, optional): name of added component.
                                   Defaults to None.
+            **kwargs (any): dict of named args
         """
 
 
