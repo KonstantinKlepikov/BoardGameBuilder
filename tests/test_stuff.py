@@ -1,5 +1,7 @@
 import json, pytest
-from bgameb.stuff import RollerType, Roller, CardType, Card
+from bgameb.stuff import (
+    RollerType, Roller, CardType, Card
+    )
 from bgameb.errors import StuffDefineError
 
 
@@ -30,11 +32,6 @@ class TestBaseStuff:
         stuff = _class(name=name)
         j = json.loads(stuff.to_json())
         assert j['name'] == name, 'not converted to json'
-        with pytest.raises(
-            KeyError,
-            match='_range'
-            ):
-            j['_range']
 
 
 class TestRollers:

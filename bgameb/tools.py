@@ -4,7 +4,7 @@ import random
 from collections import deque
 from typing import Optional, Tuple, Dict, Literal, List, Deque
 from dataclasses import dataclass, field
-from bgameb.stuff import Roller, Card, BaseStuff
+from bgameb.stuff import Roller, Card, CardType, BaseStuff
 from bgameb.constructs import BaseTool
 from bgameb.errors import ArrangeIndexError
 
@@ -18,7 +18,6 @@ class Shaker(BaseTool):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.last = {}
         self._stuff_to_add = Roller
 
     def roll(self) -> Dict[str, Tuple[int]]:
@@ -69,8 +68,7 @@ class Deck(BaseTool):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._stuff_to_add = Card
-        self.dealt = deque()
+        self._stuff_to_add = CardType
 
     def __getitem__(self, key: int) -> BaseStuff:
         """Вefines access by key to dealt deck
@@ -90,7 +88,7 @@ class Deck(BaseTool):
         self.clear()
         for val in self.stuff.values():
             for _ in range(val.count):
-                self.dealt.append(self._stuff_to_add(**val.to_dict()))
+                self.dealt.append(Card(**val.to_dict())) # NOTE: is added to make deal from cardtype
         self.shuffle()
         self.logger.debug(f'Is dealt cards: {self.dealt}')
 
@@ -207,4 +205,4 @@ TOOLS = {
     'shaker': Shaker,
     'deck': Deck,
 }
-TOOLS_TYPES = Literal['roller', 'card']
+TOOLS_TYPES = Literal['shaker', 'deck']

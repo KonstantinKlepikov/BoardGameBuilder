@@ -1,7 +1,7 @@
 """Base constructs for build package objects
 """
 from typing import (
-    Dict, List, Optional, Any, Iterable, Sequence
+    Dict, List, Optional, Any, Iterable
     )
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
@@ -189,23 +189,6 @@ class Base(DataClassJsonMixin, ABC):
             f'{self.__class__.__name__} created with {self.name=}.'
             )
 
-    @staticmethod
-    def _chek_name(name: str, chek: Sequence[str]) -> bool:
-        """Chek exist name string in seequence
-        # TODO: test me
-
-        Args:
-            name (str): name sting
-            check (Sequence[str]): cheked collection
-
-        Returns:
-            bool: name is exist or not in collection
-        """
-        if name in chek:
-            return True
-        return False
-
-
 @dataclass
 class BaseGame(Base, ABC):
     """Base class for game
@@ -225,7 +208,7 @@ class BaseGame(Base, ABC):
 
 
 @dataclass
-class BaseStuff(Base, ABC):
+class BaseStuff(Base):
     """Base class for game stuff (like dices or cards)
 
     Inherited classes needs attr name implementation
@@ -233,7 +216,7 @@ class BaseStuff(Base, ABC):
 
 
 @dataclass
-class BaseTool(Base, ABC):
+class BaseTool(Base):
     """Base class for game tools (like decks or shakers)
 
     Inherited classes needs attr name implementation
@@ -251,7 +234,6 @@ class BaseTool(Base, ABC):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.stuff = Components()
 
     def add(self, name: str, count: int = 1) -> None:
         """Add stuff to the tool stuff collection
@@ -264,7 +246,7 @@ class BaseTool(Base, ABC):
             StuffDefineError: count of stuff nonpositive
                               or stuff not exist
         """
-        if not self._chek_name(name, self._game.stuff.keys()):
+        if name not in self._game.stuff.keys():
             raise StuffDefineError(
                 message=f"Stuff with {name=} not exist in a game.",
                 logger=self.logger
@@ -276,7 +258,7 @@ class BaseTool(Base, ABC):
                 logger=self.logger
                 )
 
-        # add roller and set a count
+        # add stuff and set a count
         if name not in self.stuff.get_names():
             self.stuff.add(
                 self._stuff_to_add,
@@ -372,6 +354,7 @@ class BasePlayer(Base):
         - team (str, optioanl): team name for this player
         - owner_of (List[str]): list of objects owned by player Default to []
         - user_of (List[str]): list of objects used by player Default to []
+
     """
     is_active: bool = True
     has_priority: bool = False
@@ -381,5 +364,3 @@ class BasePlayer(Base):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        owner_of = []
-        user_of = []

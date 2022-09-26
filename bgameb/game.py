@@ -19,9 +19,6 @@ class Game(BaseGame):
     players: Components = field(default_factory=Components, init=False)
 
     def __post_init__(self) -> None:
-        self.stuff = Components()
-        self.tools = Components()
-        self.players = Components()
         super().__post_init__()
 
     def add(

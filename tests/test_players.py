@@ -1,4 +1,5 @@
 import json, pytest
+from collections import Counter
 from bgameb.players import Player, Bot
 from bgameb.constructs import BasePlayer
 
@@ -32,11 +33,6 @@ class TestBasePlayer:
         player = _class(name=name)
         j = json.loads(player.to_json())
         assert j['name'] == name, 'not converted to json'
-        with pytest.raises(
-            KeyError,
-            match='_range'
-            ):
-            j['_range']
 
     @pytest.mark.parametrize("_class, name", params)
     def test_players_attributes(
@@ -50,3 +46,4 @@ class TestBasePlayer:
         assert player.team is None, 'wrong tram'
         assert player.owner_of == [], 'wrong owner of'
         assert player.user_of == [], 'wrong user of'
+        assert isinstance(player.counter, Counter), 'wrong counter'
