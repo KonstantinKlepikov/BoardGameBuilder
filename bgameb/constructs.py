@@ -95,6 +95,7 @@ class Components(Mapping):
             component: component class
             kwargs (Dict[str, Any]): aditional args
         """
+        # print(f'{kwargs=}')
         comp = component(**kwargs)
 
         if kwargs['name'] is None:
@@ -113,6 +114,7 @@ class Components(Mapping):
             component (Component): component class
             kwargs: aditional args
         """
+        # print(f'Add {kwargs=}')
         if kwargs.get('name'):
             self._chek_in(kwargs['name'])
         else:
@@ -221,10 +223,6 @@ class BaseTool(Base):
 
     Inherited classes needs attr name implementation
     """
-    _game: BaseGame = field(
-        metadata=config(exclude=lambda x: True),
-        repr=False
-        )
     _stuff_to_add: BaseStuff = field(
         metadata=config(exclude=lambda x: True),
         repr=False,
@@ -235,7 +233,7 @@ class BaseTool(Base):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def add(self, name: str, count: int = 1) -> None:
+    def add(self, name: str, game: BaseGame, count: int = 1) -> None:
         """Add stuff to the tool stuff collection
 
         Args:
@@ -246,7 +244,7 @@ class BaseTool(Base):
             StuffDefineError: count of stuff nonpositive
                               or stuff not exist
         """
-        if name not in self._game.stuff.keys():
+        if name not in game.stuff.keys():
             raise StuffDefineError(
                 message=f"Stuff with {name=} not exist in a game.",
                 logger=self.logger
@@ -262,7 +260,7 @@ class BaseTool(Base):
         if name not in self.stuff.get_names():
             self.stuff.add(
                 self._stuff_to_add,
-                **self._game.stuff[name].to_dict()
+                **game.stuff[name].to_dict()
                 )
             self.stuff[name].count = count
             self.logger.debug(

@@ -26,20 +26,12 @@ class Game(BaseGame):
         component: Literal[STUFF_TYPES, TOOLS_TYPES, PLAERS_TYPES],
         name: Optional[str] = None,
             ) -> None:
-        if component in STUFF.keys():
-            self.stuff.add(STUFF[component], name=name)
-            self.logger.info(
-                f'{component} is added: {self.stuff.get_names()}.'
-                )
-        elif component in TOOLS.keys():
-            self.tools.add(TOOLS[component], _game=self, name=name)
-            self.logger.info(
-                f'{component} is added: {self.tools.get_names()}.'
-                )
-        elif component in PLAYERS.keys():
-            self.players.add(PLAYERS[component], name=name)
-            self.logger.info(
-                f'{component} is added: {self.players.get_names()}.'
-                )
+        for source in [
+            (STUFF, self.stuff), (TOOLS, self.tools), (PLAYERS, self.players)
+            ]:
+            if component in source[0].keys():
+                source[1].add(source[0][component], name=name)
+                self.logger.info(f'{component} is added: {source[1].get_names()}.')
+                break
         else:
             raise ComponentClassError(component, self.logger)
