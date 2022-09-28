@@ -1,7 +1,5 @@
 import json, pytest
-from bgameb.stuff import (
-    RollerType, Roller, CardType, Card
-    )
+from bgameb.stuff import RollerType, Roller, CardType, Card
 from bgameb.errors import StuffDefineError
 
 
@@ -19,15 +17,16 @@ class TestBaseStuff:
     def test_stuff_classes_created_with_name(self, _class, name: str) -> None:
         """Test stuff classes instancing
         """
-        stuff = _class(name='this_stuff')
-        assert stuff.name == 'this_stuff', 'not set name for instance'
+        obj_= _class(name='this_stuff')
+        assert obj_.name == 'this_stuff', 'not set name for instance'
+        assert obj_.is_active, 'wrong is_active'
 
     @pytest.mark.parametrize("_class, name", params)
     def test_stuff_classes_are_converted_to_json(self, _class, name: str) -> None:
         """Test to json convertatrion
         """
-        stuff = _class(name=name)
-        j = json.loads(stuff.to_json())
+        obj_ = _class(name=name)
+        j = json.loads(obj_.to_json())
         assert j['name'] == name, 'not converted to json'
 
 
@@ -48,24 +47,24 @@ class TestRollers:
         """_summary_
         """
         dice_type = RollerType(name='dice', sides=6)
-        dice = Roller(**dice_type.to_dict())
-        assert isinstance(dice, Roller), 'wrong type'
-        assert dice.name == 'dice', 'wrong name'
-        assert dice.sides == 6, 'wrong sides'
-        assert dice.count == 0, 'wrong count'
-        assert len(dice._range) == 6, 'wrong _range'
+        obj_ = Roller(**dice_type.to_dict())
+        assert isinstance(obj_, Roller), 'wrong type'
+        assert obj_.name == 'dice', 'wrong name'
+        assert obj_.sides == 6, 'wrong sides'
+        assert obj_.count == 0, 'wrong count'
+        assert len(obj_._range) == 6, 'wrong _range'
 
     def test_roller_roll(self) -> None:
         """Test roller roll return result
         """
-        dice = Roller(name='dice', count=5)
-        roll = dice.roll()
-        assert isinstance(roll, list), 'roll returns not list'
-        assert len(roll) == 5, 'wrong count of rolls'
-        assert isinstance(roll[0], int), 'ot an int in a list'
-        dice = Roller(name='dice')
-        roll = dice.roll()
-        assert len(roll) == 0, 'is roled, but count is 0'
+        obj_ = Roller(name='dice', count=5)
+        result = obj_.roll()
+        assert isinstance(result, list), 'roll returns not list'
+        assert len(result) == 5, 'wrong count of rolls'
+        assert isinstance(result[0], int), 'ot an int in a list'
+        obj_ = Roller(name='dice')
+        result = obj_.roll()
+        assert len(result) == 0, 'is roled, but count is 0'
 
 
 class TestCard:
@@ -74,49 +73,50 @@ class TestCard:
     def test_card_instanciation(self) -> None:
         """Test card correct created
         """
-        card = CardType(name='card')
-        assert card.name == 'card', 'wrong name'
-        assert card.open == False, 'card is open'
-        assert card.tapped == False, 'card is tapped'
-        assert card.side == None, 'defined wrong side'
+        obj_ = CardType(name='card')
+        assert obj_.name == 'card', 'wrong name'
+        assert obj_.is_active, 'wrong is_active'
+        assert obj_.open == False, 'card is open'
+        assert obj_.tapped == False, 'card is tapped'
+        assert obj_.side == None, 'defined wrong side'
 
     def test_flip(self) -> None:
         """Test flip card
         """
-        card = Card(name='card')
-        card.flip()
-        assert card.open, 'card not oppened'
-        card.flip()
-        assert not card.open, 'card oppened'
+        obj_ = Card(name='card')
+        obj_.flip()
+        assert obj_.open, 'card not oppened'
+        obj_.flip()
+        assert not obj_.open, 'card oppened'
 
     def test_fase_up(self) -> None:
         """Test face up open card
         """
-        card = Card(name='card')
-        card.face_up()
-        assert card.open, 'card not open'
+        obj_ = Card(name='card')
+        obj_.face_up()
+        assert obj_.open, 'card not open'
 
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
-        card = Card(name='card')
-        card.open = True
-        card.face_down()
-        assert not card.open, 'card not open'
+        obj_ = Card(name='card')
+        obj_.open = True
+        obj_.face_down()
+        assert not obj_.open, 'card not open'
 
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
         """
-        card = Card(name='card')
-        card.tap(side='left')
-        assert card.tapped, 'card not tapped'
-        assert card.side == 'left', 'wrong side'
+        obj_ = Card(name='card')
+        obj_.tap(side='left')
+        assert obj_.tapped, 'card not tapped'
+        assert obj_.side == 'left', 'wrong side'
 
     def test_untap_card(self) -> None:
         """Test tap card tap and set side
         """
-        card = Card(name='card')
-        card.tapped = True
-        assert card.tapped, 'card not tapped'
-        card.untap()
-        assert not card.tapped, 'card not untapped'
+        obj_ = Card(name='card')
+        obj_.tapped = True
+        assert obj_.tapped, 'card not tapped'
+        obj_.untap()
+        assert not obj_.tapped, 'card not untapped'
