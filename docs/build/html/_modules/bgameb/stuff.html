@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.stuff &mdash; bgameb 0.0.12 documentation</title>
+  <title>bgameb.stuff &mdash; bgameb 0.0.15 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.12
+                0.0.15
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,18 +72,24 @@
 <span></span><span class="sd">&quot;&quot;&quot;Game dices, coins, cards and other stuffs</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span>
-<span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">BaseStuff</span>
+<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">StuffDefineError</span>
+
+
+<div class="viewcode-block" id="BaseStuff"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.BaseStuff">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BaseStuff</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for game stuff (like dices or cards)</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="RollerType"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.RollerType">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">RollerType</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for define types of rollers or fliped objects</span>
-
-<span class="sd">    If name isn&#39;t given - it is randomly generated.</span>
 
 <span class="sd">    Define name to identify later this object by unique name.</span>
 <span class="sd">    For example: &#39;six_side_dice&#39;</span>
@@ -100,7 +106,6 @@
 <span class="sd">    Raises:</span>
 <span class="sd">        StuffDefineError: number of sides less than 2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -119,8 +124,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_range</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
-        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
     <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -147,8 +152,6 @@
 <span class="k">class</span> <span class="nc">CardType</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the card</span>
 
-<span class="sd">    If name isn&#39;t given - it is randomly generated.</span>
-
 <span class="sd">    Define name to identify later this object by unique name.</span>
 <span class="sd">    For example: &#39;unique_card&#39;</span>
 
@@ -157,10 +160,10 @@
 
 <span class="sd">            card = CardType(name=&#39;unique_card&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="nb">open</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">tapped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">side</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
@@ -170,6 +173,15 @@
 <span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">CardType</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the card</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">Counter</span><span class="p">,</span>
+        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -219,11 +231,6 @@
 <span class="sd">        that alternative. For ease of understanding, consider that</span>
 <span class="sd">        different views of the same card are not related directly</span>
 <span class="sd">        to each other.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Card.attach"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card.attach">[docs]</a>    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Some rules can attach any stuff to card</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 

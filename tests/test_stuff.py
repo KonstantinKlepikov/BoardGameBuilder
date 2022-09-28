@@ -1,5 +1,7 @@
 import json, pytest
-from bgameb.stuff import RollerType, Roller, CardType, Card
+from bgameb.stuff import (
+    RollerType, Roller, CardType, Card
+    )
 from bgameb.errors import StuffDefineError
 
 
@@ -17,11 +19,8 @@ class TestBaseStuff:
     def test_stuff_classes_created_with_name(self, _class, name: str) -> None:
         """Test stuff classes instancing
         """
-        assert not _class.name, 'class has name'
-        stuff = _class()
-        assert isinstance(stuff.name, str), 'wrong default name'
-        stuff = _class(name='This Rolled')
-        assert stuff.name == 'This Rolled', 'not set name for instance'
+        stuff = _class(name='this_stuff')
+        assert stuff.name == 'this_stuff', 'not set name for instance'
 
     @pytest.mark.parametrize("_class, name", params)
     def test_stuff_classes_are_converted_to_json(self, _class, name: str) -> None:
@@ -30,11 +29,6 @@ class TestBaseStuff:
         stuff = _class(name=name)
         j = json.loads(stuff.to_json())
         assert j['name'] == name, 'not converted to json'
-        with pytest.raises(
-            KeyError,
-            match='_range'
-            ):
-            j['_range']
 
 
 class TestRollers:

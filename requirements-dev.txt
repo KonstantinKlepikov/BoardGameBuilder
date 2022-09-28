@@ -58,7 +58,6 @@ pytest==7.1.2
 python-dotenv==0.20.0
 pytz==2022.2.1
 PyYAML==6.0
-Random-Word==1.0.10
 readme-renderer==37.0
 requests==2.28.1
 requests-toolbelt==0.9.1

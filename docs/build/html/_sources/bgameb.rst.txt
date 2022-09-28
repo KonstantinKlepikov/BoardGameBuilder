@@ -36,10 +36,10 @@ bgameb.tools module
    :undoc-members:
    :show-inheritance:
 
-bgameb.constructs module
-------------------------
+bgameb.base module
+------------------
 
-.. automodule:: bgameb.constructs
+.. automodule:: bgameb.base
    :members:
    :undoc-members:
    :show-inheritance:

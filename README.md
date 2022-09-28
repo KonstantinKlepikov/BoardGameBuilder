@@ -7,43 +7,62 @@ Object-oriented framework for build board game logic in python
 ## Short example
 
 ```python
+from bgameb import Game
+
 # create the game
 game = Game('one_board_game')
 
 # add dice and coin types to game
-game.add('roller', name='six_dice')
-game.add('roller', name='twenty_dice')
-game.add('roller', name='coin')
+game.add('roller', name='six_dice', sides=6)
+game.add('roller', name='twenty_dice', sides=20)
+game.add('roller', name='coin') # 2 is default number of sides
 
-# define sides for dice and coin types
-game.stuff.six_dice.sides = 6
-game.stuff.six_dice.twenty_dice.sides = 20
-game.stuff.six_dice.coin.sides = 2
+# or define sides for dice and coin types
+game.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
 game.add('shaker', name='red_shaker')
-game.tools.red_shaker.add('six_dice', count=50)
-game.tools.red_shaker.add('twenty_dice', count=10)
-game.tools.red_shaker.add('coin', count=42)
+game.red_shaker.add('six_dice', game=game, count=50)
+game.red_shaker.add('twenty_dice', game=game, count=10)
+game.red_shaker.add('coin', game=game, count=42)
 
 # roll all stuff and get result
-result = game.tools.red_shaker.roll()
+result = game.red_shaker.roll()
 
 # or define new shaker with default count == 1 and roll each stuff separatly
 game.add('shaker', name='blue_shaker')
-game.tools.blue_shaker.add('six_dice')
-game.tools.blue_shaker.add('coin')
+game.blue_shaker.add('six_dice', game=game)
+game.blue_shaker.add('coin', game=game)
 
-result = game.tools.blue_shaker.six_dice.roll()
-result = game.tools.blue_shaker.coin.roll()
+result = game.blue_shaker.six_dice.roll()
+result = game.blue_shaker.coin.roll()
+
+# get last roll (this store only full shaker roll)
+last_roll = game.blue_shaker.last
 
 # you can use dict notation offcourse
-result = game['tools']['blue_shaker']['coin'].roll()
+result = game['blue_shaker']['coin'].roll()
+
+# you can use another game object to construct tools
+game_2 = Game('another_board_game')
+game_2.add('roller', name='four_dice', sides=4)
+game.red_shaker.add('four_dice', game=game_2, count=22)
+result = game.red_shaker.roll()
 
 # delete components from any collections
-del game.tools.blue_shaker
-del game.stuff.six_dice
+del game.blue_shaker
+del game.six_dice
 
+# define a cards and decks
+game.add('card', name='one_card')
+game.add('deck', name='cards_deck')
+game.cards_deck.add('one_card', game=game, count=100)
+
+# deal card from deck
+game.cards_deck.deal()
+
+# dealt crds is a python deque
+deck = game.cards_deck.dealt
 ```
 
 ## Documentation

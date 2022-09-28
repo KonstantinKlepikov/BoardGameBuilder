@@ -1,11 +1,26 @@
-import json, pytest
+import json, pytest, random
 from typing import Tuple
 from collections import deque
-from bgameb.game import Game
+from bgameb.game import Game, BaseGame
 from bgameb.tools import Shaker, Deck, BaseTool
 from bgameb.stuff import BaseStuff
-from bgameb.constructs import Components, BaseGame
+from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
+
+
+class FixedSeed:
+    """Context manager to set random seed
+    """
+    def __init__(self, seed):
+        self.seed = seed
+        self.state = None
+
+    def __enter__(self):
+        self.state = random.getstate()
+        random.seed(self.seed)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        random.setstate(self.state)
 
 
 @pytest.fixture
@@ -32,11 +47,11 @@ class TestTool:
             ) -> None:
         """Test need count of stuff no less than 1
         """
-        tool = _class(name=name, _game=game_inst)
+        tool = _class(name=name)
         with pytest.raises(
             StuffDefineError, match="Can't add"
             ):
-            tool.add(stuff[0], count=0)
+            tool.add(stuff[0], game=game_inst, count=0)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_add_stuff_to_tool_raise_errors_if_wrong_name(
@@ -44,11 +59,11 @@ class TestTool:
             ) -> None:
         """Test need exist stuff
         """
-        tool = _class(name=name, _game=game_inst)
+        tool = _class(name=name)
         with pytest.raises(
             StuffDefineError, match="'somestuff' not exist in a game"
             ):
-            tool.add('somestuff')
+            tool.add('somestuff', game=game_inst)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_double_add_stuff_to_tool_encrease_count(
@@ -57,10 +72,10 @@ class TestTool:
         """Test double add roller with same name increase count,
         not raises error
         """
-        tool = _class(name=name, _game=game_inst)
-        tool.add(stuff[0])
-        tool.add(stuff[0])
-        assert tool.stuff[stuff[0]].count == 2, 'not increased'
+        tool = _class(name=name)
+        tool.add(stuff[0], game=game_inst)
+        tool.add(stuff[0], game=game_inst)
+        assert tool[stuff[0]].count == 2, 'not increased'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_add_stuff_to_shaker(
@@ -68,13 +83,13 @@ class TestTool:
             ) -> None:
         """Test shaker add()
         """
-        tool = _class(name=name, _game=game_inst)
-        tool.add(stuff[0])
-        assert tool.stuff[stuff[0]].count == 1, 'wrong count added'
-        tool.add(stuff[0], count=10)
-        assert tool.stuff[stuff[0]].count == 11, 'wrong count added'
-        tool.add(stuff[1])
-        assert len(tool.stuff) == 2, 'wrong count of stuff'
+        tool = _class(name=name)
+        tool.add(stuff[0], game=game_inst)
+        assert tool[stuff[0]].count == 1, 'wrong count added'
+        tool.add(stuff[0], game=game_inst, count=10)
+        assert tool[stuff[0]].count == 11, 'wrong count added'
+        tool.add(stuff[1], game=game_inst)
+        assert len(tool._stuff) == 2, 'wrong count of stuff'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_all(
@@ -82,13 +97,13 @@ class TestTool:
             ) -> None:
         """Test remove all stuff from shaker
         """
-        tool = _class(name=name, _game=game_inst)
-        tool.add(stuff[0])
-        tool.add(stuff[1])
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        tool = _class(name=name)
+        tool.add(stuff[0], game=game_inst)
+        tool.add(stuff[1], game=game_inst)
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
         tool.remove()
-        assert len(tool.stuff) == 0, 'wrong number of stuff'
-        assert isinstance(tool.stuff, Components), 'wrong type os stuff attr'
+        assert len(tool._stuff) == 0, 'wrong number of stuff'
+        assert isinstance(tool._stuff, set), 'wrong type os stuff attr'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_by_name(
@@ -96,14 +111,14 @@ class TestTool:
             ) -> None:
         """Test remove stuff by name from shaker
         """
-        tool = _class(name=name, _game=game_inst)
-        tool.add(stuff[0])
-        tool.add(stuff[1])
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        tool = _class(name=name)
+        tool.add(stuff[0], game=game_inst)
+        tool.add(stuff[1], game=game_inst)
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
         tool.remove(name=stuff[0])
-        assert len(tool.stuff) == 1, 'wrong number of stuff'
+        assert len(tool._stuff) == 1, 'wrong number of stuff'
         tool.remove(name=stuff[1])
-        assert len(tool.stuff) == 0, 'wrong number of stuff'
+        assert len(tool._stuff) == 0, 'wrong number of stuff'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_stuff(
@@ -111,16 +126,16 @@ class TestTool:
             ) -> None:
         """Test remove stuff
         """
-        tool = _class(name=name, _game=game_inst)
-        tool.add(stuff[0], count=5)
-        tool.add(stuff[1], count=5)
+        tool = _class(name=name)
+        tool.add(stuff[0], game=game_inst, count=5)
+        tool.add(stuff[1], game=game_inst, count=5)
 
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
         tool.remove(stuff[0], count=3)
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
-        assert tool.stuff[stuff[0]].count == 2, 'wrong count of stuff'
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
+        assert tool[stuff[0]].count == 2, 'wrong count of stuff'
         tool.remove(stuff[0], count=50)
-        assert len(tool.stuff) == 1, 'wrong number of stuff'
+        assert len(tool._stuff) == 1, 'wrong number of stuff'
         with pytest.raises(
             StuffDefineError, match="Count must be a integer"
         ):
@@ -130,7 +145,7 @@ class TestTool:
         ):
             tool.remove(stuff[0], count=1)
         tool.remove(count=50)
-        assert len(tool.stuff) == 0, 'stuff not removed'
+        assert len(tool._stuff) == 0, 'stuff not removed'
 
 
 class TestShaker:
@@ -140,29 +155,29 @@ class TestShaker:
     def test_shaker_instanciation(self, game_inst: BaseGame) -> None:
         """Test shaker correct created
         """
-        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker = Shaker(name='shaker')
         assert shaker.name == 'shaker', 'wrong name'
         assert isinstance(shaker.last, dict), 'nondict last'
-        assert isinstance(shaker.stuff, Components), 'wrong type of stuff'
-        assert len(shaker.stuff) == 0, 'nonempty stuff'
+        assert isinstance(shaker, Components), 'wrong type of stuff'
+        assert len(shaker._stuff) == 0, 'nonempty stuff'
         assert issubclass(shaker._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
 
     def test_shaker_are_converted_to_json(self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
         """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        shaker.add('dice')
+        shaker = Shaker(name='shaker')
+        shaker.add('dice', game=game_inst)
         j = json.loads(shaker.to_json())
         assert j['name'] == 'shaker', 'wrong name'
         assert j['last'] == {}, 'wrong last result'
-        assert len(j['stuff']) == 1, 'wrong num of stuff'
+        assert j['dice']['name'] == 'dice', 'wrong name of stuff'
 
     def test_roll_shaker(self, game_inst: BaseGame) -> None:
         """Test roll shaker
         """
-        shaker = Shaker(name='shaker', _game=game_inst)
-        shaker.add('dice', count=5)
-        shaker.add('dice_nice', count=5)
+        shaker = Shaker(name='shaker')
+        shaker.add('dice', game=game_inst, count=5)
+        shaker.add('dice_nice', game=game_inst, count=5)
         roll = shaker.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
@@ -171,7 +186,7 @@ class TestShaker:
     def test_roll_empty_shaker(self, game_inst: BaseGame) -> None:
         """Test roll empty shaker
         """
-        shaker = Shaker(name='shaker', _game=game_inst)
+        shaker = Shaker(name='shaker')
         roll = shaker.roll()
         assert roll == {}, 'wrong roll result'
         assert shaker.last == {}, 'wrong last'
@@ -184,10 +199,10 @@ class TestDeck:
     def test_shaker_instanciation(self, game_inst: BaseGame) -> None:
         """Test sdeck correct created
         """
-        deck = Deck(name='deck', _game=game_inst)
+        deck = Deck(name='deck')
         assert deck.name == 'deck', 'wrong name'
-        assert isinstance(deck.stuff, Components), 'wrong type of stuff'
-        assert len(deck.stuff) == 0, 'nonempty stuff'
+        assert isinstance(deck, Components), 'wrong type of stuff'
+        assert len(deck._stuff) == 0, 'nonempty stuff'
         assert isinstance(deck.dealt, deque), 'wrong type of dealt'
         assert len(deck.dealt) == 0, 'nonempty dealt'
         assert issubclass(deck._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
@@ -196,44 +211,37 @@ class TestDeck:
         self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
         """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card')
+        deck = Deck(name='deck')
+        deck.add('card', game=game_inst)
         j = json.loads(deck.to_json())
         assert j['name'] == 'deck', 'wrong name'
-        assert len(j['stuff']) == 1, 'wrong num of cards'
+        assert j['card']['name'] == 'card', 'wrong name of stuff'
 
     def test_deck_deal(
         self, game_inst: BaseGame) -> None:
-        """Test deck deal()
+        """Test deck deal() randomizing
         """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=5)
-        deck.add('card_nice', count=7)
-        deck.deal()
-        assert len(deck.dealt) == 12, 'wrong dealt len'
-        names = [stuff.name for stuff in deck.dealt]
-        assert 'card' in names, 'wrong cards names inside dealt'
-        assert 'card_nice' in names, 'wrong cards names inside dealt'
-        dealt0 = deck.dealt.copy()
-        deck.deal()
-        assert deck.dealt != dealt0, 'not random order'
-
-    def test_key_access_to_dealt(
-        self, game_inst: BaseGame) -> None:
-        """Key access to dealt attribute
-        """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=3)
-        deck.deal()
-        assert deck[0].name == 'card', 'broken key access'
+        with FixedSeed(42):
+            deck = Deck(name='deck')
+            deck.add('card', game=game_inst, count=20)
+            deck.add('card_nice', game=game_inst, count=20)
+            deck.deal()
+            assert len(deck.dealt) == 40, 'wrong dealt len'
+            names = [stuff.name for stuff in deck.dealt]
+            assert 'card' in names, 'wrong cards names inside dealt'
+            assert 'card_nice' in names, 'wrong cards names inside dealt'
+            before = [id(card) for card in deck.dealt]
+            deck.deal()
+            after = [id(card) for card in deck.dealt]
+            assert before != after, 'not random order'
 
     def test_deck_shuffle(
         self, game_inst: BaseGame) -> None:
         """Test deck shuffle()
         """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=5)
-        deck.add('card_nice', count=5)
+        deck = Deck(name='deck')
+        deck.add('card', game=game_inst, count=5)
+        deck.add('card_nice', game=game_inst, count=5)
         deck.deal()
         dealt0 = deck.dealt.copy()
         deck.shuffle()
@@ -243,9 +251,9 @@ class TestDeck:
         self, game_inst: BaseGame) -> None:
         """Test deck clean()
         """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=5)
-        deck.add('card_nice', count=5)
+        deck = Deck(name='deck')
+        deck.add('card', game=game_inst, count=5)
+        deck.add('card_nice', game=game_inst, count=5)
         deck.clear()
         assert isinstance(deck.dealt, deque), 'nonempty dealt'
         assert len(deck.dealt) == 0, 'nonempty dealt'
@@ -254,9 +262,9 @@ class TestDeck:
         self, game_inst: BaseGame) -> None:
         """Test deck search() one or many or no one cards
         """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=2)
-        deck.add('card_nice', count=2)
+        deck = Deck(name='deck')
+        deck.add('card', game=game_inst, count=2)
+        deck.add('card_nice', game=game_inst, count=2)
         deck.deal()
         search = deck.search(query={'card': 1})
         assert len(search) == 1, 'wrong search len'
@@ -286,9 +294,9 @@ class TestDeck:
         self, game_inst: BaseGame) -> None:
         """Test to_arrange() deck
         """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=2)
-        deck.add('card_nice', count=2)
+        deck = Deck(name='deck')
+        deck.add('card', game=game_inst, count=2)
+        deck.add('card_nice', game=game_inst, count=2)
         deck.deal()
 
         arranged, last = deck.to_arrange(0, 1)
@@ -326,20 +334,29 @@ class TestDeck:
             ):
             arranged, last = deck.to_arrange(5, 3)
 
-    def test_arrrange(
+    def test_arrrange_random(
         self, game_inst: BaseGame) -> None:
-        """Test arrange() deck
+        """Test arrange() randomaising
         """
-        deck = Deck(name='deck', _game=game_inst)
-        deck.add('card', count=10)
-        deck.add('card_nice', count=2)
+        with FixedSeed(42):
+            deck = Deck(name='deck')
+            deck.add('card', game=game_inst, count=2)
+            deck.add('card_nice', game=game_inst, count=2)
+            deck.deal()
+            arranged, last = deck.to_arrange(0, 3)
+            arranged.sort(key=lambda x: x.name)
+            before = [stuff.name for stuff in deck.dealt]
+            deck.arrange(arranged, last)
+            after = [stuff.name for stuff in deck.dealt]
+            assert after != before, 'not arranged'
 
-        deck.deal()
-        arranged, last = deck.to_arrange(0, 9)
-        arranged.sort(key=lambda x: x.name)
-        before = deck.dealt.copy()
-        deck.arrange(arranged, last)
-        assert deck.dealt != before, 'not arranged'
+    def test_arrrange_returns_same_len(
+        self, game_inst: BaseGame) -> None:
+        """Test arrange() returns same len
+        """
+        deck = Deck(name='deck')
+        deck.add('card', game=game_inst, count=2)
+        deck.add('card_nice', game=game_inst, count=2)
 
         deck.deal()
         arranged, last = deck.to_arrange(0, 4)
