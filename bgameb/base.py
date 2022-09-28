@@ -11,34 +11,6 @@ from bgameb.errors import ComponentNameError
 from bgameb.utils import log_me
 
 
-class CardTexts(dict):
-    """Cards texts collection
-    """
-    def __init__(self, **kwargs) -> None:
-        self.__dict__.update(kwargs)
-
-    def __getattr__(self, attr: str) -> str:
-        try:
-            return self[attr]
-        except KeyError:
-            raise AttributeError(attr)
-
-    def __setattr__(self, attr: str, value: str) -> None:
-        self[attr] = value
-
-    def __delattr__(self, attr: str) -> None:
-        del self[attr]
-
-    def __repr__(self):
-        items = (f"{k}={v!r}" for k, v in self.items())
-        return "{}({})".format(type(self).__name__, ", ".join(items))
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(self, dict) and isinstance(other, dict):
-            return self.__dict__ == other.__dict__
-        return NotImplemented
-
-
 @dataclass(init=False)
 class Components(Mapping):
     """Components mapping
@@ -172,6 +144,7 @@ class Base(Components, DataClassJsonMixin, ABC):
     """Base class for game, stuff and tools
     """
     name: str
+    is_active: bool = True
 
     def __post_init__(self) -> None:
         # check name
