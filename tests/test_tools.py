@@ -1,10 +1,10 @@
 import json, pytest
 from typing import Tuple
 from collections import deque
-from bgameb.game import Game
+from bgameb.game import Game, BaseGame
 from bgameb.tools import Shaker, Deck, BaseTool
 from bgameb.stuff import BaseStuff
-from bgameb.constructs import Components, BaseGame
+from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
 
 
@@ -60,7 +60,7 @@ class TestTool:
         tool = _class(name=name)
         tool.add(stuff[0], game=game_inst)
         tool.add(stuff[0], game=game_inst)
-        assert tool.stuff[stuff[0]].count == 2, 'not increased'
+        assert tool[stuff[0]].count == 2, 'not increased'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_add_stuff_to_shaker(
@@ -70,11 +70,11 @@ class TestTool:
         """
         tool = _class(name=name)
         tool.add(stuff[0], game=game_inst)
-        assert tool.stuff[stuff[0]].count == 1, 'wrong count added'
+        assert tool[stuff[0]].count == 1, 'wrong count added'
         tool.add(stuff[0], game=game_inst, count=10)
-        assert tool.stuff[stuff[0]].count == 11, 'wrong count added'
+        assert tool[stuff[0]].count == 11, 'wrong count added'
         tool.add(stuff[1], game=game_inst)
-        assert len(tool.stuff) == 2, 'wrong count of stuff'
+        assert len(tool._stuff) == 2, 'wrong count of stuff'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_all(
@@ -85,10 +85,10 @@ class TestTool:
         tool = _class(name=name)
         tool.add(stuff[0], game=game_inst)
         tool.add(stuff[1], game=game_inst)
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
         tool.remove()
-        assert len(tool.stuff) == 0, 'wrong number of stuff'
-        assert isinstance(tool.stuff, Components), 'wrong type os stuff attr'
+        assert len(tool._stuff) == 0, 'wrong number of stuff'
+        assert isinstance(tool._stuff, set), 'wrong type os stuff attr'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_by_name(
@@ -99,11 +99,11 @@ class TestTool:
         tool = _class(name=name)
         tool.add(stuff[0], game=game_inst)
         tool.add(stuff[1], game=game_inst)
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
         tool.remove(name=stuff[0])
-        assert len(tool.stuff) == 1, 'wrong number of stuff'
+        assert len(tool._stuff) == 1, 'wrong number of stuff'
         tool.remove(name=stuff[1])
-        assert len(tool.stuff) == 0, 'wrong number of stuff'
+        assert len(tool._stuff) == 0, 'wrong number of stuff'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_stuff(
@@ -115,12 +115,12 @@ class TestTool:
         tool.add(stuff[0], game=game_inst, count=5)
         tool.add(stuff[1], game=game_inst, count=5)
 
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
         tool.remove(stuff[0], count=3)
-        assert len(tool.stuff) == 2, 'wrong number of stuff'
-        assert tool.stuff[stuff[0]].count == 2, 'wrong count of stuff'
+        assert len(tool._stuff) == 2, 'wrong number of stuff'
+        assert tool[stuff[0]].count == 2, 'wrong count of stuff'
         tool.remove(stuff[0], count=50)
-        assert len(tool.stuff) == 1, 'wrong number of stuff'
+        assert len(tool._stuff) == 1, 'wrong number of stuff'
         with pytest.raises(
             StuffDefineError, match="Count must be a integer"
         ):
@@ -130,7 +130,7 @@ class TestTool:
         ):
             tool.remove(stuff[0], count=1)
         tool.remove(count=50)
-        assert len(tool.stuff) == 0, 'stuff not removed'
+        assert len(tool._stuff) == 0, 'stuff not removed'
 
 
 class TestShaker:
@@ -143,19 +143,20 @@ class TestShaker:
         shaker = Shaker(name='shaker')
         assert shaker.name == 'shaker', 'wrong name'
         assert isinstance(shaker.last, dict), 'nondict last'
-        assert isinstance(shaker.stuff, Components), 'wrong type of stuff'
-        assert len(shaker.stuff) == 0, 'nonempty stuff'
+        assert isinstance(shaker, Components), 'wrong type of stuff'
+        assert len(shaker._stuff) == 0, 'nonempty stuff'
         assert issubclass(shaker._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
 
     def test_shaker_are_converted_to_json(self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
         """
         shaker = Shaker(name='shaker')
+        print(shaker.__annotations__, shaker.__dataclass_fields__)
         shaker.add('dice', game=game_inst)
         j = json.loads(shaker.to_json())
         assert j['name'] == 'shaker', 'wrong name'
         assert j['last'] == {}, 'wrong last result'
-        assert len(j['stuff']) == 1, 'wrong num of stuff'
+        assert j['dice']['name'] == 'dice', 'wrong num of stuff'
 
     def test_roll_shaker(self, game_inst: BaseGame) -> None:
         """Test roll shaker

@@ -16,7 +16,7 @@ game.add('roller', name='twenty_dice', sides=20)
 game.add('roller', name='coin') # 2 is defoult number of sides
 
 # or define sides for dice and coin types
-game.stuff.six_dice.coin.sides = 2
+game.stuff.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
 game.add('shaker', name='red_shaker')
@@ -32,11 +32,11 @@ game.add('shaker', name='blue_shaker')
 game.tools.blue_shaker.add('six_dice', game=game)
 game.tools.blue_shaker.add('coin', game=game)
 
-result = game.tools.blue_shaker.six_dice.roll()
-result = game.tools.blue_shaker.coin.roll()
+result = game.tools.blue_shaker.stuff.six_dice.roll()
+result = game.tools.blue_shaker.stuff.coin.roll()
 
 # you can use dict notation offcourse
-result = game['tools']['blue_shaker']['coin'].roll()
+result = game['tools']['blue_shaker']['stuff']['coin'].roll()
 
 # you can use another game object to construct tools
 game_2 = Game('another_board_game')

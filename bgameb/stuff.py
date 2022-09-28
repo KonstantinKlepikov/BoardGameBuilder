@@ -1,12 +1,21 @@
 """Game dices, coins, cards and other stuffs
 """
 import random
+from abc import ABC
 from typing import List, Optional, Literal
 from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import config
-from bgameb.constructs import BaseStuff
+# from bgameb.constructs import BaseStuff
+from bgameb.base import Base
 from bgameb.errors import StuffDefineError
+
+
+@dataclass
+class BaseStuff(Base, ABC):
+    """Base class for game stuff (like dices or cards)
+    """
+    name: str
 
 
 @dataclass
