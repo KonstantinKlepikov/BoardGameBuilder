@@ -1,7 +1,6 @@
 import json, pytest
 from collections import Counter
 from bgameb.players import Player
-# from bgameb.constructs import BasePlayer
 
 
 class TestPlayer:

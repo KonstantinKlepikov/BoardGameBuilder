@@ -3,17 +3,45 @@
 from typing import (
     Dict, List, Optional, Any, Iterable
     )
-from abc import ABC, abstractmethod
+from abc import ABC
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
-from dataclasses_json import DataClassJsonMixin, config
-from bgameb.errors import ComponentNameError, StuffDefineError
-from bgameb.utils import log_me, get_random_name
+from dataclasses_json import DataClassJsonMixin
+from bgameb.errors import ComponentNameError
+from bgameb.utils import log_me
 
 
-@dataclass(init=False, repr=False)
+class CardTexts(dict):
+    """Cards texts collection
+    """
+    def __init__(self, **kwargs) -> None:
+        self.__dict__.update(kwargs)
+
+    def __getattr__(self, attr: str) -> str:
+        try:
+            return self[attr]
+        except KeyError:
+            raise AttributeError(attr)
+
+    def __setattr__(self, attr: str, value: str) -> None:
+        self[attr] = value
+
+    def __delattr__(self, attr: str) -> None:
+        del self[attr]
+
+    def __repr__(self):
+        items = (f"{k}={v!r}" for k, v in self.items())
+        return "{}({})".format(type(self).__name__, ", ".join(items))
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(self, dict) and isinstance(other, dict):
+            return self.__dict__ == other.__dict__
+        return NotImplemented
+
+
+@dataclass(init=False)
 class Components(Mapping):
-    """Components mapping.
+    """Components mapping
     """
     def __init__(
         self,
@@ -40,9 +68,6 @@ class Components(Mapping):
         except KeyError:
             raise AttributeError(attr)
 
-    # def __setattr__(self, attr: str, value) -> None:
-    #     self.__setitem__(attr, value)
-
     def __delattr__(self, attr: str) -> None:
         try:
             del self.__dict__[attr]
@@ -50,14 +75,6 @@ class Components(Mapping):
             raise AttributeError(attr)
 
     def __setitem__(self, attr: str, value) -> None:
-        # if attr not in self.__dataclass_fields__.keys():
-        #     self.__class__ = make_dataclass(
-        #         self.__class__.__name__,
-        #         fields = [(attr, type(value), field(default=value))],
-        #         bases = (self.__class__, ),
-        #         # init=False,
-        #         # repr=False,
-        #         )
         self.__dict__.update({attr: value})
 
     def __getitem__(self, attr: str):
@@ -102,16 +119,11 @@ class Components(Mapping):
         """
         comp = component(**kwargs)
 
-        # if kwargs['name'] is None:
-        #     kwargs['name'] = comp.name
-
         if kwargs['name'] not in self.__dataclass_fields__.keys():
             self.__class__ = make_dataclass(
                 self.__class__.__name__,
-                fields = [(kwargs['name'], type(comp), field(default=comp))],
-                bases = (self.__class__, ),
-                # init=False,
-                # repr=False,
+                fields=[(kwargs['name'], type(comp), field(default=comp))],
+                bases=(self.__class__, ),
                 )
 
         self.__dict__.update({kwargs['name']: comp})

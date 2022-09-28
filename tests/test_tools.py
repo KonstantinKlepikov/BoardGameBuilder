@@ -1,4 +1,4 @@
-import json, pytest
+import json, pytest, random
 from typing import Tuple
 from collections import deque
 from bgameb.game import Game, BaseGame
@@ -6,6 +6,21 @@ from bgameb.tools import Shaker, Deck, BaseTool
 from bgameb.stuff import BaseStuff
 from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
+
+
+class FixedSeed:
+    """Context manager to set random seed
+    """
+    def __init__(self, seed):
+        self.seed = seed
+        self.state = None
+
+    def __enter__(self):
+        self.state = random.getstate()
+        random.seed(self.seed)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        random.setstate(self.state)
 
 
 @pytest.fixture
@@ -151,12 +166,11 @@ class TestShaker:
         """Test to json convertatrion
         """
         shaker = Shaker(name='shaker')
-        print(shaker.__annotations__, shaker.__dataclass_fields__)
         shaker.add('dice', game=game_inst)
         j = json.loads(shaker.to_json())
         assert j['name'] == 'shaker', 'wrong name'
         assert j['last'] == {}, 'wrong last result'
-        assert j['dice']['name'] == 'dice', 'wrong num of stuff'
+        assert j['dice']['name'] == 'dice', 'wrong name of stuff'
 
     def test_roll_shaker(self, game_inst: BaseGame) -> None:
         """Test roll shaker
@@ -187,8 +201,8 @@ class TestDeck:
         """
         deck = Deck(name='deck')
         assert deck.name == 'deck', 'wrong name'
-        assert isinstance(deck.stuff, Components), 'wrong type of stuff'
-        assert len(deck.stuff) == 0, 'nonempty stuff'
+        assert isinstance(deck, Components), 'wrong type of stuff'
+        assert len(deck._stuff) == 0, 'nonempty stuff'
         assert isinstance(deck.dealt, deque), 'wrong type of dealt'
         assert len(deck.dealt) == 0, 'nonempty dealt'
         assert issubclass(deck._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
@@ -201,32 +215,25 @@ class TestDeck:
         deck.add('card', game=game_inst)
         j = json.loads(deck.to_json())
         assert j['name'] == 'deck', 'wrong name'
-        assert len(j['stuff']) == 1, 'wrong num of cards'
+        assert j['card']['name'] == 'card', 'wrong name of stuff'
 
     def test_deck_deal(
         self, game_inst: BaseGame) -> None:
-        """Test deck deal()
+        """Test deck deal() randomizing
         """
-        deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=5)
-        deck.add('card_nice', game=game_inst, count=7)
-        deck.deal()
-        assert len(deck.dealt) == 12, 'wrong dealt len'
-        names = [stuff.name for stuff in deck.dealt]
-        assert 'card' in names, 'wrong cards names inside dealt'
-        assert 'card_nice' in names, 'wrong cards names inside dealt'
-        dealt0 = deck.dealt.copy()
-        deck.deal()
-        assert deck.dealt != dealt0, 'not random order'
-
-    def test_key_access_to_dealt(
-        self, game_inst: BaseGame) -> None:
-        """Key access to dealt attribute
-        """
-        deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=3)
-        deck.deal()
-        assert deck[0].name == 'card', 'broken key access'
+        with FixedSeed(42):
+            deck = Deck(name='deck')
+            deck.add('card', game=game_inst, count=20)
+            deck.add('card_nice', game=game_inst, count=20)
+            deck.deal()
+            assert len(deck.dealt) == 40, 'wrong dealt len'
+            names = [stuff.name for stuff in deck.dealt]
+            assert 'card' in names, 'wrong cards names inside dealt'
+            assert 'card_nice' in names, 'wrong cards names inside dealt'
+            before = [id(card) for card in deck.dealt]
+            deck.deal()
+            after = [id(card) for card in deck.dealt]
+            assert before != after, 'not random order'
 
     def test_deck_shuffle(
         self, game_inst: BaseGame) -> None:
@@ -327,21 +334,29 @@ class TestDeck:
             ):
             arranged, last = deck.to_arrange(5, 3)
 
-    def test_arrrange(
+    def test_arrrange_random(
         self, game_inst: BaseGame) -> None:
-        """Test arrange() deck
+        """Test arrange() randomaising
+        """
+        with FixedSeed(42):
+            deck = Deck(name='deck')
+            deck.add('card', game=game_inst, count=2)
+            deck.add('card_nice', game=game_inst, count=2)
+            deck.deal()
+            arranged, last = deck.to_arrange(0, 3)
+            arranged.sort(key=lambda x: x.name)
+            before = [stuff.name for stuff in deck.dealt]
+            deck.arrange(arranged, last)
+            after = [stuff.name for stuff in deck.dealt]
+            assert after != before, 'not arranged'
+
+    def test_arrrange_returns_same_len(
+        self, game_inst: BaseGame) -> None:
+        """Test arrange() returns same len
         """
         deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=3)
+        deck.add('card', game=game_inst, count=2)
         deck.add('card_nice', game=game_inst, count=2)
-
-        deck.deal()
-        arranged, last = deck.to_arrange(0, 4)
-        arranged.sort(key=lambda x: x.name)
-        before = [id(card) for card in deck.dealt]
-        deck.arrange(arranged, last)
-        after = [id(card) for card in deck.dealt]
-        assert after != before, 'not arranged'
 
         deck.deal()
         arranged, last = deck.to_arrange(0, 4)

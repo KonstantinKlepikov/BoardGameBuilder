@@ -1,8 +1,41 @@
 import pytest
-from bgameb.base import Components
-# from bgameb.constructs import BaseStuff
+from bgameb.base import Components, CardTexts
 from bgameb.stuff import RollerType, CardType, Roller, Card, BaseStuff
 from bgameb.errors import ComponentNameError
+
+
+class TestCardText:
+    """Test CardText class
+    """
+
+    def test_card_text_operations(self) -> None:
+        """Test get, set and delete operations of
+        CardText
+        """
+        text = CardTexts()
+        text.this = 'this'
+        assert text.this == 'this', 'not set or cant get'
+        assert text.__repr__() == "CardTexts(this='this')", 'wrong repr'
+        text.this = 'that'
+        assert text.this == 'that', 'not set or cant update'
+        del text.this
+        with pytest.raises(
+            AttributeError, match='this'
+            ):
+            text.this
+        with pytest.raises(
+            KeyError, match='this'
+            ):
+            del text.this
+
+    def test_card_text_equal(self) -> None:
+        """Test equal of CardTexts
+        """
+        text1 = CardTexts()
+        text2 = CardTexts()
+        assert text1 == text2, 'not equal'
+        text2.this = 'this'
+        assert text1 != text2, 'equal'
 
 
 class TestComponents:

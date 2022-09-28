@@ -5,7 +5,6 @@ from collections import Counter
 from abc import ABC
 from dataclasses import dataclass, field
 from bgameb.base import Base
-# from bgameb.constructs import BasePlayer
 
 
 @dataclass
@@ -23,7 +22,6 @@ class BasePlayer(Base, ABC):
         - user_of (List[str]): list of objects used by player Default to []
 
     """
-    name: str
     counter: Counter = field(
         default_factory=Counter,
         init=False,
@@ -47,22 +45,7 @@ class Player(BasePlayer):
         super().__post_init__()
 
 
-# @dataclass
-# class Bot(BasePlayer):
-#     """Base class to create a bot player
-#     """
-#     name: Optional[str] = None
-#     counter: Counter = field(
-#         default_factory=Counter,
-#         init=False,
-#         )
-
-#     def __post_init__(self) -> None:
-#         super().__post_init__()
-
-
 PLAYERS = {
     'player': Player,
-    # 'bot': Bot,
 }
-PLAERS_TYPES = Literal['player',]
+PLAERS_TYPES = Literal['player', ]
