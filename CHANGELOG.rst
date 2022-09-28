@@ -3,6 +3,50 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.16 (2022-09-28)
+============================
+
+Features
+--------
+
+- #104:
+      * Add counter attribute to Card, Player and Game classes
+      * counter is a collections.Counter
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/104)
+- #115:
+      * add() method of a Game class now use **kwargs to unpack any number of named args.
+      * Change example in README
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/115)
+- #118
+      * removed constructs.py and test_constructs.py
+      * added base.py. Move Components, CardTexts, Base to base.py
+      * Base now is child of Constructs. Constructs is dataclass with init=False, repr=False
+      * Constructs can be accessed by setitems
+      * setaatr is removed from Constructs
+      * moved BaseGame to game.py
+      * remove stuff, tools, players attrs from Game class
+      * moved BasePlayer to players.py/ Remove bot class
+      * moved base stuffs to stuff.py
+      * moved base tools to tools.py
+      * remove stuff attr from tools. Now _tools is used for check names of added stuffs
+      * dict-like acces to dealt from tool is removed
+      * test randomizing arrange and deal() with fixed seed
+      * README changing
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/118)
+- Is removed random name definition from project -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/119)
+
+
+Bugfixes
+--------
+
+- Remove redundant attribute definition for dataclasses postinit. -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/104)
+- #111:
+      * Fix recursion problems in to_json() method.
+      * Now is changed interface - tools classes needs game object in method add()
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/111)
+- Fix arrange dealt Deck fail test. -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/112)
+
+
 Release v0.0.15 (2022-09-24)
 ============================
 

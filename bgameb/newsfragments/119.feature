@@ -1,1 +1,0 @@
-Is removed random name definition from project ->

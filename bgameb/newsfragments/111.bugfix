@@ -1,4 +1,0 @@
-#111:
-    * Fix recursion problems in to_json() method.
-    * Now is changed interface - tools classes needs game object in method add()
-    * ->
