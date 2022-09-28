@@ -1,7 +1,41 @@
 import pytest
-from bgameb.constructs import Components, BaseStuff, CardTexts
-from bgameb.stuff import RollerType, CardType, Roller, Card
+from bgameb.base import Components, CardTexts
+from bgameb.stuff import RollerType, CardType, Roller, Card, BaseStuff
 from bgameb.errors import ComponentNameError
+
+
+class TestCardText:
+    """Test CardText class
+    """
+
+    def test_card_text_operations(self) -> None:
+        """Test get, set and delete operations of
+        CardText
+        """
+        text = CardTexts()
+        text.this = 'this'
+        assert text.this == 'this', 'not set or cant get'
+        assert text.__repr__() == "CardTexts(this='this')", 'wrong repr'
+        text.this = 'that'
+        assert text.this == 'that', 'not set or cant update'
+        del text.this
+        with pytest.raises(
+            AttributeError, match='this'
+            ):
+            text.this
+        with pytest.raises(
+            KeyError, match='this'
+            ):
+            del text.this
+
+    def test_card_text_equal(self) -> None:
+        """Test equal of CardTexts
+        """
+        text1 = CardTexts()
+        text2 = CardTexts()
+        assert text1 == text2, 'not equal'
+        text2.this = 'this'
+        assert text1 != text2, 'equal'
 
 
 class TestComponents:
@@ -24,16 +58,10 @@ class TestComponents:
         assert comp.some.name == name, 'not set or cant get'
         assert comp['some'].name == name, 'not set or cant get'
 
-        with pytest.raises(
-            NotImplementedError,
-            match='This method not implementd for Components',
-            ):
-            comp.this = _class(name=name)
-        with pytest.raises(
-            NotImplementedError,
-            match='This method not implementd for Components',
-            ):
-            comp['that'] = _class(name=name)
+        comp.this = _class(name=name)
+        assert comp.this.name == name, 'not setted attr'
+        comp['that'] = _class(name=name)
+        assert comp.that.name == name, 'not setted attr'
 
         del comp.some
         with pytest.raises(AttributeError, match='some'):
@@ -81,30 +109,33 @@ class TestComponents:
         comp = Components()
         comp._update(_class, {'name': name})
         comp[name].name == name, 'wrong name'
-        comp._update(_class, {'name': None})
-        assert None not in comp.keys(), 'is added None'
+        with pytest.raises(
+            ComponentNameError,
+            match='Component with name'
+        ):
+            comp._update(_class, {'name': None})
 
     @pytest.mark.parametrize("_class, name", components)
     def test_add_component(self, _class, name: str) -> None:
         """Test add component with add() method
         """
         comp = Components()
-        comp.add(_class, name=name)
+        comp._add(_class, name=name)
         assert comp[name], 'component not added'
         with pytest.raises(
             ComponentNameError,
             match='is exist in'
         ):
-            comp.add(_class, name=name)
-        comp.add(RollerType, name='this_is')
+            comp._add(_class, name=name)
+        comp._add(RollerType, name='this_is')
         assert comp.this_is, 'component not added'
         with pytest.raises(
             ComponentNameError,
             match='is exist in'
         ):
-            comp.add(_class, name='this_is')
+            comp._add(_class, name='this_is')
         if isinstance(_class, BaseStuff):
-            comp.add(_class, name='this_is_five', sides=5)
+            comp._add(_class, name='this_is_five', sides=5)
             assert comp.this_is_five.sides == 5, 'component not added'
 
     @pytest.mark.parametrize("_class, name", components)
@@ -112,15 +143,15 @@ class TestComponents:
         """Test add_replace() method
         """
         comp = Components()
-        comp.add_replace(_class, name=name)
+        comp._add_replace(_class, name=name)
         add1 = id(comp[name])
         assert comp[name], 'component not added'
-        comp.add_replace(_class, name=name)
+        comp._add_replace(_class, name=name)
         assert id(comp[name]) != add1, 'not replaced'
-        comp.add(_class, name='this_is')
+        comp._add_replace(_class, name='this_is')
         assert comp.this_is, 'component not added'
         if isinstance(_class, BaseStuff):
-            comp.add(_class, name='this_is_five', sides=5)
+            comp._add_replace(_class, name='this_is_five', sides=5)
             assert comp.this_is_five.sides == 5, 'component not added'
 
     @pytest.mark.parametrize("_class, name", components)
@@ -129,41 +160,7 @@ class TestComponents:
         """
         comp = Components()
         assert comp.get_names() == [], 'nonempty list of names'
-        comp.add(_class, name=name)
+        comp._add(_class, name=name)
         assert comp.get_names() == [name], 'empty list of names'
-        comp.add(_class, name='this')
+        comp._add(_class, name='this')
         assert comp.get_names() == [name, 'this'], 'empty list of names'
-
-
-class TestCardText:
-    """Test CardText class
-    """
-
-    def test_card_text_operations(self) -> None:
-        """Test get, set and delete operations of
-        CardText
-        """
-        text = CardTexts()
-        text.this = 'this'
-        assert text.this == 'this', 'not set or cant get'
-        assert text.__repr__() == "CardTexts(this='this')", 'wrong repr'
-        text.this = 'that'
-        assert text.this == 'that', 'not set or cant update'
-        del text.this
-        with pytest.raises(
-            AttributeError, match='this'
-            ):
-            text.this
-        with pytest.raises(
-            KeyError, match='this'
-            ):
-            del text.this
-
-    def test_card_text_equal(self) -> None:
-        """Test equal of CardTexts
-        """
-        text1 = CardTexts()
-        text2 = CardTexts()
-        assert text1 == text2, 'not equal'
-        text2.this = 'this'
-        assert text1 != text2, 'equal'

@@ -1,19 +1,24 @@
 """Game dices, coins, cards and other stuffs
 """
 import random
+from abc import ABC
 from typing import List, Optional, Literal
 from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import config
-from bgameb.constructs import BaseStuff
+from bgameb.base import Base
 from bgameb.errors import StuffDefineError
+
+
+@dataclass
+class BaseStuff(Base, ABC):
+    """Base class for game stuff (like dices or cards)
+    """
 
 
 @dataclass
 class RollerType(BaseStuff):
     """Base class for define types of rollers or fliped objects
-
-    If name isn't given - it is randomly generated.
 
     Define name to identify later this object by unique name.
     For example: 'six_side_dice'
@@ -30,7 +35,6 @@ class RollerType(BaseStuff):
     Raises:
         StuffDefineError: number of sides less than 2
     """
-    name: Optional[str] = None
     sides: int = 2
 
     def __post_init__(self) -> None:
@@ -49,8 +53,8 @@ class Roller(RollerType):
     """
     _range: List[int] = field(
         default_factory=list,
-        init=False,
         metadata=config(exclude=lambda x: True),
+        init=False,
         repr=False
         )
     count: int = 0
@@ -77,8 +81,6 @@ class Roller(RollerType):
 class CardType(BaseStuff):
     """Create the card
 
-    If name isn't given - it is randomly generated.
-
     Define name to identify later this object by unique name.
     For example: 'unique_card'
 
@@ -87,10 +89,10 @@ class CardType(BaseStuff):
 
             card = CardType(name='unique_card')
     """
-    name: Optional[str] = None
     open: bool = False
     tapped: bool = False
     side: Optional[str] = None
+    count: int = 0
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -103,6 +105,11 @@ class Card(CardType):
     counter: Counter = field(
         default_factory=Counter,
         init=False,
+        )
+    count: int = field(
+        default=0,
+        metadata=config(exclude=lambda x: True),
+        repr=False
         )
 
     def __post_init__(self) -> None:

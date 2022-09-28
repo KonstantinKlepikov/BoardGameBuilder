@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.tools &mdash; bgameb 0.0.12 documentation</title>
+  <title>bgameb.tools &mdash; bgameb 0.0.15 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.12
+                0.0.15
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,19 +72,149 @@
 <span></span><span class="sd">&quot;&quot;&quot;Game tools classes like shakers or decks</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Deque</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Deque</span><span class="p">,</span> <span class="n">Set</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
 <span class="kn">from</span> <span class="nn">bgameb.stuff</span> <span class="kn">import</span> <span class="n">Roller</span><span class="p">,</span> <span class="n">Card</span><span class="p">,</span> <span class="n">CardType</span><span class="p">,</span> <span class="n">BaseStuff</span>
-<span class="kn">from</span> <span class="nn">bgameb.constructs</span> <span class="kn">import</span> <span class="n">BaseTool</span>
-<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span>
+<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span><span class="p">,</span> <span class="n">StuffDefineError</span>
+
+
+<div class="viewcode-block" id="BaseTool"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BaseTool</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for game tools (like decks or shakers)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_stuff_to_add</span><span class="p">:</span> <span class="n">BaseStuff</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">_stuff</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseTool.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">game</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add stuff to the tool stuff collection</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of stuff</span>
+<span class="sd">            count (int, optional): count of stuff copy Defaults to 1.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            StuffDefineError: count of stuff nonpositive</span>
+<span class="sd">                              or stuff not exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Stuff with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s2"> not exist in a game.&quot;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Can&#39;t add </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> stuff.&quot;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="p">)</span>
+
+        <span class="c1"># add stuff and set a count</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">game</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Added stuff with &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">&quot; and </span><span class="si">{</span><span class="n">count</span><span class="si">=}</span><span class="s1">.&#39;</span>
+                <span class="p">)</span>
+
+        <span class="c1"># if exist increase a count</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="n">count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Number of stuff with &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">&quot; increased by </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">. &#39;</span> <span class="o">+</span>
+                <span class="sa">f</span><span class="s1">&#39;Result count is </span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_decrease</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Decrease number of stuff by count</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of stuff</span>
+<span class="sd">            count (int): count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">count</span> <span class="o">-=</span> <span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Removed </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1"> stuff with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">. &#39;</span> <span class="o">+</span>
+            <span class="sa">f</span><span class="s1">&#39;Result count is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseTool.remove"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove any kind of stuff copy from tool by its name and count</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str, optional): name of stuff. Defaults to None.</span>
+<span class="sd">            count (int, optional): count of stuff. Defaults to None.</span>
+
+<span class="sd">        You can use any combination for names and counts to remove all</span>
+<span class="sd">        stuff, all or any by name or by count.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            StuffDefineError: nonpositive integer for count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Count must be a integer greater than 0.&quot;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removed all stuff&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Removed all stuff with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1">.&#39;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_decrease</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Stuff with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s2"> not exist in tool.&quot;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Shaker</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create shaker for roll dices or flip coins</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">last</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -107,8 +237,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">roll</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">roller</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">roll</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">roller</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="p">:</span>
+            <span class="n">roll</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">roll</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="n">roll</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -141,25 +271,15 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">CardType</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseStuff</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Вefines access by key to dealt deck</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            key (int): index number</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            BaseStuff: stuff from dealt object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-
 <div class="viewcode-block" id="Deck.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Deal new random shuffled deck and save it to</span>
 <span class="sd">        self.dealt: List[str]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stuff</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">count</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="o">**</span><span class="n">val</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()))</span>
+        <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">stuff</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Card</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="p">[</span><span class="n">stuff</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is dealt cards: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dealt</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 

@@ -19,11 +19,8 @@ class TestBaseStuff:
     def test_stuff_classes_created_with_name(self, _class, name: str) -> None:
         """Test stuff classes instancing
         """
-        assert not _class.name, 'class has name'
-        stuff = _class()
-        assert isinstance(stuff.name, str), 'wrong default name'
-        stuff = _class(name='This Rolled')
-        assert stuff.name == 'This Rolled', 'not set name for instance'
+        stuff = _class(name='this_stuff')
+        assert stuff.name == 'this_stuff', 'not set name for instance'
 
     @pytest.mark.parametrize("_class, name", params)
     def test_stuff_classes_are_converted_to_json(self, _class, name: str) -> None:

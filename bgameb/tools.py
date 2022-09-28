@@ -1,19 +1,149 @@
 """Game tools classes like shakers or decks
 """
 import random
+from abc import ABC
 from collections import deque
-from typing import Optional, Tuple, Dict, Literal, List, Deque
+from typing import Optional, Tuple, Dict, Literal, List, Deque, Set
 from dataclasses import dataclass, field
+from dataclasses_json import config
+from bgameb.base import Base
 from bgameb.stuff import Roller, Card, CardType, BaseStuff
-from bgameb.constructs import BaseTool
-from bgameb.errors import ArrangeIndexError
+from bgameb.errors import ArrangeIndexError, StuffDefineError
+
+
+@dataclass
+class BaseTool(Base, ABC):
+    """Base class for game tools (like decks or shakers)
+    """
+    _stuff_to_add: BaseStuff = field(
+        metadata=config(exclude=lambda x: True),
+        repr=False,
+        init=False,
+        )
+    _stuff: Set[str] = field(
+        default_factory=set,
+        metadata=config(exclude=lambda x: True),
+        repr=False,
+        init=False,
+        )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+    def add(self, name: str, game, count: int = 1) -> None:
+        """Add stuff to the tool stuff collection
+
+        Args:
+            name (str): name of stuff
+            count (int, optional): count of stuff copy Defaults to 1.
+
+        Raises:
+            StuffDefineError: count of stuff nonpositive
+                              or stuff not exist
+        """
+        if name not in game.keys():
+            raise StuffDefineError(
+                message=f"Stuff with {name=} not exist in a game.",
+                logger=self.logger
+                )
+
+        if count < 1:
+            raise StuffDefineError(
+                message=f"Can't add {count} stuff.",
+                logger=self.logger
+                )
+
+        # add stuff and set a count
+        if name not in self._stuff:
+            self._add(
+                self._stuff_to_add,
+                **game[name].to_dict()
+                )
+            self[name].count = count
+            self._stuff.add(name)
+            self.logger.debug(
+                f'Added stuff with "{name=}" and {count=}.'
+                )
+
+        # if exist increase a count
+        else:
+            self[name].count += count
+            self.logger.debug(
+                f'Number of stuff with "{name=}" increased by {count}. ' +
+                f'Result count is {self[name].count}'
+                )
+
+    def _decrease(self, name: str, count: int) -> None:
+        """Decrease number of stuff by count
+
+        Args:
+            name (str): name of stuff
+            count (int): count
+        """
+        self[name].count -= count
+        self.logger.debug(
+            f'Removed {count} stuff with {name=}. ' +
+            f'Result count is {self.get(name, 0)}'
+            )
+        if self[name].count <= 0:
+            del self[name]
+            self._stuff.discard(name)
+
+    def remove(
+        self,
+        name: Optional[str] = None,
+        count: Optional[int] = None
+            ) -> None:
+        """Remove any kind of stuff copy from tool by its name and count
+
+        Args:
+            name (str, optional): name of stuff. Defaults to None.
+            count (int, optional): count of stuff. Defaults to None.
+
+        You can use any combination for names and counts to remove all
+        stuff, all or any by name or by count.
+
+        Raises:
+            StuffDefineError: nonpositive integer for count
+        """
+        if count is not None and count <= 0:
+            raise StuffDefineError(
+                f"Count must be a integer greater than 0.",
+                logger=self.logger
+                )
+
+        if name is None:
+
+            if count is None:
+                for n in self._stuff:
+                    del self[n]
+                self._stuff = set()
+                self.logger.debug('Removed all stuff')
+            else:
+                for stuff in list(self._stuff):
+                    self._decrease(stuff, count)
+
+        elif self.get(name):
+            if count is None:
+                del self[name]
+                self._stuff.discard(name)
+                self.logger.debug(
+                    f'Removed all stuff with {name=}.'
+                    )
+            else:
+                self._decrease(name, count)
+
+        else:
+            raise StuffDefineError(
+                message=f"Stuff with {name=} not exist in tool.",
+                logger=self.logger
+                )
 
 
 @dataclass
 class Shaker(BaseTool):
     """Create shaker for roll dices or flip coins
     """
-    name: Optional[str] = None
     last: Dict[str, Tuple[int]] = field(default_factory=dict, init=False)
 
     def __post_init__(self) -> None:
@@ -36,8 +166,8 @@ class Shaker(BaseTool):
         """
         roll = {}
 
-        for name, roller in self.stuff.items():
-            roll[name] = roller.roll()
+        for name in self._stuff:
+            roll[name] = self[name].roll()
 
         self.last = roll
         self.logger.debug(f'Result of roll: {roll}')
@@ -70,25 +200,15 @@ class Deck(BaseTool):
         super().__post_init__()
         self._stuff_to_add = CardType
 
-    def __getitem__(self, key: int) -> BaseStuff:
-        """Вefines access by key to dealt deck
-
-        Args:
-            key (int): index number
-
-        Returns:
-            BaseStuff: stuff from dealt object
-        """
-        return self.dealt[key]
-
     def deal(self) -> List[str]:
         """Deal new random shuffled deck and save it to
         self.dealt: List[str]
         """
         self.clear()
-        for val in self.stuff.values():
-            for _ in range(val.count):
-                self.dealt.append(Card(**val.to_dict()))
+        for stuff in self._stuff:
+            for _ in range(self[stuff].count):
+                self.dealt.append(Card(**self[stuff].to_dict()))
+
         self.shuffle()
         self.logger.debug(f'Is dealt cards: {self.dealt}')
 
