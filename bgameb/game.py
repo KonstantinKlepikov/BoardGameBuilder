@@ -4,6 +4,7 @@ from typing import Literal, Dict, Any
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from bgameb.base import Base
+from bgameb.rules import RulesMixin
 from bgameb.tools import TOOLS, TOOLS_TYPES
 from bgameb.stuff import STUFF, STUFF_TYPES
 from bgameb.players import PLAYERS, PLAERS_TYPES
@@ -17,7 +18,6 @@ component = Literal[STUFF_TYPES, TOOLS_TYPES, PLAERS_TYPES]
 class BaseGame(Base, ABC):
     """Base class for game
     """
-
     @abstractmethod
     def add(
         self,
@@ -50,7 +50,7 @@ class BaseGame(Base, ABC):
 
 
 @dataclass
-class Game(BaseGame):
+class Game(RulesMixin, BaseGame):
     """Create the game object
     """
 
@@ -89,6 +89,7 @@ if __name__ == '__main__':
     game.add('card', name='one_card')
     game.add('deck', name='cards_deck')
     game.add_to('one_card', 'cards_deck', count=3)
+    game.add_rule('this_rule', "The text is short, but the rule is important")
     game.cards_deck.deal()
     print(game)
     print('='*20)

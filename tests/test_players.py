@@ -13,6 +13,7 @@ class TestPlayer:
         obj_ = Player(name='player')
         assert obj_.name == 'player', 'not set name for instance'
         assert obj_.is_active, 'wrong is_active'
+        assert obj_.rules == [], 'no rules'
 
     def test_players_classes_are_converted_to_json(self) -> None:
         """Test to json convertatrion
