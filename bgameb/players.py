@@ -47,5 +47,5 @@ class Player(BasePlayer):
 
 PLAYERS = {
     'player': Player,
-}
+    }
 PLAERS_TYPES = Literal['player', ]

@@ -14,10 +14,11 @@ from bgameb.errors import StuffDefineError
 class BaseStuff(Base, ABC):
     """Base class for game stuff (like dices or cards)
     """
+    count: int = 1
 
 
 @dataclass
-class RollerType(BaseStuff):
+class Roller(BaseStuff):
     """Base class for define types of rollers or fliped objects
 
     Define name to identify later this object by unique name.
@@ -30,11 +31,17 @@ class RollerType(BaseStuff):
     .. code-block::
         :caption: Example:
 
-            dice = RollerType(name='coin', sides=2)
+            dice = Roller(name='coin', sides=2)
 
     Raises:
         StuffDefineError: number of sides less than 2
     """
+    _range: List[int] = field(
+        default_factory=list,
+        metadata=config(exclude=lambda x: True),
+        init=False,
+        repr=False
+        )
     sides: int = 2
 
     def __post_init__(self) -> None:
@@ -45,22 +52,6 @@ class RollerType(BaseStuff):
                         f'for {self.name}. Needed >= 2.',
                 logger=self.logger
                 )
-
-
-@dataclass
-class Roller(RollerType):
-    """Creare the roller (like dice or coin)
-    """
-    _range: List[int] = field(
-        default_factory=list,
-        metadata=config(exclude=lambda x: True),
-        init=False,
-        repr=False
-        )
-    count: int = 0
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
         self._range = list(range(1, self.sides + 1))
 
     def roll(self) -> List[int]:
@@ -78,7 +69,7 @@ class Roller(RollerType):
 
 
 @dataclass
-class CardType(BaseStuff):
+class Card(BaseStuff):
     """Create the card
 
     Define name to identify later this object by unique name.
@@ -92,25 +83,7 @@ class CardType(BaseStuff):
     open: bool = False
     tapped: bool = False
     side: Optional[str] = None
-    count: int = 0
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-
-
-@dataclass
-class Card(CardType):
-    """Create the card
-    """
-    counter: Counter = field(
-        default_factory=Counter,
-        init=False,
-        )
-    count: int = field(
-        default=0,
-        metadata=config(exclude=lambda x: True),
-        repr=False
-        )
+    counter: Counter = field(default_factory=Counter)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -165,7 +138,7 @@ class Card(CardType):
 
 
 STUFF = {
-    'roller': RollerType,
-    'card': CardType,
-}
+    'roller': Roller,
+    'card': Card,
+    }
 STUFF_TYPES = Literal['roller', 'card']

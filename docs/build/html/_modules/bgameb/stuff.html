@@ -84,11 +84,12 @@
 <div class="viewcode-block" id="BaseStuff"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.BaseStuff">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">BaseStuff</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game stuff (like dices or cards)</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="RollerType"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.RollerType">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">RollerType</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
+<div class="viewcode-block" id="Roller"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Roller">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Roller</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for define types of rollers or fliped objects</span>
 
 <span class="sd">    Define name to identify later this object by unique name.</span>
@@ -101,11 +102,17 @@
 <span class="sd">    .. code-block::</span>
 <span class="sd">        :caption: Example:</span>
 
-<span class="sd">            dice = RollerType(name=&#39;coin&#39;, sides=2)</span>
+<span class="sd">            dice = Roller(name=&#39;coin&#39;, sides=2)</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        StuffDefineError: number of sides less than 2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_range</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
     <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -115,23 +122,7 @@
                 <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Number of sides=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sides</span><span class="si">}</span><span class="s1"> &#39;</span>
                         <span class="sa">f</span><span class="s1">&#39;for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">. Needed &gt;= 2.&#39;</span><span class="p">,</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
-                <span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Roller"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Roller">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Roller</span><span class="p">(</span><span class="n">RollerType</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creare the roller (like dice or coin)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_range</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+                <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Roller.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Roller.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
@@ -148,8 +139,8 @@
         <span class="k">return</span> <span class="n">roll</span></div></div>
 
 
-<div class="viewcode-block" id="CardType"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.CardType">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">CardType</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
+<div class="viewcode-block" id="Card"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">BaseStuff</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the card</span>
 
 <span class="sd">    Define name to identify later this object by unique name.</span>
@@ -163,25 +154,7 @@
     <span class="nb">open</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">tapped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">side</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="Card"><a class="viewcode-back" href="../../bgameb.html#bgameb.stuff.Card">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">CardType</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create the card</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Counter</span><span class="p">,</span>
-        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+    <span class="n">counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Counter</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -236,9 +209,9 @@
 
 
 <span class="n">STUFF</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;roller&#39;</span><span class="p">:</span> <span class="n">RollerType</span><span class="p">,</span>
-    <span class="s1">&#39;card&#39;</span><span class="p">:</span> <span class="n">CardType</span><span class="p">,</span>
-<span class="p">}</span>
+    <span class="s1">&#39;roller&#39;</span><span class="p">:</span> <span class="n">Roller</span><span class="p">,</span>
+    <span class="s1">&#39;card&#39;</span><span class="p">:</span> <span class="n">Card</span><span class="p">,</span>
+    <span class="p">}</span>
 <span class="n">STUFF_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;roller&#39;</span><span class="p">,</span> <span class="s1">&#39;card&#39;</span><span class="p">]</span>
 </pre></div>
 

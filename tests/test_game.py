@@ -56,3 +56,47 @@ class TestGame:
             match='not a component'
             ):
             obj_.add('chocho', name='this')
+
+    def test_add_to(self) -> None:
+        """Test add_to() method
+        """
+        obj_ = Game(name='game')
+        obj_.add('roller', name='that')
+        obj_.add('shaker', name='this')
+        obj_.add_to('that', 'this', count=10)
+        assert obj_.this.that.count == 10, 'not added'
+
+    def test_add_notexisted(self) -> None:
+        """Test add_to() notexisted stuff or tool
+        """
+        obj_ = Game(name='game')
+        obj_.add('roller', name='that')
+        obj_.add('shaker', name='this')
+        with pytest.raises(
+            ComponentClassError,
+            match='not a component'
+            ):
+            obj_.add_to('what', 'this', count=10)
+        with pytest.raises(
+            ComponentClassError,
+            match='not a component'
+            ):
+            obj_.add_to('that', 'what', count=10)
+
+    @pytest.mark.skip('# TODO: define logic')
+    def test_add_not_stuff_or_not_to_tool(self) -> None:
+        """Test add_to() missed type
+        """
+        obj_ = Game(name='game')
+        obj_.add('roller', name='that')
+        obj_.add('shaker', name='this')
+        with pytest.raises(
+            ComponentClassError,
+            match='not a component'
+            ):
+            obj_.add_to('this', 'this', count=10)
+        with pytest.raises(
+            ComponentClassError,
+            match='not a component'
+            ):
+            obj_.add_to('that', 'that', count=10)

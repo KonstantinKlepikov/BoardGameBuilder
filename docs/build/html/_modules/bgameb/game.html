@@ -71,7 +71,7 @@
   <h1>Source code for bgameb.game</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Main engine to create games</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
@@ -91,25 +91,38 @@
 
 <div class="viewcode-block" id="BaseGame.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.add">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">component</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add stuff or tools to game</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">component</span><span class="p">:</span> <span class="n">component</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">Any</span><span class="p">]</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add object to game</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            component (component): type of added component.</span>
-<span class="sd">            name (str, optional): name of added component.</span>
-<span class="sd">                                  Defaults to None.</span>
-<span class="sd">            **kwargs (any): dict of named args</span>
+<span class="sd">            name (str): name of added component.</span>
+<span class="sd">            **kwargs (Dict[str,Any]): dict of named args</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="BaseGame.add_to"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.add_to">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">add_to</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">to</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add stuff to game tool</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of added stuff.</span>
+<span class="sd">            to (str): name of tool, where added</span>
+<span class="sd">            **kwargs (Dict[str,Any]): dict of named args</span>
 <span class="sd">        &quot;&quot;&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">BaseGame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create the game object</span>
-
-<span class="sd">    Attrs</span>
-
-<span class="sd">        - name (str): game name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -118,16 +131,39 @@
 <div class="viewcode-block" id="Game.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">component</span><span class="p">:</span> <span class="n">component</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="p">[</span><span class="n">STUFF</span><span class="p">,</span> <span class="n">TOOLS</span><span class="p">,</span> <span class="n">PLAYERS</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="n">component</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s1"> is added: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is added to game.&#39;</span><span class="p">)</span>
                 <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.add_to"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game.add_to">[docs]</a>    <span class="k">def</span> <span class="nf">add_to</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">to</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">to</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">to</span><span class="p">]</span><span class="o">.</span><span class="n">_increase</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">game</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is added to </span><span class="si">{</span><span class="n">to</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="s1">&#39;one_board_game&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;card&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;one_card&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;deck&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cards_deck&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="s1">&#39;one_card&#39;</span><span class="p">,</span> <span class="s1">&#39;cards_deck&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
 </pre></div>
 
            </div>
