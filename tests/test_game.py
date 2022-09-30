@@ -64,7 +64,7 @@ class TestGame:
         obj_ = Game(name='game')
         obj_.add('roller', name='that')
         obj_.add('shaker', name='this')
-        obj_.add_to('that', 'this', count=10)
+        obj_.add_to('this', 'that', count=10)
         assert obj_.this.that.count == 10, 'not added'
 
     def test_add_notexisted(self) -> None:
@@ -77,12 +77,12 @@ class TestGame:
             ComponentClassError,
             match='not a component'
             ):
-            obj_.add_to('what', 'this', count=10)
+            obj_.add_to('this', 'what', count=10)
         with pytest.raises(
             ComponentClassError,
             match='not a component'
             ):
-            obj_.add_to('that', 'what', count=10)
+            obj_.add_to('what', 'that', count=10)
 
     @pytest.mark.skip('# TODO: define logic')
     def test_add_not_stuff_or_not_to_tool(self) -> None:

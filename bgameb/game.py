@@ -73,8 +73,8 @@ class Game(RulesMixin, BaseGame):
 
     def add_to(
         self,
-        name: str,
         to: str,
+        name: str,
         **kwargs
             ) -> None:
         if name in self.keys() and to in self.keys():
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     game = Game('one_board_game')
     game.add('card', name='one_card')
     game.add('deck', name='cards_deck')
-    game.add_to('one_card', 'cards_deck', count=3)
+    game.add_to('cards_deck', 'one_card', count=3)
     game.add_rule('this_rule', "The text is short, but the rule is important")
     game.cards_deck.deal()
     print(game)
