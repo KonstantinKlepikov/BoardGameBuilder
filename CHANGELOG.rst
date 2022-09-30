@@ -3,6 +3,51 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.17 (2022-10-01)
+============================
+
+Features
+--------
+
+- #89:
+      * Add Rule class. It is dataclass dict like object
+      * Add is_active to all game objects
+      * Some tests changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/89)
+- #123:
+      * Remove RollerType and CardType classes
+      * Now all logic in Roller and Card classes
+      * Added add_to() method to Game class - now we can add stuff to tool from Game() obgect
+      * Method add() of tools objects is closed and renamed to _increase()
+      * Added simple check code to game.py -> run by ``python bgameb/game.py``
+      * Default count of stuff is 1
+      * last attr of Shaker class and dealt attr of Deck class are hidden from repr
+      * Test all
+      * Example in README changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/123)
+- #124:
+      * Changing add_to() method of Game. Now add_to(to, name, ...)
+      * README example changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/124)
+- #125:
+      * Added RulesMixin class
+      * Some minore changes in Rules class
+      * Game obgect recieve rules attr - is na Component for Rules
+      * Game has method add_rule()
+      * Added rules attrs to stuff and players classes - is are list of str for save names of rules for this object
+      * README changes
+      * Test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/125)
+
+
+Deprecations and Removals
+-------------------------
+
+- #90:
+      * Now is removed CardText class
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/90)
+
+
 Release v0.0.16 (2022-09-28)
 ============================
 
