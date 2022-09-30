@@ -4,10 +4,10 @@ import random
 from abc import ABC
 from collections import deque
 from typing import Optional, Tuple, Dict, Literal, List, Deque, Set
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from dataclasses_json import config
 from bgameb.base import Base
-from bgameb.stuff import Roller, Card, CardType, BaseStuff
+from bgameb.stuff import Card, Roller, BaseStuff
 from bgameb.errors import ArrangeIndexError, StuffDefineError
 
 
@@ -30,11 +30,12 @@ class BaseTool(Base, ABC):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def add(self, name: str, game, count: int = 1) -> None:
-        """Add stuff to the tool stuff collection
+    def _increase(self, name: str, game, count: int = 1) -> None:
+        """Add or increase count of stuff in tool
 
         Args:
-            name (str): name of stuff
+            name (str): name of stuff.
+            game (BaseGame): game instance object.
             count (int, optional): count of stuff copy Defaults to 1.
 
         Raises:
@@ -144,7 +145,10 @@ class BaseTool(Base, ABC):
 class Shaker(BaseTool):
     """Create shaker for roll dices or flip coins
     """
-    last: Dict[str, Tuple[int]] = field(default_factory=dict, init=False)
+    last: Dict[str, Tuple[int]] = field(
+        default_factory=dict,
+        repr=False,
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -193,12 +197,12 @@ class Deck(BaseTool):
     name: Optional[str] = None
     dealt: Deque[BaseStuff] = field(
         default_factory=deque,
-        init=False,
-    )
+        repr=False,
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._stuff_to_add = CardType
+        self._stuff_to_add = Card
 
     def deal(self) -> List[str]:
         """Deal new random shuffled deck and save it to
@@ -207,7 +211,9 @@ class Deck(BaseTool):
         self.clear()
         for stuff in self._stuff:
             for _ in range(self[stuff].count):
-                self.dealt.append(Card(**self[stuff].to_dict()))
+                card = replace(self[stuff])
+                card.count = 1
+                self.dealt.append(card)
 
         self.shuffle()
         self.logger.debug(f'Is dealt cards: {self.dealt}')
@@ -288,7 +294,7 @@ class Deck(BaseTool):
         .. code-block::
             :caption: Example:
 
-                game.tools.stuff.deck1.search(
+                game.deck1.search(
                     {'card1': 2,
                      'card2': 1 },
                     remove=False
@@ -324,5 +330,5 @@ class Deck(BaseTool):
 TOOLS = {
     'shaker': Shaker,
     'deck': Deck,
-}
+    }
 TOOLS_TYPES = Literal['shaker', 'deck']

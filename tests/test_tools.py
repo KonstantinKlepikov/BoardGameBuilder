@@ -39,57 +39,57 @@ class TestTool:
     params = [
         (Deck, 'deck', ('card', 'card_nice')),
         (Shaker, 'shaker', ('dice', 'dice_nice')),
-    ]
+        ]
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_add_stuff_to_tool_raise_errors_if_wrong_count(
+    def test_increase_stuff_to_tool_raise_errors_if_wrong_count(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test need count of stuff no less than 1
         """
-        tool = _class(name=name)
+        obj_ = _class(name=name)
         with pytest.raises(
             StuffDefineError, match="Can't add"
             ):
-            tool.add(stuff[0], game=game_inst, count=0)
+            obj_._increase(stuff[0], game=game_inst, count=0)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_add_stuff_to_tool_raise_errors_if_wrong_name(
+    def test_increase_stuff_to_tool_raise_errors_if_wrong_name(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test need exist stuff
         """
-        tool = _class(name=name)
+        obj_ = _class(name=name)
         with pytest.raises(
             StuffDefineError, match="'somestuff' not exist in a game"
             ):
-            tool.add('somestuff', game=game_inst)
+            obj_._increase('somestuff', game=game_inst)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_double_add_stuff_to_tool_encrease_count(
+    def test_double_increase_stuff_to_tool_encrease_count(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test double add roller with same name increase count,
         not raises error
         """
-        tool = _class(name=name)
-        tool.add(stuff[0], game=game_inst)
-        tool.add(stuff[0], game=game_inst)
-        assert tool[stuff[0]].count == 2, 'not increased'
+        obj_ = _class(name=name)
+        obj_._increase(stuff[0], game=game_inst)
+        obj_._increase(stuff[0], game=game_inst)
+        assert obj_[stuff[0]].count == 2, 'not increased'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_add_stuff_to_shaker(
+    def test_increase_stuff_to_shaker(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test shaker add()
         """
-        tool = _class(name=name)
-        tool.add(stuff[0], game=game_inst)
-        assert tool[stuff[0]].count == 1, 'wrong count added'
-        tool.add(stuff[0], game=game_inst, count=10)
-        assert tool[stuff[0]].count == 11, 'wrong count added'
-        tool.add(stuff[1], game=game_inst)
-        assert len(tool._stuff) == 2, 'wrong count of stuff'
+        obj_ = _class(name=name)
+        obj_._increase(stuff[0], game=game_inst)
+        assert obj_[stuff[0]].count == 1, 'wrong count added'
+        obj_._increase(stuff[0], game=game_inst, count=10)
+        assert obj_[stuff[0]].count == 11, 'wrong count added'
+        obj_._increase(stuff[1], game=game_inst)
+        assert len(obj_._stuff) == 2, 'wrong count of stuff'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_all(
@@ -97,13 +97,13 @@ class TestTool:
             ) -> None:
         """Test remove all stuff from shaker
         """
-        tool = _class(name=name)
-        tool.add(stuff[0], game=game_inst)
-        tool.add(stuff[1], game=game_inst)
-        assert len(tool._stuff) == 2, 'wrong number of stuff'
-        tool.remove()
-        assert len(tool._stuff) == 0, 'wrong number of stuff'
-        assert isinstance(tool._stuff, set), 'wrong type os stuff attr'
+        obj_ = _class(name=name)
+        obj_._increase(stuff[0], game=game_inst)
+        obj_._increase(stuff[1], game=game_inst)
+        assert len(obj_._stuff) == 2, 'wrong number of stuff'
+        obj_.remove()
+        assert len(obj_._stuff) == 0, 'wrong number of stuff'
+        assert isinstance(obj_._stuff, set), 'wrong type os stuff attr'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_by_name(
@@ -111,14 +111,14 @@ class TestTool:
             ) -> None:
         """Test remove stuff by name from shaker
         """
-        tool = _class(name=name)
-        tool.add(stuff[0], game=game_inst)
-        tool.add(stuff[1], game=game_inst)
-        assert len(tool._stuff) == 2, 'wrong number of stuff'
-        tool.remove(name=stuff[0])
-        assert len(tool._stuff) == 1, 'wrong number of stuff'
-        tool.remove(name=stuff[1])
-        assert len(tool._stuff) == 0, 'wrong number of stuff'
+        obj_ = _class(name=name)
+        obj_._increase(stuff[0], game=game_inst)
+        obj_._increase(stuff[1], game=game_inst)
+        assert len(obj_._stuff) == 2, 'wrong number of stuff'
+        obj_.remove(name=stuff[0])
+        assert len(obj_._stuff) == 1, 'wrong number of stuff'
+        obj_.remove(name=stuff[1])
+        assert len(obj_._stuff) == 0, 'wrong number of stuff'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_stuff(
@@ -126,26 +126,26 @@ class TestTool:
             ) -> None:
         """Test remove stuff
         """
-        tool = _class(name=name)
-        tool.add(stuff[0], game=game_inst, count=5)
-        tool.add(stuff[1], game=game_inst, count=5)
+        obj_ = _class(name=name)
+        obj_._increase(stuff[0], game=game_inst, count=5)
+        obj_._increase(stuff[1], game=game_inst, count=5)
 
-        assert len(tool._stuff) == 2, 'wrong number of stuff'
-        tool.remove(stuff[0], count=3)
-        assert len(tool._stuff) == 2, 'wrong number of stuff'
-        assert tool[stuff[0]].count == 2, 'wrong count of stuff'
-        tool.remove(stuff[0], count=50)
-        assert len(tool._stuff) == 1, 'wrong number of stuff'
+        assert len(obj_._stuff) == 2, 'wrong number of stuff'
+        obj_.remove(stuff[0], count=3)
+        assert len(obj_._stuff) == 2, 'wrong number of stuff'
+        assert obj_[stuff[0]].count == 2, 'wrong count of stuff'
+        obj_.remove(stuff[0], count=50)
+        assert len(obj_._stuff) == 1, 'wrong number of stuff'
         with pytest.raises(
             StuffDefineError, match="Count must be a integer"
         ):
-            tool.remove(stuff[1], count=0)
+            obj_.remove(stuff[1], count=0)
         with pytest.raises(
             StuffDefineError, match="not exist in tool"
         ):
-            tool.remove(stuff[0], count=1)
-        tool.remove(count=50)
-        assert len(tool._stuff) == 0, 'stuff not removed'
+            obj_.remove(stuff[0], count=1)
+        obj_.remove(count=50)
+        assert len(obj_._stuff) == 0, 'stuff not removed'
 
 
 class TestShaker:
@@ -157,6 +157,7 @@ class TestShaker:
         """
         shaker = Shaker(name='shaker')
         assert shaker.name == 'shaker', 'wrong name'
+        assert shaker.is_active, 'wrong is_active'
         assert isinstance(shaker.last, dict), 'nondict last'
         assert isinstance(shaker, Components), 'wrong type of stuff'
         assert len(shaker._stuff) == 0, 'nonempty stuff'
@@ -166,7 +167,7 @@ class TestShaker:
         """Test to json convertatrion
         """
         shaker = Shaker(name='shaker')
-        shaker.add('dice', game=game_inst)
+        shaker._increase('dice', game=game_inst)
         j = json.loads(shaker.to_json())
         assert j['name'] == 'shaker', 'wrong name'
         assert j['last'] == {}, 'wrong last result'
@@ -176,8 +177,8 @@ class TestShaker:
         """Test roll shaker
         """
         shaker = Shaker(name='shaker')
-        shaker.add('dice', game=game_inst, count=5)
-        shaker.add('dice_nice', game=game_inst, count=5)
+        shaker._increase('dice', game=game_inst, count=5)
+        shaker._increase('dice_nice', game=game_inst, count=5)
         roll = shaker.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
@@ -201,6 +202,7 @@ class TestDeck:
         """
         deck = Deck(name='deck')
         assert deck.name == 'deck', 'wrong name'
+        assert deck.is_active, 'wrong is_active'
         assert isinstance(deck, Components), 'wrong type of stuff'
         assert len(deck._stuff) == 0, 'nonempty stuff'
         assert isinstance(deck.dealt, deque), 'wrong type of dealt'
@@ -212,7 +214,7 @@ class TestDeck:
         """Test to json convertatrion
         """
         deck = Deck(name='deck')
-        deck.add('card', game=game_inst)
+        deck._increase('card', game=game_inst)
         j = json.loads(deck.to_json())
         assert j['name'] == 'deck', 'wrong name'
         assert j['card']['name'] == 'card', 'wrong name of stuff'
@@ -223,8 +225,8 @@ class TestDeck:
         """
         with FixedSeed(42):
             deck = Deck(name='deck')
-            deck.add('card', game=game_inst, count=20)
-            deck.add('card_nice', game=game_inst, count=20)
+            deck._increase('card', game=game_inst, count=20)
+            deck._increase('card_nice', game=game_inst, count=20)
             deck.deal()
             assert len(deck.dealt) == 40, 'wrong dealt len'
             names = [stuff.name for stuff in deck.dealt]
@@ -240,8 +242,8 @@ class TestDeck:
         """Test deck shuffle()
         """
         deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=5)
-        deck.add('card_nice', game=game_inst, count=5)
+        deck._increase('card', game=game_inst, count=5)
+        deck._increase('card_nice', game=game_inst, count=5)
         deck.deal()
         dealt0 = deck.dealt.copy()
         deck.shuffle()
@@ -252,8 +254,8 @@ class TestDeck:
         """Test deck clean()
         """
         deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=5)
-        deck.add('card_nice', game=game_inst, count=5)
+        deck._increase('card', game=game_inst, count=5)
+        deck._increase('card_nice', game=game_inst, count=5)
         deck.clear()
         assert isinstance(deck.dealt, deque), 'nonempty dealt'
         assert len(deck.dealt) == 0, 'nonempty dealt'
@@ -263,8 +265,8 @@ class TestDeck:
         """Test deck search() one or many or no one cards
         """
         deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=2)
-        deck.add('card_nice', game=game_inst, count=2)
+        deck._increase('card', game=game_inst, count=2)
+        deck._increase('card_nice', game=game_inst, count=2)
         deck.deal()
         search = deck.search(query={'card': 1})
         assert len(search) == 1, 'wrong search len'
@@ -295,8 +297,8 @@ class TestDeck:
         """Test to_arrange() deck
         """
         deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=2)
-        deck.add('card_nice', game=game_inst, count=2)
+        deck._increase('card', game=game_inst, count=2)
+        deck._increase('card_nice', game=game_inst, count=2)
         deck.deal()
 
         arranged, last = deck.to_arrange(0, 1)
@@ -340,8 +342,8 @@ class TestDeck:
         """
         with FixedSeed(42):
             deck = Deck(name='deck')
-            deck.add('card', game=game_inst, count=2)
-            deck.add('card_nice', game=game_inst, count=2)
+            deck._increase('card', game=game_inst, count=2)
+            deck._increase('card_nice', game=game_inst, count=2)
             deck.deal()
             arranged, last = deck.to_arrange(0, 3)
             arranged.sort(key=lambda x: x.name)
@@ -355,8 +357,8 @@ class TestDeck:
         """Test arrange() returns same len
         """
         deck = Deck(name='deck')
-        deck.add('card', game=game_inst, count=2)
-        deck.add('card_nice', game=game_inst, count=2)
+        deck._increase('card', game=game_inst, count=2)
+        deck._increase('card_nice', game=game_inst, count=2)
 
         deck.deal()
         arranged, last = deck.to_arrange(0, 4)

@@ -22,17 +22,17 @@ game.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
 game.add('shaker', name='red_shaker')
-game.red_shaker.add('six_dice', game=game, count=50)
-game.red_shaker.add('twenty_dice', game=game, count=10)
-game.red_shaker.add('coin', game=game, count=42)
+game.add_to('red_shaker', 'six_dice', count=50)
+game.add_to('red_shaker', 'twenty_dice', count=10)
+game.add_to('red_shaker', 'coin', count=42)
 
 # roll all stuff and get result
 result = game.red_shaker.roll()
 
 # or define new shaker with default count == 1 and roll each stuff separatly
 game.add('shaker', name='blue_shaker')
-game.blue_shaker.add('six_dice', game=game)
-game.blue_shaker.add('coin', game=game)
+game.add_to('blue_shaker', 'six_dice')
+game.add_to('blue_shaker', 'coin')
 
 result = game.blue_shaker.six_dice.roll()
 result = game.blue_shaker.coin.roll()
@@ -43,12 +43,6 @@ last_roll = game.blue_shaker.last
 # you can use dict notation offcourse
 result = game['blue_shaker']['coin'].roll()
 
-# you can use another game object to construct tools
-game_2 = Game('another_board_game')
-game_2.add('roller', name='four_dice', sides=4)
-game.red_shaker.add('four_dice', game=game_2, count=22)
-result = game.red_shaker.roll()
-
 # delete components from any collections
 del game.blue_shaker
 del game.six_dice
@@ -56,13 +50,24 @@ del game.six_dice
 # define a cards and decks
 game.add('card', name='one_card')
 game.add('deck', name='cards_deck')
-game.cards_deck.add('one_card', game=game, count=100)
+game.add_to('cards_deck', 'one_card', count=100)
 
 # deal card from deck
 game.cards_deck.deal()
 
 # dealt crds is a python deque
 deck = game.cards_deck.dealt
+
+# all rule is store in Game class
+game.add_rule(name='this_rule', text='Important text')
+
+# rule is a dict-like object
+game.rules.this_rule.additional = 'Add something else'
+
+# Any stuff or players objects in game have rules list to link to rules
+game.one_card.rules.append(game.rules.this_rule.name)
+for rule in game.one_card.rules:
+    print(game.rules[rule].text)
 ```
 
 ## Documentation

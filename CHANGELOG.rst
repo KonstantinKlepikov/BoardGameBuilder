@@ -3,6 +3,51 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.17 (2022-10-01)
+============================
+
+Features
+--------
+
+- #89:
+      * Add Rule class. It is dataclass dict like object
+      * Add is_active to all game objects
+      * Some tests changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/89)
+- #123:
+      * Remove RollerType and CardType classes
+      * Now all logic in Roller and Card classes
+      * Added add_to() method to Game class - now we can add stuff to tool from Game() obgect
+      * Method add() of tools objects is closed and renamed to _increase()
+      * Added simple check code to game.py -> run by ``python bgameb/game.py``
+      * Default count of stuff is 1
+      * last attr of Shaker class and dealt attr of Deck class are hidden from repr
+      * Test all
+      * Example in README changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/123)
+- #124:
+      * Changing add_to() method of Game. Now add_to(to, name, ...)
+      * README example changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/124)
+- #125:
+      * Added RulesMixin class
+      * Some minore changes in Rules class
+      * Game obgect recieve rules attr - is na Component for Rules
+      * Game has method add_rule()
+      * Added rules attrs to stuff and players classes - is are list of str for save names of rules for this object
+      * README changes
+      * Test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/125)
+
+
+Deprecations and Removals
+-------------------------
+
+- #90:
+      * Now is removed CardText class
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/90)
+
+
 Release v0.0.16 (2022-09-28)
 ============================
 
@@ -14,7 +59,7 @@ Features
       * counter is a collections.Counter
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/104)
 - #115:
-      * add() method of a Game class now use **kwargs to unpack any number of named args.
+      * add() method of a Game class now use kwargs to unpack any number of named args.
       * Change example in README
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/115)
 - #118
@@ -33,18 +78,24 @@ Features
       * test randomizing arrange and deal() with fixed seed
       * README changing
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/118)
-- Is removed random name definition from project -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/119)
+- #119:
+      * Is removed random name definition from project
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/119)
 
 
 Bugfixes
 --------
 
-- Remove redundant attribute definition for dataclasses postinit. -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/104)
+- #104:
+      * Remove redundant attribute definition for dataclasses postinit.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/104)
 - #111:
       * Fix recursion problems in to_json() method.
       * Now is changed interface - tools classes needs game object in method add()
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/111)
-- Fix arrange dealt Deck fail test. -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/112)
+- #112:
+      * Fix arrange dealt Deck fail test.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/112)
 
 
 Release v0.0.15 (2022-09-24)
@@ -70,7 +121,9 @@ Features
       * add ArrangeIndexError
       * add key access to self.dealt of Deck
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/77)
-- Add and test search() method to deck. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/81)
+- #81:
+      * Add and test search() method to deck.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/81)
 
 
 Release v0.0.13 (2022-09-21)
@@ -82,7 +135,9 @@ Features
 - #76:
       * implenemt deal() method and add deal attr to Deck class. When we deal() the cards - the names of all cards in deck multiplied by its copies are random shuffled in to a list, saved in dealt attr
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/76)
-- Add shuffle() method of Deck class implenebtation. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/78)
+- #78:
+      * Add shuffle() method of Deck class implenebtation.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/78)
 - #80:
       * create copy of deck stuff cards to use in ``dealt``
       * implement clean method - remove all dealt cards
@@ -93,13 +148,17 @@ Features
 Bugfixes
 --------
 
-- Changed method _update() of Components class to check - is None name of added component. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/71)
+- #71:
+      * Changed method _update() of Components class to check - is None name of added component.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/71)
 
 
 Improved Documentation
 ----------------------
 
-- Fix example of usage in readme. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/76)
+- #76:
+      * Fix example of usage in readme.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/76)
 
 
 Release v0.0.12 (2022-09-19)
@@ -174,7 +233,9 @@ Features
       * refactoring of Shaker methods - remove() now is one method for all remove operation
       * tests all
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/34)
-- Move logging errors inside StuffDefineError. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/47)
+- #47:
+      * Move logging errors inside StuffDefineError.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/47)
 
 
 Release v0.0.10 (2022-09-10)
@@ -183,7 +244,9 @@ Release v0.0.10 (2022-09-10)
 Features
 --------
 
-- Add get_names() method to Components class. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/57)
+- #57:
+      * Add get_names() method to Components class.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/57)
 - #58:
       * Add random-word package
       * Add function to word generating
@@ -202,7 +265,9 @@ Features
       * game_rollers -> game_rollers
       * exclude fields fro json/dict by using `metadata=config(exclude=lambda x:True)`
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/62)
-- Hide rollers field for json/dict from shaker instance. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/64)
+- #64:
+      * Hide rollers field for json/dict from shaker instance.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/64)
 
 
 Release v0.0.9 (2022-09-09)
@@ -244,7 +309,9 @@ Release v0.0.8 (2022-09-07)
 Features
 --------
 
-- Parametrize shaker tests with Dice, Coin objects. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/30)
+- #30:
+      * Parametrize shaker tests with Dice, Coin objects.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/30)
 - #33:
       * Add cards.py
       * Add class Cards
@@ -273,14 +340,17 @@ Features
       * last_roll() -> last()
       * remove name from shakers named tuple
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/32)
-- Add flake8 support. (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/37)
+- #37:
+      * Add flake8 support.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/37)
 
 
 Bugfixes
 --------
 
-- Fix release run if closed pullrequest without merge.
-* -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/40)
+- #40:
+      * Fix release run if closed pullrequest without merge.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/40)
 
 
 Release v0.0.6 (2022-09-03)
@@ -359,4 +429,4 @@ Features
       * add incremental to autobump version
       * add pytproject.toml to specify towncrier
       * add release workflow
-      * ->  (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/3)
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/3)

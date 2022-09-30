@@ -10,23 +10,25 @@ class TestPlayer:
     def test_players_classes_created_with_name(self) -> None:
         """Test players classes instancing
         """
-        player = Player(name='player')
-        assert player.name == 'player', 'not set name for instance'
+        obj_ = Player(name='player')
+        assert obj_.name == 'player', 'not set name for instance'
+        assert obj_.is_active, 'wrong is_active'
+        assert obj_.rules == [], 'no rules'
 
     def test_players_classes_are_converted_to_json(self) -> None:
         """Test to json convertatrion
         """
-        player = Player(name='player')
-        j = json.loads(player.to_json())
+        obj_ = Player(name='player')
+        j = json.loads(obj_.to_json())
         assert j['name'] == 'player', 'not converted to json'
 
     def test_players_attributes(self) -> None:
         """Test players attributes
         """
-        player = Player(name='player')
-        assert player.is_active == True, 'wrong is_active'
-        assert player.has_priority == False, 'wrong priority'
-        assert player.team is None, 'wrong tram'
-        assert player.owner_of == [], 'wrong owner of'
-        assert player.user_of == [], 'wrong user of'
-        assert isinstance(player.counter, Counter), 'wrong counter'
+        obj_ = Player(name='player')
+        assert obj_.is_active == True, 'wrong is_active'
+        assert obj_.has_priority == False, 'wrong priority'
+        assert obj_.team is None, 'wrong tram'
+        assert obj_.owner_of == [], 'wrong owner of'
+        assert obj_.user_of == [], 'wrong user of'
+        assert isinstance(obj_.counter, Counter), 'wrong counter'
