@@ -57,6 +57,17 @@ game.cards_deck.deal()
 
 # dealt crds is a python deque
 deck = game.cards_deck.dealt
+
+# all rule is store in Game class
+game.add_rule(name='this_rule', text='Important text')
+
+# rule is a dict-like object
+game.rules.this_rule.additional = 'Add something else'
+
+# Any stuff or players objects in game have rules list to link to rules
+game.one_card.rules.append(game.rules.this_rule.name)
+for rule in game.one_card.rules:
+    print(game.rules[rule].text)
 ```
 
 ## Documentation

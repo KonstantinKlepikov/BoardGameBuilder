@@ -160,3 +160,17 @@ class Base(Components, DataClassJsonMixin, ABC):
         self.logger.info(
             f'{self.__class__.__name__} created with {self.name=}.'
             )
+
+
+# @dataclass
+# class RulesMixin:
+#     """Mixin class for classes tht needs rules"""
+
+#     rules: Components = field(default_factory=Components)
+
+#     def __post_init__(self) -> None:
+#         super().__post_init__()
+
+#     def add_rule(self, name: str, text: str):
+#         rule = Rule(name=name, text=text)
+#         self.rules[name] = rule

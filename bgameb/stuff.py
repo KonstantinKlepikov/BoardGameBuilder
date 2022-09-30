@@ -15,6 +15,7 @@ class BaseStuff(Base, ABC):
     """Base class for game stuff (like dices or cards)
     """
     count: int = 1
+    rules: List[str] = field(default_factory=list)
 
 
 @dataclass

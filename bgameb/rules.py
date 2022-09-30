@@ -1,15 +1,16 @@
 """Rules objects for game stuff
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from dataclasses_json import DataClassJsonMixin
+from bgameb.base import Components
 
 
-@dataclass(eq=True)
+@dataclass
 class Rule(dict, DataClassJsonMixin):
     """Rule collection
     """
     name: str
-    is_active: bool = True
+    text: str
 
     def __getattr__(self, attr: str) -> str:
         try:
@@ -26,3 +27,19 @@ class Rule(dict, DataClassJsonMixin):
     def __repr__(self):
         items = (f"{k}={v!r}" for k, v in self.items())
         return "{}({})".format(type(self).__name__, ", ".join(items))
+
+
+@dataclass
+class RulesMixin:
+    """Mixin class for classes tht needs rules"""
+
+    rules: Components = field(default_factory=Components)
+
+    def add_rule(self, name: str, text: str):
+        """Add rule to game rules
+
+        Args:
+            name (str): name of rule
+            text (str): text of rule
+        """
+        self.rules[name] = Rule(name=name, text=text)

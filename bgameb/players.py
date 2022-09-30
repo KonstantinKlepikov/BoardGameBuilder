@@ -29,8 +29,9 @@ class BasePlayer(Base, ABC):
     is_active: bool = True
     has_priority: bool = False
     team: Optional[str] = None
-    owner_of: List[str] = field(default_factory=list, init=False)
-    user_of: List[str] = field(default_factory=list, init=False)
+    owner_of: List[str] = field(default_factory=list)
+    user_of: List[str] = field(default_factory=list)
+    rules: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         super().__post_init__()
