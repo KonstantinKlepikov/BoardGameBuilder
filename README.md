@@ -22,17 +22,17 @@ game.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
 game.add('shaker', name='red_shaker')
-game.add_to('six_dice', 'red_shaker', count=50)
-game.add_to('twenty_dice', 'red_shaker', count=10)
-game.add_to('coin', 'red_shaker', count=42)
+game.add_to('red_shaker', 'six_dice', count=50)
+game.add_to('red_shaker', 'twenty_dice', count=10)
+game.add_to('red_shaker', 'coin', count=42)
 
 # roll all stuff and get result
 result = game.red_shaker.roll()
 
 # or define new shaker with default count == 1 and roll each stuff separatly
 game.add('shaker', name='blue_shaker')
-game.add_to('six_dice', 'blue_shaker')
-game.add_to('coin', 'blue_shaker')
+game.add_to('blue_shaker', 'six_dice')
+game.add_to('blue_shaker', 'coin')
 
 result = game.blue_shaker.six_dice.roll()
 result = game.blue_shaker.coin.roll()
@@ -50,7 +50,7 @@ del game.six_dice
 # define a cards and decks
 game.add('card', name='one_card')
 game.add('deck', name='cards_deck')
-game.add_to('one_card', 'cards_deck', count=100)
+game.add_to('cards_deck', 'one_card', count=100)
 
 # deal card from deck
 game.cards_deck.deal()
