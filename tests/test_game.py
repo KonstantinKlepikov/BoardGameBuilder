@@ -1,6 +1,7 @@
 import json, pytest
 from bgameb.game import Game
 from bgameb.base import Components
+from bgameb.rules import Stream
 from bgameb.stuff import STUFF
 from bgameb.tools import TOOLS
 from bgameb.players import PLAYERS
@@ -17,6 +18,7 @@ class TestGame:
         obj_ = Game(name='this_game')
         assert obj_.name == 'this_game', 'not set name for instance'
         assert obj_.is_active, 'wrong is_active'
+        assert isinstance(obj_.turn_order, Stream), 'turn_order isnt Stream'
         assert isinstance(obj_.rules, Components), 'rules isnt component'
         assert isinstance(obj_, Components), 'isnt component'
 

@@ -73,9 +73,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
-<span class="kn">from</span> <span class="nn">bgameb.rules</span> <span class="kn">import</span> <span class="n">RulesMixin</span>
+<span class="kn">from</span> <span class="nn">bgameb.rules</span> <span class="kn">import</span> <span class="n">RulesMixin</span><span class="p">,</span> <span class="n">Stream</span>
 <span class="kn">from</span> <span class="nn">bgameb.tools</span> <span class="kn">import</span> <span class="n">TOOLS</span><span class="p">,</span> <span class="n">TOOLS_TYPES</span>
 <span class="kn">from</span> <span class="nn">bgameb.stuff</span> <span class="kn">import</span> <span class="n">STUFF</span><span class="p">,</span> <span class="n">STUFF_TYPES</span>
 <span class="kn">from</span> <span class="nn">bgameb.players</span> <span class="kn">import</span> <span class="n">PLAYERS</span><span class="p">,</span> <span class="n">PLAERS_TYPES</span>
@@ -89,6 +89,13 @@
 <span class="k">class</span> <span class="nc">BaseGame</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">turn_order</span><span class="p">:</span> <span class="n">Stream</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn_order</span> <span class="o">=</span> <span class="n">Stream</span><span class="p">(</span><span class="s1">&#39;TurnOrder&#39;</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="BaseGame.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.add">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -161,10 +168,12 @@
     <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;deck&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cards_deck&#39;</span><span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="s1">&#39;cards_deck&#39;</span><span class="p">,</span> <span class="s1">&#39;one_card&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="s1">&#39;this_rule&#39;</span><span class="p">,</span> <span class="s2">&quot;The text is short, but the rule is important&quot;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">turn_order</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="s1">&#39;phase_one&#39;</span><span class="p">,</span> <span class="s1">&#39;We have only this one phase in turn&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">turn_order</span><span class="o">.</span><span class="n">new_cycle</span><span class="p">()</span>
     <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
 </pre></div>
 
            </div>
