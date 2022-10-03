@@ -2,9 +2,9 @@
 """
 from typing import Literal, Dict, Any
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from bgameb.base import Base
-from bgameb.rules import RulesMixin
+from bgameb.rules import RulesMixin, Stream
 from bgameb.tools import TOOLS, TOOLS_TYPES
 from bgameb.stuff import STUFF, STUFF_TYPES
 from bgameb.players import PLAYERS, PLAERS_TYPES
@@ -18,6 +18,13 @@ component = Literal[STUFF_TYPES, TOOLS_TYPES, PLAERS_TYPES]
 class BaseGame(Base, ABC):
     """Base class for game
     """
+    turn_order: Stream = field(init=False)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self.turn_order = Stream('TurnOrder')
+
+
     @abstractmethod
     def add(
         self,
@@ -90,7 +97,9 @@ if __name__ == '__main__':
     game.add('deck', name='cards_deck')
     game.add_to('cards_deck', 'one_card', count=3)
     game.add_rule('this_rule', "The text is short, but the rule is important")
+    game.turn_order.add_rule('phase_one', 'We have only this one phase in turn')
+    game.turn_order.new_cycle()
     game.cards_deck.deal()
     print(game)
     print('='*20)
-    print(game.to_dict())
+    print(game.to_json())

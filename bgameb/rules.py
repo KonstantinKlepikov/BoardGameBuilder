@@ -1,7 +1,9 @@
 """Rules objects for game stuff
 """
+from typing import Deque, List, Any
 from dataclasses import dataclass, field
-from dataclasses_json import DataClassJsonMixin
+from collections import deque
+from dataclasses_json import DataClassJsonMixin, config
 from bgameb.base import Components
 
 
@@ -43,3 +45,42 @@ class RulesMixin:
             text (str): text of rule
         """
         self.rules[name] = Rule(name=name, text=text)
+
+
+@dataclass
+class Stream(deque, DataClassJsonMixin):
+    """Stream is a deque-like object for save
+    sata about game turns
+
+    Args:
+        name (str): name of Stream.
+        _order (List[Rule]): list of default elements of Stream.
+    """
+    name: str
+    _order: List[Rule] = field(
+        default_factory=list,
+        repr=False,
+        metadata=config(exclude=lambda x: True),
+        )
+
+    def add_rule(self, name: str, text: str):
+        """Add rule to basic structure of turn
+        Yhis structure is a list of Rules. The method
+        new_cycle() instantiaate the turn inside
+        Stream class.
+
+        Args:
+            name (str): name of phase rule
+            text (str): text of phase rule
+        """
+        self._order.append(Rule(name=name, text=text))
+
+    def new_cycle(self):
+        """Clear the Stream and instantiate new turn
+        """
+        self.clear()
+        self.extend(self._order)
+
+    def __repr__(self):
+        items = (f"{rule.name}={rule.text}" for rule in self)
+        return "{}({})".format(self.name, ", ".join(items))
