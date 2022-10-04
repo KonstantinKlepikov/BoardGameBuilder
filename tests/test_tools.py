@@ -2,7 +2,7 @@ import json, pytest, random
 from typing import Tuple
 from collections import deque
 from bgameb.game import Game, BaseGame
-from bgameb.tools import Shaker, Deck, BaseTool
+from bgameb.tools import Shaker, Deck, CardsBag, BaseTool
 from bgameb.stuff import BaseStuff
 from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
@@ -37,6 +37,7 @@ class TestTool:
     """Test tools classes
     """
     params = [
+        (CardsBag, 'hand', ('card', 'card_nice')),
         (Deck, 'deck', ('card', 'card_nice')),
         (Shaker, 'shaker', ('dice', 'dice_nice')),
         ]

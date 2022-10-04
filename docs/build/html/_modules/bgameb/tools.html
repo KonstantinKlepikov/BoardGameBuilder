@@ -250,9 +250,22 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span></div></div>
 
 
+<div class="viewcode-block" id="CardsBag"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.CardsBag">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CardsBag</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Datastorage for nonqueued list of stuff. Use it for</span>
+<span class="sd">    hand with cards, graveyards, outside of the game cards and etc</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">Card</span></div>
+
+
 <div class="viewcode-block" id="Deck"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Deck</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Deck</span><span class="p">(</span><span class="n">CardsBag</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create deck for cards</span>
+
+<span class="sd">    Deck ia a CardsBag class that conyain dealt property for</span>
+<span class="sd">    define queued deck representation</span>
 
 <span class="sd">    You can add cards, define it counts and deal a deck.</span>
 <span class="sd">    Result is saved in dealt attr as deque object. This object</span>
@@ -265,7 +278,6 @@
 
 <span class="sd">            deque(Card1, Card3, Card2, Card4)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">dealt</span><span class="p">:</span> <span class="n">Deque</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="n">deque</span><span class="p">,</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -273,7 +285,6 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">Card</span>
 
 <div class="viewcode-block" id="Deck.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Deal new random shuffled deck and save it to</span>
@@ -400,9 +411,10 @@
 
 <span class="n">TOOLS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;shaker&#39;</span><span class="p">:</span> <span class="n">Shaker</span><span class="p">,</span>
+    <span class="s1">&#39;cards_bag&#39;</span><span class="p">:</span> <span class="n">CardsBag</span><span class="p">,</span>
     <span class="s1">&#39;deck&#39;</span><span class="p">:</span> <span class="n">Deck</span><span class="p">,</span>
     <span class="p">}</span>
-<span class="n">TOOLS_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;shaker&#39;</span><span class="p">,</span> <span class="s1">&#39;deck&#39;</span><span class="p">]</span>
+<span class="n">TOOLS_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;shaker&#39;</span><span class="p">,</span> <span class="s1">&#39;cards_bag&#39;</span><span class="p">,</span> <span class="s1">&#39;deck&#39;</span><span class="p">]</span>
 </pre></div>
 
            </div>
