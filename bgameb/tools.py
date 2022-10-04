@@ -180,8 +180,21 @@ class Shaker(BaseTool):
 
 
 @dataclass
-class Deck(BaseTool):
+class CardsBag(BaseTool):
+    """Datastorage for nonqueued list of stuff. Use it for
+    hand with cards, graveyards, outside of the game cards and etc
+    """
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self._stuff_to_add = Card
+
+
+@dataclass
+class Deck(CardsBag):
     """Create deck for cards
+
+    Deck ia a CardsBag class that conyain dealt property for
+    define queued deck representation
 
     You can add cards, define it counts and deal a deck.
     Result is saved in dealt attr as deque object. This object
@@ -194,7 +207,6 @@ class Deck(BaseTool):
 
             deque(Card1, Card3, Card2, Card4)
     """
-    name: Optional[str] = None
     dealt: Deque[BaseStuff] = field(
         default_factory=deque,
         repr=False,
@@ -202,7 +214,6 @@ class Deck(BaseTool):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._stuff_to_add = Card
 
     def deal(self) -> List[str]:
         """Deal new random shuffled deck and save it to
@@ -329,6 +340,7 @@ class Deck(BaseTool):
 
 TOOLS = {
     'shaker': Shaker,
+    'cards_bag': CardsBag,
     'deck': Deck,
     }
-TOOLS_TYPES = Literal['shaker', 'deck']
+TOOLS_TYPES = Literal['shaker', 'cards_bag', 'deck']

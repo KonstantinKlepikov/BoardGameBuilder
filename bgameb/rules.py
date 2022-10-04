@@ -1,6 +1,6 @@
 """Rules objects for game stuff
 """
-from typing import Deque, List, Any
+from typing import List
 from dataclasses import dataclass, field
 from collections import deque
 from dataclasses_json import DataClassJsonMixin, config
