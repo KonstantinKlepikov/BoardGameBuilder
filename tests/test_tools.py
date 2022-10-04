@@ -257,7 +257,7 @@ class TestDeck:
         deck = Deck(name='deck')
         deck._increase('card', game=game_inst, count=5)
         deck._increase('card_nice', game=game_inst, count=5)
-        deck.clear()
+        deck.dealt.clear()
         assert isinstance(deck.dealt, deque), 'nonempty dealt'
         assert len(deck.dealt) == 0, 'nonempty dealt'
 

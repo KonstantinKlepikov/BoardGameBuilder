@@ -1,6 +1,7 @@
 import pytest
 from bgameb.base import Components
 from bgameb.stuff import Roller, Card, BaseStuff
+from bgameb.rules import Rule, Turn
 from bgameb.errors import ComponentNameError
 
 

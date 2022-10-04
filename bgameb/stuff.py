@@ -19,6 +19,22 @@ class BaseStuff(Base, ABC):
 
 
 @dataclass
+class Rule(BaseStuff):
+    """Rule object
+    """
+    count: int = field(
+        default=1,
+        metadata=config(exclude=lambda x: True),
+        init=False,
+        repr=False
+        )
+    text: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+
+@dataclass
 class Roller(BaseStuff):
     """Base class for define types of rollers or fliped objects
 
@@ -139,7 +155,8 @@ class Card(BaseStuff):
 
 
 STUFF = {
+    'rule': Rule,
     'roller': Roller,
     'card': Card,
     }
-STUFF_TYPES = Literal['roller', 'card']
+STUFF_TYPES = Literal['rule', 'roller', 'card']

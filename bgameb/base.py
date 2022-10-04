@@ -12,7 +12,7 @@ from bgameb.utils import log_me
 
 
 @dataclass(init=False)
-class Components(Mapping):
+class Components(Mapping, DataClassJsonMixin):
     """Components mapping
     """
     def __init__(

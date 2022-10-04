@@ -59,7 +59,7 @@ game.cards_deck.deal()
 deck = game.cards_deck.dealt
 
 # all rule is store in Game class
-game.add_rule(name='this_rule', text='Important text')
+game.add_phase(name='this_rule', text='Important text')
 
 # rule is a dict-like object
 game.rules.this_rule.additional = 'Add something else'
