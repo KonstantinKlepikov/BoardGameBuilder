@@ -5,8 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from bgameb.base import Base
 from bgameb.types import COMPONENTS, component_type
-from bgameb.tools import RuleBook
-from bgameb.rules import Turn
+from bgameb.tools import RuleBook, Turn
 from bgameb.errors import ComponentClassError
 
 
@@ -113,15 +112,11 @@ if __name__ == '__main__':
         )
     game.add('card', name='one_card')
     game.add('deck', name='cards_deck')
-    game.one_card.rules.append('this_rule')
     game.add_to('cards_deck', 'one_card', count=3)
     game.add_to('game_rules', 'this_rule')
+    game.add_to('turn_order', 'this_rule')
     game.cards_deck.deal()
-
-    game.turn_order.add_phase(
-        'phase_one', 'We have only this one phase in turn'
-        )
-    game.turn_order.new_cycle()
+    game.turn_order.deal()
 
     print(game)
     print('='*20)

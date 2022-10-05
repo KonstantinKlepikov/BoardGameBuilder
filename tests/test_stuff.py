@@ -1,6 +1,6 @@
 import json, pytest
 from collections import Counter
-from bgameb.stuff import Roller, Card
+from bgameb.stuff import Roller, Card, Rule
 from bgameb.errors import StuffDefineError
 
 
@@ -10,6 +10,7 @@ class TestBaseStuff:
     params = [
         (Roller, 'roller'),
         (Card, 'card'),
+        (Rule, 'rule'),
         ]
 
     @pytest.mark.parametrize("_class, name", params)
@@ -19,7 +20,8 @@ class TestBaseStuff:
         obj_= _class(name='this_stuff')
         assert obj_.name == 'this_stuff', 'not set name for instance'
         assert obj_.is_active, 'wrong is_active'
-        assert obj_.rules == [], 'no rules'
+        assert obj_.count == 1, 'wrong count'
+        # assert obj_.rules == [], 'no rules'
 
     @pytest.mark.parametrize("_class, name", params)
     def test_stuff_classes_are_converted_to_json(self, _class, name: str) -> None:
@@ -28,6 +30,17 @@ class TestBaseStuff:
         obj_ = _class(name=name)
         j = json.loads(obj_.to_json())
         assert j['name'] == name, 'not converted to json'
+
+
+class TestRule:
+    """Test Rule class
+    """
+
+    def test_rule_instance(self) -> None:
+        """Test Rule class instance
+        """
+        obj_ = Rule(name='this_rule', text='text of rule')
+        assert obj_.text == 'text of rule', 'not set text'
 
 
 class TestRollers:
@@ -42,7 +55,7 @@ class TestRollers:
         assert obj_.is_active, 'wrong is_active'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
-        assert obj_.rules == [], 'no rules'
+        # assert obj_.rules == [], 'no rules'
         assert len(obj_._range) == 2, 'wrong range'
 
     def test_roller_type_have_sides_defined_less_than_two(self) -> None:
@@ -80,7 +93,7 @@ class TestCard:
         assert obj_.tapped == False, 'card is tapped'
         assert obj_.side == None, 'defined wrong side'
         assert obj_.count == 1, 'wrong count'
-        assert obj_.rules == [], 'no rules'
+        # assert obj_.rules == [], 'no rules'
         assert isinstance(obj_.counter, Counter), 'wrong counter'
 
     def test_flip(self) -> None:

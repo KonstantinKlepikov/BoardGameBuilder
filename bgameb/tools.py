@@ -8,7 +8,6 @@ from dataclasses import dataclass, field, replace
 from dataclasses_json import config
 from bgameb.base import Base
 from bgameb.stuff import Card, Roller, Rule, BaseStuff
-# from bgameb.rules import Rule
 from bgameb.errors import ArrangeIndexError, StuffDefineError
 
 
@@ -349,15 +348,15 @@ class Deck(CardsBag):
 
 
 @dataclass
-class TurnOrder(BaseTool):
-    """Turn is a deque-like object for save
-    sata about game turns
+class Turn(BaseTool):
+    """Turn is an deque-like object for save
+    game phases rules
 
     Args:
         name (str): name of Turn.
         _order (List[Rule]): list of default elements of Turn.
     """
-    order: Deque[BaseStuff] = field(
+    dealt: Deque[BaseStuff] = field(
         default_factory=deque,
         repr=False,
         )
@@ -366,15 +365,14 @@ class TurnOrder(BaseTool):
         super().__post_init__()
         self._stuff_to_add = Rule
 
-    def new_cycle(self):
+    def deal(self):
         """Clear the Turn and instantiate new turn
         """
-        self.order.clear()
+        self.dealt.clear()
         for stuff in self._stuff:
-            for _ in range(self[stuff].count):
-                phase = replace(self[stuff])
-                self.order.append(phase)
-        self.logger.debug(f'Is dealt cards: {self.order}')
+            phase = replace(self[stuff])
+            self.dealt.append(phase)
+        self.logger.debug(f'Is dealt order of turn: {self.dealt}')
 
 
 TOOLS = {
@@ -382,5 +380,6 @@ TOOLS = {
     'shaker': Shaker,
     'cards_bag': CardsBag,
     'deck': Deck,
+    'turn': Turn,
     }
-TOOLS_TYPES = Literal['rule_book', 'shaker', 'cards_bag', 'deck']
+TOOLS_TYPES = Literal['rule_book', 'shaker', 'cards_bag', 'deck', 'turn']

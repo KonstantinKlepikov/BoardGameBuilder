@@ -1,7 +1,6 @@
 import pytest
 from bgameb.base import Components
-from bgameb.stuff import Roller, Card, BaseStuff
-from bgameb.rules import Rule, Turn
+from bgameb.stuff import Roller, Card, Rule, BaseStuff
 from bgameb.errors import ComponentNameError
 
 
@@ -11,6 +10,7 @@ class TestComponents:
     components = [
         (Roller, 'dice'),
         (Card, 'card'),
+        (Rule, 'rule'),
         ]
 
     @pytest.mark.parametrize("_class, name", components)

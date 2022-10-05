@@ -2,8 +2,8 @@ import json, pytest, random
 from typing import Tuple
 from collections import deque
 from bgameb.game import Game, BaseGame
-from bgameb.tools import Shaker, Deck, CardsBag, BaseTool
-from bgameb.stuff import BaseStuff
+from bgameb.tools import Shaker, Deck, CardsBag, RuleBook, Turn, BaseTool
+from bgameb.stuff import Rule, BaseStuff
 from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
 
@@ -30,6 +30,8 @@ def game_inst() -> BaseGame:
     game.add('roller', name='dice_nice')
     game.add('card', name='card')
     game.add('card', name='card_nice')
+    game.add('rule', name='rule1', text='one text')
+    game.add('rule', name='rule2', text='two text')
     return game
 
 
@@ -40,10 +42,12 @@ class TestTool:
         (CardsBag, 'hand', ('card', 'card_nice')),
         (Deck, 'deck', ('card', 'card_nice')),
         (Shaker, 'shaker', ('dice', 'dice_nice')),
+        (RuleBook, 'rule_book', ('rule1', 'rule2')),
+        (Turn, 'turn', ('rule1', 'rule2')),
         ]
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_to_tool_raise_errors_if_wrong_count(
+    def test_increase_stuff_raise_errors_if_wrong_count(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test need count of stuff no less than 1
@@ -55,7 +59,7 @@ class TestTool:
             obj_._increase(stuff[0], game=game_inst, count=0)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_to_tool_raise_errors_if_wrong_name(
+    def test_increase_stuff_to_raise_errors_if_wrong_name(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test need exist stuff
@@ -67,7 +71,7 @@ class TestTool:
             obj_._increase('somestuff', game=game_inst)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_double_increase_stuff_to_tool_encrease_count(
+    def test_double_increase_stuff_encrease_count(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test double add roller with same name increase count,
@@ -79,7 +83,7 @@ class TestTool:
         assert obj_[stuff[0]].count == 2, 'not increased'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_to_shaker(
+    def test_increase_stuff(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test shaker add()
@@ -369,3 +373,42 @@ class TestDeck:
             match="Wrong to_arranged parts"
             ):
             deck.arrange(arranged, last)
+
+
+class TestTurn:
+    """Test Turn class
+    """
+
+    def test_turn_instance(self) -> None:
+        """Test Turn class instance
+        """
+        obj_ = Turn('game_turn')
+        assert isinstance(obj_, Components), 'wrong turn type'
+        assert isinstance(obj_.dealt, deque), 'wrong dealt type'
+        assert len(obj_.dealt) == 0, 'wrong dealt len'
+        assert len(obj_._stuff) == 0, 'wrong turn len'
+
+    def test_turn_add_phase(self, game_inst: BaseGame) -> None:
+        """Add rule to turn
+        """
+        obj_ = Turn('game_Turn')
+        obj_._increase('rule1', game=game_inst)
+        assert len(obj_._stuff) == 1, 'wrong dealt len'
+        assert isinstance(obj_.rule1, Rule), 'wrong rule type'
+        assert obj_.rule1.name == 'rule1', 'wrong rule name'
+        assert obj_.rule1.text == 'one text', 'wrong rule text'
+
+    def test_deal(self, game_inst: BaseGame) -> None:
+        """Test start new cycle of turn
+        """
+        obj_ = Turn('game_Turn')
+        obj_._increase('rule1', game=game_inst)
+        obj_._increase('rule2', game=game_inst)
+        obj_.deal()
+        assert len(obj_.dealt) == 2, 'wrong Turn len'
+        assert obj_.dealt[0].name == 'rule1', 'wrong first element'
+        assert obj_.dealt[1].name == 'rule2', 'wrong second element'
+        obj_.dealt.pop()
+        assert len(obj_.dealt) == 1, 'wrong turn len'
+        obj_.deal()
+        assert len(obj_.dealt) == 2, 'turn not clean'

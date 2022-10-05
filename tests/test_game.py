@@ -1,7 +1,6 @@
 import json, pytest
 from bgameb.game import Game
 from bgameb.base import Components
-from bgameb.rules import Turn
 from bgameb.types import COMPONENTS
 from bgameb.errors import ComponentClassError
 
@@ -16,7 +15,7 @@ class TestGame:
         obj_ = Game(name='this_game')
         assert obj_.name == 'this_game', 'not set name for instance'
         assert obj_.is_active, 'wrong is_active'
-        assert isinstance(obj_.turn_order, Turn), 'turn_order isnt Turn'
+        assert isinstance(obj_.turn_order, COMPONENTS['turn']), 'turn_order isnt Turn'
         assert isinstance(obj_.game_rules, Components), 'rules isnt component'
         assert isinstance(obj_, Components), 'isnt component'
 
