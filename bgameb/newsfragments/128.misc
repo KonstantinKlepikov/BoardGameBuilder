@@ -1,0 +1,3 @@
+#128:
+    * Now we use one interface for all adding to game object
+    * ->

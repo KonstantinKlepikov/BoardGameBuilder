@@ -1,6 +1,6 @@
 import pytest
 from bgameb.base import Components
-from bgameb.stuff import Roller, Card, BaseStuff
+from bgameb.stuff import Dice, Card, Rule, BaseStuff
 from bgameb.errors import ComponentNameError
 
 
@@ -8,8 +8,9 @@ class TestComponents:
     """Test CardText class
     """
     components = [
-        (Roller, 'dice'),
+        (Dice, 'dice'),
         (Card, 'card'),
+        (Rule, 'rule'),
         ]
 
     @pytest.mark.parametrize("_class, name", components)
@@ -91,7 +92,7 @@ class TestComponents:
             match='is exist in'
         ):
             comp._add(_class, name=name)
-        comp._add(Roller, name='this_is')
+        comp._add(Dice, name='this_is')
         assert comp.this_is, 'component not added'
         with pytest.raises(
             ComponentNameError,
