@@ -3,7 +3,7 @@
 from typing import Dict, Any
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from bgameb.base import Base
+from bgameb.base import Base, log_enable
 from bgameb.types import COMPONENTS, component_type
 from bgameb.tools import Rules, Turn
 from bgameb.errors import ComponentClassError
@@ -86,6 +86,7 @@ class Game(BaseGame):
 
 
 if __name__ == '__main__':
+    log_enable()
     game = Game('one_board_game')
     game.add(
         'rule',

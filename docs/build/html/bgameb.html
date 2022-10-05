@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb package &mdash; bgameb 0.0.15 documentation</title>
+  <title>bgameb package &mdash; bgameb 0.0.17 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -31,7 +31,7 @@
             <a href="index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.15
+                0.0.17
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -53,7 +53,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.base">bgameb.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.types">bgameb.types module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.errors">bgameb.errors module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.utils">bgameb.utils module</a></li>
 </ul>
 </li>
 </ul>
@@ -670,6 +669,21 @@ Default to True</p></li>
 <section id="module-bgameb.base">
 <span id="bgameb-base-module"></span><h2>bgameb.base module<a class="headerlink" href="#module-bgameb.base" title="Permalink to this heading"></a></h2>
 <p>Base constructs for build package objects</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="bgameb.base.log_enable">
+<span class="sig-prename descclassname"><span class="pre">bgameb.base.</span></span><span class="sig-name descname"><span class="pre">log_enable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./logs/game.log'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DEBUG'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/base.html#log_enable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.base.log_enable" title="Permalink to this definition"></a></dt>
+<dd><p>Enable logging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_path</strong> (<em>str</em><em>, </em><em>optional</em>) – path to log file.
+Defaults to ‘./logs/game.log’.</p></li>
+<li><p><strong>log_level</strong> (<em>str</em><em>, </em><em>optional</em>) – logging level. Defaults to ‘DEBUG’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="bgameb.base.Components">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.base.</span></span><span class="sig-name descname"><span class="pre">Components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/base.html#Components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.base.Components" title="Permalink to this definition"></a></dt>
@@ -751,25 +765,6 @@ class instance.</p>
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bgameb.errors.</span></span><span class="sig-name descname"><span class="pre">ArrangeIndexError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bgameb/errors.html#ArrangeIndexError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.errors.ArrangeIndexError" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IndexError</span></code></p>
 <p>Index error for arrange tool</p>
-</dd></dl>
-
-</section>
-<section id="module-bgameb.utils">
-<span id="bgameb-utils-module"></span><h2>bgameb.utils module<a class="headerlink" href="#module-bgameb.utils" title="Permalink to this heading"></a></h2>
-<p>Utils, like logger</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bgameb.utils.log_enable">
-<span class="sig-prename descclassname"><span class="pre">bgameb.utils.</span></span><span class="sig-name descname"><span class="pre">log_enable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./logs/game.log'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DEBUG'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/bgameb/utils.html#log_enable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.utils.log_enable" title="Permalink to this definition"></a></dt>
-<dd><p>Enable logging</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>log_path</strong> (<em>str</em><em>, </em><em>optional</em>) – path to log file.
-Defaults to ‘./logs/game.log’.</p></li>
-<li><p><strong>log_level</strong> (<em>str</em><em>, </em><em>optional</em>) – logging level. Defaults to ‘DEBUG’.</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
