@@ -3,11 +3,11 @@
 import random
 from abc import ABC
 from collections import deque
-from typing import Optional, Tuple, Dict, Literal, List, Deque, Set
+from typing import Optional, Tuple, Dict, Literal, List, Deque
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config
 from bgameb.base import Base
-from bgameb.stuff import Card, Roller, BaseStuff
+from bgameb.stuff import Card, Dice, Rule, BaseStuff
 from bgameb.errors import ArrangeIndexError, StuffDefineError
 
 
@@ -20,8 +20,8 @@ class BaseTool(Base, ABC):
         repr=False,
         init=False,
         )
-    _stuff: Set[str] = field(
-        default_factory=set,
+    _stuff: List[str] = field(
+        default_factory=list,
         metadata=config(exclude=lambda x: True),
         repr=False,
         init=False,
@@ -61,7 +61,7 @@ class BaseTool(Base, ABC):
                 **game[name].to_dict()
                 )
             self[name].count = count
-            self._stuff.add(name)
+            self._stuff.append(name)
             self.logger.debug(
                 f'Added stuff with "{name=}" and {count=}.'
                 )
@@ -88,7 +88,7 @@ class BaseTool(Base, ABC):
             )
         if self[name].count <= 0:
             del self[name]
-            self._stuff.discard(name)
+            self._stuff.remove(name)
 
     def remove(
         self,
@@ -121,13 +121,13 @@ class BaseTool(Base, ABC):
                 self._stuff = set()
                 self.logger.debug('Removed all stuff')
             else:
-                for stuff in list(self._stuff):
+                for stuff in self._stuff:
                     self._decrease(stuff, count)
 
         elif self.get(name):
             if count is None:
                 del self[name]
-                self._stuff.discard(name)
+                self._stuff.remove(name)
                 self.logger.debug(
                     f'Removed all stuff with {name=}.'
                     )
@@ -145,14 +145,10 @@ class BaseTool(Base, ABC):
 class Shaker(BaseTool):
     """Create shaker for roll dices or flip coins
     """
-    last: Dict[str, Tuple[int]] = field(
-        default_factory=dict,
-        repr=False,
-        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._stuff_to_add = Roller
+        self._stuff_to_add = Dice
 
     def roll(self) -> Dict[str, Tuple[int]]:
         """Roll all stuff with shaker and return results
@@ -173,15 +169,27 @@ class Shaker(BaseTool):
         for name in self._stuff:
             roll[name] = self[name].roll()
 
-        self.last = roll
         self.logger.debug(f'Result of roll: {roll}')
 
-        return self.last
+        return roll
 
 
 @dataclass
-class Deck(BaseTool):
+class Bag(BaseTool):
+    """Datastorage for nonqueued list of stuff. Use it for
+    hand with cards, graveyards, outside of the game cards and etc
+    """
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self._stuff_to_add = Card
+
+
+@dataclass
+class Deck(Bag):
     """Create deck for cards
+
+    Deck ia a Bag class that conyain dealt property for
+    define queued deck representation
 
     You can add cards, define it counts and deal a deck.
     Result is saved in dealt attr as deque object. This object
@@ -194,7 +202,6 @@ class Deck(BaseTool):
 
             deque(Card1, Card3, Card2, Card4)
     """
-    name: Optional[str] = None
     dealt: Deque[BaseStuff] = field(
         default_factory=deque,
         repr=False,
@@ -202,13 +209,12 @@ class Deck(BaseTool):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._stuff_to_add = Card
 
     def deal(self) -> List[str]:
         """Deal new random shuffled deck and save it to
         self.dealt: List[str]
         """
-        self.clear()
+        self.dealt.clear()
         for stuff in self._stuff:
             for _ in range(self[stuff].count):
                 card = replace(self[stuff])
@@ -320,15 +326,47 @@ class Deck(BaseTool):
 
         return result
 
-    def clear(self) -> None:
-        """Clean dealt deack
+
+@dataclass
+class Rules(BaseTool):
+    """Basic rules storage
+    """
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self._stuff_to_add = Rule
+
+
+@dataclass
+class Turn(Rules):
+    """Turn is data storage for turn rules
+
+    Args:
+        name (str): name of Turn.
+        _order (List[Rule]): list of default elements of Turn.
+    """
+    dealt: Deque[BaseStuff] = field(
+        default_factory=deque,
+        repr=False,
+        )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+    def deal(self):
+        """Clear the Turn and instantiate new turn
         """
         self.dealt.clear()
-        self.logger.debug(f'Dealt deck is clear')
+        for stuff in self._stuff:
+            phase = replace(self[stuff])
+            self.dealt.append(phase)
+        self.logger.debug(f'Is dealt order of turn: {self.dealt}')
 
 
 TOOLS = {
     'shaker': Shaker,
+    'cards_bag': Bag,
     'deck': Deck,
+    'rules': Rules,
+    'turn': Turn,
     }
-TOOLS_TYPES = Literal['shaker', 'deck']
+TOOLS_TYPES = Literal['rule_book', 'shaker', 'cards_bag', 'deck', 'turn']

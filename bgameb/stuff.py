@@ -15,15 +15,31 @@ class BaseStuff(Base, ABC):
     """Base class for game stuff (like dices or cards)
     """
     count: int = 1
-    rules: List[str] = field(default_factory=list)
+    # rules: List[str] = field(default_factory=list)
 
 
 @dataclass
-class Roller(BaseStuff):
-    """Base class for define types of rollers or fliped objects
+class Rule(BaseStuff):
+    """Rule object
+    """
+    count: int = field(
+        default=1,
+        metadata=config(exclude=lambda x: True),
+        # init=False,
+        repr=False
+        )
+    text: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+
+@dataclass
+class Dice(BaseStuff):
+    """Base class for define types of rolled or fliped objects
 
     Define name to identify later this object by unique name.
-    For example: 'six_side_dice'
+    For example: 'six_side'
 
     Sides attr define number of sides of roller. Default to 2.
     Sides can't be less than 2, because one-sided roller is
@@ -32,7 +48,7 @@ class Roller(BaseStuff):
     .. code-block::
         :caption: Example:
 
-            dice = Roller(name='coin', sides=2)
+            dice = Dice(name='coin', sides=2)
 
     Raises:
         StuffDefineError: number of sides less than 2
@@ -139,7 +155,8 @@ class Card(BaseStuff):
 
 
 STUFF = {
-    'roller': Roller,
+    'rule': Rule,
+    'dice': Dice,
     'card': Card,
     }
-STUFF_TYPES = Literal['roller', 'card']
+STUFF_TYPES = Literal['rule', 'dice', 'card']

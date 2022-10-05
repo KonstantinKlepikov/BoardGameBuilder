@@ -2,8 +2,8 @@ import json, pytest, random
 from typing import Tuple
 from collections import deque
 from bgameb.game import Game, BaseGame
-from bgameb.tools import Shaker, Deck, BaseTool
-from bgameb.stuff import BaseStuff
+from bgameb.tools import Shaker, Deck, Bag, Rules, Turn, BaseTool
+from bgameb.stuff import Rule, BaseStuff
 from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
 
@@ -26,10 +26,12 @@ class FixedSeed:
 @pytest.fixture
 def game_inst() -> BaseGame:
     game = Game(name='game')
-    game.add('roller', name='dice')
-    game.add('roller', name='dice_nice')
+    game.add('dice', name='dice')
+    game.add('dice', name='dice_nice')
     game.add('card', name='card')
     game.add('card', name='card_nice')
+    game.add('rule', name='rule1', text='one text')
+    game.add('rule', name='rule2', text='two text')
     return game
 
 
@@ -37,12 +39,15 @@ class TestTool:
     """Test tools classes
     """
     params = [
+        (Bag, 'hand', ('card', 'card_nice')),
         (Deck, 'deck', ('card', 'card_nice')),
         (Shaker, 'shaker', ('dice', 'dice_nice')),
+        (Rules, 'rules', ('rule1', 'rule2')),
+        (Turn, 'turn', ('rule1', 'rule2')),
         ]
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_to_tool_raise_errors_if_wrong_count(
+    def test_increase_stuff_raise_errors_if_wrong_count(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test need count of stuff no less than 1
@@ -54,7 +59,7 @@ class TestTool:
             obj_._increase(stuff[0], game=game_inst, count=0)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_to_tool_raise_errors_if_wrong_name(
+    def test_increase_stuff_to_raise_errors_if_wrong_name(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test need exist stuff
@@ -66,10 +71,10 @@ class TestTool:
             obj_._increase('somestuff', game=game_inst)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_double_increase_stuff_to_tool_encrease_count(
+    def test_double_increase_stuff_encrease_count(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
-        """Test double add roller with same name increase count,
+        """Test double add dice with same name increase count,
         not raises error
         """
         obj_ = _class(name=name)
@@ -78,7 +83,7 @@ class TestTool:
         assert obj_[stuff[0]].count == 2, 'not increased'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_to_shaker(
+    def test_increase_stuff(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
         """Test shaker add()
@@ -155,42 +160,38 @@ class TestShaker:
     def test_shaker_instanciation(self, game_inst: BaseGame) -> None:
         """Test shaker correct created
         """
-        shaker = Shaker(name='shaker')
-        assert shaker.name == 'shaker', 'wrong name'
-        assert shaker.is_active, 'wrong is_active'
-        assert isinstance(shaker.last, dict), 'nondict last'
-        assert isinstance(shaker, Components), 'wrong type of stuff'
-        assert len(shaker._stuff) == 0, 'nonempty stuff'
-        assert issubclass(shaker._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
+        obj_ = Shaker(name='shaker')
+        assert obj_.name == 'shaker', 'wrong name'
+        assert obj_.is_active, 'wrong is_active'
+        assert isinstance(obj_, Components), 'wrong type of stuff'
+        assert len(obj_._stuff) == 0, 'nonempty stuff'
+        assert issubclass(obj_._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
 
     def test_shaker_are_converted_to_json(self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
         """
-        shaker = Shaker(name='shaker')
-        shaker._increase('dice', game=game_inst)
-        j = json.loads(shaker.to_json())
+        obj_ = Shaker(name='shaker')
+        obj_._increase('dice', game=game_inst)
+        j = json.loads(obj_.to_json())
         assert j['name'] == 'shaker', 'wrong name'
-        assert j['last'] == {}, 'wrong last result'
         assert j['dice']['name'] == 'dice', 'wrong name of stuff'
 
     def test_roll_shaker(self, game_inst: BaseGame) -> None:
         """Test roll shaker
         """
-        shaker = Shaker(name='shaker')
-        shaker._increase('dice', game=game_inst, count=5)
-        shaker._increase('dice_nice', game=game_inst, count=5)
-        roll = shaker.roll()
+        obj_ = Shaker(name='shaker')
+        obj_._increase('dice', game=game_inst, count=5)
+        obj_._increase('dice_nice', game=game_inst, count=5)
+        roll = obj_.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
-        assert len(shaker.last) == 2, 'wrong last'
 
     def test_roll_empty_shaker(self, game_inst: BaseGame) -> None:
         """Test roll empty shaker
         """
-        shaker = Shaker(name='shaker')
-        roll = shaker.roll()
+        obj_ = Shaker(name='shaker')
+        roll = obj_.roll()
         assert roll == {}, 'wrong roll result'
-        assert shaker.last == {}, 'wrong last'
 
 
 class TestDeck:
@@ -256,7 +257,7 @@ class TestDeck:
         deck = Deck(name='deck')
         deck._increase('card', game=game_inst, count=5)
         deck._increase('card_nice', game=game_inst, count=5)
-        deck.clear()
+        deck.dealt.clear()
         assert isinstance(deck.dealt, deque), 'nonempty dealt'
         assert len(deck.dealt) == 0, 'nonempty dealt'
 
@@ -368,3 +369,42 @@ class TestDeck:
             match="Wrong to_arranged parts"
             ):
             deck.arrange(arranged, last)
+
+
+class TestTurn:
+    """Test Turn class
+    """
+
+    def test_turn_instance(self) -> None:
+        """Test Turn class instance
+        """
+        obj_ = Turn('game_turn')
+        assert isinstance(obj_, Components), 'wrong turn type'
+        assert isinstance(obj_.dealt, deque), 'wrong dealt type'
+        assert len(obj_.dealt) == 0, 'wrong dealt len'
+        assert len(obj_._stuff) == 0, 'wrong turn len'
+
+    def test_turn_add_phase(self, game_inst: BaseGame) -> None:
+        """Add rule to turn
+        """
+        obj_ = Turn('game_Turn')
+        obj_._increase('rule1', game=game_inst)
+        assert len(obj_._stuff) == 1, 'wrong dealt len'
+        assert isinstance(obj_.rule1, Rule), 'wrong rule type'
+        assert obj_.rule1.name == 'rule1', 'wrong rule name'
+        assert obj_.rule1.text == 'one text', 'wrong rule text'
+
+    def test_deal(self, game_inst: BaseGame) -> None:
+        """Test start new cycle of turn
+        """
+        obj_ = Turn('game_Turn')
+        obj_._increase('rule1', game=game_inst)
+        obj_._increase('rule2', game=game_inst)
+        obj_.deal()
+        assert len(obj_.dealt) == 2, 'wrong Turn len'
+        assert obj_.dealt[0].name == 'rule1', 'wrong first element'
+        assert obj_.dealt[1].name == 'rule2', 'wrong second element'
+        obj_.dealt.pop()
+        assert len(obj_.dealt) == 1, 'wrong turn len'
+        obj_.deal()
+        assert len(obj_.dealt) == 2, 'turn not clean'
