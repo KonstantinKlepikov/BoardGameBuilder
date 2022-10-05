@@ -13,17 +13,17 @@ from bgameb import Game
 game = Game('one_board_game')
 
 # add dice and coin types to game
-game.add('roller', name='six_dice', sides=6)
-game.add('roller', name='twenty_dice', sides=20)
-game.add('roller', name='coin') # 2 is default number of sides
+game.add('dice', name='six', sides=6)
+game.add('dice', name='twenty', sides=20)
+game.add('dice', name='coin') # 2 is default number of sides
 
 # or define sides for dice and coin types
 game.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
 game.add('shaker', name='red_shaker')
-game.add_to('red_shaker', 'six_dice', count=50)
-game.add_to('red_shaker', 'twenty_dice', count=10)
+game.add_to('red_shaker', 'six', count=50)
+game.add_to('red_shaker', 'twenty', count=10)
 game.add_to('red_shaker', 'coin', count=42)
 
 # roll all stuff and get result
@@ -31,7 +31,7 @@ result = game.red_shaker.roll()
 
 # or define new shaker with default count == 1 and roll each stuff separatly
 game.add('shaker', name='blue_shaker')
-game.add_to('blue_shaker', 'six_dice')
+game.add_to('blue_shaker', 'six')
 game.add_to('blue_shaker', 'coin')
 
 result = game.blue_shaker.six_dice.roll()
@@ -45,7 +45,7 @@ result = game['blue_shaker']['coin'].roll()
 
 # delete components from any collections
 del game.blue_shaker
-del game.six_dice
+del game.six
 
 # define a cards and decks
 game.add('card', name='one_card')
@@ -55,19 +55,21 @@ game.add_to('cards_deck', 'one_card', count=100)
 # deal card from deck
 game.cards_deck.deal()
 
-# dealt crds is a python deque
+# dealt cards is a python deque
 deck = game.cards_deck.dealt
 
 # all rule is store in Game class
-game.add_phase(name='this_rule', text='Important text')
+game.add('rule', name='phase_one', text='Important text')
+game.add('rule', name='phase_two', text='Another important text')
 
 # rule is a dict-like object
-game.rules.this_rule.additional = 'Add something else'
+game.phase_one.additional = 'Add something else'
 
-# Any stuff or players objects in game have rules list to link to rules
-game.one_card.rules.append(game.rules.this_rule.name)
-for rule in game.one_card.rules:
-    print(game.rules[rule].text)
+# lets create game turn structure
+game.add_to('turn_order', 'phase_one')
+game.add_to('turn_order', 'phase_two')
+game.turn_order.deal()
+current_turn = game.turn_order.dealt
 ```
 
 ## Documentation

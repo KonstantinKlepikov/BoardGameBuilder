@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from bgameb.base import Base
 from bgameb.types import COMPONENTS, component_type
-from bgameb.tools import RuleBook, Turn
+from bgameb.tools import Rules, Turn
 from bgameb.errors import ComponentClassError
 
 
@@ -13,12 +13,12 @@ from bgameb.errors import ComponentClassError
 class BaseGame(Base, ABC):
     """Base class for game
     """
-    game_rules: RuleBook = field(init=False)
+    game_rules: Rules = field(init=False)
     turn_order: Turn = field(init=False)
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.game_rules = RuleBook('game_rules')
+        self.game_rules = Rules('game_rules')
         self.turn_order = Turn('turn_order')
 
     @abstractmethod
@@ -50,15 +50,6 @@ class BaseGame(Base, ABC):
             to (str): name of tool, where added
             **kwargs (Dict[str,Any]): dict of named args
         """
-
-    # @abstractmethod
-    # def add_rule(self, name: str, text: str) -> None:
-    #     """Add rule to game
-
-    #     Args:
-    #         name (str): name of added rule.
-    #         text (str): text of added rule.
-    #     """
 
 
 @dataclass
@@ -92,15 +83,6 @@ class Game(BaseGame):
             self.logger.info(f'{name} is added to {to}.')
         else:
             raise ComponentClassError(name, self.logger)
-
-    # def add_rule(self, name: str, text: str) -> None:
-    #     """Add rule to game rules
-
-    #     Args:
-    #         name (str): name of rule
-    #         text (str): text of rule
-    #     """
-    #     self.rules[name] = Rule(name=name, text=text)
 
 
 if __name__ == '__main__':

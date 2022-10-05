@@ -44,6 +44,14 @@ bgameb.base module
    :undoc-members:
    :show-inheritance:
 
+bgameb.types module
+-------------------
+
+.. automodule:: bgameb.types
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 bgameb.errors module
 --------------------
 

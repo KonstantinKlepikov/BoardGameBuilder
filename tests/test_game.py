@@ -15,8 +15,8 @@ class TestGame:
         obj_ = Game(name='this_game')
         assert obj_.name == 'this_game', 'not set name for instance'
         assert obj_.is_active, 'wrong is_active'
-        assert isinstance(obj_.turn_order, COMPONENTS['turn']), 'turn_order isnt Turn'
-        assert isinstance(obj_.game_rules, Components), 'rules isnt component'
+        assert isinstance(obj_.turn_order, COMPONENTS['turn']), 'turn_order isnt component'
+        assert isinstance(obj_.game_rules, COMPONENTS['rules']), 'rules isnt component'
         assert isinstance(obj_, Components), 'isnt component'
 
     def test_game_class_is_converted_to_json(self) -> None:
@@ -41,7 +41,7 @@ class TestGame:
         """Test add with kwargs
         """
         obj_ = Game(name='game')
-        obj_.add('roller', name='dice', sides=42)
+        obj_.add('dice', name='dice', sides=42)
         assert obj_.dice.sides == 42, 'wrong count'
 
     def test_add_wrong_component_to_game(self) -> None:
@@ -58,7 +58,7 @@ class TestGame:
         """Test add_to() method
         """
         obj_ = Game(name='game')
-        obj_.add('roller', name='that')
+        obj_.add('dice', name='that')
         obj_.add('shaker', name='this')
         obj_.add_to('this', 'that', count=10)
         assert obj_.this.that.count == 10, 'not added'
@@ -67,7 +67,7 @@ class TestGame:
         """Test add_to() notexisted stuff or tool
         """
         obj_ = Game(name='game')
-        obj_.add('roller', name='that')
+        obj_.add('dice', name='that')
         obj_.add('shaker', name='this')
         with pytest.raises(
             ComponentClassError,
@@ -96,7 +96,7 @@ class TestGame:
         """Test add_to() missed type
         """
         obj_ = Game(name='game')
-        obj_.add('roller', name='that')
+        obj_.add('dice', name='that')
         obj_.add('shaker', name='this')
         with pytest.raises(
             ComponentClassError,

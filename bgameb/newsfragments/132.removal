@@ -1,0 +1,8 @@
+#128:
+    * Removed rules.py. All rules classes are Components now - tools or stuff
+    * Remove add_rules() method of Game
+    * Removed List[str] rules attributes from all classes
+    * Removed clear method for Deck - use deck.dealt.clear() deque method
+    * Removed dtata types constrants of each components - now we use constants from types.py
+    * Last properti of Shaker is removed
+    * ->

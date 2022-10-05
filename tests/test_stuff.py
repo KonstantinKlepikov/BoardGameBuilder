@@ -1,6 +1,6 @@
 import json, pytest
 from collections import Counter
-from bgameb.stuff import Roller, Card, Rule
+from bgameb.stuff import Dice, Card, Rule
 from bgameb.errors import StuffDefineError
 
 
@@ -8,7 +8,7 @@ class TestBaseStuff:
     """Test creation with names and json schemes
     """
     params = [
-        (Roller, 'roller'),
+        (Dice, 'dice'),
         (Card, 'card'),
         (Rule, 'rule'),
         ]
@@ -43,14 +43,14 @@ class TestRule:
         assert obj_.text == 'text of rule', 'not set text'
 
 
-class TestRollers:
-    """Test RollerType class
+class TestDices:
+    """Test Dice class
     """
 
-    def test_roller_instanciation(self) -> None:
-        """Test roller correct created
+    def test_dice_instanciation(self) -> None:
+        """Test dice correct created
         """
-        obj_ = Roller(name='dice')
+        obj_ = Dice(name='dice')
         assert obj_.name == 'dice', 'wrong name'
         assert obj_.is_active, 'wrong is_active'
         assert obj_.sides == 2, 'wrong sides'
@@ -58,24 +58,24 @@ class TestRollers:
         # assert obj_.rules == [], 'no rules'
         assert len(obj_._range) == 2, 'wrong range'
 
-    def test_roller_type_have_sides_defined_less_than_two(self) -> None:
-        """Test roller class initialised with less than 2 sides
+    def test_dice_type_have_sides_defined_less_than_two(self) -> None:
+        """Test dice class initialised with less than 2 sides
         """
         with pytest.raises(
             StuffDefineError,
             match='Needed >= 2'
             ):
-            Roller(name='base', sides=1)
+            Dice(name='base', sides=1)
 
-    def test_roller_roll(self) -> None:
-        """Test roller roll return result
+    def test_dice_roll(self) -> None:
+        """Test dice roll return result
         """
-        obj_ = Roller(name='dice', count=5)
+        obj_ = Dice(name='dice', count=5)
         result = obj_.roll()
         assert isinstance(result, list), 'roll returns not list'
         assert len(result) == 5, 'wrong count of rolls'
         assert isinstance(result[0], int), 'ot an int in a list'
-        obj_ = Roller(name='dice')
+        obj_ = Dice(name='dice')
         result = obj_.roll()
         assert len(result) == 1, 'is rolled, but count is 0'
 

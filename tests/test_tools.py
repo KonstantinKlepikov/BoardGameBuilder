@@ -2,7 +2,7 @@ import json, pytest, random
 from typing import Tuple
 from collections import deque
 from bgameb.game import Game, BaseGame
-from bgameb.tools import Shaker, Deck, CardsBag, RuleBook, Turn, BaseTool
+from bgameb.tools import Shaker, Deck, Bag, Rules, Turn, BaseTool
 from bgameb.stuff import Rule, BaseStuff
 from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
@@ -26,8 +26,8 @@ class FixedSeed:
 @pytest.fixture
 def game_inst() -> BaseGame:
     game = Game(name='game')
-    game.add('roller', name='dice')
-    game.add('roller', name='dice_nice')
+    game.add('dice', name='dice')
+    game.add('dice', name='dice_nice')
     game.add('card', name='card')
     game.add('card', name='card_nice')
     game.add('rule', name='rule1', text='one text')
@@ -39,10 +39,10 @@ class TestTool:
     """Test tools classes
     """
     params = [
-        (CardsBag, 'hand', ('card', 'card_nice')),
+        (Bag, 'hand', ('card', 'card_nice')),
         (Deck, 'deck', ('card', 'card_nice')),
         (Shaker, 'shaker', ('dice', 'dice_nice')),
-        (RuleBook, 'rule_book', ('rule1', 'rule2')),
+        (Rules, 'rules', ('rule1', 'rule2')),
         (Turn, 'turn', ('rule1', 'rule2')),
         ]
 
@@ -74,7 +74,7 @@ class TestTool:
     def test_double_increase_stuff_encrease_count(
         self, game_inst: BaseGame, _class: BaseTool, name: str, stuff: Tuple[str]
             ) -> None:
-        """Test double add roller with same name increase count,
+        """Test double add dice with same name increase count,
         not raises error
         """
         obj_ = _class(name=name)
@@ -160,42 +160,38 @@ class TestShaker:
     def test_shaker_instanciation(self, game_inst: BaseGame) -> None:
         """Test shaker correct created
         """
-        shaker = Shaker(name='shaker')
-        assert shaker.name == 'shaker', 'wrong name'
-        assert shaker.is_active, 'wrong is_active'
-        assert isinstance(shaker.last, dict), 'nondict last'
-        assert isinstance(shaker, Components), 'wrong type of stuff'
-        assert len(shaker._stuff) == 0, 'nonempty stuff'
-        assert issubclass(shaker._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
+        obj_ = Shaker(name='shaker')
+        assert obj_.name == 'shaker', 'wrong name'
+        assert obj_.is_active, 'wrong is_active'
+        assert isinstance(obj_, Components), 'wrong type of stuff'
+        assert len(obj_._stuff) == 0, 'nonempty stuff'
+        assert issubclass(obj_._stuff_to_add, BaseStuff), 'wrong stuff _stuff_to_add'
 
     def test_shaker_are_converted_to_json(self, game_inst: BaseGame) -> None:
         """Test to json convertatrion
         """
-        shaker = Shaker(name='shaker')
-        shaker._increase('dice', game=game_inst)
-        j = json.loads(shaker.to_json())
+        obj_ = Shaker(name='shaker')
+        obj_._increase('dice', game=game_inst)
+        j = json.loads(obj_.to_json())
         assert j['name'] == 'shaker', 'wrong name'
-        assert j['last'] == {}, 'wrong last result'
         assert j['dice']['name'] == 'dice', 'wrong name of stuff'
 
     def test_roll_shaker(self, game_inst: BaseGame) -> None:
         """Test roll shaker
         """
-        shaker = Shaker(name='shaker')
-        shaker._increase('dice', game=game_inst, count=5)
-        shaker._increase('dice_nice', game=game_inst, count=5)
-        roll = shaker.roll()
+        obj_ = Shaker(name='shaker')
+        obj_._increase('dice', game=game_inst, count=5)
+        obj_._increase('dice_nice', game=game_inst, count=5)
+        roll = obj_.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
-        assert len(shaker.last) == 2, 'wrong last'
 
     def test_roll_empty_shaker(self, game_inst: BaseGame) -> None:
         """Test roll empty shaker
         """
-        shaker = Shaker(name='shaker')
-        roll = shaker.roll()
+        obj_ = Shaker(name='shaker')
+        roll = obj_.roll()
         assert roll == {}, 'wrong roll result'
-        assert shaker.last == {}, 'wrong last'
 
 
 class TestDeck:
