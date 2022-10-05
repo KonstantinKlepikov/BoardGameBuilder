@@ -3,6 +3,54 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.18 (2022-10-05)
+============================
+
+Features
+--------
+
+- #79:
+      * logger now is a part of base.py and log_me not a global
+      * Added ``make ipython``
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/79)
+- #103:
+      * Added Stream class
+      * turn_order added to Game class - is a Stream object
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/103)
+- #106:
+      * Added CardsBag class - construct for nonqueued deck, like hands, graveyards, exiles and etc
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/106)
+- #132:
+      * _stufff attr of tolls now is a list (not set) - this grant order
+      * Rule is a stuff now and realize Components interface
+      * Added types.py with types and objects constants of stuff and tools
+      * Added Rules tool and Turn tool for storage rules and turn rules
+      * Added Bag type for ordered but not queued lists of cards
+      * Roller class now is a Dice
+      * Test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/132)
+
+
+Deprecations and Removals
+-------------------------
+
+- #128:
+      * Removed rules.py. All rules classes are Components now - tools or stuff
+      * Remove add_rules() method of Game
+      * Removed List[str] rules attributes from all classes
+      * Removed clear method for Deck - use deck.dealt.clear() deque method
+      * Removed dtata types constrants of each components - now we use constants from types.py
+      * Last properti of Shaker is removed
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/132)
+
+
+Misc
+----
+
+- https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/128
+
+
 Release v0.0.17 (2022-10-01)
 ============================
 
