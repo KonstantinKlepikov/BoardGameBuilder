@@ -21,3 +21,6 @@ test:
 log:
 	@read -p "Enter newsfragment name:" frag; \
 	towncrier create $$frag
+
+ipython:
+	python -m IPython

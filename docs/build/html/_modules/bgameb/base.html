@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.base &mdash; bgameb 0.0.15 documentation</title>
+  <title>bgameb.base &mdash; bgameb 0.0.17 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.15
+                0.0.17
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -79,7 +79,31 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">make_dataclass</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">DataClassJsonMixin</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ComponentNameError</span>
-<span class="kn">from</span> <span class="nn">bgameb.utils</span> <span class="kn">import</span> <span class="n">log_me</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+
+
+<span class="n">logger</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="s1">&#39;bgameb&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="log_enable"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.log_enable">[docs]</a><span class="k">def</span> <span class="nf">log_enable</span><span class="p">(</span>
+    <span class="n">log_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;./logs/game.log&#39;</span><span class="p">,</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Enable logging</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        log_path (str, optional): path to log file.</span>
+<span class="sd">                                  Defaults to &#39;./logs/game.log&#39;.</span>
+<span class="sd">        log_level (str, optional): logging level. Defaults to &#39;DEBUG&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">sink</span><span class="o">=</span><span class="n">log_path</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">log_level</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{extra[classname]}</span><span class="s1">: &quot;</span><span class="si">{extra[name]}</span><span class="s1">&quot; -&gt; func </span><span class="si">{function}</span><span class="s1"> | &#39;</span> <span class="o">+</span>
+        <span class="s1">&#39;{time:YYYY-MM-DD at HH:mm:ss} | </span><span class="si">{level}</span><span class="s1"> | </span><span class="si">{message}</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="s1">&#39;bgameb&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Components"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Components">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -225,7 +249,7 @@
             <span class="p">)</span>
 
         <span class="c1"># set logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">log_me</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
             <span class="n">classname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>

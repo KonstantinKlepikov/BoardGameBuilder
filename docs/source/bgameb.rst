@@ -59,11 +59,3 @@ bgameb.errors module
    :members:
    :undoc-members:
    :show-inheritance:
-
-bgameb.utils module
--------------------
-
-.. automodule:: bgameb.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

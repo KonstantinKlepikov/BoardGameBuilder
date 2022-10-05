@@ -8,7 +8,31 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
 from dataclasses_json import DataClassJsonMixin
 from bgameb.errors import ComponentNameError
-from bgameb.utils import log_me
+from loguru import logger
+
+
+logger.disable('bgameb')
+
+
+def log_enable(
+    log_path: str = './logs/game.log',
+    log_level: str = 'DEBUG'
+        ) -> None:
+    """Enable logging
+
+    Args:
+        log_path (str, optional): path to log file.
+                                  Defaults to './logs/game.log'.
+        log_level (str, optional): logging level. Defaults to 'DEBUG'.
+    """
+    logger.remove()
+    logger.add(
+        sink=log_path,
+        level=log_level,
+        format='{extra[classname]}: "{extra[name]}" -> func {function} | ' +
+        '{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}',
+    )
+    logger.enable('bgameb')
 
 
 @dataclass(init=False)
@@ -154,7 +178,7 @@ class Base(Components, DataClassJsonMixin, ABC):
             )
 
         # set logger
-        self.logger = log_me.bind(
+        self.logger = logger.bind(
             classname=self.__class__.__name__,
             name=self.name)
         self.logger.info(

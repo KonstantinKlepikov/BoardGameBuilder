@@ -79,7 +79,7 @@ current_turn = game.turn_order.dealt
 
 ## Development
 
-[how install project for development](https://konstantinklepikov.github.io/BoardGameBuilder/usage.html). Use IPython for dev mode `python -m IPython`.
+[how install project for development](https://konstantinklepikov.github.io/BoardGameBuilder/usage.html).
 
 ### Available cli
 
@@ -90,6 +90,8 @@ current_turn = game.turn_order.dealt
 `make test-pypi` to test deploy to testpypi
 
 `make log` - insert fragmet name to store new about project
+
+`make ipython` p run interactive terminal
 
 Available fragmet naming:
 
