@@ -93,6 +93,8 @@ current_turn = game.turn_order.dealt
 
 `make ipython` p run interactive terminal
 
+`mypy bgameb`, `flake8 bgameb`
+
 Available fragmet naming:
 
 - .feature: Signifying a new feature.

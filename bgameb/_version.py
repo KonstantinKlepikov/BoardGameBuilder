@@ -5,7 +5,7 @@ Provides bgameb version information.
 # This file is auto-generated! Do not edit!
 # Use `python -m incremental.update bgameb` to change this file.
 
-from incremental import Version
+from incremental import Version  # type: ignore
 
 __version__ = Version("bgameb", 0, 0, 18)
 __all__ = ["__version__"]
