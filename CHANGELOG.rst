@@ -3,6 +3,18 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.19 (2022-10-12)
+============================
+
+Bugfixes
+--------
+
+- #61:
+      * added mypy
+      * fixed type annotation
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/61)
+
+
 Release v0.0.18 (2022-10-05)
 ============================
 
