@@ -1,9 +1,7 @@
 """Base constructs for build package objects
 """
-from typing import (
-    Dict, List, Optional, Any, Iterable
-    )
 from abc import ABC
+from typing import Dict, List, Optional, Any, Iterator
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
 from dataclasses_json import DataClassJsonMixin
@@ -55,7 +53,7 @@ class Components(Mapping, DataClassJsonMixin):
         if kwargs:
             self.__dict__.update(kwargs)
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return iter(self.__dict__)
 
     def __getattr__(self, attr: str):

@@ -39,8 +39,8 @@ class BaseGame(Base, ABC):
     @abstractmethod
     def add_to(
         self,
-        name: str,
         to: str,
+        name: str,
         **kwargs: Dict[str, Any]
             ) -> None:
         """Add stuff to game tool

@@ -11,4 +11,5 @@ component_type = Literal[
     ]
 
 COMPONENTS: Dict[component_type, Any] = {}
-for d in (TOOLS, STUFF, PLAYERS): COMPONENTS.update(d)
+for d in (TOOLS, STUFF, PLAYERS):
+    COMPONENTS.update(d)  # type: ignore
