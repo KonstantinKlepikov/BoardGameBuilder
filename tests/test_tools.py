@@ -108,7 +108,7 @@ class TestTool:
         assert len(obj_._stuff) == 2, 'wrong number of stuff'
         obj_.remove()
         assert len(obj_._stuff) == 0, 'wrong number of stuff'
-        assert isinstance(obj_._stuff, set), 'wrong type os stuff attr'
+        assert isinstance(obj_._stuff, list), 'wrong type os stuff attr'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
     def test_remove_by_name(

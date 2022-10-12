@@ -15,7 +15,6 @@ class BaseStuff(Base, ABC):
     """Base class for game stuff (like dices or cards)
     """
     count: int = 1
-    # rules: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -24,8 +23,7 @@ class Rule(BaseStuff):
     """
     count: int = field(
         default=1,
-        metadata=config(exclude=lambda x: True),
-        # init=False,
+        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
     text: Optional[str] = None
@@ -55,7 +53,7 @@ class Dice(BaseStuff):
     """
     _range: List[int] = field(
         default_factory=list,
-        metadata=config(exclude=lambda x: True),
+        metadata=config(exclude=lambda x: True),  # type: ignore
         init=False,
         repr=False
         )

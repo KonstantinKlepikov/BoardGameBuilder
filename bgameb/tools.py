@@ -3,7 +3,9 @@
 import random
 from abc import ABC
 from collections import deque
-from typing import Optional, Tuple, Dict, Literal, List, Deque
+from typing import (
+    Optional, Tuple, Dict, Literal, List, Deque, Type
+    )
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config
 from bgameb.base import Base
@@ -15,14 +17,14 @@ from bgameb.errors import ArrangeIndexError, StuffDefineError
 class BaseTool(Base, ABC):
     """Base class for game tools (like decks or shakers)
     """
-    _stuff_to_add: BaseStuff = field(
-        metadata=config(exclude=lambda x: True),
+    _stuff_to_add: Type[BaseStuff] = field(
+        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         init=False,
         )
     _stuff: List[str] = field(
         default_factory=list,
-        metadata=config(exclude=lambda x: True),
+        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         init=False,
         )
@@ -30,7 +32,7 @@ class BaseTool(Base, ABC):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def _increase(self, name: str, game, count: int = 1) -> None:
+    def _increase(self, name: str, game: Base, count: int = 1) -> None:
         """Add or increase count of stuff in tool
 
         Args:
@@ -118,7 +120,7 @@ class BaseTool(Base, ABC):
             if count is None:
                 for n in self._stuff:
                     del self[n]
-                self._stuff = set()
+                self._stuff = []
                 self.logger.debug('Removed all stuff')
             else:
                 for stuff in self._stuff:
@@ -210,7 +212,7 @@ class Deck(Bag):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def deal(self) -> List[str]:
+    def deal(self) -> None:
         """Deal new random shuffled deck and save it to
         self.dealt: List[str]
         """
@@ -231,8 +233,13 @@ class Deck(Bag):
         self.logger.debug(f'Is shuffled: {self.dealt}')
 
     def to_arrange(
-        self, start: int, end: int
-            ) -> Tuple[List[BaseStuff], Tuple[List[BaseStuff]]]:
+        self,
+        start: int,
+        end: int
+            ) -> Tuple[
+                List[BaseStuff],
+                Tuple[List[BaseStuff], List[BaseStuff]]
+                    ]:
         """Prepare dealt deck to arrange
 
         Args:
@@ -245,7 +252,7 @@ class Deck(Bag):
         by arrange() method.
 
         Return:
-            Tuple[List[BaseStuff], Tuple[List[BaseStuff]]]: part to arrange
+            Tuple[List[BaseStuff], Tuple[List[BaseStuff]]: part to arrange
         """
         if start < 0 or end < 0 or end < start:
             raise ArrangeIndexError(
@@ -271,7 +278,7 @@ class Deck(Bag):
             arranged (List[BaseStuff]): arranged list of cards
             last: (Deque[BaseStuff]): last of deck deque
         """
-        reorranged = deque()
+        reorranged: Deque = deque()
         reorranged.extend(last[0])
         reorranged.extend(arranged)
         reorranged.extend(last[1])
@@ -285,7 +292,9 @@ class Deck(Bag):
                 logger=self.logger
                 )
 
-    def search(self, query: Dict[str, int], remove: bool = True) -> List[Card]:
+    def search(
+        self, query: Dict[str, int], remove: bool = True
+            ) -> List[BaseStuff]:
         """Search for cards in dealt deck
 
         Args:
@@ -306,7 +315,7 @@ class Deck(Bag):
                     remove=False
                     )
         """
-        for_deque = deque()
+        for_deque: Deque = deque()
         result = []
 
         while True:
