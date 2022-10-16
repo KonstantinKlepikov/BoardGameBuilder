@@ -1,7 +1,6 @@
 """Main engine to create games
 """
-from typing import Dict, Any
-from abc import ABC, abstractmethod
+from typing import Optional
 from dataclasses import dataclass, field
 from bgameb.base import Base, log_enable
 from bgameb.types import COMPONENTS, component_type
@@ -10,7 +9,7 @@ from bgameb.errors import ComponentClassError
 
 
 @dataclass
-class BaseGame(Base, ABC):
+class BaseGame(Base):
     """Base class for game
     """
     game_rules: Rules = field(init=False)
@@ -20,36 +19,6 @@ class BaseGame(Base, ABC):
         super().__post_init__()
         self.game_rules = Rules('game_rules')
         self.turn_order = Turn('turn_order')
-
-    @abstractmethod
-    def add(
-        self,
-        component: component_type,
-        name: str,
-        **kwargs: Dict[str, Any]
-            ) -> None:
-        """Add object to game
-
-        Args:
-            component (component_type): type of added component.
-            name (str): name of added component.
-            **kwargs (Dict[str,Any]): dict of named args
-        """
-
-    @abstractmethod
-    def add_to(
-        self,
-        to: str,
-        name: str,
-        **kwargs: Dict[str, Any]
-            ) -> None:
-        """Add stuff to game tool
-
-        Args:
-            name (str): name of added stuff.
-            to (str): name of tool, where added
-            **kwargs (Dict[str,Any]): dict of named args
-        """
 
 
 @dataclass
@@ -66,6 +35,13 @@ class Game(BaseGame):
         name: str,
         **kwargs
             ) -> None:
+        """Add stuff to game tool
+
+        Args:
+            name (str): name of added stuff.
+            to (str): name of tool, where added
+            **kwargs (Dict[str,Any]): dict of named args
+        """
         if component in COMPONENTS.keys():
             self._add(COMPONENTS[component], name=name, **kwargs)
             self.logger.info(f'{name} is added to game.')
@@ -78,11 +54,49 @@ class Game(BaseGame):
         name: str,
         **kwargs
             ) -> None:
+        """Add object to game
+
+        Args:
+            component (component_type): type of added component.
+            name (str): name of added component.
+            **kwargs (Dict[str,Any]): dict of named args
+        """
         if name in self.keys() and to in self.keys():
             self[to]._increase(name=name, game=self, **kwargs)
             self.logger.info(f'{name} is added to {to}.')
         else:
             raise ComponentClassError(name, self.logger)
+
+    def new(
+        self,
+        name: str,
+        obj_type: component_type,
+        to_obj: Optional[str] = None,
+        **kwargs
+            ) -> None:
+        if obj_type in COMPONENTS.keys():
+            if not to_obj:
+                self._add(COMPONENTS[obj_type], name=name, **kwargs)
+                self.logger.info(f'{name} is added to game.')
+            else:
+                self['to_obj']._add(COMPONENTS[obj_type], name=name, **kwargs)
+                self.logger.info(f'{name} is added to {to_obj}.')
+
+        else:
+            raise ComponentClassError(obj_type, self.logger)
+
+    def copy(
+        self,
+        copied: str,
+        to_obj: str,
+        **kwargs
+            ) -> None:
+        if copied in self.keys() and to_obj in self.keys():
+            self[to_obj]._increase(name=copied, game=self, **kwargs)
+            self.logger.info(f'{copied} is added to {to_obj}.')
+        else:
+            raise ComponentClassError((copied, to_obj), self.logger)
+
 
 
 if __name__ == '__main__':

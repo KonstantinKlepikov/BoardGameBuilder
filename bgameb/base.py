@@ -1,6 +1,5 @@
 """Base constructs for build package objects
 """
-from abc import ABC
 from typing import Dict, List, Optional, Any, Iterator
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
@@ -162,7 +161,7 @@ class Components(Mapping, DataClassJsonMixin):
 
 
 @dataclass
-class Base(Components, DataClassJsonMixin, ABC):
+class Base(Components, DataClassJsonMixin):
     """Base class for game, stuff and tools
     """
     name: str

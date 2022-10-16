@@ -18,6 +18,14 @@ release:
 test:
 	python -m pytest -x -s -v -m "not slow"
 
+check:
+	echo "---> Check main package by flake8"; \
+	flake8 bgameb; \
+	echo "---> Check types annotation in main package"; \
+	mypy bgameb; \
+	echo "---> Check tests folder by flake8"; \
+	flake8 tests
+
 log:
 	@read -p "Enter newsfragment name:" frag; \
 	towncrier create $$frag

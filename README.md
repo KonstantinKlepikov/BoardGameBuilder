@@ -91,9 +91,9 @@ current_turn = game.turn_order.dealt
 
 `make log` - insert fragmet name to store new about project
 
-`make ipython` p run interactive terminal
+`make ipython` run interactive terminal
 
-`mypy bgameb`, `flake8 bgameb`
+`make check` check flake8 and mypy
 
 Available fragmet naming:
 

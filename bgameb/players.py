@@ -2,13 +2,12 @@
 """
 from typing import Optional, Literal, List
 from collections import Counter
-from abc import ABC
 from dataclasses import dataclass, field
 from bgameb.base import Base
 
 
 @dataclass
-class BasePlayer(Base, ABC):
+class BasePlayer(Base):
     """Base class for game players and bots
 
     Attrs

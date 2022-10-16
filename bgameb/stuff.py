@@ -1,7 +1,6 @@
 """Game dices, coins, cards and other stuffs
 """
 import random
-from abc import ABC
 from typing import List, Optional, Literal
 from collections import Counter
 from dataclasses import dataclass, field
@@ -11,7 +10,7 @@ from bgameb.errors import StuffDefineError
 
 
 @dataclass
-class BaseStuff(Base, ABC):
+class BaseStuff(Base):
     """Base class for game stuff (like dices or cards)
     """
     count: int = 1

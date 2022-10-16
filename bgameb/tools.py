@@ -1,7 +1,6 @@
 """Game tools classes like shakers or decks
 """
 import random
-from abc import ABC
 from collections import deque
 from typing import (
     Optional, Tuple, Dict, Literal, List, Deque, Type
@@ -14,7 +13,7 @@ from bgameb.errors import ArrangeIndexError, StuffDefineError
 
 
 @dataclass
-class BaseTool(Base, ABC):
+class BaseTool(Base):
     """Base class for game tools (like decks or shakers)
     """
     _stuff_to_add: Type[BaseStuff] = field(
