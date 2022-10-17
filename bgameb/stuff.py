@@ -1,7 +1,6 @@
 """Game dices, coins, cards and other stuffs
 """
 import random
-from abc import ABC
 from typing import List, Optional, Literal
 from collections import Counter
 from dataclasses import dataclass, field
@@ -11,7 +10,7 @@ from bgameb.errors import StuffDefineError
 
 
 @dataclass
-class BaseStuff(Base, ABC):
+class BaseStuff(Base):
     """Base class for game stuff (like dices or cards)
     """
     count: int = 1
@@ -27,6 +26,11 @@ class Rule(BaseStuff):
         repr=False
         )
     text: Optional[str] = None
+    type_: str = field(
+        default='rule',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -58,6 +62,11 @@ class Dice(BaseStuff):
         repr=False
         )
     sides: int = 2
+    type_: str = field(
+        default='dice',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -99,6 +108,11 @@ class Card(BaseStuff):
     tapped: bool = False
     side: Optional[str] = None
     counter: Counter = field(default_factory=Counter)
+    type_: str = field(
+        default='card',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -153,8 +167,8 @@ class Card(BaseStuff):
 
 
 STUFF = {
-    'rule': Rule,
-    'dice': Dice,
-    'card': Card,
+    Rule.type_: Rule,
+    Dice.type_: Dice,
+    Card.type_: Card,
     }
 STUFF_TYPES = Literal['rule', 'dice', 'card']

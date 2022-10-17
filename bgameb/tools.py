@@ -1,7 +1,6 @@
 """Game tools classes like shakers or decks
 """
 import random
-from abc import ABC
 from collections import deque
 from typing import (
     Optional, Tuple, Dict, Literal, List, Deque, Type
@@ -14,7 +13,7 @@ from bgameb.errors import ArrangeIndexError, StuffDefineError
 
 
 @dataclass
-class BaseTool(Base, ABC):
+class BaseTool(Base):
     """Base class for game tools (like decks or shakers)
     """
     _stuff_to_add: Type[BaseStuff] = field(
@@ -32,7 +31,7 @@ class BaseTool(Base, ABC):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def _increase(self, name: str, game: Base, count: int = 1) -> None:
+    def update(self, name: str, game: Base, count: int = 1) -> None:
         """Add or increase count of stuff in tool
 
         Args:
@@ -147,6 +146,11 @@ class BaseTool(Base, ABC):
 class Shaker(BaseTool):
     """Create shaker for roll dices or flip coins
     """
+    type_: str = field(
+        default='shaker',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -181,6 +185,12 @@ class Bag(BaseTool):
     """Datastorage for nonqueued list of stuff. Use it for
     hand with cards, graveyards, outside of the game cards and etc
     """
+    type_: str = field(
+        default='bag',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
+
     def __post_init__(self) -> None:
         super().__post_init__()
         self._stuff_to_add = Card
@@ -207,6 +217,11 @@ class Deck(Bag):
     dealt: Deque[BaseStuff] = field(
         default_factory=deque,
         repr=False,
+        )
+    type_: str = field(
+        default='deck',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
         )
 
     def __post_init__(self) -> None:
@@ -340,13 +355,19 @@ class Deck(Bag):
 class Rules(BaseTool):
     """Basic rules storage
     """
+    type_: str = field(
+        default='rules',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
+
     def __post_init__(self) -> None:
         super().__post_init__()
         self._stuff_to_add = Rule
 
 
 @dataclass
-class Turn(Rules):
+class Turns(Rules):
     """Turn is data storage for turn rules
 
     Args:
@@ -356,6 +377,11 @@ class Turn(Rules):
     dealt: Deque[BaseStuff] = field(
         default_factory=deque,
         repr=False,
+        )
+    type_: str = field(
+        default='turns',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
         )
 
     def __post_init__(self) -> None:
@@ -372,10 +398,10 @@ class Turn(Rules):
 
 
 TOOLS = {
-    'shaker': Shaker,
-    'cards_bag': Bag,
-    'deck': Deck,
-    'rules': Rules,
-    'turn': Turn,
+    Shaker.type_: Shaker,
+    Bag.type_: Bag,
+    Deck.type_: Deck,
+    Rules.type_: Rules,
+    Turns.type_: Turns,
     }
-TOOLS_TYPES = Literal['rule_book', 'shaker', 'cards_bag', 'deck', 'turn']
+TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'rules', 'turns']

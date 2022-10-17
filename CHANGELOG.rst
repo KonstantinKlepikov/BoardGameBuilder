@@ -3,6 +3,34 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.20 (2022-10-18)
+============================
+
+Features
+--------
+
+- # 139:
+      * To Game object added methods new() and copy() for create new components and copy components
+      * Added make check to check flake8 and mypy to Makefile
+      * add nonstuff types to types.py
+      * _increase() method for tool classes is replaces by update() method
+      * add type_ for each component/ Types is constructed from classes type_
+      * now to tools and players can be added only stuffs
+      * test all
+      * chenges in README
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/139)
+
+
+Deprecations and Removals
+-------------------------
+
+- #139:
+      * Is removed anstracted classes from project
+      * add() method is deprecated and removed from Game class
+      * add_to() is deprecated and removed from Game class
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/139)
+
+
 Release v0.0.19 (2022-10-12)
 ============================
 
@@ -78,7 +106,7 @@ Features
       * Remove RollerType and CardType classes
       * Now all logic in Roller and Card classes
       * Added add_to() method to Game class - now we can add stuff to tool from Game() obgect
-      * Method add() of tools objects is closed and renamed to _increase()
+      * Method add() of tools objects is closed and renamed to update()
       * Added simple check code to game.py -> run by ``python bgameb/game.py``
       * Default count of stuff is 1
       * last attr of Shaker class and dealt attr of Deck class are hidden from repr

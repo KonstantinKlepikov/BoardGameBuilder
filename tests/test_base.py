@@ -18,7 +18,9 @@ class TestComponents:
         """Test components acces to attrs
         """
         comp = Components()
-        comp.__dict__.update({'some': _class(name=name), 'many': _class(name=name)})
+        comp.__dict__.update(
+            {'some': _class(name=name), 'many': _class(name=name)}
+            )
 
         assert comp.some.name == name, 'not set or cant get'
         assert comp['some'].name == name, 'not set or cant get'
@@ -53,7 +55,7 @@ class TestComponents:
         """
         comp1 = Components()
         comp2 = Components()
-        comp1.__dict__.update({'some':_class(name=name)})
+        comp1.__dict__.update({'some': _class(name=name)})
         assert len(comp1) == 1, 'wrong len'
         assert len(comp2) == 0, 'wrong len'
 
