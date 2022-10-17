@@ -4,12 +4,21 @@ from bgameb.stuff import STUFF, STUFF_TYPES
 from bgameb.players import PLAYERS, PLAERS_TYPES
 
 
-component_type = Literal[
+COMPONENTS_TYPES = Literal[
     STUFF_TYPES,
     TOOLS_TYPES,
     PLAERS_TYPES,
     ]
 
-COMPONENTS: Dict[component_type, Any] = {}
+COMPONENTS: Dict[COMPONENTS_TYPES, Any] = {}
 for d in (TOOLS, STUFF, PLAYERS):
     COMPONENTS.update(d)  # type: ignore
+
+NONSTUFF_TYPES = Literal[
+    TOOLS_TYPES,
+    PLAERS_TYPES,
+    ]
+
+NONSTUFF: Dict[NONSTUFF_TYPES, Any] = {}
+for d in (TOOLS, PLAYERS):
+    NONSTUFF.update(d)  # type: ignore

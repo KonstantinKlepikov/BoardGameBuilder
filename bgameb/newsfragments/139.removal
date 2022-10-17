@@ -1,0 +1,5 @@
+#139:
+    * Is removed anstracted classes from project
+    * add() method is deprecated and removed from Game class
+    * add_to() is deprecated and removed from Game class
+    * ->

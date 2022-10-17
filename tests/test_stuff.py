@@ -1,4 +1,5 @@
-import json, pytest
+import json
+import pytest
 from collections import Counter
 from bgameb.stuff import Dice, Card, Rule
 from bgameb.errors import StuffDefineError
@@ -17,14 +18,15 @@ class TestBaseStuff:
     def test_stuff_classes_created_with_name(self, _class, name: str) -> None:
         """Test stuff classes instancing
         """
-        obj_= _class(name='this_stuff')
+        obj_ = _class(name='this_stuff')
         assert obj_.name == 'this_stuff', 'not set name for instance'
         assert obj_.is_active, 'wrong is_active'
         assert obj_.count == 1, 'wrong count'
-        # assert obj_.rules == [], 'no rules'
 
     @pytest.mark.parametrize("_class, name", params)
-    def test_stuff_classes_are_converted_to_json(self, _class, name: str) -> None:
+    def test_stuff_classes_are_converted_to_json(
+        self, _class, name: str
+            ) -> None:
         """Test to json convertatrion
         """
         obj_ = _class(name=name)
@@ -55,7 +57,6 @@ class TestDices:
         assert obj_.is_active, 'wrong is_active'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
-        # assert obj_.rules == [], 'no rules'
         assert len(obj_._range) == 2, 'wrong range'
 
     def test_dice_type_have_sides_defined_less_than_two(self) -> None:
@@ -64,7 +65,7 @@ class TestDices:
         with pytest.raises(
             StuffDefineError,
             match='Needed >= 2'
-            ):
+                ):
             Dice(name='base', sides=1)
 
     def test_dice_roll(self) -> None:
@@ -89,11 +90,10 @@ class TestCard:
         obj_ = Card(name='card')
         assert obj_.name == 'card', 'wrong name'
         assert obj_.is_active, 'wrong is_active'
-        assert obj_.open == False, 'card is open'
-        assert obj_.tapped == False, 'card is tapped'
-        assert obj_.side == None, 'defined wrong side'
+        assert obj_.open is False, 'card is open'
+        assert obj_.tapped is False, 'card is tapped'
+        assert obj_.side is None, 'defined wrong side'
         assert obj_.count == 1, 'wrong count'
-        # assert obj_.rules == [], 'no rules'
         assert isinstance(obj_.counter, Counter), 'wrong counter'
 
     def test_flip(self) -> None:

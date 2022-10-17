@@ -23,7 +23,8 @@ class ComponentClassError(CustomRuntimeError):
     """Given class isnt component
     """
     def __init__(self, obj_, logger: loguru.Logger) -> None:
-        self.message = f'Given: {obj_} not a component.'
+        self.message = f'Given: {obj_} not a component or you are trying ' +\
+                        'to place a component in a non-designated component.'
         logger.exception(self.message)
         super().__init__(self.message)
 
