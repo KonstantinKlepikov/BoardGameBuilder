@@ -26,12 +26,12 @@ class FixedSeed:
 @pytest.fixture
 def game_inst() -> BaseGame:
     game = Game(name='game')
-    game.add('dice', name='dice')
-    game.add('dice', name='dice_nice')
-    game.add('card', name='card')
-    game.add('card', name='card_nice')
-    game.add('rule', name='rule1', text='one text')
-    game.add('rule', name='rule2', text='two text')
+    game.new('dice', ctype='dice')
+    game.new('dice_nice', ctype='dice')
+    game.new('card', ctype='card')
+    game.new('card_nice', ctype='card')
+    game.new('rule1', ctype='rule', text='one text')
+    game.new('rule2', ctype='rule', text='two text')
     return game
 
 

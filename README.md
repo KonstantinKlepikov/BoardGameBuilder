@@ -13,15 +13,15 @@ from bgameb import Game
 game = Game('one_board_game')
 
 # add dice and coin types to game
-game.add('dice', name='six', sides=6)
-game.add('dice', name='twenty', sides=20)
-game.add('dice', name='coin') # 2 is default number of sides
+game.new('six', ctype='dice', sides=6)
+game.new('twenty', ctype='dice', sides=20)
+game.new('coin', ctype='dice') # 2 is default number of sides
 
 # or define sides for dice and coin types
 game.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
-game.add('shaker', name='red_shaker')
+game.new('red_shaker', ctype='shaker')
 game.add_to('red_shaker', 'six', count=50)
 game.add_to('red_shaker', 'twenty', count=10)
 game.add_to('red_shaker', 'coin', count=42)
@@ -30,7 +30,7 @@ game.add_to('red_shaker', 'coin', count=42)
 result = game.red_shaker.roll()
 
 # or define new shaker with default count == 1 and roll each stuff separatly
-game.add('shaker', name='blue_shaker')
+game.add('blue_shaker', ctype='shaker')
 game.add_to('blue_shaker', 'six')
 game.add_to('blue_shaker', 'coin')
 
@@ -48,8 +48,8 @@ del game.blue_shaker
 del game.six
 
 # define a cards and decks
-game.add('card', name='one_card')
-game.add('deck', name='cards_deck')
+game.new('one_card', ctype='card')
+game.new('cards_deck', ctype='deck')
 game.add_to('cards_deck', 'one_card', count=100)
 
 # deal card from deck
@@ -59,8 +59,8 @@ game.cards_deck.deal()
 deck = game.cards_deck.dealt
 
 # all rule is store in Game class
-game.add('rule', name='phase_one', text='Important text')
-game.add('rule', name='phase_two', text='Another important text')
+game.new('phase_one', ctype='rule', text='Important text')
+game.new('phase_two', ctype='rule', text='Another important text')
 
 # rule is a dict-like object
 game.phase_one.additional = 'Add something else'
