@@ -3,7 +3,10 @@
 from typing import Optional
 from dataclasses import dataclass, field
 from bgameb.base import Base, log_enable
-from bgameb.types import COMPONENTS, component_type
+from bgameb.types import (
+    COMPONENTS, NONSTUFF, COMPONENTS_TYPES, NONSTUFF_TYPES,
+    STUFF_TYPES, STUFF
+)
 from bgameb.tools import Rules, Turn
 from bgameb.errors import ComponentClassError
 
@@ -31,7 +34,7 @@ class Game(BaseGame):
 
     # def add(
     #     self,
-    #     component: component_type,
+    #     component: COMPONENTS_TYPES,
     #     name: str,
     #     **kwargs
     #         ) -> None:
@@ -48,29 +51,29 @@ class Game(BaseGame):
     #     else:
     #         raise ComponentClassError(component, self.logger)
 
-    def add_to(
-        self,
-        to: str,
-        name: str,
-        **kwargs
-            ) -> None:
-        """Add object to game
+    # def add_to(
+    #     self,
+    #     to: str,
+    #     name: str,
+    #     **kwargs
+    #         ) -> None:
+    #     """Add object to game
 
-        Args:
-            component (component_type): type of added component.
-            name (str): name of added component.
-            **kwargs (Dict[str,Any]): dict of named args
-        """
-        if name in self.keys() and to in self.keys():
-            self[to]._increase(name=name, game=self, **kwargs)
-            self.logger.info(f'{name} is added to {to}.')
-        else:
-            raise ComponentClassError(name, self.logger)
+    #     Args:
+    #         component (COMPONENTS_TYPES): type of added component.
+    #         name (str): name of added component.
+    #         **kwargs (Dict[str,Any]): dict of named args
+    #     """
+    #     if name in self.keys() and to in self.keys():
+    #         self[to]._increase(name=name, game=self, **kwargs)
+    #         self.logger.info(f'{name} is added to {to}.')
+    #     else:
+    #         raise ComponentClassError(name, self.logger)
 
     def new(
         self,
         name: str,
-        ctype: component_type,
+        ctype: COMPONENTS_TYPES,
         target: Optional[str] = None,
         **kwargs
             ) -> None:
@@ -78,7 +81,7 @@ class Game(BaseGame):
 
         Args:
             name (str): name of new component (must be unic)
-            ctype (component_type): type of new component
+            ctype (COMPONENTS_TYPES): type of new component
             target (Optional[str], optional): name of class, where placed copy.
                                               Defaults to None.
 
@@ -104,7 +107,7 @@ class Game(BaseGame):
         target: str,
         **kwargs
             ) -> None:
-        """Copy component from game object to any game-hosted object
+        """Copy stuff from game object to any game-hosted tool or player
 
         Args:
             source (str): name of copied class
@@ -138,9 +141,9 @@ if __name__ == '__main__':
         )
     game.new('one_card', ctype='card')
     game.new('cards_deck', ctype='deck')
-    game.add_to('cards_deck', 'one_card', count=3)
-    game.add_to('game_rules', 'this_rule')
-    game.add_to('turn_order', 'this_rule')
+    game.copy('one_card', 'cards_deck', count=3)
+    game.copy('this_rule', 'game_rules')
+    game.copy('this_rule', 'turn_order')
     game.cards_deck.deal()
     game.turn_order.deal()
 

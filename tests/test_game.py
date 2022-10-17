@@ -148,14 +148,54 @@ class TestGame:
     #         ):
     #         obj_.add_to('what', 'that', count=10)
 
+    def test_copy_component_from_game_to_another_component(self) -> None:
+        """Test copy() existed component to another component
+        """
+        obj_ = Game(name='game')
+        obj_.new('this', ctype='shaker')
+        obj_.new('that', ctype='dice')
+        obj_.copy('that', 'this')
+        assert obj_.this.that.name == 'that', 'not copied'
 
+    def test_copy_component_with_kwargs(self) -> None:
+        """Test copy() existed component to another component
+        with kwargs
+        """
+        obj_ = Game(name='game')
+        obj_.new('this', ctype='shaker')
+        obj_.new('that', ctype='dice')
+        obj_.copy('that', 'this', count=6)
+        assert obj_.that.count == 1, 'wrong count'
+        assert obj_.this.that.count == 6, 'not copied with new count'
+
+    def test_copy_notexisted_component_to_tool(self) -> None:
+        """Test copy() cant copy notexisted stuff
+        """
+        obj_ = Game(name='game')
+        obj_.new('this', ctype='shaker')
+        with pytest.raises(
+            ComponentClassError,
+            match='not a component'
+            ):
+            obj_.copy('that', 'this', count=6)
+
+    def test_copy_component_to_notexisted_tool(self) -> None:
+        """Test copy() cant copy to notexisted tool
+        """
+        obj_ = Game(name='game')
+        obj_.new('that', ctype='dice')
+        with pytest.raises(
+            ComponentClassError,
+            match='not a component'
+            ):
+            obj_.copy('that', 'this', count=6)
 
     def test_add_rule_to_rules(self) -> None:
         """Test add rule to game rules
         """
         obj_ = Game(name='game')
         obj_.new('this', ctype='rule', text='that')
-        obj_.add_to('game_rules', 'this')
+        obj_.copy('this', 'game_rules')
         assert isinstance(obj_.game_rules.this, COMPONENTS['rule']), 'wrong type of rule'
         assert obj_.game_rules.this.name == 'this', 'wrong name of rule'
         assert obj_.game_rules.this.text == 'that', 'wrong text rule'
