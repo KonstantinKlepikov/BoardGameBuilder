@@ -131,13 +131,13 @@ class Game(BaseGame):
 if __name__ == '__main__':
     log_enable()
     game = Game('one_board_game')
-    game.add(
-        'rule',
-        name='this_rule',
+    game.new(
+        'this_rule',
+        ctype='rule',
         text="The text is short, but the rule is important"
         )
-    game.add('card', name='one_card')
-    game.add('deck', name='cards_deck')
+    game.new('one_card', ctype='card')
+    game.new('cards_deck', ctype='deck')
     game.add_to('cards_deck', 'one_card', count=3)
     game.add_to('game_rules', 'this_rule')
     game.add_to('turn_order', 'this_rule')
