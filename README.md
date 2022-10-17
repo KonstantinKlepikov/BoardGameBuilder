@@ -22,23 +22,17 @@ game.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
 game.new('red_shaker', ctype='shaker')
-game.add_to('red_shaker', 'six', count=50)
-game.add_to('red_shaker', 'twenty', count=10)
-game.add_to('red_shaker', 'coin', count=42)
+game.copy('six', 'red_shaker', count=50)
+game.copy('twenty', 'red_shaker', count=10)
+game.copy('coin', 'red_shaker', count=42)
 
 # roll all stuff and get result
 result = game.red_shaker.roll()
 
-# or define new shaker with default count == 1 and roll each stuff separatly
-game.add('blue_shaker', ctype='shaker')
-game.add_to('blue_shaker', 'six')
-game.add_to('blue_shaker', 'coin')
-
-result = game.blue_shaker.six_dice.roll()
-result = game.blue_shaker.coin.roll()
-
-# get last roll (this store only full shaker roll)
-last_roll = game.blue_shaker.last
+# or define new shaker and add stuff directly
+game.new('blue_shaker', ctype='shaker')
+game.new('eight', ctype='dice', target='blue_shaker', sides=8, count=10)
+result = game.blue_shaker.eight.roll()
 
 # you can use dict notation offcourse
 result = game['blue_shaker']['coin'].roll()
@@ -50,7 +44,7 @@ del game.six
 # define a cards and decks
 game.new('one_card', ctype='card')
 game.new('cards_deck', ctype='deck')
-game.add_to('cards_deck', 'one_card', count=100)
+game.copy('one_card', 'cards_deck', count=100)
 
 # deal card from deck
 game.cards_deck.deal()
@@ -66,8 +60,8 @@ game.new('phase_two', ctype='rule', text='Another important text')
 game.phase_one.additional = 'Add something else'
 
 # lets create game turn structure
-game.add_to('turn_order', 'phase_one')
-game.add_to('turn_order', 'phase_two')
+game.copy('phase_one', 'turn_order')
+game.copy('phase_two', 'turn_order')
 game.turn_order.deal()
 current_turn = game.turn_order.dealt
 ```

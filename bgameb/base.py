@@ -3,7 +3,7 @@
 from typing import Dict, List, Optional, Any, Iterator
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
-from dataclasses_json import DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin, config
 from bgameb.errors import ComponentNameError
 from loguru import logger
 
@@ -162,7 +162,7 @@ class Components(Mapping, DataClassJsonMixin):
 
 @dataclass
 class Base(Components, DataClassJsonMixin):
-    """Base class for game, stuff and tools
+    """Base class for game, stuff, tools players and other components
     """
     name: str
     is_active: bool = True

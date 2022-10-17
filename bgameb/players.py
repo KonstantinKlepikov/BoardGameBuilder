@@ -3,6 +3,7 @@
 from typing import Optional, Literal, List
 from collections import Counter
 from dataclasses import dataclass, field
+from dataclasses_json import config
 from bgameb.base import Base
 
 
@@ -40,12 +41,17 @@ class BasePlayer(Base):
 class Player(BasePlayer):
     """Base class to create a player
     """
+    type_: str = field(
+        default='player',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
 
 
 PLAYERS = {
-    'player': Player,
+    Player.type_: Player,
     }
 PLAERS_TYPES = Literal['player', ]
