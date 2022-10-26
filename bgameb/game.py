@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import config
 from bgameb.base import Base, log_enable
 from bgameb.types import COMPONENTS, NONSTUFF, COMPONENTS_TYPES, STUFF
-from bgameb.tools import Rules, Turns
+from bgameb.tools import Steps
 from bgameb.errors import ComponentClassError
 
 
@@ -13,13 +13,15 @@ from bgameb.errors import ComponentClassError
 class BaseGame(Base):
     """Base class for game
     """
-    game_rules: Rules = field(init=False)
-    turn_order: Turns = field(init=False)
+    # game_rules: Rules = field(init=False)
+    # turn_order: Turns = field(init=False)
+    game_steps: Steps = field(init=False)
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.game_rules = Rules('game_rules')
-        self.turn_order = Turns('turn_order')
+        # self.game_rules = Rules('game_rules')
+        # self.turn_order = Turns('turn_order')
+        self.game_steps = Steps('game_steps')
 
 
 @dataclass
@@ -104,17 +106,24 @@ if __name__ == '__main__':
     log_enable()
     game = Game('one_board_game')
     game.new(
-        'this_rule',
-        ctype='rule',
-        text="The text is short, but the rule is important"
-        )
+        'step0',
+        ctype='step',
+        target='game_steps'
+            )
+    game.new(
+        'step1',
+        ctype='step',
+        target='game_steps',
+        priority=1
+            )
     game.new('one_card', ctype='card')
     game.new('cards_deck', ctype='deck')
     game.copy('one_card', 'cards_deck', count=3)
-    game.copy('this_rule', 'game_rules')
-    game.copy('this_rule', 'turn_order')
+    # game.copy('this_rule', 'game_rules')
+    # game.copy('this_rule', 'turn_order')
+    game.game_steps.deal()
     game.cards_deck.deal()
-    game.turn_order.deal()
+    # game.turn_order.deal()
     game.new('blue_shaker', ctype='shaker')
     game.new('eight', ctype='dice', target='blue_shaker', sides=8, count=10)
     result = game.blue_shaker.eight.roll()

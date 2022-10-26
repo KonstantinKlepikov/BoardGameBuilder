@@ -1,7 +1,7 @@
 import json
 import pytest
 from collections import Counter
-from bgameb.stuff import Dice, Card, Rule
+from bgameb.stuff import Dice, Card, Step
 from bgameb.errors import StuffDefineError
 
 
@@ -11,7 +11,7 @@ class TestBaseStuff:
     params = [
         (Dice, 'dice'),
         (Card, 'card'),
-        (Rule, 'rule'),
+        # (Rule, 'rule'),
         ]
 
     @pytest.mark.parametrize("_class, name", params)
@@ -34,15 +34,30 @@ class TestBaseStuff:
         assert j['name'] == name, 'not converted to json'
 
 
-class TestRule:
-    """Test Rule class
+# class TestRule:
+#     """Test Rule class
+#     """
+
+#     def test_rule_instance(self) -> None:
+#         """Test Rule class instance
+#         """
+#         obj_ = Rule(name='this_rule', text='text of rule')
+#         assert obj_.text == 'text of rule', 'not set text'
+
+
+class TestStep:
+    """Test Step class
     """
 
-    def test_rule_instance(self) -> None:
-        """Test Rule class instance
+    def test_step_instance(self) -> None:
+        """Test Step class instance
         """
-        obj_ = Rule(name='this_rule', text='text of rule')
-        assert obj_.text == 'text of rule', 'not set text'
+        obj_ = Step(name='first_step')
+        assert obj_.priority == 0, 'wrong priority'
+        assert obj_.type_ == 'step', 'wrong type'
+        obj1 = Step(name='first_step', priority=20)
+        assert obj1.priority == 20, 'wrong priority'
+        assert obj1 > obj_, 'wong comparison'
 
 
 class TestDices:

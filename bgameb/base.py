@@ -1,8 +1,9 @@
 """Base constructs for build package objects
 """
-from typing import Dict, List, Optional, Any, Iterator
+from typing import Dict, List, Optional, Any, Iterator, Tuple
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
+from heapq import heappop, heappush
 from dataclasses_json import DataClassJsonMixin, config
 from bgameb.errors import ComponentNameError
 from loguru import logger
@@ -161,7 +162,30 @@ class Components(Mapping, DataClassJsonMixin):
 
 
 @dataclass
-class Base(Components, DataClassJsonMixin):
+class Order(DataClassJsonMixin):
+    """Order of steps priority queue. Isnt tradesafe
+    """
+    current_order: List[Tuple[int, Components]] = field(
+        default_factory=list,
+        # metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
+
+    def __len__(self) -> int:
+        return len(self.current_order)
+
+    def clear(self) -> None:
+        self.current_order = []
+
+    def put(self, item) -> None:
+        heappush(self.current_order, (item.priority, item))
+
+    def get(self):
+        return heappop(self.current_order)[1]
+
+
+@dataclass
+class Base(Components):
     """Base class for game, stuff, tools players and other components
     """
     name: str

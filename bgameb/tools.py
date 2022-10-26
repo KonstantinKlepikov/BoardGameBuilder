@@ -2,13 +2,15 @@
 """
 import random
 from collections import deque
+# from queue import PriorityQueue
+# from heapq import heappop, heappush
 from typing import (
     Optional, Tuple, Dict, Literal, List, Deque, Type
     )
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config
-from bgameb.base import Base
-from bgameb.stuff import Card, Dice, Rule, BaseStuff
+from bgameb.base import Base, Order
+from bgameb.stuff import Card, Dice, Step, BaseStuff
 from bgameb.errors import ArrangeIndexError, StuffDefineError
 
 
@@ -351,57 +353,110 @@ class Deck(Bag):
         return result
 
 
+# @dataclass
+# class Rules(BaseTool):
+#     """Basic rules storage
+#     """
+#     type_: str = field(
+#         default='rules',
+#         metadata=config(exclude=lambda x: True),  # type: ignore
+#         repr=False
+#         )
+
+#     def __post_init__(self) -> None:
+#         super().__post_init__()
+#         self._stuff_to_add = Rule
+
+
+# @dataclass
+# class Order(DataClassJsonMixin):
+#     """Order of steps priority queue. Isnt tradesafe
+#     """
+#     _queue: list = field(
+#         default_factory=list,
+#         repr=False,
+#             )
+
+#     def __len__(self) -> int:
+#         return len(self._queue)
+
+#     def clear(self) -> None:
+#         self._queue = []
+
+#     def put(self, item: Step) -> None:
+#         heappush(self._queue, (item.priority, item))
+
+#     def get(self) -> Step:
+#         return heappop(self._queue)[1]
+
+
 @dataclass
-class Rules(BaseTool):
-    """Basic rules storage
+class Steps(BaseTool):
+    """Game steps order
     """
-    type_: str = field(
-        default='rules',
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False
-        )
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-        self._stuff_to_add = Rule
-
-
-@dataclass
-class Turns(Rules):
-    """Turn is data storage for turn rules
-
-    Args:
-        name (str): name of Turn.
-        _order (List[Rule]): list of default elements of Turn.
-    """
-    dealt: Deque[BaseStuff] = field(
-        default_factory=deque,
+    dealt: Order = field(
+        default_factory=Order,
         repr=False,
         )
     type_: str = field(
-        default='turns',
+        default='steps',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
 
     def __post_init__(self) -> None:
         super().__post_init__()
+        # self.dealt = Order()
+        self._stuff_to_add = Step
 
     def deal(self):
-        """Clear the Turn and instantiate new turn
+        """Clear the order and instantiate new order
         """
         self.dealt.clear()
-        for stuff in self._stuff:
-            phase = replace(self[stuff])
-            self.dealt.append(phase)
+        for step in self._stuff:
+            step = replace(self[step])
+            self.dealt.put(step)
         self.logger.debug(f'Is dealt order of turn: {self.dealt}')
+
+
+# @dataclass
+# class Turns(Rules):
+#     """Turn is data storage for turn rules
+
+#     Args:
+#         name (str): name of Turn.
+#         _order (List[Rule]): list of default elements of Turn.
+#     """
+#     dealt: Deque[BaseStuff] = field(
+#         default_factory=deque,
+#         repr=False,
+#         )
+#     type_: str = field(
+#         default='turns',
+#         metadata=config(exclude=lambda x: True),  # type: ignore
+#         repr=False
+#         )
+
+#     def __post_init__(self) -> None:
+#         super().__post_init__()
+
+#     def deal(self):
+#         """Clear the Turn and instantiate new turn
+#         """
+#         self.dealt.clear()
+#         for stuff in self._stuff:
+#             phase = replace(self[stuff])
+#             self.dealt.append(phase)
+#         self.logger.debug(f'Is dealt order of turn: {self.dealt}')
 
 
 TOOLS = {
     Shaker.type_: Shaker,
     Bag.type_: Bag,
     Deck.type_: Deck,
-    Rules.type_: Rules,
-    Turns.type_: Turns,
+    # Rules.type_: Rules,
+    # Turns.type_: Turns,
+    Steps.type_: Steps,
     }
-TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'rules', 'turns']
+# TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'rules', 'turns', 'steps']
+TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'steps']

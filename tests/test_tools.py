@@ -3,9 +3,10 @@ import pytest
 import random
 from typing import Tuple
 from collections import deque
+# from queue import PriorityQueue, Empty
 from bgameb.game import Game, BaseGame
-from bgameb.tools import Shaker, Deck, Bag, Rules, Turns, BaseTool
-from bgameb.stuff import Rule, BaseStuff
+from bgameb.tools import Shaker, Deck, Bag, Order, Steps, BaseTool
+from bgameb.stuff import Step, BaseStuff
 from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
 
@@ -32,8 +33,10 @@ def game_inst() -> BaseGame:
     game.new('dice_nice', ctype='dice')
     game.new('card', ctype='card')
     game.new('card_nice', ctype='card')
-    game.new('rule1', ctype='rule', text='one text')
-    game.new('rule2', ctype='rule', text='two text')
+    # game.new('rule1', ctype='rule', text='one text')
+    # game.new('rule2', ctype='rule', text='two text')
+    game.new('step1', ctype='step', priority=1)
+    game.new('astep', ctype='step', priority=2)
     return game
 
 
@@ -44,12 +47,13 @@ class TestTool:
         (Bag, Bag.type_, ('card', 'card_nice')),
         (Deck, Deck.type_, ('card', 'card_nice')),
         (Shaker, Shaker.type_, ('dice', 'dice_nice')),
-        (Rules, Rules.type_, ('rule1', 'rule2')),
-        (Turns, Turns.type_, ('rule1', 'rule2')),
+        # (Rules, Rules.type_, ('rule1', 'rule2')),
+        # (Turns, Turns.type_, ('rule1', 'rule2')),
+        (Steps, Steps.type_, ('step1', 'astep'))
         ]
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def testupdate_stuff_raise_errors_if_wrong_count(
+    def test_update_stuff_raise_errors_if_wrong_count(
         self,
         game_inst: BaseGame,
         _class: BaseTool,
@@ -65,7 +69,7 @@ class TestTool:
             obj_.update(stuff[0], game=game_inst, count=0)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def testupdate_stuff_to_raise_errors_if_wrong_name(
+    def test_update_stuff_to_raise_errors_if_wrong_name(
         self,
         game_inst: BaseGame,
         _class: BaseTool,
@@ -97,7 +101,7 @@ class TestTool:
         assert obj_[stuff[0]].count == 2, 'not increased'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def testupdate_stuff(
+    def test_update_stuff(
         self,
         game_inst: BaseGame,
         _class: BaseTool,
@@ -395,40 +399,86 @@ class TestDeck:
             deck.arrange(arranged, last)
 
 
-class TestTurns:
-    """Test Turns class
+class TestSteps:
+    """Test Steps class
     """
 
-    def test_turn_instance(self) -> None:
-        """Test Turns class instance
+    def test_steps_instance(self) -> None:
+        """Test Steps class instance
         """
-        obj_ = Turns('game_turns')
+        obj_ = Steps('game_turns')
         assert isinstance(obj_, Components), 'wrong turn type'
-        assert isinstance(obj_.dealt, deque), 'wrong dealt type'
+        assert isinstance(obj_.dealt, Order), 'wrong dealt type'
         assert len(obj_.dealt) == 0, 'wrong dealt len'
         assert len(obj_._stuff) == 0, 'wrong turn len'
 
-    def test_turn_add_phase(self, game_inst: BaseGame) -> None:
-        """Add rule to turn
+    def test_steps_add_steps(self, game_inst: BaseGame) -> None:
+        """Test add step to steps
         """
-        obj_ = Turns('game_turns')
-        obj_.update('rule1', game=game_inst)
-        assert len(obj_._stuff) == 1, 'wrong dealt len'
-        assert isinstance(obj_.rule1, Rule), 'wrong rule type'
-        assert obj_.rule1.name == 'rule1', 'wrong rule name'
-        assert obj_.rule1.text == 'one text', 'wrong rule text'
+        obj_ = Steps('game_turns')
+        obj_.update('step1', game=game_inst)
+        assert len(obj_._stuff) == 1, 'wrong stuff len'
+        assert isinstance(obj_.step1, Step), 'wrong type'
+        assert obj_.step1.name == 'step1', 'wrong name'
+        assert obj_.step1.priority == 1, 'wrong priority'
 
-    def test_deal(self, game_inst: BaseGame) -> None:
+    def test_steps_deal(self, game_inst: BaseGame) -> None:
         """Test start new cycle of turn
         """
-        obj_ = Turns('game_turns')
-        obj_.update('rule1', game=game_inst)
-        obj_.update('rule2', game=game_inst)
+        obj_ = Steps('game_turns')
+        obj_.update('step1', game=game_inst)
+        obj_.update('astep', game=game_inst)
         obj_.deal()
-        assert len(obj_.dealt) == 2, 'wrong turns len'
-        assert obj_.dealt[0].name == 'rule1', 'wrong first element'
-        assert obj_.dealt[1].name == 'rule2', 'wrong second element'
-        obj_.dealt.pop()
-        assert len(obj_.dealt) == 1, 'wrong turn len'
+        assert len(obj_.dealt) == 2, 'wrong len'
+        current = obj_.dealt.get()
+        assert len(obj_.dealt) == 1, 'wrong len'
+        assert current.name == 'step1', 'wrong current step'
+        current = obj_.dealt.get()
+        assert len(obj_.dealt) == 0, 'wrong len'
+        assert current.name == 'astep', 'wrong current step'
+        with pytest.raises(
+            IndexError,
+            match='index out of range'
+                ):
+            obj_.dealt.get()
         obj_.deal()
         assert len(obj_.dealt) == 2, 'turn not clean'
+
+
+# class TestTurns:
+#     """Test Turns class
+#     """
+
+#     def test_turn_instance(self) -> None:
+#         """Test Turns class instance
+#         """
+#         obj_ = Turns('game_turns')
+#         assert isinstance(obj_, Components), 'wrong turn type'
+#         assert isinstance(obj_.dealt, deque), 'wrong dealt type'
+#         assert len(obj_.dealt) == 0, 'wrong dealt len'
+#         assert len(obj_._stuff) == 0, 'wrong turn len'
+
+#     def test_turn_add_phase(self, game_inst: BaseGame) -> None:
+#         """Add rule to turn
+#         """
+#         obj_ = Turns('game_turns')
+#         obj_.update('rule1', game=game_inst)
+#         assert len(obj_._stuff) == 1, 'wrong dealt len'
+#         assert isinstance(obj_.rule1, Rule), 'wrong rule type'
+#         assert obj_.rule1.name == 'rule1', 'wrong rule name'
+#         assert obj_.rule1.text == 'one text', 'wrong rule text'
+
+#     def test_deal(self, game_inst: BaseGame) -> None:
+#         """Test start new cycle of turn
+#         """
+#         obj_ = Turns('game_turns')
+#         obj_.update('rule1', game=game_inst)
+#         obj_.update('rule2', game=game_inst)
+#         obj_.deal()
+#         assert len(obj_.dealt) == 2, 'wrong turns len'
+#         assert obj_.dealt[0].name == 'rule1', 'wrong first element'
+#         assert obj_.dealt[1].name == 'rule2', 'wrong second element'
+#         obj_.dealt.pop()
+#         assert len(obj_.dealt) == 1, 'wrong turn len'
+#         obj_.deal()
+#         assert len(obj_.dealt) == 2, 'turn not clean'

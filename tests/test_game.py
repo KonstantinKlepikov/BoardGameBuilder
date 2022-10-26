@@ -16,10 +16,12 @@ class TestGame:
         obj_ = Game(name='this_game')
         assert obj_.name == 'this_game', 'not set name for instance'
         assert obj_.is_active, 'wrong is_active'
-        assert isinstance(obj_.turn_order, COMPONENTS['turns']), \
-            'turn_order isnt component'
-        assert isinstance(obj_.game_rules, COMPONENTS['rules']), \
-            'rules isnt component'
+        # assert isinstance(obj_.turn_order, COMPONENTS['turns']), \
+        #     'turn_order isnt component'
+        # assert isinstance(obj_.game_rules, COMPONENTS['rules']), \
+        #     'rules isnt component'
+        assert isinstance(obj_.game_steps, COMPONENTS['steps']), \
+            'steps isnt component'
         assert isinstance(obj_, Components), 'isnt component'
 
     def test_game_class_is_converted_to_json(self) -> None:
@@ -34,10 +36,11 @@ class TestGame:
         """
         obj_ = Game(name='game')
         for n in COMPONENTS.keys():
-            if n == 'rule':
-                obj_.new(name=n, ctype=n, text='this')
-            else:
-                obj_.new(name=n, ctype=n)
+            obj_.new(name=n, ctype=n)
+            # if n == 'rule':
+            #     obj_.new(name=n, ctype=n, text='this')
+            # else:
+            #     obj_.new(name=n, ctype=n)
             assert obj_[n].name == n, 'component not added'
 
     def test_add_new_component_with_kwargs(self) -> None:
@@ -161,16 +164,16 @@ class TestGame:
                 ):
             obj_.copy('that', 'this', count=6)
 
-    def test_add_rule_to_rules(self) -> None:
-        """Test add rule to game rules
-        """
-        obj_ = Game(name='game')
-        obj_.new('this', ctype='rule', text='that')
-        obj_.copy('this', 'game_rules')
-        assert isinstance(obj_.game_rules.this, COMPONENTS['rule']), \
-            'wrong type of rule'
-        assert obj_.game_rules.this.name == 'this', 'wrong name of rule'
-        assert obj_.game_rules.this.text == 'that', 'wrong text rule'
+    # def test_add_rule_to_rules(self) -> None:
+    #     """Test add rule to game rules
+    #     """
+    #     obj_ = Game(name='game')
+    #     obj_.new('this', ctype='rule', text='that')
+    #     obj_.copy('this', 'game_rules')
+    #     assert isinstance(obj_.game_rules.this, COMPONENTS['rule']), \
+    #         'wrong type of rule'
+    #     assert obj_.game_rules.this.name == 'this', 'wrong name of rule'
+    #     assert obj_.game_rules.this.text == 'that', 'wrong text rule'
 
     def test_copy_not_stuff_or_not_to_tool(self) -> None:
         """Test copy() missed type

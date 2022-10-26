@@ -1,0 +1,5 @@
+#145:
+    * Removed Rule class form stuff.py
+    * Removed Rules and Turns classes
+    * Remove attrs game_turn and game_rules from game object
+    * ->

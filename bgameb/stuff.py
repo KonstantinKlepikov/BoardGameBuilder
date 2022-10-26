@@ -16,18 +16,38 @@ class BaseStuff(Base):
     count: int = 1
 
 
-@dataclass
-class Rule(BaseStuff):
-    """Rule object
+# @dataclass
+# class Rule(BaseStuff):
+#     """Rule object
+#     """
+#     count: int = field(
+#         default=1,
+#         metadata=config(exclude=lambda x: True),  # type: ignore
+#         repr=False
+#         )
+#     text: Optional[str] = None
+#     type_: str = field(
+#         default='rule',
+#         metadata=config(exclude=lambda x: True),  # type: ignore
+#         repr=False
+#         )
+
+#     def __post_init__(self) -> None:
+#         super().__post_init__()
+
+
+@dataclass(order=True)
+class Step(BaseStuff):
+    """Game steps or turns
     """
     count: int = field(
         default=1,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
-    text: Optional[str] = None
+    priority: int = 0
     type_: str = field(
-        default='rule',
+        default='step',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
@@ -167,8 +187,10 @@ class Card(BaseStuff):
 
 
 STUFF = {
-    Rule.type_: Rule,
+    # Rule.type_: Rule,
     Dice.type_: Dice,
     Card.type_: Card,
+    Step.type_: Step,
     }
-STUFF_TYPES = Literal['rule', 'dice', 'card']
+# STUFF_TYPES = Literal['rule', 'dice', 'card', 'step']
+STUFF_TYPES = Literal['dice', 'card', 'step']
