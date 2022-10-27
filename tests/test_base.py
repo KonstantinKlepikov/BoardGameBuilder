@@ -10,7 +10,6 @@ class TestComponents:
     components = [
         (Dice, 'dice'),
         (Card, 'card'),
-        # (Rule, 'rule'),
         ]
 
     @pytest.mark.parametrize("_class, name", components)

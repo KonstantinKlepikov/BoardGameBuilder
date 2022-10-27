@@ -1,5 +1,8 @@
 #145:
-    * Removed Rule class form stuff.py
-    * Removed Rules and Turns classes
-    * Remove attrs game_turn and game_rules from game object
+    * removed Rule class form stuff.py
+    * removed Rules and Turns classes
+    * remove attrs game_turn and game_rules from game object
+    * all delt attrs removed from dict/jsone output
+    * is_active property removed from all objects
+    * type_ removed from Game class
     * ->

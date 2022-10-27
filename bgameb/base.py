@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Any, Iterator, Tuple
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
 from heapq import heappop, heappush
-from dataclasses_json import DataClassJsonMixin, config
+from dataclasses_json import config, dataclass_json
 from bgameb.errors import ComponentNameError
 from loguru import logger
 
@@ -33,8 +33,9 @@ def log_enable(
     logger.enable('bgameb')
 
 
-@dataclass(init=False)
-class Components(Mapping, DataClassJsonMixin):
+@dataclass_json
+@dataclass(repr=False)
+class Components(Mapping):
     """Components mapping
     """
     def __init__(
@@ -78,7 +79,11 @@ class Components(Mapping, DataClassJsonMixin):
         del self.__dict__[attr]
 
     def __repr__(self):
-        items = (f"{k}={v!r}" for k, v in self.__dict__.items())
+        items = (
+            f"{k}={v!r}" for k, v
+            in self.__dict__.items()
+            if not k.startswith('_') and not k.startswith('current')
+            )
         return "{}({})".format(type(self).__name__, ", ".join(items))
 
     def __len__(self) -> int:
@@ -118,6 +123,7 @@ class Components(Mapping, DataClassJsonMixin):
                 self.__class__.__name__,
                 fields=[(kwargs['name'], type(comp), field(default=comp))],
                 bases=(self.__class__, ),
+                repr=False
                 )
 
         self.__dict__.update({kwargs['name']: comp})
@@ -161,35 +167,36 @@ class Components(Mapping, DataClassJsonMixin):
         return list(self.__dict__)
 
 
+@dataclass_json
 @dataclass
-class Order(DataClassJsonMixin):
+class Order:
     """Order of steps priority queue. Isnt tradesafe
     """
-    current_order: List[Tuple[int, Components]] = field(
+    current: List[Tuple[int, Components]] = field(
         default_factory=list,
-        # metadata=config(exclude=lambda x: True),  # type: ignore
+        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
             )
 
     def __len__(self) -> int:
-        return len(self.current_order)
+        return len(self.current)
 
     def clear(self) -> None:
-        self.current_order = []
+        self.current = []
 
     def put(self, item) -> None:
-        heappush(self.current_order, (item.priority, item))
+        heappush(self.current, (item.priority, item))
 
     def get(self):
-        return heappop(self.current_order)[1]
+        return heappop(self.current)[1]
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class Base(Components):
     """Base class for game, stuff, tools players and other components
     """
     name: str
-    is_active: bool = True
 
     def __post_init__(self) -> None:
         # check name
@@ -199,9 +206,9 @@ class Base(Components):
             )
 
         # set logger
-        self.logger = logger.bind(
+        self._logger = logger.bind(
             classname=self.__class__.__name__,
             name=self.name)
-        self.logger.info(
+        self._logger.info(
             f'{self.__class__.__name__} created with {self.name=}.'
             )

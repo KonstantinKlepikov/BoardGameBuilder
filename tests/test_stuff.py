@@ -11,7 +11,6 @@ class TestBaseStuff:
     params = [
         (Dice, 'dice'),
         (Card, 'card'),
-        # (Rule, 'rule'),
         ]
 
     @pytest.mark.parametrize("_class, name", params)
@@ -20,7 +19,6 @@ class TestBaseStuff:
         """
         obj_ = _class(name='this_stuff')
         assert obj_.name == 'this_stuff', 'not set name for instance'
-        assert obj_.is_active, 'wrong is_active'
         assert obj_.count == 1, 'wrong count'
 
     @pytest.mark.parametrize("_class, name", params)
@@ -34,17 +32,6 @@ class TestBaseStuff:
         assert j['name'] == name, 'not converted to json'
 
 
-# class TestRule:
-#     """Test Rule class
-#     """
-
-#     def test_rule_instance(self) -> None:
-#         """Test Rule class instance
-#         """
-#         obj_ = Rule(name='this_rule', text='text of rule')
-#         assert obj_.text == 'text of rule', 'not set text'
-
-
 class TestStep:
     """Test Step class
     """
@@ -54,7 +41,7 @@ class TestStep:
         """
         obj_ = Step(name='first_step')
         assert obj_.priority == 0, 'wrong priority'
-        assert obj_.type_ == 'step', 'wrong type'
+        assert obj_._type == 'step', 'wrong type'
         obj1 = Step(name='first_step', priority=20)
         assert obj1.priority == 20, 'wrong priority'
         assert obj1 > obj_, 'wong comparison'
@@ -69,7 +56,6 @@ class TestDices:
         """
         obj_ = Dice(name='dice')
         assert obj_.name == 'dice', 'wrong name'
-        assert obj_.is_active, 'wrong is_active'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
         assert len(obj_._range) == 2, 'wrong range'
@@ -104,7 +90,6 @@ class TestCard:
         """
         obj_ = Card(name='card')
         assert obj_.name == 'card', 'wrong name'
-        assert obj_.is_active, 'wrong is_active'
         assert obj_.open is False, 'card is open'
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
