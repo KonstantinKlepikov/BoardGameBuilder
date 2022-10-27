@@ -1,7 +1,7 @@
 import json
 import pytest
 from collections import Counter
-from bgameb.stuff import Dice, Card, Rule
+from bgameb.stuff import Dice, Card, Step
 from bgameb.errors import StuffDefineError
 
 
@@ -11,7 +11,6 @@ class TestBaseStuff:
     params = [
         (Dice, 'dice'),
         (Card, 'card'),
-        (Rule, 'rule'),
         ]
 
     @pytest.mark.parametrize("_class, name", params)
@@ -20,7 +19,6 @@ class TestBaseStuff:
         """
         obj_ = _class(name='this_stuff')
         assert obj_.name == 'this_stuff', 'not set name for instance'
-        assert obj_.is_active, 'wrong is_active'
         assert obj_.count == 1, 'wrong count'
 
     @pytest.mark.parametrize("_class, name", params)
@@ -34,15 +32,19 @@ class TestBaseStuff:
         assert j['name'] == name, 'not converted to json'
 
 
-class TestRule:
-    """Test Rule class
+class TestStep:
+    """Test Step class
     """
 
-    def test_rule_instance(self) -> None:
-        """Test Rule class instance
+    def test_step_instance(self) -> None:
+        """Test Step class instance
         """
-        obj_ = Rule(name='this_rule', text='text of rule')
-        assert obj_.text == 'text of rule', 'not set text'
+        obj_ = Step(name='first_step')
+        assert obj_.priority == 0, 'wrong priority'
+        assert obj_._type == 'step', 'wrong type'
+        obj1 = Step(name='first_step', priority=20)
+        assert obj1.priority == 20, 'wrong priority'
+        assert obj1 > obj_, 'wong comparison'
 
 
 class TestDices:
@@ -54,7 +56,6 @@ class TestDices:
         """
         obj_ = Dice(name='dice')
         assert obj_.name == 'dice', 'wrong name'
-        assert obj_.is_active, 'wrong is_active'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
         assert len(obj_._range) == 2, 'wrong range'
@@ -89,8 +90,7 @@ class TestCard:
         """
         obj_ = Card(name='card')
         assert obj_.name == 'card', 'wrong name'
-        assert obj_.is_active, 'wrong is_active'
-        assert obj_.open is False, 'card is open'
+        assert obj_.opened is False, 'card is opened'
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
         assert obj_.count == 1, 'wrong count'
@@ -101,24 +101,24 @@ class TestCard:
         """
         obj_ = Card(name='card')
         obj_.flip()
-        assert obj_.open, 'card not oppened'
+        assert obj_.opened, 'card not oppened'
         obj_.flip()
-        assert not obj_.open, 'card oppened'
+        assert not obj_.opened, 'card oppened'
 
-    def test_fase_up(self) -> None:
-        """Test face up open card
+    def test_open(self) -> None:
+        """Test face up opened card
         """
         obj_ = Card(name='card')
-        obj_.face_up()
-        assert obj_.open, 'card not open'
+        obj_.open()
+        assert obj_.opened, 'card not opened'
 
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
         obj_ = Card(name='card')
-        obj_.open = True
-        obj_.face_down()
-        assert not obj_.open, 'card not open'
+        obj_.opened = True
+        obj_.hide()
+        assert not obj_.opened, 'card not opened'
 
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
@@ -134,5 +134,7 @@ class TestCard:
         obj_ = Card(name='card')
         obj_.tapped = True
         assert obj_.tapped, 'card not tapped'
+        obj_.side = 'left'
         obj_.untap()
         assert not obj_.tapped, 'card not untapped'
+        assert obj_.side is None, 'wrong side'

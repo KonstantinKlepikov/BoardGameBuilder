@@ -4,8 +4,8 @@ import random
 from typing import Tuple
 from collections import deque
 from bgameb.game import Game, BaseGame
-from bgameb.tools import Shaker, Deck, Bag, Rules, Turns, BaseTool
-from bgameb.stuff import Rule, BaseStuff
+from bgameb.tools import Shaker, Deck, Bag, Order, Steps, BaseTool
+from bgameb.stuff import Step, BaseStuff
 from bgameb.base import Components
 from bgameb.errors import StuffDefineError, ArrangeIndexError
 
@@ -28,12 +28,12 @@ class FixedSeed:
 @pytest.fixture
 def game_inst() -> BaseGame:
     game = Game(name='game')
-    game.new('dice', ctype='dice')
-    game.new('dice_nice', ctype='dice')
-    game.new('card', ctype='card')
-    game.new('card_nice', ctype='card')
-    game.new('rule1', ctype='rule', text='one text')
-    game.new('rule2', ctype='rule', text='two text')
+    game.new('dice', type_='dice')
+    game.new('dice_nice', type_='dice')
+    game.new('card', type_='card')
+    game.new('card_nice', type_='card')
+    game.new('step1', type_='step', priority=1)
+    game.new('astep', type_='step', priority=2)
     return game
 
 
@@ -41,15 +41,14 @@ class TestTool:
     """Test tools classes
     """
     params = [
-        (Bag, Bag.type_, ('card', 'card_nice')),
-        (Deck, Deck.type_, ('card', 'card_nice')),
-        (Shaker, Shaker.type_, ('dice', 'dice_nice')),
-        (Rules, Rules.type_, ('rule1', 'rule2')),
-        (Turns, Turns.type_, ('rule1', 'rule2')),
+        (Bag, Bag._type, ('card', 'card_nice')),
+        (Deck, Deck._type, ('card', 'card_nice')),
+        (Shaker, Shaker._type, ('dice', 'dice_nice')),
+        (Steps, Steps._type, ('step1', 'astep'))
         ]
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def testupdate_stuff_raise_errors_if_wrong_count(
+    def test_update_stuff_raise_errors_if_wrong_count(
         self,
         game_inst: BaseGame,
         _class: BaseTool,
@@ -65,7 +64,7 @@ class TestTool:
             obj_.update(stuff[0], game=game_inst, count=0)
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def testupdate_stuff_to_raise_errors_if_wrong_name(
+    def test_update_stuff_to_raise_errors_if_wrong_name(
         self,
         game_inst: BaseGame,
         _class: BaseTool,
@@ -97,7 +96,7 @@ class TestTool:
         assert obj_[stuff[0]].count == 2, 'not increased'
 
     @pytest.mark.parametrize("_class, name, stuff", params)
-    def testupdate_stuff(
+    def test_update_stuff(
         self,
         game_inst: BaseGame,
         _class: BaseTool,
@@ -192,7 +191,6 @@ class TestShaker:
         """
         obj_ = Shaker(name='shaker')
         assert obj_.name == 'shaker', 'wrong name'
-        assert obj_.is_active, 'wrong is_active'
         assert isinstance(obj_, Components), 'wrong type of stuff'
         assert len(obj_._stuff) == 0, 'nonempty stuff'
         assert issubclass(obj_._stuff_to_add, BaseStuff), \
@@ -234,11 +232,10 @@ class TestDeck:
         """
         deck = Deck(name='deck')
         assert deck.name == 'deck', 'wrong name'
-        assert deck.is_active, 'wrong is_active'
         assert isinstance(deck, Components), 'wrong type of stuff'
         assert len(deck._stuff) == 0, 'nonempty stuff'
-        assert isinstance(deck.dealt, deque), 'wrong type of dealt'
-        assert len(deck.dealt) == 0, 'nonempty dealt'
+        assert isinstance(deck.current, deque), 'wrong type of current'
+        assert len(deck.current) == 0, 'nonempty current'
         assert issubclass(deck._stuff_to_add, BaseStuff), \
             'wrong stuff _stuff_to_add'
 
@@ -259,13 +256,13 @@ class TestDeck:
             deck.update('card', game=game_inst, count=20)
             deck.update('card_nice', game=game_inst, count=20)
             deck.deal()
-            assert len(deck.dealt) == 40, 'wrong dealt len'
-            names = [stuff.name for stuff in deck.dealt]
-            assert 'card' in names, 'wrong cards names inside dealt'
-            assert 'card_nice' in names, 'wrong cards names inside dealt'
-            before = [id(card) for card in deck.dealt]
+            assert len(deck.current) == 40, 'wrong current len'
+            names = [stuff.name for stuff in deck.current]
+            assert 'card' in names, 'wrong cards names inside current'
+            assert 'card_nice' in names, 'wrong cards names inside current'
+            before = [id(card) for card in deck.current]
             deck.deal()
-            after = [id(card) for card in deck.dealt]
+            after = [id(card) for card in deck.current]
             assert before != after, 'not random order'
 
     def test_deck_shuffle(self, game_inst: BaseGame) -> None:
@@ -275,9 +272,9 @@ class TestDeck:
         deck.update('card', game=game_inst, count=5)
         deck.update('card_nice', game=game_inst, count=5)
         deck.deal()
-        dealt0 = deck.dealt.copy()
+        current0 = deck.current.copy()
         deck.shuffle()
-        assert deck.dealt != dealt0, 'not changed order'
+        assert deck.current != current0, 'not changed order'
 
     def test_clear(self, game_inst: BaseGame) -> None:
         """Test deck clean()
@@ -285,9 +282,9 @@ class TestDeck:
         deck = Deck(name='deck')
         deck.update('card', game=game_inst, count=5)
         deck.update('card_nice', game=game_inst, count=5)
-        deck.dealt.clear()
-        assert isinstance(deck.dealt, deque), 'nonempty dealt'
-        assert len(deck.dealt) == 0, 'nonempty dealt'
+        deck.current.clear()
+        assert isinstance(deck.current, deque), 'nonempty current'
+        assert len(deck.current) == 0, 'nonempty current'
 
     def test_search(self, game_inst: BaseGame) -> None:
         """Test deck search() one or many or no one cards
@@ -300,25 +297,25 @@ class TestDeck:
         assert len(search) == 1, 'wrong search len'
         assert isinstance(search[0], BaseStuff), 'wrong search type'
         assert search[0].name == 'card', 'wrong finded name'
-        assert len(deck.dealt) == 3, 'wrong dealt len'
+        assert len(deck.current) == 3, 'wrong current len'
 
         search = deck.search(query={'card_nice': 2}, remove=False)
         assert len(search) == 2, 'wrong search len'
         assert search[0].name == 'card_nice', 'wrong finded name'
-        assert len(deck.dealt) == 3, 'wrong dealt len'
+        assert len(deck.current) == 3, 'wrong current len'
 
         search = deck.search(query={'card': 1, 'card_nice': 1})
         assert len(search) == 2, 'wrong search len'
-        assert len(deck.dealt) == 1, 'wrong dealt len'
+        assert len(deck.current) == 1, 'wrong current len'
 
         search = deck.search(query={'card_nice': 50})
         assert len(search) == 1, 'wrong search len'
-        assert len(deck.dealt) == 0, 'wrong dealt len'
+        assert len(deck.current) == 0, 'wrong current len'
 
         deck.deal()
         search = deck.search(query={'wrong_card': 1})
         assert len(search) == 0, 'wrong search len'
-        assert len(deck.dealt) == 4, 'wrong dealt len'
+        assert len(deck.current) == 4, 'wrong current len'
 
     def test_to_arrange(self, game_inst: BaseGame) -> None:
         """Test to_arrange() deck
@@ -333,7 +330,7 @@ class TestDeck:
         assert isinstance(last[0], list), 'wrong left'
         assert isinstance(last[1], list), 'wrong right'
         assert isinstance(arranged, list), 'wrong center'
-        assert arranged[0].name == deck.dealt[0].name, 'wrong arranged'
+        assert arranged[0].name == deck.current[0].name, 'wrong arranged'
         assert last[0] == [], 'wrong split'
         assert len(last[1]) == 3, 'wrong split'
 
@@ -373,9 +370,9 @@ class TestDeck:
             deck.deal()
             arranged, last = deck.to_arrange(0, 3)
             arranged.sort(key=lambda x: x.name)
-            before = [stuff.name for stuff in deck.dealt]
+            before = [stuff.name for stuff in deck.current]
             deck.arrange(arranged, last)
-            after = [stuff.name for stuff in deck.dealt]
+            after = [stuff.name for stuff in deck.current]
             assert after != before, 'not arranged'
 
     def test_arrrange_returns_same_len(self, game_inst: BaseGame) -> None:
@@ -395,40 +392,47 @@ class TestDeck:
             deck.arrange(arranged, last)
 
 
-class TestTurns:
-    """Test Turns class
+class TestSteps:
+    """Test Steps class
     """
 
-    def test_turn_instance(self) -> None:
-        """Test Turns class instance
+    def test_steps_instance(self) -> None:
+        """Test Steps class instance
         """
-        obj_ = Turns('game_turns')
+        obj_ = Steps('game_turns')
         assert isinstance(obj_, Components), 'wrong turn type'
-        assert isinstance(obj_.dealt, deque), 'wrong dealt type'
-        assert len(obj_.dealt) == 0, 'wrong dealt len'
+        assert isinstance(obj_.current, Order), 'wrong current type'
+        assert len(obj_.current) == 0, 'wrong current len'
         assert len(obj_._stuff) == 0, 'wrong turn len'
 
-    def test_turn_add_phase(self, game_inst: BaseGame) -> None:
-        """Add rule to turn
+    def test_steps_add_steps(self, game_inst: BaseGame) -> None:
+        """Test add step to steps
         """
-        obj_ = Turns('game_turns')
-        obj_.update('rule1', game=game_inst)
-        assert len(obj_._stuff) == 1, 'wrong dealt len'
-        assert isinstance(obj_.rule1, Rule), 'wrong rule type'
-        assert obj_.rule1.name == 'rule1', 'wrong rule name'
-        assert obj_.rule1.text == 'one text', 'wrong rule text'
+        obj_ = Steps('game_turns')
+        obj_.update('step1', game=game_inst)
+        assert len(obj_._stuff) == 1, 'wrong stuff len'
+        assert isinstance(obj_.step1, Step), 'wrong type'
+        assert obj_.step1.name == 'step1', 'wrong name'
+        assert obj_.step1.priority == 1, 'wrong priority'
 
-    def test_deal(self, game_inst: BaseGame) -> None:
+    def test_steps_deal(self, game_inst: BaseGame) -> None:
         """Test start new cycle of turn
         """
-        obj_ = Turns('game_turns')
-        obj_.update('rule1', game=game_inst)
-        obj_.update('rule2', game=game_inst)
+        obj_ = Steps('game_turns')
+        obj_.update('step1', game=game_inst)
+        obj_.update('astep', game=game_inst)
         obj_.deal()
-        assert len(obj_.dealt) == 2, 'wrong turns len'
-        assert obj_.dealt[0].name == 'rule1', 'wrong first element'
-        assert obj_.dealt[1].name == 'rule2', 'wrong second element'
-        obj_.dealt.pop()
-        assert len(obj_.dealt) == 1, 'wrong turn len'
+        assert len(obj_.current) == 2, 'wrong len'
+        current = obj_.current.get()
+        assert len(obj_.current) == 1, 'wrong len'
+        assert current.name == 'step1', 'wrong current step'
+        current = obj_.current.get()
+        assert len(obj_.current) == 0, 'wrong len'
+        assert current.name == 'astep', 'wrong current step'
+        with pytest.raises(
+            IndexError,
+            match='index out of range'
+                ):
+            obj_.current.get()
         obj_.deal()
-        assert len(obj_.dealt) == 2, 'turn not clean'
+        assert len(obj_.current) == 2, 'turn not clean'

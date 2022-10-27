@@ -4,30 +4,32 @@ import random
 from typing import List, Optional, Literal
 from collections import Counter
 from dataclasses import dataclass, field
-from dataclasses_json import config
+from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class BaseStuff(Base):
     """Base class for game stuff (like dices or cards)
     """
     count: int = 1
 
 
-@dataclass
-class Rule(BaseStuff):
-    """Rule object
+@dataclass_json
+@dataclass(order=True, repr=False)
+class Step(BaseStuff):
+    """Game steps or turns
     """
     count: int = field(
         default=1,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
-    text: Optional[str] = None
-    type_: str = field(
-        default='rule',
+    priority: int = 0
+    _type: str = field(
+        default='step',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
@@ -36,7 +38,8 @@ class Rule(BaseStuff):
         super().__post_init__()
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class Dice(BaseStuff):
     """Base class for define types of rolled or fliped objects
 
@@ -62,7 +65,7 @@ class Dice(BaseStuff):
         repr=False
         )
     sides: int = 2
-    type_: str = field(
+    _type: str = field(
         default='dice',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
@@ -74,7 +77,7 @@ class Dice(BaseStuff):
             raise StuffDefineError(
                 message=f'Number of sides={self.sides} '
                         f'for {self.name}. Needed >= 2.',
-                logger=self.logger
+                logger=self._logger
                 )
         self._range = list(range(1, self.sides + 1))
 
@@ -88,11 +91,12 @@ class Dice(BaseStuff):
             random.choices(self._range, k=1)[0] for _
             in list(range(self.count))
             ]
-        self.logger.debug(f'Is rolled {roll=}')
+        self._logger.debug(f'Is rolled {roll=}')
         return roll
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class Card(BaseStuff):
     """Create the card
 
@@ -104,11 +108,11 @@ class Card(BaseStuff):
 
             card = CardType(name='unique_card')
     """
-    open: bool = False
+    opened: bool = False
     tapped: bool = False
     side: Optional[str] = None
     counter: Counter = field(default_factory=Counter)
-    type_: str = field(
+    _type: str = field(
         default='card',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
@@ -120,24 +124,24 @@ class Card(BaseStuff):
     def flip(self) -> None:
         """Face up or face down the card regardles of it condition
         """
-        if self.open:
-            self.open = False
-            self.logger.debug(f'Card face down.')
+        if self.opened:
+            self.opened = False
+            self._logger.debug(f'Card face down.')
         else:
-            self.open = True
-            self.logger.debug(f'Card face up.')
+            self.opened = True
+            self._logger.debug(f'Card face up.')
 
-    def face_up(self) -> None:
-        """Face up the card and return text
+    def open(self) -> None:
+        """Face up the card
         """
-        self.open = True
-        self.logger.debug(f'Card face up.')
+        self.opened = True
+        self._logger.debug(f'Card face up.')
 
-    def face_down(self) -> None:
+    def hide(self) -> None:
         """Face down the card
         """
-        self.open = False
-        self.logger.debug(f'Card face down.')
+        self.opened = False
+        self._logger.debug(f'Card face down.')
 
     def tap(self, side='right') -> None:
         """Tap the card to the given side
@@ -147,13 +151,14 @@ class Card(BaseStuff):
         """
         self.tapped = True
         self.side = side
-        self.logger.debug(f'Card taped to side {side}.')
+        self._logger.debug(f'Card taped to side {side}.')
 
     def untap(self) -> None:
         """Untap the card
         """
         self.tapped = False
-        self.logger.debug(f'Card untaped.')
+        self.side = None
+        self._logger.debug(f'Card untaped.')
 
     def alter(self) -> None:
         """Many cards have alter views. For example
@@ -167,8 +172,8 @@ class Card(BaseStuff):
 
 
 STUFF = {
-    Rule.type_: Rule,
-    Dice.type_: Dice,
-    Card.type_: Card,
+    Dice._type: Dice,
+    Card._type: Card,
+    Step._type: Step,
     }
-STUFF_TYPES = Literal['rule', 'dice', 'card']
+STUFF_TYPES = Literal['dice', 'card', 'step']
