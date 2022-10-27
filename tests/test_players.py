@@ -27,5 +27,4 @@ class TestPlayer:
         assert obj_.has_priority is False, 'wrong priority'
         assert obj_.team is None, 'wrong tram'
         assert obj_.owner_of == [], 'wrong owner of'
-        assert obj_.user_of == [], 'wrong user of'
         assert isinstance(obj_.counter, Counter), 'wrong counter'

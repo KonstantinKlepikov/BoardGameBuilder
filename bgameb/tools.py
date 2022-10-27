@@ -1,4 +1,4 @@
-"""Game tools classes like shakers or decks
+"""Game tools classes
 """
 import random
 from collections import deque
@@ -38,7 +38,7 @@ class BaseTool(Base):
         Args:
             name (str): name of stuff.
             game (BaseGame): game instance object.
-            count (int, optional): count of stuff copy Defaults to 1.
+            count (int, optional): count of stuff copies. Defaults to 1.
 
         Raises:
             StuffDefineError: count of stuff nonpositive
@@ -95,7 +95,7 @@ class BaseTool(Base):
         name: Optional[str] = None,
         count: Optional[int] = None
             ) -> None:
-        """Remove any kind of stuff copy from tool by its name and count
+        """Remove any kind of stuff copies from tool by its name and count
 
         Args:
             name (str, optional): name of stuff. Defaults to None.
@@ -157,7 +157,7 @@ class Shaker(BaseTool):
         self._stuff_to_add = Dice
 
     def roll(self) -> Dict[str, Tuple[int]]:
-        """Roll all stuff with shaker and return results
+        """Roll all stuff in shaker and return results
 
         Return:
             Dict[str, Tuple[int]]: result of roll
@@ -183,8 +183,9 @@ class Shaker(BaseTool):
 @dataclass_json
 @dataclass(repr=False)
 class Bag(BaseTool):
-    """Datastorage for nonqueued list of stuff. Use it for
-    hand with cards, graveyards, outside of the game cards and etc
+    """Datastorage for ordered list of stuff. Isnt queue or stack.
+    Use it for hand with cards, graveyards, outside of the game cards
+    and etc.
     """
     _type: str = field(
         default='bag',
@@ -200,10 +201,10 @@ class Bag(BaseTool):
 @dataclass_json
 @dataclass(repr=False)
 class Deck(Bag):
-    """Create deck for cards
+    """Deck object
 
-    Deck ia a Bag class that conyain current deck property for
-    define queued deck representation
+    Deck ia a Bag subclass that contains Cards for
+    define curent game deque.
 
     You can add cards, define it counts and deal a deck.
     Result is saved in current deck attr as deque object. This object
@@ -232,7 +233,7 @@ class Deck(Bag):
 
     def deal(self) -> None:
         """Deal new random shuffled deck and save it to
-        self.current: List[str]
+        self.current
         """
         self.current.clear()
         for stuff in self._stuff:
@@ -245,7 +246,7 @@ class Deck(Bag):
         self._logger.debug(f'Is deal cards: {self.current}')
 
     def shuffle(self) -> None:
-        """Shuffle current deck
+        """Random shuffle current deck
         """
         random.shuffle(self.current)
         self._logger.debug(f'Is shuffled: {self.current}')
@@ -265,9 +266,10 @@ class Deck(Bag):
             end (int): end of slice
 
         Start and end cant be less than 0 and end must be greater than start.
-        Arranged deck are splited to three part - left, center and right.
-        You can rearrange center part and concatenate that in new deque
-        by arrange() method.
+        Arranged deck are splited to two part - center (used for arrange part
+        of deck) and tupple with last part of deck. You can rearrange center
+        part and then concatenate it with last part in new deque by arrange()
+        method.
 
         Return:
             Tuple[List[BaseStuff], Tuple[List[BaseStuff]]: part to arrange
@@ -286,15 +288,14 @@ class Deck(Bag):
     def arrange(
         self,
         arranged: List[BaseStuff],
-        last: List[Deque[BaseStuff]]
+        last: Tuple[List[BaseStuff], List[BaseStuff]]
             ) -> None:
-        """Compone new current deck deck with given arranged list and
-        last of deck. Use to_arrange() method to get liat to arrange
-        and last of deck before arrange.
+        """Concatenate new current deck from given arranged list and last of
+        deck. Use to_arrange() method to get list to arrange and last.
 
         Args:
             arranged (List[BaseStuff]): arranged list of cards
-            last: (Deque[BaseStuff]): last of deck deque
+            last: (Tuple[List[BaseStuff], List[BaseStuff]]): last of deck
         """
         reorranged: Deque = deque()
         reorranged.extend(last[0])
@@ -311,18 +312,20 @@ class Deck(Bag):
                 )
 
     def search(
-        self, query: Dict[str, int], remove: bool = True
+        self,
+        query: Dict[str, int],
+        remove: bool = True
             ) -> List[BaseStuff]:
         """Search for cards in current deck
 
         Args:
             query (Dict[str, int]): dict with name of searched
-                                    card and count of seartching
+                                    cards and count of searching
             remove (bool): if True - remove cards from current deck.
-                           Default to True
+                           Default to True.
 
         Return:
-            List[Card]: list of finded cards
+            List[Card]: list of find cards
 
         .. code-block::
             :caption: Example:
@@ -357,7 +360,11 @@ class Deck(Bag):
 @dataclass_json
 @dataclass(repr=False)
 class Steps(BaseTool):
-    """Game steps order
+    """Game steps order object
+
+    Args:
+
+        - current (Order): current order of steps.
     """
     current: Order = field(
         default_factory=Order,
@@ -375,7 +382,7 @@ class Steps(BaseTool):
         self._stuff_to_add = Step
 
     def deal(self):
-        """Clear the order and instantiate new order
+        """Clear current order and create new current order
         """
         self.current.clear()
         for step in self._stuff:

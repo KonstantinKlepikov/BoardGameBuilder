@@ -10,8 +10,7 @@ class CustomRuntimeError(RuntimeError):
 
 
 class ComponentNameError(CustomRuntimeError):
-    """Component with given name is in Components
-    class instance.
+    """Component with given name has not unique or wrong name.
     """
     def __init__(self, name: str) -> None:
         self.message = f'Component with {name=} is exist in ' + \
@@ -20,7 +19,7 @@ class ComponentNameError(CustomRuntimeError):
 
 
 class ComponentClassError(CustomRuntimeError):
-    """Given class isnt component
+    """Given class isn't component.
     """
     def __init__(self, obj_, logger: loguru.Logger) -> None:
         self.message = f'Given: {obj_} not a component or you are trying ' +\
@@ -30,7 +29,7 @@ class ComponentClassError(CustomRuntimeError):
 
 
 class StuffDefineError(AttributeError):
-    """Defining stuff error
+    """Uncorrectly defined stuff.
     """
     def __init__(self, message: str, logger: loguru.Logger) -> None:
         self.message = message
@@ -39,7 +38,7 @@ class StuffDefineError(AttributeError):
 
 
 class ArrangeIndexError(IndexError):
-    """Index error for arrange tool
+    """Index error for arrange tool.
     """
     def __init__(self, message: str, logger: loguru.Logger) -> None:
         self.message = message

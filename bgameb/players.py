@@ -12,14 +12,13 @@ from bgameb.base import Base
 class BasePlayer(Base):
     """Base class for game players and bots
 
-    Attrs
+    Args:
 
         - name (str): player name
         - counter (Counter): counter object for count any items
-        - has_priority (bool): Default to False
-        - team (str, optioanl): team name for this player
-        - owner_of (List[str]): list of objects owned by player Default to []
-        - user_of (List[str]): list of objects used by player Default to []
+        - has_priority (bool): Priority flag. Default to False
+        - team (str, optioanl): team name for player. Default to None
+        - owner_of (List[str]): list of object names owned by player Default to []
 
     """
     counter: Counter = field(
@@ -30,7 +29,6 @@ class BasePlayer(Base):
     has_priority: bool = False
     team: Optional[str] = None
     owner_of: List[str] = field(default_factory=list)
-    user_of: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -39,7 +37,7 @@ class BasePlayer(Base):
 @dataclass_json
 @dataclass(repr=False)
 class Player(BasePlayer):
-    """Base class to create a player
+    """Player class
     """
     _type: str = field(
         default='player',

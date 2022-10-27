@@ -13,6 +13,9 @@ from bgameb.errors import ComponentClassError
 @dataclass(repr=False)
 class BaseGame(Base):
     """Base class for game
+
+    Args:
+        game_steps (Steps): game turn steps order
     """
     game_steps: Steps = field(init=False)
 
@@ -24,7 +27,7 @@ class BaseGame(Base):
 @dataclass_json
 @dataclass(repr=False)
 class Game(BaseGame):
-    """Create the game object
+    """The main game object
     """
 
     def __post_init__(self) -> None:
@@ -43,7 +46,7 @@ class Game(BaseGame):
             name (str): name of new component (must be unic)
             type_ (COMPONENTS_TYPES): type of new component
             target (str, optional): name of class, where placed component.
-                                              Defaults to None.
+                                    Defaults to None.
 
         Raises:
             ComponentClassError: target or type of component not exist
@@ -79,11 +82,13 @@ class Game(BaseGame):
             ComponentClassError: target or source not exist
 
         As result this operation we need two classes inside Game object:
-        - target Component-like stuff
-        - source Component-like tool
+        - target tool component
+        - source stuff component
 
-        When method was called, is created new Component with all
-        attributes of source class and it placed in target class
+        All this classes must be a Components instances.
+
+        When method was execute, it create new stuff component with all
+        attributes of source stuff and place it in target tool component
         """
         if source in self.keys() \
                 and self[source]._type in STUFF.keys() \
