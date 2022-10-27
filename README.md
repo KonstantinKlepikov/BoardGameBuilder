@@ -13,15 +13,15 @@ from bgameb import Game
 game = Game('one_board_game')
 
 # add dice and coin types to game
-game.new('six', ctype='dice', sides=6)
-game.new('twenty', ctype='dice', sides=20)
-game.new('coin', ctype='dice') # 2 is default number of sides
+game.new('six', type_='dice', sides=6)
+game.new('twenty', type_='dice', sides=20)
+game.new('coin', type_='dice') # 2 is default number of sides
 
 # or define sides for dice and coin types
 game.coin.sides = 3
 
 # add shaker and add count of stuff to shaker
-game.new('red_shaker', ctype='shaker')
+game.new('red_shaker', type_='shaker')
 game.copy('six', 'red_shaker', count=50)
 game.copy('twenty', 'red_shaker', count=10)
 game.copy('coin', 'red_shaker', count=42)
@@ -30,8 +30,8 @@ game.copy('coin', 'red_shaker', count=42)
 result = game.red_shaker.roll()
 
 # or define new shaker and add stuff directly
-game.new('blue_shaker', ctype='shaker')
-game.new('eight', ctype='dice', target='blue_shaker', sides=8, count=10)
+game.new('blue_shaker', type_='shaker')
+game.new('eight', type_='dice', target='blue_shaker', sides=8, count=10)
 result = game.blue_shaker.eight.roll()
 
 # you can use dict notation offcourse
@@ -42,28 +42,24 @@ del game.blue_shaker
 del game.six
 
 # define a cards and decks
-game.new('one_card', ctype='card')
-game.new('cards_deck', ctype='deck')
+game.new('one_card', type_='card')
+game.new('cards_deck', type_='deck')
 game.copy('one_card', 'cards_deck', count=100)
 
 # deal card from deck
 game.cards_deck.deal()
 
-# dealt cards is a python deque
-deck = game.cards_deck.dealt
-
-# all rule is store in Game class
-game.new('phase_one', ctype='rule', text='Important text')
-game.new('phase_two', ctype='rule', text='Another important text')
-
-# rule is a dict-like object
-game.phase_one.additional = 'Add something else'
+# current deck is a python deque
+deck = game.cards_deck.current
 
 # lets create game turn structure
-game.copy('phase_one', 'turn_order')
-game.copy('phase_two', 'turn_order')
-game.turn_order.deal()
-current_turn = game.turn_order.dealt
+game.new('phase_one', 'game_steps', priority=0)
+game.copy('phase_two', 'game_steps', priority=1)
+game.game_steps.deal()
+
+# game_steps is a priority queue, that linked to priority attribute
+current_game_steps = game.game_steps.current
+current_step = current_game_steps.get()
 ```
 
 ## Documentation

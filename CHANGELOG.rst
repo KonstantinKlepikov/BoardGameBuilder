@@ -3,6 +3,48 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.21 (2022-10-28)
+============================
+
+Features
+--------
+
+- #145:
+      * added custom dataclass queue - Order with ordering by priority attr
+      * added Steps class to define game order
+      * added Step class with priority to define priority of game turns
+      * Order is moved to base.py
+      * renamed dealt to current. All names of attrs not shown in repr, if starts with _ or current
+      * __repr__ now is custom, __str__ is same as __repr__
+      * renamed methods of Card object
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/145)
+
+
+Improved Documentation
+----------------------
+
+- #148:
+      * modified and cleaned project dock
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/148)
+
+
+Deprecations and Removals
+-------------------------
+
+- #145:
+      * removed Rule class form stuff.py
+      * removed Rules and Turns classes
+      * remove attrs game_turn and game_rules from game object
+      * all delt attrs removed from dict/jsone output
+      * is_active property removed from all objects
+      * type_ removed from Game class
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/145)
+- #146:
+      * is removed used_of attr from player
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/146)
+
+
 Release v0.0.20 (2022-10-18)
 ============================
 

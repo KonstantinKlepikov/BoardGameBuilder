@@ -1,4 +1,4 @@
-"""Game tools classes like shakers or decks
+"""Game tools classes
 """
 import random
 from collections import deque
@@ -6,13 +6,14 @@ from typing import (
     Optional, Tuple, Dict, Literal, List, Deque, Type
     )
 from dataclasses import dataclass, field, replace
-from dataclasses_json import config
-from bgameb.base import Base
-from bgameb.stuff import Card, Dice, Rule, BaseStuff
+from dataclasses_json import config, dataclass_json
+from bgameb.base import Base, Order
+from bgameb.stuff import Card, Dice, Step, BaseStuff
 from bgameb.errors import ArrangeIndexError, StuffDefineError
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class BaseTool(Base):
     """Base class for game tools (like decks or shakers)
     """
@@ -37,7 +38,7 @@ class BaseTool(Base):
         Args:
             name (str): name of stuff.
             game (BaseGame): game instance object.
-            count (int, optional): count of stuff copy Defaults to 1.
+            count (int, optional): count of stuff copies. Defaults to 1.
 
         Raises:
             StuffDefineError: count of stuff nonpositive
@@ -46,16 +47,15 @@ class BaseTool(Base):
         if name not in game.keys():
             raise StuffDefineError(
                 message=f"Stuff with {name=} not exist in a game.",
-                logger=self.logger
+                logger=self._logger
                 )
 
         if count < 1:
             raise StuffDefineError(
                 message=f"Can't add {count} stuff.",
-                logger=self.logger
+                logger=self._logger
                 )
 
-        # add stuff and set a count
         if name not in self._stuff:
             self._add(
                 self._stuff_to_add,
@@ -63,14 +63,13 @@ class BaseTool(Base):
                 )
             self[name].count = count
             self._stuff.append(name)
-            self.logger.debug(
+            self._logger.debug(
                 f'Added stuff with "{name=}" and {count=}.'
                 )
 
-        # if exist increase a count
         else:
             self[name].count += count
-            self.logger.debug(
+            self._logger.debug(
                 f'Number of stuff with "{name=}" increased by {count}. ' +
                 f'Result count is {self[name].count}'
                 )
@@ -83,7 +82,7 @@ class BaseTool(Base):
             count (int): count
         """
         self[name].count -= count
-        self.logger.debug(
+        self._logger.debug(
             f'Removed {count} stuff with {name=}. ' +
             f'Result count is {self.get(name, 0)}'
             )
@@ -96,7 +95,7 @@ class BaseTool(Base):
         name: Optional[str] = None,
         count: Optional[int] = None
             ) -> None:
-        """Remove any kind of stuff copy from tool by its name and count
+        """Remove any kind of stuff copies from tool by its name and count
 
         Args:
             name (str, optional): name of stuff. Defaults to None.
@@ -111,7 +110,7 @@ class BaseTool(Base):
         if count is not None and count <= 0:
             raise StuffDefineError(
                 f"Count must be a integer greater than 0.",
-                logger=self.logger
+                logger=self._logger
                 )
 
         if name is None:
@@ -120,7 +119,7 @@ class BaseTool(Base):
                 for n in self._stuff:
                     del self[n]
                 self._stuff = []
-                self.logger.debug('Removed all stuff')
+                self._logger.debug('Removed all stuff')
             else:
                 for stuff in self._stuff:
                     self._decrease(stuff, count)
@@ -129,7 +128,7 @@ class BaseTool(Base):
             if count is None:
                 del self[name]
                 self._stuff.remove(name)
-                self.logger.debug(
+                self._logger.debug(
                     f'Removed all stuff with {name=}.'
                     )
             else:
@@ -138,15 +137,16 @@ class BaseTool(Base):
         else:
             raise StuffDefineError(
                 message=f"Stuff with {name=} not exist in tool.",
-                logger=self.logger
+                logger=self._logger
                 )
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class Shaker(BaseTool):
     """Create shaker for roll dices or flip coins
     """
-    type_: str = field(
+    _type: str = field(
         default='shaker',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
@@ -157,7 +157,7 @@ class Shaker(BaseTool):
         self._stuff_to_add = Dice
 
     def roll(self) -> Dict[str, Tuple[int]]:
-        """Roll all stuff with shaker and return results
+        """Roll all stuff in shaker and return results
 
         Return:
             Dict[str, Tuple[int]]: result of roll
@@ -175,17 +175,19 @@ class Shaker(BaseTool):
         for name in self._stuff:
             roll[name] = self[name].roll()
 
-        self.logger.debug(f'Result of roll: {roll}')
+        self._logger.debug(f'Result of roll: {roll}')
 
         return roll
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class Bag(BaseTool):
-    """Datastorage for nonqueued list of stuff. Use it for
-    hand with cards, graveyards, outside of the game cards and etc
+    """Datastorage for ordered list of stuff. Isnt queue or stack.
+    Use it for hand with cards, graveyards, outside of the game cards
+    and etc.
     """
-    type_: str = field(
+    _type: str = field(
         default='bag',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
@@ -196,15 +198,16 @@ class Bag(BaseTool):
         self._stuff_to_add = Card
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class Deck(Bag):
-    """Create deck for cards
+    """Deck object
 
-    Deck ia a Bag class that conyain dealt property for
-    define queued deck representation
+    Deck ia a Bag subclass that contains Cards for
+    define curent game deque.
 
     You can add cards, define it counts and deal a deck.
-    Result is saved in dealt attr as deque object. This object
+    Result is saved in current deck attr as deque object. This object
     has all methods of
     `python deque
     <https://docs.python.org/3/library/collections.html#deque-objects>`_
@@ -214,11 +217,12 @@ class Deck(Bag):
 
             deque(Card1, Card3, Card2, Card4)
     """
-    dealt: Deque[BaseStuff] = field(
+    current: Deque[BaseStuff] = field(
         default_factory=deque,
+        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    type_: str = field(
+    _type: str = field(
         default='deck',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
@@ -229,23 +233,23 @@ class Deck(Bag):
 
     def deal(self) -> None:
         """Deal new random shuffled deck and save it to
-        self.dealt: List[str]
+        self.current
         """
-        self.dealt.clear()
+        self.current.clear()
         for stuff in self._stuff:
             for _ in range(self[stuff].count):
                 card = replace(self[stuff])
                 card.count = 1
-                self.dealt.append(card)
+                self.current.append(card)
 
         self.shuffle()
-        self.logger.debug(f'Is dealt cards: {self.dealt}')
+        self._logger.debug(f'Is deal cards: {self.current}')
 
     def shuffle(self) -> None:
-        """Shuffle dealt deck
+        """Random shuffle current deck
         """
-        random.shuffle(self.dealt)
-        self.logger.debug(f'Is shuffled: {self.dealt}')
+        random.shuffle(self.current)
+        self._logger.debug(f'Is shuffled: {self.current}')
 
     def to_arrange(
         self,
@@ -255,16 +259,17 @@ class Deck(Bag):
                 List[BaseStuff],
                 Tuple[List[BaseStuff], List[BaseStuff]]
                     ]:
-        """Prepare dealt deck to arrange
+        """Prepare current deck to arrange
 
         Args:
             start (int): start of slice
             end (int): end of slice
 
         Start and end cant be less than 0 and end must be greater than start.
-        Arranged deck are splited to three part - left, center and right.
-        You can rearrange center part and concatenate that in new deque
-        by arrange() method.
+        Arranged deck are splited to two part - center (used for arrange part
+        of deck) and tupple with last part of deck. You can rearrange center
+        part and then concatenate it with last part in new deque by arrange()
+        method.
 
         Return:
             Tuple[List[BaseStuff], Tuple[List[BaseStuff]]: part to arrange
@@ -272,54 +277,55 @@ class Deck(Bag):
         if start < 0 or end < 0 or end < start:
             raise ArrangeIndexError(
                 message=f'Nonpositive or broken {start=} or {end=}',
-                logger=self.logger
+                logger=self._logger
                 )
-        to_split = list(self.dealt)
+        to_split = list(self.current)
         splited = (to_split[start:end], (to_split[0:start], to_split[end:]))
-        self.logger.debug(f'To arrange result: {splited=}')
+        self._logger.debug(f'To arrange result: {splited=}')
 
         return splited
 
     def arrange(
         self,
         arranged: List[BaseStuff],
-        last: List[Deque[BaseStuff]]
+        last: Tuple[List[BaseStuff], List[BaseStuff]]
             ) -> None:
-        """Compone new dealt deck with given arranged list and
-        last of deck. Use to_arrange() method to get liat to arrange
-        and last of deck before arrange.
+        """Concatenate new current deck from given arranged list and last of
+        deck. Use to_arrange() method to get list to arrange and last.
 
         Args:
             arranged (List[BaseStuff]): arranged list of cards
-            last: (Deque[BaseStuff]): last of deck deque
+            last: (Tuple[List[BaseStuff], List[BaseStuff]]): last of deck
         """
         reorranged: Deque = deque()
         reorranged.extend(last[0])
         reorranged.extend(arranged)
         reorranged.extend(last[1])
 
-        if len(reorranged) == len(self.dealt):
-            self.dealt = reorranged
-            self.logger.debug(f'Arrange result: {reorranged=}')
+        if len(reorranged) == len(self.current):
+            self.current = reorranged
+            self._logger.debug(f'Arrange result: {reorranged=}')
         else:
             raise ArrangeIndexError(
                 f'Wrong to_arranged parts: {arranged=}, {last=}',
-                logger=self.logger
+                logger=self._logger
                 )
 
     def search(
-        self, query: Dict[str, int], remove: bool = True
+        self,
+        query: Dict[str, int],
+        remove: bool = True
             ) -> List[BaseStuff]:
-        """Search for cards in dealt deck
+        """Search for cards in current deck
 
         Args:
             query (Dict[str, int]): dict with name of searched
-                                    card and count of seartching
-            remove (bool): if True - remove cards from dealt deck.
-                           Default to True
+                                    cards and count of searching
+            remove (bool): if True - remove cards from current deck.
+                           Default to True.
 
         Return:
-            List[Card]: list of finded cards
+            List[Card]: list of find cards
 
         .. code-block::
             :caption: Example:
@@ -335,7 +341,7 @@ class Deck(Bag):
 
         while True:
             try:
-                card = self.dealt.popleft()
+                card = self.current.popleft()
                 if card.name in query.keys() and query[card.name] > 0:
                     result.append(card)
                     query[card.name] -= 1
@@ -345,63 +351,50 @@ class Deck(Bag):
                     for_deque.append(card)
             except IndexError:
                 break
-        self.dealt = for_deque
-        self.logger.debug(f'Search result: {result}')
+        self.current = for_deque
+        self._logger.debug(f'Search result: {result}')
 
         return result
 
 
-@dataclass
-class Rules(BaseTool):
-    """Basic rules storage
-    """
-    type_: str = field(
-        default='rules',
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False
-        )
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-        self._stuff_to_add = Rule
-
-
-@dataclass
-class Turns(Rules):
-    """Turn is data storage for turn rules
+@dataclass_json
+@dataclass(repr=False)
+class Steps(BaseTool):
+    """Game steps order object
 
     Args:
-        name (str): name of Turn.
-        _order (List[Rule]): list of default elements of Turn.
+
+        - current (Order): current order of steps.
     """
-    dealt: Deque[BaseStuff] = field(
-        default_factory=deque,
+    current: Order = field(
+        default_factory=Order,
+        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    type_: str = field(
-        default='turns',
+    _type: str = field(
+        default='steps',
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
 
     def __post_init__(self) -> None:
         super().__post_init__()
+        self._stuff_to_add = Step
 
     def deal(self):
-        """Clear the Turn and instantiate new turn
+        """Clear current order and create new current order
         """
-        self.dealt.clear()
-        for stuff in self._stuff:
-            phase = replace(self[stuff])
-            self.dealt.append(phase)
-        self.logger.debug(f'Is dealt order of turn: {self.dealt}')
+        self.current.clear()
+        for step in self._stuff:
+            step = replace(self[step])
+            self.current.put(step)
+        self._logger.debug(f'Is deal order of turn: {self.current}')
 
 
 TOOLS = {
-    Shaker.type_: Shaker,
-    Bag.type_: Bag,
-    Deck.type_: Deck,
-    Rules.type_: Rules,
-    Turns.type_: Turns,
+    Shaker._type: Shaker,
+    Bag._type: Bag,
+    Deck._type: Deck,
+    Steps._type: Steps,
     }
-TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'rules', 'turns']
+TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'steps']

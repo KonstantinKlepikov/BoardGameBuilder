@@ -2,35 +2,33 @@
 """
 from typing import Optional
 from dataclasses import dataclass, field
-from dataclasses_json import config
+from dataclasses_json import dataclass_json
 from bgameb.base import Base, log_enable
 from bgameb.types import COMPONENTS, NONSTUFF, COMPONENTS_TYPES, STUFF
-from bgameb.tools import Rules, Turns
+from bgameb.tools import Steps
 from bgameb.errors import ComponentClassError
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class BaseGame(Base):
     """Base class for game
+
+    Args:
+        game_steps (Steps): game turn steps order
     """
-    game_rules: Rules = field(init=False)
-    turn_order: Turns = field(init=False)
+    game_steps: Steps = field(init=False)
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.game_rules = Rules('game_rules')
-        self.turn_order = Turns('turn_order')
+        self.game_steps = Steps('game_steps')
 
 
-@dataclass
+@dataclass_json
+@dataclass(repr=False)
 class Game(BaseGame):
-    """Create the game object
+    """The main game object
     """
-    type_: str = field(
-        default='game',
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False
-        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -38,7 +36,7 @@ class Game(BaseGame):
     def new(
         self,
         name: str,
-        ctype: COMPONENTS_TYPES,
+        type_: COMPONENTS_TYPES,
         target: Optional[str] = None,
         **kwargs
             ) -> None:
@@ -46,27 +44,27 @@ class Game(BaseGame):
 
         Args:
             name (str): name of new component (must be unic)
-            ctype (COMPONENTS_TYPES): type of new component
+            type_ (COMPONENTS_TYPES): type of new component
             target (str, optional): name of class, where placed component.
-                                              Defaults to None.
+                                    Defaults to None.
 
         Raises:
             ComponentClassError: target or type of component not exist
         """
-        if ctype in COMPONENTS.keys():
+        if type_ in COMPONENTS.keys():
             if not target:
-                self._add(COMPONENTS[ctype], name=name, **kwargs)
-                self.logger.info(f'{name} is added to game.')
+                self._add(COMPONENTS[type_], name=name, **kwargs)
+                self._logger.info(f'{name} is added to game.')
             elif target in self.keys() \
-                    and self[target].type_ in NONSTUFF.keys() \
-                    and ctype in STUFF.keys():
-                self[target]._add(COMPONENTS[ctype], name=name, **kwargs)
-                self.logger.info(f'{name} is added to {target}.')
+                    and self[target]._type in NONSTUFF.keys() \
+                    and type_ in STUFF.keys():
+                self[target]._add(COMPONENTS[type_], name=name, **kwargs)
+                self._logger.info(f'{name} is added to {target}.')
             else:
-                raise ComponentClassError(target, self.logger)
+                raise ComponentClassError(target, self._logger)
 
         else:
-            raise ComponentClassError(ctype, self.logger)
+            raise ComponentClassError(type_, self._logger)
 
     def copy(
         self,
@@ -84,41 +82,53 @@ class Game(BaseGame):
             ComponentClassError: target or source not exist
 
         As result this operation we need two classes inside Game object:
-        - target Component-like stuff
-        - source Component-like tool
+        - target tool component
+        - source stuff component
 
-        When method was called, is created new Component with all
-        attributes of source class and it placed in target class
+        All this classes must be a Components instances.
+
+        When method was execute, it create new stuff component with all
+        attributes of source stuff and place it in target tool component
         """
         if source in self.keys() \
-                and self[source].type_ in STUFF.keys() \
+                and self[source]._type in STUFF.keys() \
                 and target in self.keys() \
-                and self[target].type_ in NONSTUFF.keys():
+                and self[target]._type in NONSTUFF.keys():
             self[target].update(name=source, game=self, **kwargs)
-            self.logger.info(f'{source} is added to {target}.')
+            self._logger.info(f'{source} is added to {target}.')
         else:
-            raise ComponentClassError((source, target), self.logger)
+            raise ComponentClassError((source, target), self._logger)
 
 
 if __name__ == '__main__':
+    from pprint import pprint
     log_enable()
     game = Game('one_board_game')
     game.new(
-        'this_rule',
-        ctype='rule',
-        text="The text is short, but the rule is important"
-        )
-    game.new('one_card', ctype='card')
-    game.new('cards_deck', ctype='deck')
+        'step0',
+        type_='step',
+        target='game_steps'
+            )
+    game.new(
+        'step1',
+        type_='step',
+        target='game_steps',
+        priority=1
+            )
+    game.new('one_card', type_='card')
+    game.new('cards_deck', type_='deck')
     game.copy('one_card', 'cards_deck', count=3)
-    game.copy('this_rule', 'game_rules')
-    game.copy('this_rule', 'turn_order')
+    game.game_steps.deal()
     game.cards_deck.deal()
-    game.turn_order.deal()
-    game.new('blue_shaker', ctype='shaker')
-    game.new('eight', ctype='dice', target='blue_shaker', sides=8, count=10)
+    game.is_active = True  # type: ignore
+    game.new('blue_shaker', type_='shaker')
+    game.new('eight', type_='dice', target='blue_shaker', sides=8, count=10)
     result = game.blue_shaker.eight.roll()
 
+    print(repr(game))
+    print('='*20 + '\n')
     print(game)
-    print('='*20)
-    print(game.to_dict())
+    print('='*20 + '\n')
+    pprint(game.to_dict())
+    print('='*20 + '\n')
+    print(dir(game))

@@ -12,8 +12,6 @@ class TestPlayer:
         """
         obj_ = Player(name='player')
         assert obj_.name == 'player', 'not set name for instance'
-        assert obj_.is_active, 'wrong is_active'
-        assert obj_.rules == [], 'no rules'
 
     def test_players_classes_are_converted_to_json(self) -> None:
         """Test to json convertatrion
@@ -26,9 +24,7 @@ class TestPlayer:
         """Test players attributes
         """
         obj_ = Player(name='player')
-        assert obj_.is_active is True, 'wrong is_active'
         assert obj_.has_priority is False, 'wrong priority'
         assert obj_.team is None, 'wrong tram'
         assert obj_.owner_of == [], 'wrong owner of'
-        assert obj_.user_of == [], 'wrong user of'
         assert isinstance(obj_.counter, Counter), 'wrong counter'

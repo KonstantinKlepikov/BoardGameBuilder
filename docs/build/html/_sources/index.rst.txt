@@ -9,9 +9,7 @@ Index
    usage
 
 
-Indices and tables
-==================
+All in index
+============
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

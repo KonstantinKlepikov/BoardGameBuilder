@@ -1,8 +1,13 @@
 bgameb package
 ==============
 
-Submodules
-----------
+bgameb.base module
+------------------
+
+.. automodule:: bgameb.base
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 bgameb.game module
 ------------------
@@ -32,14 +37,6 @@ bgameb.tools module
 -------------------
 
 .. automodule:: bgameb.tools
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bgameb.base module
-------------------
-
-.. automodule:: bgameb.base
    :members:
    :undoc-members:
    :show-inheritance:

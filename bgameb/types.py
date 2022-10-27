@@ -1,3 +1,5 @@
+"""Types of package objects
+"""
 from typing import Literal, Dict, Any
 from bgameb.tools import TOOLS, TOOLS_TYPES
 from bgameb.stuff import STUFF, STUFF_TYPES
