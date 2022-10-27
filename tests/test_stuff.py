@@ -90,7 +90,7 @@ class TestCard:
         """
         obj_ = Card(name='card')
         assert obj_.name == 'card', 'wrong name'
-        assert obj_.open is False, 'card is open'
+        assert obj_.opened is False, 'card is opened'
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
         assert obj_.count == 1, 'wrong count'
@@ -101,24 +101,24 @@ class TestCard:
         """
         obj_ = Card(name='card')
         obj_.flip()
-        assert obj_.open, 'card not oppened'
+        assert obj_.opened, 'card not oppened'
         obj_.flip()
-        assert not obj_.open, 'card oppened'
+        assert not obj_.opened, 'card oppened'
 
-    def test_fase_up(self) -> None:
-        """Test face up open card
+    def test_open(self) -> None:
+        """Test face up opened card
         """
         obj_ = Card(name='card')
-        obj_.face_up()
-        assert obj_.open, 'card not open'
+        obj_.open()
+        assert obj_.opened, 'card not opened'
 
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
         obj_ = Card(name='card')
-        obj_.open = True
-        obj_.face_down()
-        assert not obj_.open, 'card not open'
+        obj_.opened = True
+        obj_.hide()
+        assert not obj_.opened, 'card not opened'
 
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
@@ -134,5 +134,7 @@ class TestCard:
         obj_ = Card(name='card')
         obj_.tapped = True
         assert obj_.tapped, 'card not tapped'
+        obj_.side = 'left'
         obj_.untap()
         assert not obj_.tapped, 'card not untapped'
+        assert obj_.side is None, 'wrong side'

@@ -1,6 +1,6 @@
 import pytest
-from bgameb.base import Components
-from bgameb.stuff import Dice, Card, BaseStuff
+from bgameb.base import Components, Order
+from bgameb.stuff import Dice, Card, Step, BaseStuff
 from bgameb.errors import ComponentNameError
 
 
@@ -130,3 +130,41 @@ class TestComponents:
         assert comp.get_names() == [name], 'empty list of names'
         comp._add(_class, name='this')
         assert comp.get_names() == [name, 'this'], 'empty list of names'
+
+class TestOrder:
+    """Test order class
+    """
+
+    def test_init_order(self) -> None:
+        """Test correct inity order
+        """
+        obj_ = Order()
+        assert isinstance(obj_.current, list), 'wrong current'
+        assert len(obj_.current) == 0, 'wrong len current'
+
+    def test_order_methods(self) -> None:
+        """Test order methods
+        """
+        obj_ = Order()
+        item_in = Step('one', priority=0)
+        assert len(obj_) == 0, 'wrong len Order'
+        obj_.put(item_in)
+        assert len(obj_) == 1, 'wrong len Order'
+        item_out = obj_.get()
+        assert len(obj_) == 0, 'wrong len Order'
+        assert item_out is item_in, 'wrong item'
+        obj_.put(item_in)
+        obj_.clear()
+        assert len(obj_) == 0, 'wrong len Order'
+        assert isinstance(obj_.current, list), 'wrong current'
+
+    def test_order_ordering(self) -> None:
+        """Test order priority ordering
+        """
+        obj_ = Order()
+        for i in range(3):
+            item_in = Step('step', priority=i)
+            obj_.put(item_in)
+        for i in range(3):
+            item_out = obj_.get()
+            assert item_out.priority == i, 'wrong priority'

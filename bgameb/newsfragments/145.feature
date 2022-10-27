@@ -5,4 +5,5 @@
     * Order is moved to base.py
     * renamed dealt to current. All names of attrs not shown in repr, if starts with _ or current
     * __repr__ now is custom, __str__ is same as __repr__
+    * test all
     * ->

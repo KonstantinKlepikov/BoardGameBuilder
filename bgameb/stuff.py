@@ -108,7 +108,7 @@ class Card(BaseStuff):
 
             card = CardType(name='unique_card')
     """
-    open: bool = False
+    opened: bool = False
     tapped: bool = False
     side: Optional[str] = None
     counter: Counter = field(default_factory=Counter)
@@ -124,23 +124,23 @@ class Card(BaseStuff):
     def flip(self) -> None:
         """Face up or face down the card regardles of it condition
         """
-        if self.open:
-            self.open = False
+        if self.opened:
+            self.opened = False
             self._logger.debug(f'Card face down.')
         else:
-            self.open = True
+            self.opened = True
             self._logger.debug(f'Card face up.')
 
-    def face_up(self) -> None:
-        """Face up the card and return text
+    def open(self) -> None:
+        """Face up the card
         """
-        self.open = True
+        self.opened = True
         self._logger.debug(f'Card face up.')
 
-    def face_down(self) -> None:
+    def hide(self) -> None:
         """Face down the card
         """
-        self.open = False
+        self.opened = False
         self._logger.debug(f'Card face down.')
 
     def tap(self, side='right') -> None:
@@ -157,6 +157,7 @@ class Card(BaseStuff):
         """Untap the card
         """
         self.tapped = False
+        self.side = None
         self._logger.debug(f'Card untaped.')
 
     def alter(self) -> None:
