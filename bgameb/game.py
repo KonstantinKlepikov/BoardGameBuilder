@@ -120,7 +120,7 @@ if __name__ == '__main__':
     game.copy('one_card', 'cards_deck', count=3)
     game.game_steps.deal()
     game.cards_deck.deal()
-    game.is_active = True
+    game.is_active = True  # type: ignore
     game.new('blue_shaker', type_='shaker')
     game.new('eight', type_='dice', target='blue_shaker', sides=8, count=10)
     result = game.blue_shaker.eight.roll()

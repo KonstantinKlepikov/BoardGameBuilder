@@ -131,6 +131,7 @@ class TestComponents:
         comp._add(_class, name='this')
         assert comp.get_names() == [name, 'this'], 'empty list of names'
 
+
 class TestOrder:
     """Test order class
     """

@@ -18,7 +18,8 @@ class BasePlayer(Base):
         - counter (Counter): counter object for count any items
         - has_priority (bool): Priority flag. Default to False
         - team (str, optioanl): team name for player. Default to None
-        - owner_of (List[str]): list of object names owned by player Default to []
+        - owner_of (List[str]): list of object names owned by
+                                player Default to []
 
     """
     counter: Counter = field(
