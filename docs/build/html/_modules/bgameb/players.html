@@ -83,14 +83,13 @@
 <span class="k">class</span> <span class="nc">BasePlayer</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game players and bots</span>
 
-<span class="sd">    Attrs</span>
+<span class="sd">    Args:</span>
 
 <span class="sd">        - name (str): player name</span>
 <span class="sd">        - counter (Counter): counter object for count any items</span>
-<span class="sd">        - has_priority (bool): Default to False</span>
-<span class="sd">        - team (str, optioanl): team name for this player</span>
-<span class="sd">        - owner_of (List[str]): list of objects owned by player Default to []</span>
-<span class="sd">        - user_of (List[str]): list of objects used by player Default to []</span>
+<span class="sd">        - has_priority (bool): Priority flag. Default to False</span>
+<span class="sd">        - team (str, optioanl): team name for player. Default to None</span>
+<span class="sd">        - owner_of (List[str]): list of object names owned by player Default to []</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
@@ -101,7 +100,6 @@
     <span class="n">has_priority</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">team</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">owner_of</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">user_of</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
@@ -110,7 +108,7 @@
 <div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Player">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">BasePlayer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class to create a player</span>
+    <span class="sd">&quot;&quot;&quot;Player class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;player&#39;</span><span class="p">,</span>

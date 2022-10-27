@@ -69,7 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for bgameb.tools</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Game tools classes like shakers or decks</span>
+<span></span><span class="sd">&quot;&quot;&quot;Game tools classes</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
@@ -109,7 +109,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            name (str): name of stuff.</span>
 <span class="sd">            game (BaseGame): game instance object.</span>
-<span class="sd">            count (int, optional): count of stuff copy Defaults to 1.</span>
+<span class="sd">            count (int, optional): count of stuff copies. Defaults to 1.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            StuffDefineError: count of stuff nonpositive</span>
@@ -166,7 +166,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove any kind of stuff copy from tool by its name and count</span>
+        <span class="sd">&quot;&quot;&quot;Remove any kind of stuff copies from tool by its name and count</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name (str, optional): name of stuff. Defaults to None.</span>
@@ -228,7 +228,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">Dice</span>
 
 <div class="viewcode-block" id="Shaker.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Roll all stuff with shaker and return results</span>
+        <span class="sd">&quot;&quot;&quot;Roll all stuff in shaker and return results</span>
 
 <span class="sd">        Return:</span>
 <span class="sd">            Dict[str, Tuple[int]]: result of roll</span>
@@ -254,8 +254,9 @@
 <div class="viewcode-block" id="Bag"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Bag</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Datastorage for nonqueued list of stuff. Use it for</span>
-<span class="sd">    hand with cards, graveyards, outside of the game cards and etc</span>
+    <span class="sd">&quot;&quot;&quot;Datastorage for ordered list of stuff. Isnt queue or stack.</span>
+<span class="sd">    Use it for hand with cards, graveyards, outside of the game cards</span>
+<span class="sd">    and etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;bag&#39;</span><span class="p">,</span>
@@ -271,10 +272,10 @@
 <div class="viewcode-block" id="Deck"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Deck</span><span class="p">(</span><span class="n">Bag</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create deck for cards</span>
+    <span class="sd">&quot;&quot;&quot;Deck object</span>
 
-<span class="sd">    Deck ia a Bag class that conyain current deck property for</span>
-<span class="sd">    define queued deck representation</span>
+<span class="sd">    Deck ia a Bag subclass that contains Cards for</span>
+<span class="sd">    define curent game deque.</span>
 
 <span class="sd">    You can add cards, define it counts and deal a deck.</span>
 <span class="sd">    Result is saved in current deck attr as deque object. This object</span>
@@ -303,7 +304,7 @@
 
 <div class="viewcode-block" id="Deck.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Deal new random shuffled deck and save it to</span>
-<span class="sd">        self.current: List[str]</span>
+<span class="sd">        self.current</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="p">:</span>
@@ -316,7 +317,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is deal cards: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Deck.shuffle"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.shuffle">[docs]</a>    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Shuffle current deck</span>
+        <span class="sd">&quot;&quot;&quot;Random shuffle current deck</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is shuffled: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
@@ -336,9 +337,10 @@
 <span class="sd">            end (int): end of slice</span>
 
 <span class="sd">        Start and end cant be less than 0 and end must be greater than start.</span>
-<span class="sd">        Arranged deck are splited to three part - left, center and right.</span>
-<span class="sd">        You can rearrange center part and concatenate that in new deque</span>
-<span class="sd">        by arrange() method.</span>
+<span class="sd">        Arranged deck are splited to two part - center (used for arrange part</span>
+<span class="sd">        of deck) and tupple with last part of deck. You can rearrange center</span>
+<span class="sd">        part and then concatenate it with last part in new deque by arrange()</span>
+<span class="sd">        method.</span>
 
 <span class="sd">        Return:</span>
 <span class="sd">            Tuple[List[BaseStuff], Tuple[List[BaseStuff]]: part to arrange</span>
@@ -357,15 +359,14 @@
 <div class="viewcode-block" id="Deck.arrange"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.arrange">[docs]</a>    <span class="k">def</span> <span class="nf">arrange</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">arranged</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">],</span>
-        <span class="n">last</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Deque</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">]]</span>
+        <span class="n">last</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">]]</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Compone new current deck deck with given arranged list and</span>
-<span class="sd">        last of deck. Use to_arrange() method to get liat to arrange</span>
-<span class="sd">        and last of deck before arrange.</span>
+        <span class="sd">&quot;&quot;&quot;Concatenate new current deck from given arranged list and last of</span>
+<span class="sd">        deck. Use to_arrange() method to get list to arrange and last.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            arranged (List[BaseStuff]): arranged list of cards</span>
-<span class="sd">            last: (Deque[BaseStuff]): last of deck deque</span>
+<span class="sd">            last: (Tuple[List[BaseStuff], List[BaseStuff]]): last of deck</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">reorranged</span><span class="p">:</span> <span class="n">Deque</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
         <span class="n">reorranged</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">last</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -382,18 +383,20 @@
                 <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Deck.search"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseStuff</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Search for cards in current deck</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            query (Dict[str, int]): dict with name of searched</span>
-<span class="sd">                                    card and count of seartching</span>
+<span class="sd">                                    cards and count of searching</span>
 <span class="sd">            remove (bool): if True - remove cards from current deck.</span>
-<span class="sd">                           Default to True</span>
+<span class="sd">                           Default to True.</span>
 
 <span class="sd">        Return:</span>
-<span class="sd">            List[Card]: list of finded cards</span>
+<span class="sd">            List[Card]: list of find cards</span>
 
 <span class="sd">        .. code-block::</span>
 <span class="sd">            :caption: Example:</span>
@@ -428,7 +431,11 @@
 <div class="viewcode-block" id="Steps"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Steps</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Game steps order</span>
+    <span class="sd">&quot;&quot;&quot;Game steps order object</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        - current (Order): current order of steps.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">current</span><span class="p">:</span> <span class="n">Order</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="n">Order</span><span class="p">,</span>
@@ -446,7 +453,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stuff_to_add</span> <span class="o">=</span> <span class="n">Step</span>
 
 <div class="viewcode-block" id="Steps.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Clear the order and instantiate new order</span>
+        <span class="sd">&quot;&quot;&quot;Clear current order and create new current order</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stuff</span><span class="p">:</span>

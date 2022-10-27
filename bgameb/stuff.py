@@ -13,6 +13,10 @@ from bgameb.errors import StuffDefineError
 @dataclass(repr=False)
 class BaseStuff(Base):
     """Base class for game stuff (like dices or cards)
+
+    Args:
+
+        - count (int): count of stuffs. Default to 1.
     """
     count: int = 1
 
@@ -21,6 +25,10 @@ class BaseStuff(Base):
 @dataclass(order=True, repr=False)
 class Step(BaseStuff):
     """Game steps or turns
+
+    Args:
+
+        - priority (int): priority queue number. Default to 0.
     """
     count: int = field(
         default=1,
@@ -41,19 +49,15 @@ class Step(BaseStuff):
 @dataclass_json
 @dataclass(repr=False)
 class Dice(BaseStuff):
-    """Base class for define types of rolled or fliped objects
-
-    Define name to identify later this object by unique name.
-    For example: 'six_side'
+    """Rolled or fliped objects, like dices or coins.
 
     Sides attr define number of sides of roller. Default to 2.
-    Sides can't be less than 2, because one-sided roller is
-    strongly determined and 0zero-sided is imposible.
+    Sides can't be less than 2.
 
     .. code-block::
         :caption: Example:
 
-            dice = Dice(name='coin', sides=2)
+            dice = Dice('coin', sides=2)
 
     Raises:
         StuffDefineError: number of sides less than 2
@@ -98,15 +102,20 @@ class Dice(BaseStuff):
 @dataclass_json
 @dataclass(repr=False)
 class Card(BaseStuff):
-    """Create the card
+    """Card object
 
-    Define name to identify later this object by unique name.
-    For example: 'unique_card'
+    Args:
+
+        - opened (bool): is card oppened. Default to False.
+        - tapped (bool): is card tapped. Default to False.
+        - side (str, optional): the side of tap. Default to None.
+        - counter (Counter): counter object for count any items.
 
     .. code-block::
         :caption: Example:
 
-            card = CardType(name='unique_card')
+            card = CardType('unique_card')
+            card.tap(side='left')
     """
     opened: bool = False
     tapped: bool = False
@@ -147,7 +156,7 @@ class Card(BaseStuff):
         """Tap the card to the given side
 
         Args:
-            side (str, optional): sifde to tap. Defaults to 'right'.
+            side (str, optional): side to tap. Defaults to 'right'.
         """
         self.tapped = True
         self.side = side
@@ -158,7 +167,7 @@ class Card(BaseStuff):
         """
         self.tapped = False
         self.side = None
-        self._logger.debug(f'Card untaped.')
+        self._logger.debug(f'Card untaped. Side set to None.')
 
     def alter(self) -> None:
         """Many cards have alter views. For example

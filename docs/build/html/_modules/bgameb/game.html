@@ -84,6 +84,9 @@
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseGame</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        game_steps (Steps): game turn steps order</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">game_steps</span><span class="p">:</span> <span class="n">Steps</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -95,7 +98,7 @@
 <div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">BaseGame</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create the game object</span>
+    <span class="sd">&quot;&quot;&quot;The main game object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -114,7 +117,7 @@
 <span class="sd">            name (str): name of new component (must be unic)</span>
 <span class="sd">            type_ (COMPONENTS_TYPES): type of new component</span>
 <span class="sd">            target (str, optional): name of class, where placed component.</span>
-<span class="sd">                                              Defaults to None.</span>
+<span class="sd">                                    Defaults to None.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ComponentClassError: target or type of component not exist</span>
@@ -150,11 +153,13 @@
 <span class="sd">            ComponentClassError: target or source not exist</span>
 
 <span class="sd">        As result this operation we need two classes inside Game object:</span>
-<span class="sd">        - target Component-like stuff</span>
-<span class="sd">        - source Component-like tool</span>
+<span class="sd">        - target tool component</span>
+<span class="sd">        - source stuff component</span>
 
-<span class="sd">        When method was called, is created new Component with all</span>
-<span class="sd">        attributes of source class and it placed in target class</span>
+<span class="sd">        All this classes must be a Components instances.</span>
+
+<span class="sd">        When method was execute, it create new stuff component with all</span>
+<span class="sd">        attributes of source stuff and place it in target tool component</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
                 <span class="ow">and</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">_type</span> <span class="ow">in</span> <span class="n">STUFF</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
