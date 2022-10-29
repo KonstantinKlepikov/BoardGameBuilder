@@ -15,8 +15,8 @@ underlines = "=-~"
 wrap = false  # Wrap text to 79 characters
 all_bullets = true  # make all fragments bullet points
 
-[tool.towncrier.cicd]
-  name = "Integration tasks"
+[tool.towncrier.fragment.cicd]
+name = "Integration tasks"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
