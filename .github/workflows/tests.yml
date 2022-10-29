@@ -1,12 +1,13 @@
-name: Make tests on pull_request to any branch, except main and issues
+name: Make tests on pull_request except main branche
 
 on:
   pull_request:
+    branches-ignore: [ main ]
     types: [ opened, reopened ]
-    branches: [ '!main' ]
 
 jobs:
-  build:
+
+  make-tests:
 
     runs-on: ubuntu-latest
     strategy:
@@ -44,4 +45,3 @@ jobs:
       - name: Test with pytest
         run: |
           python -m pytest
-        continue-on-error: true
