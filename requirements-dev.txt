@@ -19,6 +19,7 @@ dataclasses-json==0.5.7
 decorator==5.1.1
 docutils==0.17.1
 executing==1.0.0
+flake8==5.0.4
 hyperlink==21.0.0
 idna==3.3
 imagesize==1.4.1
@@ -36,8 +37,10 @@ MarkupSafe==2.1.1
 marshmallow==3.17.1
 marshmallow-enum==1.5.1
 matplotlib-inline==0.1.6
+mccabe==0.7.0
 mdit-py-plugins==0.3.0
 mdurl==0.1.2
+mypy==0.982
 mypy-extensions==0.4.3
 myst-parser==0.18.0
 packaging==21.3
@@ -51,13 +54,16 @@ prompt-toolkit==3.0.30
 ptyprocess==0.7.0
 pure-eval==0.2.2
 py==1.11.0
+pycodestyle==2.9.1
 pycparser==2.21
+pyflakes==2.5.0
 Pygments==2.13.0
 pyparsing==3.0.9
 pytest==7.1.2
 python-dotenv==0.20.0
 pytz==2022.2.1
 PyYAML==6.0
+Random-Word==1.0.10
 readme-renderer==37.0
 requests==2.28.1
 requests-toolbelt==0.9.1

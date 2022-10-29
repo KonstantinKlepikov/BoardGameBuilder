@@ -135,22 +135,22 @@ class Card(BaseStuff):
         """
         if self.opened:
             self.opened = False
-            self._logger.debug(f'Card face down.')
+            self._logger.debug('Card face down.')
         else:
             self.opened = True
-            self._logger.debug(f'Card face up.')
+            self._logger.debug('Card face up.')
 
     def open(self) -> None:
         """Face up the card
         """
         self.opened = True
-        self._logger.debug(f'Card face up.')
+        self._logger.debug('Card face up.')
 
     def hide(self) -> None:
         """Face down the card
         """
         self.opened = False
-        self._logger.debug(f'Card face down.')
+        self._logger.debug('Card face down.')
 
     def tap(self, side='right') -> None:
         """Tap the card to the given side
@@ -167,7 +167,7 @@ class Card(BaseStuff):
         """
         self.tapped = False
         self.side = None
-        self._logger.debug(f'Card untaped. Side set to None.')
+        self._logger.debug('Card untaped. Side set to None.')
 
     def alter(self) -> None:
         """Many cards have alter views. For example
