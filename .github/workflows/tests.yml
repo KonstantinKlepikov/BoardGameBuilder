@@ -1,6 +1,8 @@
 name: Make tests on pull_request except main branche
 
 on:
+  push:
+    branches-ignore: [ main, '*/issue*' ]
   pull_request:
     branches-ignore: [ main ]
     types: [ opened, reopened ]
@@ -12,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
       - uses: actions/checkout@v3
