@@ -2,7 +2,7 @@ name: Make tests on pull_request to any branch, except main and issues
 
 on:
   pull_request:
-    types: [ opened ]
+    types: [ opened, reopened ]
     branches: [ '!main', '!*/issue*' ]
 
 jobs:
@@ -39,7 +39,9 @@ jobs:
           flake8 bgameb --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 bgameb --count --exit-zero --max-line-length=127 --statistics
+        continue-on-error: true
 
       - name: Test with pytest
         run: |
           python -m pytest
+        continue-on-error: true
