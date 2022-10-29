@@ -3,7 +3,7 @@ name: Make tests on pull_request to any branch, except main and issues
 on:
   pull_request:
     types: [ opened, reopened ]
-    branches: [ '!main', '!*/issue*' ]
+    branches: [ '!main', '*/issue*' ]
 
 jobs:
   build:
