@@ -109,7 +109,7 @@ class BaseTool(Base):
         """
         if count is not None and count <= 0:
             raise StuffDefineError(
-                f"Count must be a integer greater than 0.",
+                "Count must be a integer greater than 0.",
                 logger=self._logger
                 )
 
