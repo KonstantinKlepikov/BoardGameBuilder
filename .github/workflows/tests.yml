@@ -1,8 +1,6 @@
 name: Make tests on pull_request except main branche
 
 on:
-  push:
-    branches-ignore: [ main, '*/issue*' ]
   pull_request:
     branches-ignore: [ main ]
     types: [ opened, reopened, synchronize ]
