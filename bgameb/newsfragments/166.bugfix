@@ -1,4 +1,0 @@
-#166:
-    * add ``synchronize`` to pull_request trigger for tests.yml
-    * remove start action on push
-    * ->

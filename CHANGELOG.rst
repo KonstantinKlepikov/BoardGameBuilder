@@ -3,6 +3,32 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.22 (2022-10-31)
+============================
+
+Features
+--------
+
+- #147:
+      * tests.yml for grid tests
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/147)
+- # 167:
+      * added mypy check to test.yml workflow
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/167)
+
+
+Bugfixes
+--------
+
+- #166:
+      * add ``synchronize`` to pull_request trigger for tests.yml
+      * remove start action on push
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/166)
+- #168:
+      * custom newsfragments are removed
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/168)
+
+
 Release v0.0.21 (2022-10-28)
 ============================
 
