@@ -1,0 +1,4 @@
+#166
+
+    * add ``synchronize`` to pull_request trigger for tests.yml
+    * ->
