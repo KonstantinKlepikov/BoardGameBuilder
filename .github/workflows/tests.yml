@@ -1,11 +1,9 @@
 name: Make tests on pull_request except main branche
 
 on:
-  push:
-    branches-ignore: [ main, '*/issue*' ]
   pull_request:
     branches-ignore: [ main ]
-    types: [ opened, reopened ]
+    types: [ opened, reopened, synchronize ]
 
 jobs:
 
@@ -41,6 +39,10 @@ jobs:
           flake8 bgameb --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 bgameb --count --exit-zero --max-line-length=127 --statistics
+
+      - name: Check with mypy
+        run: |
+          mypy bgameb
 
       - name: Test with pytest
         run: |
