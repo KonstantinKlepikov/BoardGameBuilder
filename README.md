@@ -95,7 +95,6 @@ Available fragmet naming:
 - .doc: Signifying a documentation improvement.
 - .removal: Signifying a deprecation or removal of public API.
 - .misc: A ticket has been closed, but it is not of interest to users.
-- .cicd: Integration tasks
 
 `make release` - to bump version and build changelog. You can use `towncrier build --draft` to check changelog output
 
