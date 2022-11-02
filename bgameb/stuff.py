@@ -1,8 +1,8 @@
 """Game dices, coins, cards and other stuffs
 """
 import random
+import collections
 from typing import List, Optional, Literal
-from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
@@ -19,6 +19,40 @@ class BaseStuff(Base):
         - count (int): count of stuffs. Default to 1.
     """
     count: int = 1
+
+
+@dataclass_json
+@dataclass(repr=False)
+class Counter(BaseStuff):
+    """Counter is a class that count some statistics for other
+    objects. It use `python collections/Counter
+    <https://docs.python.org/3/library/collections.html#collections.Counter>`_
+
+    Aargs:
+        current (Counter): collections.Counter obkject
+                           is a current order of steps.
+    """
+    count: int = field(
+        default=1,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
+    current: collections.Counter = field(
+        default_factory=collections.Counter
+        )
+    _type: str = field(
+        default='counter',
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False
+        )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+    def clear(self) -> None:
+        """Clear the current queue
+        """
+        self.current = collections.Counter()
 
 
 @dataclass_json
@@ -109,7 +143,6 @@ class Card(BaseStuff):
         - opened (bool): is card oppened. Default to False.
         - tapped (bool): is card tapped. Default to False.
         - side (str, optional): the side of tap. Default to None.
-        - counter (Counter): counter object for count any items.
 
     .. code-block::
         :caption: Example:
@@ -120,7 +153,7 @@ class Card(BaseStuff):
     opened: bool = False
     tapped: bool = False
     side: Optional[str] = None
-    counter: Counter = field(default_factory=Counter)
+    # counter: Counter = field(default_factory=Counter)
     _type: str = field(
         default='card',
         metadata=config(exclude=lambda x: True),  # type: ignore
@@ -184,5 +217,6 @@ STUFF = {
     Dice._type: Dice,
     Card._type: Card,
     Step._type: Step,
+    Counter._type: Counter,
     }
-STUFF_TYPES = Literal['dice', 'card', 'step']
+STUFF_TYPES = Literal['dice', 'card', 'step', 'counter']

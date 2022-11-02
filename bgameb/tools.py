@@ -2,12 +2,13 @@
 """
 import random
 from collections import deque
+from heapq import heappop, heappush
 from typing import (
     Optional, Tuple, Dict, Literal, List, Deque, Type
     )
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config, dataclass_json
-from bgameb.base import Base, Order
+from bgameb.base import Base
 from bgameb.stuff import Card, Dice, Step, BaseStuff
 from bgameb.errors import ArrangeIndexError, StuffDefineError
 
@@ -32,7 +33,7 @@ class BaseTool(Base):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def update(self, name: str, game: Base, count: int = 1) -> None:
+    def _increase(self, name: str, game: Base, count: int = 1) -> None:
         """Add or increase count of stuff in tool
 
         Args:
@@ -355,6 +356,52 @@ class Deck(Bag):
         self._logger.debug(f'Search result: {result}')
 
         return result
+
+
+@dataclass_json
+@dataclass
+class Order:
+    """Order of steps priority queue. Isnt tradesafe.
+    Is used only for define game steps order.
+
+    Args:
+
+        - current List[Tuple[int, Components]]: priority queue list
+    """
+    current: List[Tuple[int, Step]] = field(
+        default_factory=list,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
+
+    def __len__(self) -> int:
+        """Len of queue
+
+        Returns:
+            int: len of current queue
+        """
+        return len(self.current)
+
+    def clear(self) -> None:
+        """Clear the current queue
+        """
+        self.current = []
+
+    def put(self, item) -> None:
+        """Put Step object to queue
+
+        Args:
+            item (Step): Step class instance
+        """
+        heappush(self.current, (item.priority, item))
+
+    def get(self) -> Step:
+        """Get Syep object from queue with lowest priority
+
+        Returns:
+            Step: Step instance object
+        """
+        return heappop(self.current)[1]
 
 
 @dataclass_json

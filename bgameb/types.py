@@ -16,6 +16,7 @@ COMPONENTS: Dict[COMPONENTS_TYPES, Any] = {}
 for d in (TOOLS, STUFF, PLAYERS):
     COMPONENTS.update(d)  # type: ignore
 
+# other objects, like tools and players
 NONSTUFF_TYPES = Literal[
     TOOLS_TYPES,
     PLAERS_TYPES,
@@ -24,3 +25,8 @@ NONSTUFF_TYPES = Literal[
 NONSTUFF: Dict[NONSTUFF_TYPES, Any] = {}
 for d in (TOOLS, PLAYERS):
     NONSTUFF.update(d)  # type: ignore
+
+# stuff that can be added to stuff
+SPETIAL_STUFF = {
+    'counter': STUFF['counter'],
+    }

@@ -1,10 +1,9 @@
 """Base constructs for build package objects
 """
-from typing import Dict, List, Optional, Any, Iterator, Tuple
+from typing import Dict, List, Optional, Any, Iterator
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
-from heapq import heappop, heappush
-from dataclasses_json import config, dataclass_json
+from dataclasses_json import dataclass_json
 from bgameb.errors import ComponentNameError
 from loguru import logger
 
@@ -165,52 +164,6 @@ class Components(Mapping):
             List[str]: list of components names
         """
         return list(self.__dict__)
-
-
-@dataclass_json
-@dataclass
-class Order:
-    """Order of steps priority queue. Isnt tradesafe.
-    Can be used for define geme steps order.
-
-    Args:
-
-        - current List[Tuple[int, Components]]: priority queue list
-    """
-    current: List[Tuple[int, Components]] = field(
-        default_factory=list,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-
-    def __len__(self) -> int:
-        """Len of queue
-
-        Returns:
-            int: len of current queue
-        """
-        return len(self.current)
-
-    def clear(self) -> None:
-        """Clear the current queue
-        """
-        self.current = []
-
-    def put(self, item) -> None:
-        """Put Step object to queue
-
-        Args:
-            item (Step): Step class instance
-        """
-        heappush(self.current, (item.priority, item))
-
-    def get(self) -> Components:
-        """Get Syep object from queue with lowest priority
-
-        Returns:
-            Step: Step instance object
-        """
-        return heappop(self.current)[1]
 
 
 @dataclass_json

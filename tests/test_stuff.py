@@ -1,7 +1,7 @@
 import json
 import pytest
-from collections import Counter
-from bgameb.stuff import Dice, Card, Step
+import collections
+from bgameb.stuff import Dice, Card, Step, Counter
 from bgameb.errors import StuffDefineError
 
 
@@ -30,6 +30,22 @@ class TestBaseStuff:
         obj_ = _class(name=name)
         j = json.loads(obj_.to_json())
         assert j['name'] == name, 'not converted to json'
+
+
+class TestCounter:
+    """Test counter object
+    """
+
+    def test_counter_instance(self) -> None:
+        """Test Step class instance
+        """
+        obj_ = Counter(name='yellow')
+        assert isinstance(obj_.current, collections.Counter), 'wrong current'
+        assert obj_._type == 'counter', 'wrong type'
+        obj_.current['bacon'] = 1
+        assert len(obj_.current) == 1, 'wrong len of counter'
+        obj_.clear()
+        assert len(obj_.current) == 0, 'wrong len of counter'
 
 
 class TestStep:
@@ -94,7 +110,7 @@ class TestCard:
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
         assert obj_.count == 1, 'wrong count'
-        assert isinstance(obj_.counter, Counter), 'wrong counter'
+        # assert isinstance(obj_.counter, Counter), 'wrong counter'
 
     def test_flip(self) -> None:
         """Test flip card

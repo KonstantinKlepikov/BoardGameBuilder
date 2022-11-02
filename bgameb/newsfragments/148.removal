@@ -1,0 +1,3 @@
+#148:
+    * BaseGame class is removed. Functional now is Game.
+    * ->
