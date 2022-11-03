@@ -17,18 +17,18 @@ bgameb.game module
    :undoc-members:
    :show-inheritance:
 
-bgameb.players module
+bgameb.markers module
 ---------------------
 
-.. automodule:: bgameb.players
+.. automodule:: bgameb.markers
    :members:
    :undoc-members:
    :show-inheritance:
 
-bgameb.stuff module
+bgameb.items module
 -------------------
 
-.. automodule:: bgameb.stuff
+.. automodule:: bgameb.items
    :members:
    :undoc-members:
    :show-inheritance:
@@ -37,6 +37,14 @@ bgameb.tools module
 -------------------
 
 .. automodule:: bgameb.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bgameb.players module
+---------------------
+
+.. automodule:: bgameb.players
    :members:
    :undoc-members:
    :show-inheritance:

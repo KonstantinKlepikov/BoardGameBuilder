@@ -1,10 +1,9 @@
 """Base constructs for build package objects
 """
-from typing import Dict, List, Optional, Any, Iterator, Tuple
+from typing import List, Optional, Iterator
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
-from heapq import heappop, heappush
-from dataclasses_json import config, dataclass_json
+from dataclasses_json import dataclass_json
 from bgameb.errors import ComponentNameError
 from loguru import logger
 
@@ -107,26 +106,22 @@ class Components(Mapping):
 
     def _update(
         self,
-        component,
-        kwargs: Dict[str, Any]
+        comp,
             ) -> None:
-        """Update components dict
+        """Update Components dict
 
         Args:
-            component: component class
-            kwargs (Dict[str, Any]): additional args for component
+            comp: component instance
         """
-        comp = component(**kwargs)
-
-        if kwargs['name'] not in self.__dataclass_fields__.keys():
+        if comp.name not in self.__dataclass_fields__.keys():
             self.__class__ = make_dataclass(
                 self.__class__.__name__,
-                fields=[(kwargs['name'], type(comp), field(default=comp))],
+                fields=[(comp.name, type(comp), field(default=comp))],
                 bases=(self.__class__, ),
                 repr=False
                 )
 
-        self.__dict__.update({kwargs['name']: comp})
+        self.__dict__.update({comp.name: comp})
 
     def _add(self, component, **kwargs) -> None:
         """Add component to Components dict. Components with
@@ -145,7 +140,9 @@ class Components(Mapping):
             self._chek_in(component.name)
             kwargs['name'] = component.name
 
-        self._update(component, kwargs)
+        comp = component(**kwargs)
+
+        self._update(comp)
 
     def _add_replace(self, component, **kwargs) -> None:
         """Add or replace component in Components dict.
@@ -156,7 +153,10 @@ class Components(Mapping):
         """
         if not kwargs.get('name'):
             kwargs['name'] = component.name
-        self._update(component, kwargs)
+
+        comp = component(**kwargs)
+
+        self._update(comp)
 
     def get_names(self) -> List[str]:
         """Get names of all components in Components
@@ -165,52 +165,6 @@ class Components(Mapping):
             List[str]: list of components names
         """
         return list(self.__dict__)
-
-
-@dataclass_json
-@dataclass
-class Order:
-    """Order of steps priority queue. Isnt tradesafe.
-    Can be used for define geme steps order.
-
-    Args:
-
-        - current List[Tuple[int, Components]]: priority queue list
-    """
-    current: List[Tuple[int, Components]] = field(
-        default_factory=list,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-
-    def __len__(self) -> int:
-        """Len of queue
-
-        Returns:
-            int: len of current queue
-        """
-        return len(self.current)
-
-    def clear(self) -> None:
-        """Clear the current queue
-        """
-        self.current = []
-
-    def put(self, item) -> None:
-        """Put Step object to queue
-
-        Args:
-            item (Step): Step class instance
-        """
-        heappush(self.current, (item.priority, item))
-
-    def get(self) -> Components:
-        """Get Syep object from queue with lowest priority
-
-        Returns:
-            Step: Step instance object
-        """
-        return heappop(self.current)[1]
 
 
 @dataclass_json

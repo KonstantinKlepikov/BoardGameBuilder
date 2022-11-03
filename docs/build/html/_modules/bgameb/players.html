@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.players &mdash; bgameb 0.0.20 documentation</title>
+  <title>bgameb.players &mdash; bgameb 0.0.22 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.20
+                0.0.22
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,30 +72,25 @@
 <span></span><span class="sd">&quot;&quot;&quot;Game players classes</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">dataclass_json</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
 
-<div class="viewcode-block" id="BasePlayer"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.BasePlayer">[docs]</a><span class="nd">@dataclass_json</span>
+<div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Player">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">BasePlayer</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game players and bots</span>
 
 <span class="sd">    Args:</span>
 
 <span class="sd">        - name (str): player name</span>
-<span class="sd">        - counter (Counter): counter object for count any items</span>
 <span class="sd">        - has_priority (bool): Priority flag. Default to False</span>
 <span class="sd">        - team (str, optioanl): team name for player. Default to None</span>
-<span class="sd">        - owner_of (List[str]): list of object names owned by player Default to []</span>
+<span class="sd">        - owner_of (List[str]): list of object names owned by</span>
+<span class="sd">                                player Default to []</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Counter</span><span class="p">,</span>
-        <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
     <span class="n">is_active</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">has_priority</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">team</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -105,22 +100,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Player">[docs]</a><span class="nd">@dataclass_json</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">BasePlayer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Player class</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;player&#39;</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
-
-
-<span class="n">PLAYERS</span> <span class="o">=</span> <span class="p">{</span><span class="n">Player</span><span class="o">.</span><span class="n">_type</span><span class="p">:</span> <span class="n">Player</span><span class="p">,</span> <span class="p">}</span>
+<span class="n">PLAYERS</span> <span class="o">=</span> <span class="p">{</span><span class="n">Player</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">Player</span><span class="p">,</span> <span class="p">}</span>
 <span class="n">PLAERS_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;player&#39;</span><span class="p">,</span> <span class="p">]</span>
 </pre></div>
 

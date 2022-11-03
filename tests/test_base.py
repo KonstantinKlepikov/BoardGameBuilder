@@ -1,6 +1,6 @@
 import pytest
-from bgameb.base import Components, Order
-from bgameb.stuff import Dice, Card, Step, BaseStuff
+from bgameb.base import Components
+from bgameb.items import Dice, Card, BaseItem
 from bgameb.errors import ComponentNameError
 
 
@@ -8,12 +8,14 @@ class TestComponents:
     """Test CardText class
     """
     components = [
-        (Dice, 'dice'),
-        (Card, 'card'),
+        (Dice, 'dice_nice'),
+        (Card, 'card_ward'),
         ]
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_components_access_to_attr(self, _class, name: str) -> None:
+    def test_components_access_to_attr(
+        self, _class: BaseItem, name: str
+            ) -> None:
         """Test components acces to attrs
         """
         comp = Components()
@@ -41,7 +43,7 @@ class TestComponents:
             del comp['newer']
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_components_repr(self, _class, name: str) -> None:
+    def test_components_repr(self, _class: BaseItem, name: str) -> None:
         """Test components repr
         """
         comp = Components()
@@ -49,7 +51,7 @@ class TestComponents:
         assert "Components(some=" in comp.__repr__(), 'wrong repr'
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_components_len(self, _class, name: str) -> None:
+    def test_components_len(self, _class: BaseItem, name: str) -> None:
         """Test components len
         """
         comp1 = Components()
@@ -59,7 +61,7 @@ class TestComponents:
         assert len(comp2) == 0, 'wrong len'
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_components_items(self, _class, name: str) -> None:
+    def test_components_items(self, _class: BaseItem, name: str) -> None:
         """Test components items access
         """
         comp = Components()
@@ -69,20 +71,16 @@ class TestComponents:
         assert len(comp.values()) == 1, 'values not accessed'
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_update_component(self, _class, name: str) -> None:
+    def test_update_component(self, _class: BaseItem, name: str) -> None:
         """Test update component
         """
         comp = Components()
-        comp._update(_class, {'name': name})
+        cl = _class(name)
+        comp._update(cl)
         comp[name].name == name, 'wrong name'
-        with pytest.raises(
-            ComponentNameError,
-            match='Component with name'
-        ):
-            comp._update(_class, {'name': None})
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_add_component(self, _class, name: str) -> None:
+    def test_add_component(self, _class: BaseItem, name: str) -> None:
         """Test add component with add() method
         """
         comp = Components()
@@ -100,12 +98,12 @@ class TestComponents:
             match='is exist in'
         ):
             comp._add(_class, name='this_is')
-        if isinstance(_class, BaseStuff):
+        if isinstance(_class, BaseItem):
             comp._add(_class, name='this_is_five', sides=5)
             assert comp.this_is_five.sides == 5, 'component not added'
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_add_replace_component(self, _class, name: str) -> None:
+    def test_add_replace_component(self, _class: BaseItem, name: str) -> None:
         """Test add_replace() method
         """
         comp = Components()
@@ -116,12 +114,12 @@ class TestComponents:
         assert id(comp[name]) != add1, 'not replaced'
         comp._add_replace(_class, name='this_is')
         assert comp.this_is, 'component not added'
-        if isinstance(_class, BaseStuff):
+        if isinstance(_class, BaseItem):
             comp._add_replace(_class, name='this_is_five', sides=5)
             assert comp.this_is_five.sides == 5, 'component not added'
 
     @pytest.mark.parametrize("_class, name", components)
-    def test_get_names(self, _class, name: str) -> None:
+    def test_get_names(self, _class: BaseItem, name: str) -> None:
         """Test get_names() method
         """
         comp = Components()
@@ -130,42 +128,3 @@ class TestComponents:
         assert comp.get_names() == [name], 'empty list of names'
         comp._add(_class, name='this')
         assert comp.get_names() == [name, 'this'], 'empty list of names'
-
-
-class TestOrder:
-    """Test order class
-    """
-
-    def test_init_order(self) -> None:
-        """Test correct inity order
-        """
-        obj_ = Order()
-        assert isinstance(obj_.current, list), 'wrong current'
-        assert len(obj_.current) == 0, 'wrong len current'
-
-    def test_order_methods(self) -> None:
-        """Test order methods
-        """
-        obj_ = Order()
-        item_in = Step('one', priority=0)
-        assert len(obj_) == 0, 'wrong len Order'
-        obj_.put(item_in)
-        assert len(obj_) == 1, 'wrong len Order'
-        item_out = obj_.get()
-        assert len(obj_) == 0, 'wrong len Order'
-        assert item_out is item_in, 'wrong item'
-        obj_.put(item_in)
-        obj_.clear()
-        assert len(obj_) == 0, 'wrong len Order'
-        assert isinstance(obj_.current, list), 'wrong current'
-
-    def test_order_ordering(self) -> None:
-        """Test order priority ordering
-        """
-        obj_ = Order()
-        for i in range(3):
-            item_in = Step('step', priority=i)
-            obj_.put(item_in)
-        for i in range(3):
-            item_out = obj_.get()
-            assert item_out.priority == i, 'wrong priority'

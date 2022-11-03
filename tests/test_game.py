@@ -3,7 +3,7 @@ import pytest
 from bgameb.game import Game
 from bgameb.base import Components
 from bgameb.types import COMPONENTS
-from bgameb.errors import ComponentClassError
+from bgameb.errors import ComponentClassError, ComponentNameError
 
 
 class TestGame:
@@ -51,14 +51,18 @@ class TestGame:
                 ):
             obj_.new('chocho', type_='this')
 
-    def test_add_new_to_existed_object(self) -> None:
+    def test_add_new_existed_object(self) -> None:
         """Test new() method for add new object to existed component
         """
         obj_ = Game(name='game')
         obj_.new('this', type_='shaker')
         obj_.new('that', type_='dice', target='this', count=10)
-        assert obj_.this.that.name == 'that', 'not added'
-        assert obj_.this.that.count == 10, 'not added'
+        with pytest.raises(
+            ComponentNameError,
+            match='is exist in'
+                ):
+
+            obj_.new('that', type_='dice', target='this', count=10)
 
     def test_add_new_wrong_component_to_existed_object(self) -> None:
         """Test new() cant add new wrong object to existed component
