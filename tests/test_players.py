@@ -1,5 +1,4 @@
 import json
-# from collections import Counter
 from bgameb.players import Player
 
 
@@ -27,4 +26,3 @@ class TestPlayer:
         assert obj_.has_priority is False, 'wrong priority'
         assert obj_.team is None, 'wrong tram'
         assert obj_.owner_of == [], 'wrong owner of'
-        # assert isinstance(obj_.counter, Counter), 'wrong counter'

@@ -1,13 +1,12 @@
 import json
 import pytest
 import random
-from typing import Tuple
 from collections import deque
-from bgameb.game import Game
-from bgameb.tools import Shaker, Deck, Bag, Order, Steps, BaseTool
-from bgameb.stuff import Step, BaseStuff
 from bgameb.base import Components
-from bgameb.errors import StuffDefineError, ArrangeIndexError
+from bgameb.markers import Step
+from bgameb.items import Dice, Card, BaseItem
+from bgameb.tools import Shaker, Deck, Bag, Order, Steps, BaseTool
+from bgameb.errors import ArrangeIndexError
 
 
 class FixedSeed:
@@ -25,197 +24,55 @@ class FixedSeed:
         random.setstate(self.state)
 
 
-@pytest.fixture
-def game_inst() -> Game:
-    game = Game(name='game')
-    game.new('dice', type_='dice')
-    game.new('dice_nice', type_='dice')
-    game.new('card', type_='card')
-    game.new('card_nice', type_='card')
-    game.new('step1', type_='step', priority=1)
-    game.new('astep', type_='step', priority=2)
-    return game
-
-
 class TestTool:
     """Test tools classes
     """
     params = [
-        (Bag, Bag._type, ('card', 'card_nice')),
-        (Deck, Deck._type, ('card', 'card_nice')),
-        (Shaker, Shaker._type, ('dice', 'dice_nice')),
-        (Steps, Steps._type, ('step1', 'astep'))
+        (Bag, 'bag_fy'),
+        (Deck, 'deck_yeah'),
+        (Shaker, 'shaker_wzzzz'),
+        (Steps, 'steps_to')
         ]
 
-    @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_raise_errors_if_wrong_count(
+    @pytest.mark.parametrize("_class, name", params)
+    def test_tool_classes_created_with_name(
         self,
-        game_inst: Game,
         _class: BaseTool,
         name: str,
-        stuff: Tuple[str]
             ) -> None:
-        """Test need count of stuff no less than 1
+        """Test stuff classes instancing
         """
         obj_ = _class(name=name)
-        with pytest.raises(
-            StuffDefineError, match="Can't add"
-                ):
-            obj_._increase(stuff[0], game=game_inst, count=0)
+        assert obj_.name == name, 'not set name for instance'
 
-    @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff_to_raise_errors_if_wrong_name(
+    @pytest.mark.parametrize("_class, name", params)
+    def test_stuff_classes_are_converted_to_json(
         self,
-        game_inst: Game,
         _class: BaseTool,
         name: str,
-        stuff: Tuple[str]
             ) -> None:
-        """Test need exist stuff
+        """Test to json convertatrion
         """
         obj_ = _class(name=name)
-        with pytest.raises(
-            StuffDefineError, match="'somestuff' not exist in a game"
-                ):
-            obj_._increase('somestuff', game=game_inst)
-
-    @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_double_increase_stuff_encrease_count(
-        self,
-        game_inst: Game,
-        _class: BaseTool,
-        name: str,
-        stuff: Tuple[str]
-            ) -> None:
-        """Test double add dice with same name increase count,
-        not raises error
-        """
-        obj_ = _class(name=name)
-        obj_._increase(stuff[0], game=game_inst)
-        obj_._increase(stuff[0], game=game_inst)
-        assert obj_[stuff[0]].count == 2, 'not increased'
-
-    @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_increase_stuff(
-        self,
-        game_inst: Game,
-        _class: BaseTool,
-        name: str,
-        stuff: Tuple[str]
-            ) -> None:
-        """Test shaker add()
-        """
-        obj_ = _class(name=name)
-        obj_._increase(stuff[0], game=game_inst)
-        assert obj_[stuff[0]].count == 1, 'wrong count added'
-        obj_._increase(stuff[0], game=game_inst, count=10)
-        assert obj_[stuff[0]].count == 11, 'wrong count added'
-        obj_._increase(stuff[1], game=game_inst)
-        assert len(obj_._stuff) == 2, 'wrong count of stuff'
-
-    @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_remove_all(
-        self,
-        game_inst: Game,
-        _class: BaseTool,
-        name: str,
-        stuff: Tuple[str]
-            ) -> None:
-        """Test remove all stuff from shaker
-        """
-        obj_ = _class(name=name)
-        obj_._increase(stuff[0], game=game_inst)
-        obj_._increase(stuff[1], game=game_inst)
-        assert len(obj_._stuff) == 2, 'wrong number of stuff'
-        obj_.remove()
-        assert len(obj_._stuff) == 0, 'wrong number of stuff'
-        assert isinstance(obj_._stuff, list), 'wrong type os stuff attr'
-
-    @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_remove_by_name(
-        self,
-        game_inst: Game,
-        _class: BaseTool,
-        name: str,
-        stuff: Tuple[str]
-            ) -> None:
-        """Test remove stuff by name from shaker
-        """
-        obj_ = _class(name=name)
-        obj_._increase(stuff[0], game=game_inst)
-        obj_._increase(stuff[1], game=game_inst)
-        assert len(obj_._stuff) == 2, 'wrong number of stuff'
-        obj_.remove(name=stuff[0])
-        assert len(obj_._stuff) == 1, 'wrong number of stuff'
-        obj_.remove(name=stuff[1])
-        assert len(obj_._stuff) == 0, 'wrong number of stuff'
-
-    @pytest.mark.parametrize("_class, name, stuff", params)
-    def test_remove_stuff(
-        self,
-        game_inst: Game,
-        _class: BaseTool,
-        name: str,
-        stuff: Tuple[str]
-            ) -> None:
-        """Test remove stuff
-        """
-        obj_ = _class(name=name)
-        obj_._increase(stuff[0], game=game_inst, count=5)
-        obj_._increase(stuff[1], game=game_inst, count=5)
-
-        assert len(obj_._stuff) == 2, 'wrong number of stuff'
-        obj_.remove(stuff[0], count=3)
-        assert len(obj_._stuff) == 2, 'wrong number of stuff'
-        assert obj_[stuff[0]].count == 2, 'wrong count of stuff'
-        obj_.remove(stuff[0], count=50)
-        assert len(obj_._stuff) == 1, 'wrong number of stuff'
-        with pytest.raises(
-            StuffDefineError, match="Count must be a integer"
-                ):
-            obj_.remove(stuff[1], count=0)
-        with pytest.raises(
-            StuffDefineError, match="not exist in tool"
-                ):
-            obj_.remove(stuff[0], count=1)
-        obj_.remove(count=50)
-        assert len(obj_._stuff) == 0, 'stuff not removed'
+        j = json.loads(obj_.to_json())
+        assert j['name'] == name, 'not converted to json'
 
 
 class TestShaker:
     """Test Shaker class
     """
 
-    def test_shaker_instanciation(self) -> None:
-        """Test shaker correct created
-        """
-        obj_ = Shaker(name='shaker')
-        assert obj_.name == 'shaker', 'wrong name'
-        assert isinstance(obj_, Components), 'wrong type of stuff'
-        assert len(obj_._stuff) == 0, 'nonempty stuff'
-        assert issubclass(obj_._stuff_to_add, BaseStuff), \
-            'wrong stuff _stuff_to_add'
-
-    def test_shaker_are_converted_to_json(self, game_inst: Game) -> None:
-        """Test to json convertatrion
-        """
-        obj_ = Shaker(name='shaker')
-        obj_._increase('dice', game=game_inst)
-        j = json.loads(obj_.to_json())
-        assert j['name'] == 'shaker', 'wrong name'
-        assert j['dice']['name'] == 'dice', 'wrong name of stuff'
-
-    def test_roll_shaker(self, game_inst: Game) -> None:
+    def test_roll_shaker(self) -> None:
         """Test roll shaker
         """
         obj_ = Shaker(name='shaker')
-        obj_._increase('dice', game=game_inst, count=5)
-        obj_._increase('dice_nice', game=game_inst, count=5)
+        obj_['dice'] = Dice('dice', count=5)
+        obj_['dice_nice'] = Dice('dice_nice', count=5)
         roll = obj_.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
 
-    def test_roll_empty_shaker(self, game_inst: Game) -> None:
+    def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
         """
         obj_ = Shaker(name='shaker')
@@ -227,34 +84,25 @@ class TestDeck:
     """Test Deck class
     """
 
+    @pytest.fixture
+    def obj_(self) -> Deck:
+        obj_ = Deck(name='deck')
+        obj_['card'] = Card('card', count=20)
+        obj_['card_nice'] = Card('card_nice', count=20)
+        return obj_
+
     def test_deck_instanciation(self) -> None:
         """Test deck correct created
         """
         obj_ = Deck(name='deck')
         assert obj_.name == 'deck', 'wrong name'
-        assert isinstance(obj_, Components), 'wrong type of stuff'
-        assert len(obj_._stuff) == 0, 'nonempty stuff'
         assert isinstance(obj_.current, deque), 'wrong type of current'
         assert len(obj_.current) == 0, 'nonempty current'
-        assert issubclass(obj_._stuff_to_add, BaseStuff), \
-            'wrong stuff _stuff_to_add'
 
-    def test_deck_are_converted_to_json(self, game_inst: Game) -> None:
-        """Test to json convertatrion
-        """
-        obj_ = Deck(name='deck')
-        obj_._increase('card', game=game_inst)
-        j = json.loads(obj_.to_json())
-        assert j['name'] == 'deck', 'wrong name'
-        assert j['card']['name'] == 'card', 'wrong name of stuff'
-
-    def test_deck_deal(self, game_inst: Game) -> None:
+    def test_deck_deal(self, obj_: Deck) -> None:
         """Test obj_ deal() randomizing
         """
         with FixedSeed(42):
-            obj_ = Deck(name='deck')
-            obj_._increase('card', game=game_inst, count=20)
-            obj_._increase('card_nice', game=game_inst, count=20)
             obj_.deal()
             assert len(obj_.current) == 40, 'wrong current len'
             names = [stuff.name for stuff in obj_.current]
@@ -265,37 +113,34 @@ class TestDeck:
             after = [id(card) for card in obj_.current]
             assert before != after, 'not random order'
 
-    def test_deck_shuffle(self, game_inst: Game) -> None:
+    def test_deck_shuffle(self, obj_: Deck) -> None:
         """Test deck shuffle()
         """
-        obj_ = Deck(name='deck')
-        obj_._increase('card', game=game_inst, count=5)
-        obj_._increase('card_nice', game=game_inst, count=5)
+        obj_.card.count = 5
+        obj_.card_nice.count = 5
         obj_.deal()
         current0 = obj_.current.copy()
         obj_.shuffle()
         assert obj_.current != current0, 'not changed order'
 
-    def test_clear(self, game_inst: Game) -> None:
+    def test_clear(self, obj_: Deck) -> None:
         """Test deck clean()
         """
-        obj_ = Deck(name='deck')
-        obj_._increase('card', game=game_inst, count=5)
-        obj_._increase('card_nice', game=game_inst, count=5)
+        obj_.card.count = 5
+        obj_.card_nice.count = 5
         obj_.current.clear()
         assert isinstance(obj_.current, deque), 'nonempty current'
         assert len(obj_.current) == 0, 'nonempty current'
 
-    def test_search(self, game_inst: Game) -> None:
+    def test_search(self, obj_: Deck) -> None:
         """Test deck search() one or many or no one cards
         """
-        obj_ = Deck(name='deck')
-        obj_._increase('card', game=game_inst, count=2)
-        obj_._increase('card_nice', game=game_inst, count=2)
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
         obj_.deal()
         search = obj_.search(query={'card': 1})
         assert len(search) == 1, 'wrong search len'
-        assert isinstance(search[0], BaseStuff), 'wrong search type'
+        assert isinstance(search[0], BaseItem), 'wrong search type'
         assert search[0].name == 'card', 'wrong finded name'
         assert len(obj_.current) == 3, 'wrong current len'
 
@@ -317,12 +162,11 @@ class TestDeck:
         assert len(search) == 0, 'wrong search len'
         assert len(obj_.current) == 4, 'wrong current len'
 
-    def test_to_arrange(self, game_inst: Game) -> None:
+    def test_to_arrange(self, obj_: Deck) -> None:
         """Test to_arrange() deck
         """
-        obj_ = Deck(name='deck')
-        obj_._increase('card', game=game_inst, count=2)
-        obj_._increase('card_nice', game=game_inst, count=2)
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
         obj_.deal()
 
         arranged, last = obj_.to_arrange(0, 1)
@@ -360,13 +204,12 @@ class TestDeck:
                 ):
             arranged, last = obj_.to_arrange(5, 3)
 
-    def test_arrrange_random(self, game_inst: Game) -> None:
+    def test_arrrange_random(self, obj_: Deck) -> None:
         """Test arrange() randomaising
         """
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
         with FixedSeed(42):
-            obj_ = Deck(name='deck')
-            obj_._increase('card', game=game_inst, count=2)
-            obj_._increase('card_nice', game=game_inst, count=2)
             obj_.deal()
             arranged, last = obj_.to_arrange(0, 3)
             arranged.sort(key=lambda x: x.name)
@@ -375,13 +218,11 @@ class TestDeck:
             after = [stuff.name for stuff in obj_.current]
             assert after != before, 'not arranged'
 
-    def test_arrrange_returns_same_len(self, game_inst: Game) -> None:
+    def test_arrrange_returns_same_len(self, obj_: Deck) -> None:
         """Test arrange() returns same len
         """
-        obj_ = Deck(name='deck')
-        obj_._increase('card', game=game_inst, count=2)
-        obj_._increase('card_nice', game=game_inst, count=2)
-
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
         obj_.deal()
         arranged, last = obj_.to_arrange(0, 4)
         arranged.pop()
@@ -435,6 +276,13 @@ class TestSteps:
     """Test Steps class
     """
 
+    @pytest.fixture
+    def obj_(self) -> Steps:
+        obj_ = Steps('game_turns')
+        obj_['step1'] = Step('step1', priority=1)
+        obj_['astep'] = Step('astep', priority=2)
+        return obj_
+
     def test_steps_instance(self) -> None:
         """Test Steps class instance
         """
@@ -442,24 +290,17 @@ class TestSteps:
         assert isinstance(obj_, Components), 'wrong turn type'
         assert isinstance(obj_.current, Order), 'wrong current type'
         assert len(obj_.current) == 0, 'wrong current len'
-        assert len(obj_._stuff) == 0, 'wrong turn len'
 
-    def test_steps_add_steps(self, game_inst: Game) -> None:
+    def test_steps_add_steps(self, obj_: Steps) -> None:
         """Test add step to steps
         """
-        obj_ = Steps('game_turns')
-        obj_._increase('step1', game=game_inst)
-        assert len(obj_._stuff) == 1, 'wrong stuff len'
         assert isinstance(obj_.step1, Step), 'wrong type'
         assert obj_.step1.name == 'step1', 'wrong name'
         assert obj_.step1.priority == 1, 'wrong priority'
 
-    def test_steps_deal(self, game_inst: Game) -> None:
+    def test_steps_deal(self, obj_: Steps) -> None:
         """Test start new cycle of turn
         """
-        obj_ = Steps('game_turns')
-        obj_._increase('step1', game=game_inst)
-        obj_._increase('astep', game=game_inst)
         obj_.deal()
         assert len(obj_.current) == 2, 'wrong len'
         current = obj_.current.get()

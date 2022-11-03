@@ -1,6 +1,6 @@
 """Base constructs for build package objects
 """
-from typing import Dict, List, Optional, Any, Iterator
+from typing import List, Optional, Iterator
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
 from dataclasses_json import dataclass_json
@@ -106,26 +106,22 @@ class Components(Mapping):
 
     def _update(
         self,
-        component,
-        kwargs: Dict[str, Any]
+        comp,
             ) -> None:
-        """Update components dict
+        """Update Components dict
 
         Args:
-            component: component class
-            kwargs (Dict[str, Any]): additional args for component
+            comp: component instance
         """
-        comp = component(**kwargs)
-
-        if kwargs['name'] not in self.__dataclass_fields__.keys():
+        if comp.name not in self.__dataclass_fields__.keys():
             self.__class__ = make_dataclass(
                 self.__class__.__name__,
-                fields=[(kwargs['name'], type(comp), field(default=comp))],
+                fields=[(comp.name, type(comp), field(default=comp))],
                 bases=(self.__class__, ),
                 repr=False
                 )
 
-        self.__dict__.update({kwargs['name']: comp})
+        self.__dict__.update({comp.name: comp})
 
     def _add(self, component, **kwargs) -> None:
         """Add component to Components dict. Components with
@@ -144,7 +140,9 @@ class Components(Mapping):
             self._chek_in(component.name)
             kwargs['name'] = component.name
 
-        self._update(component, kwargs)
+        comp = component(**kwargs)
+
+        self._update(comp)
 
     def _add_replace(self, component, **kwargs) -> None:
         """Add or replace component in Components dict.
@@ -155,7 +153,10 @@ class Components(Mapping):
         """
         if not kwargs.get('name'):
             kwargs['name'] = component.name
-        self._update(component, kwargs)
+
+        comp = component(**kwargs)
+
+        self._update(comp)
 
     def get_names(self) -> List[str]:
         """Get names of all components in Components

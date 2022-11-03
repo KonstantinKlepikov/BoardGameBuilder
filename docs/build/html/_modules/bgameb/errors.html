@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.errors &mdash; bgameb 0.0.20 documentation</title>
+  <title>bgameb.errors &mdash; bgameb 0.0.22 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.20
+                0.0.22
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -81,7 +81,7 @@
 
 
 <div class="viewcode-block" id="ComponentNameError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.ComponentNameError">[docs]</a><span class="k">class</span> <span class="nc">ComponentNameError</span><span class="p">(</span><span class="n">CustomRuntimeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Component with given name has not unique or wrong name.</span>
+    <span class="sd">&quot;&quot;&quot;Component with given name has not wrong name or name isnt unique.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Component with </span><span class="si">{</span><span class="n">name</span><span class="si">=}</span><span class="s1"> is exist in &#39;</span> <span class="o">+</span> \
@@ -100,7 +100,7 @@
 
 
 <div class="viewcode-block" id="StuffDefineError"><a class="viewcode-back" href="../../bgameb.html#bgameb.errors.StuffDefineError">[docs]</a><span class="k">class</span> <span class="nc">StuffDefineError</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Uncorrectly defined stuff.</span>
+    <span class="sd">&quot;&quot;&quot;Badd definition of item.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">loguru</span><span class="o">.</span><span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>

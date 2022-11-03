@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.game &mdash; bgameb 0.0.20 documentation</title>
+  <title>bgameb.game &mdash; bgameb 0.0.22 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.20
+                0.0.22
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -69,21 +69,25 @@
            <div itemprop="articleBody">
              
   <h1>Source code for bgameb.game</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Main engine to create games</span>
+<span></span><span class="sd">&quot;&quot;&quot;Main engine to create game</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">log_enable</span>
-<span class="kn">from</span> <span class="nn">bgameb.types</span> <span class="kn">import</span> <span class="n">COMPONENTS</span><span class="p">,</span> <span class="n">NONSTUFF</span><span class="p">,</span> <span class="n">COMPONENTS_TYPES</span><span class="p">,</span> <span class="n">STUFF</span>
+<span class="kn">from</span> <span class="nn">bgameb.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">COMPONENTS</span><span class="p">,</span> <span class="n">COMPONENTS_TYPES</span><span class="p">,</span> <span class="n">MARKERS_MORE</span><span class="p">,</span>
+    <span class="n">ITEMS_MORE</span><span class="p">,</span> <span class="n">TOOLS_MORE</span><span class="p">,</span> <span class="n">MARKERS</span><span class="p">,</span> <span class="n">ITEMS</span><span class="p">,</span> <span class="n">TOOLS</span><span class="p">,</span>
+    <span class="n">PLAYERS</span>
+    <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">bgameb.tools</span> <span class="kn">import</span> <span class="n">Steps</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ComponentClassError</span>
 
 
-<div class="viewcode-block" id="BaseGame"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame">[docs]</a><span class="nd">@dataclass_json</span>
+<div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">BaseGame</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for game</span>
+<span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The main game object</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        game_steps (Steps): game turn steps order</span>
@@ -92,17 +96,7 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">game_steps</span> <span class="o">=</span> <span class="n">Steps</span><span class="p">(</span><span class="s1">&#39;game_steps&#39;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game">[docs]</a><span class="nd">@dataclass_json</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">BaseGame</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The main game object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_steps</span> <span class="o">=</span> <span class="n">Steps</span><span class="p">(</span><span class="s1">&#39;game_steps&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Game.new"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -111,7 +105,7 @@
         <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add new component to game or any stuff to game-hosted tool or player</span>
+        <span class="sd">&quot;&quot;&quot;Add new component to game or any subcomponent in game</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name (str): name of new component (must be unic)</span>
@@ -122,15 +116,25 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ComponentClassError: target or type of component not exist</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">target_type</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">((</span><span class="n">target</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">type_</span> <span class="ow">in</span> <span class="n">COMPONENTS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">COMPONENTS</span><span class="p">[</span><span class="n">type_</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is added to game.&#39;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
-                    <span class="ow">and</span> <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">_type</span> <span class="ow">in</span> <span class="n">NONSTUFF</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
-                    <span class="ow">and</span> <span class="n">type_</span> <span class="ow">in</span> <span class="n">STUFF</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="k">elif</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">MARKERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">MARKERS_MORE</span><span class="p">)</span> \
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">ITEMS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">ITEMS_MORE</span><span class="p">)</span> \
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">TOOLS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">TOOLS_MORE</span><span class="p">)</span> \
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">PLAYERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">COMPONENTS</span><span class="p">):</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">COMPONENTS</span><span class="p">[</span><span class="n">type_</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is added to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
 
@@ -143,30 +147,45 @@
         <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Copy stuff from game object to any game-hosted tool or player</span>
+        <span class="sd">&quot;&quot;&quot;Copy component from game object to any game-hosted component</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            source (str): name of copied stuff</span>
-<span class="sd">            target (str): name of tool or player, where placed copy</span>
+<span class="sd">            target (str): name of stuff, where placed copy</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ComponentClassError: target or source not exist</span>
 
 <span class="sd">        As result this operation we need two classes inside Game object:</span>
-<span class="sd">        - target tool component</span>
-<span class="sd">        - source stuff component</span>
+<span class="sd">        - target component</span>
+<span class="sd">        - source component</span>
 
 <span class="sd">        All this classes must be a Components instances.</span>
 
-<span class="sd">        When method was execute, it create new stuff component with all</span>
-<span class="sd">        attributes of source stuff and place it in target tool component</span>
+<span class="sd">        When method was execute, it create new component with all</span>
+<span class="sd">        attributes of source stuff and place it in target component.</span>
+
+<span class="sd">        You can make copy in order: markers -&gt; items -&gt; tools -&gt; players</span>
+
+<span class="sd">        For example markers can be copied to tools, but players can&#39;t be copied.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
-                <span class="ow">and</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">_type</span> <span class="ow">in</span> <span class="n">STUFF</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
-                <span class="ow">and</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
-                <span class="ow">and</span> <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">_type</span> <span class="ow">in</span> <span class="n">NONSTUFF</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">game</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">source_type</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">target_type</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">((</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
+                <span class="ow">and</span> <span class="p">((</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">MARKERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">MARKERS_MORE</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="p">(</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">ITEMS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">ITEMS_MORE</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="p">(</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">TOOLS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">TOOLS_MORE</span><span class="p">)):</span>
+
+            <span class="n">to_copy</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="n">to_copy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">to_copy</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">**</span><span class="n">to_copy</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">to_copy</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1"> is added to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">((</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div></div>
 
@@ -187,11 +206,12 @@
         <span class="n">priority</span><span class="o">=</span><span class="mi">1</span>
             <span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;one_card&#39;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;card&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;counter&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;one_card&#39;</span><span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;cards_deck&#39;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;deck&#39;</span><span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s1">&#39;one_card&#39;</span><span class="p">,</span> <span class="s1">&#39;cards_deck&#39;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
     <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># type: ignore</span>
     <span class="n">game</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;blue_shaker&#39;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;shaker&#39;</span><span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;eight&#39;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;dice&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;blue_shaker&#39;</span><span class="p">,</span> <span class="n">sides</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">blue_shaker</span><span class="o">.</span><span class="n">eight</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>

@@ -1,8 +1,9 @@
-"""Game dices, coins, cards and other stuffs
+"""Game markers, like counters and etc
 """
+from typing import Literal
 import collections
 from dataclasses import dataclass, field
-from dataclasses_json import config, dataclass_json
+from dataclasses_json import dataclass_json, config
 from bgameb.base import Base
 
 
@@ -28,12 +29,9 @@ class Counter(BaseMarker):
                            is a current order of steps.
     """
     current: collections.Counter = field(
-        default_factory=collections.Counter
-        )
-    _type: str = field(
-        default='counter',
+        default_factory=collections.Counter,
         metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False
+        repr=False,
         )
 
     def __post_init__(self) -> None:
@@ -43,3 +41,25 @@ class Counter(BaseMarker):
         """Clear the current queue
         """
         self.current = collections.Counter()
+
+
+@dataclass_json
+@dataclass(order=True, repr=False)
+class Step(BaseMarker):
+    """Game steps or turns
+
+    Args:
+
+        - priority (int): priority queue number. Default to 0.
+    """
+    priority: int = 0
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+
+MARKERS = {
+    Counter.__name__.lower(): Counter,
+    Step.__name__.lower(): Step,
+    }
+MARKERS_TYPES = Literal['counter', 'step', ]

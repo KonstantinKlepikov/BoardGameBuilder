@@ -10,7 +10,7 @@ class CustomRuntimeError(RuntimeError):
 
 
 class ComponentNameError(CustomRuntimeError):
-    """Component with given name has not unique or wrong name.
+    """Component with given name has not wrong name or name isnt unique.
     """
     def __init__(self, name: str) -> None:
         self.message = f'Component with {name=} is exist in ' + \
@@ -29,7 +29,7 @@ class ComponentClassError(CustomRuntimeError):
 
 
 class StuffDefineError(AttributeError):
-    """Uncorrectly defined stuff.
+    """Badd definition of item.
     """
     def __init__(self, message: str, logger: loguru.Logger) -> None:
         self.message = message
