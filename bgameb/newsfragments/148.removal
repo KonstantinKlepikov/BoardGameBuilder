@@ -1,7 +1,0 @@
-#148:
-    * BaseGame class is removed. Functional now is Game.
-    * counter attributes removed from all classes
-    * stuff.py is removed
-    * type_ are removed from all objacts. Now is an lower() __name__ of class
-    * BasePlayer class is removed
-    * ->
