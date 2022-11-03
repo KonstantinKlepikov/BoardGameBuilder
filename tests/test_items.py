@@ -1,7 +1,6 @@
 import json
 import pytest
-from collections import Counter
-from bgameb.stuff import Dice, Card, Step
+from bgameb.items import Dice, Card
 from bgameb.errors import StuffDefineError
 
 
@@ -9,16 +8,16 @@ class TestBaseStuff:
     """Test creation with names and json schemes
     """
     params = [
-        (Dice, 'dice'),
-        (Card, 'card'),
+        (Dice, 'dice_me'),
+        (Card, 'card_you'),
         ]
 
     @pytest.mark.parametrize("_class, name", params)
     def test_stuff_classes_created_with_name(self, _class, name: str) -> None:
         """Test stuff classes instancing
         """
-        obj_ = _class(name='this_stuff')
-        assert obj_.name == 'this_stuff', 'not set name for instance'
+        obj_ = _class(name=name)
+        assert obj_.name == name, 'not set name for instance'
         assert obj_.count == 1, 'wrong count'
 
     @pytest.mark.parametrize("_class, name", params)
@@ -30,21 +29,6 @@ class TestBaseStuff:
         obj_ = _class(name=name)
         j = json.loads(obj_.to_json())
         assert j['name'] == name, 'not converted to json'
-
-
-class TestStep:
-    """Test Step class
-    """
-
-    def test_step_instance(self) -> None:
-        """Test Step class instance
-        """
-        obj_ = Step(name='first_step')
-        assert obj_.priority == 0, 'wrong priority'
-        assert obj_._type == 'step', 'wrong type'
-        obj1 = Step(name='first_step', priority=20)
-        assert obj1.priority == 20, 'wrong priority'
-        assert obj1 > obj_, 'wong comparison'
 
 
 class TestDices:
@@ -94,7 +78,6 @@ class TestCard:
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
         assert obj_.count == 1, 'wrong count'
-        assert isinstance(obj_.counter, Counter), 'wrong counter'
 
     def test_flip(self) -> None:
         """Test flip card

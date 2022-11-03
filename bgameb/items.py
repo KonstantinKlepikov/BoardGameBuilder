@@ -1,8 +1,7 @@
-"""Game dices, coins, cards and other stuffs
+"""Game dices, coins, cards and other items
 """
 import random
 from typing import List, Optional, Literal
-from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
@@ -11,44 +10,19 @@ from bgameb.errors import StuffDefineError
 
 @dataclass_json
 @dataclass(repr=False)
-class BaseStuff(Base):
+class BaseItem(Base):
     """Base class for game stuff (like dices or cards)
 
     Args:
 
-        - count (int): count of stuffs. Default to 1.
+        - count (int): count of items. Default to 1.
     """
     count: int = 1
 
 
 @dataclass_json
-@dataclass(order=True, repr=False)
-class Step(BaseStuff):
-    """Game steps or turns
-
-    Args:
-
-        - priority (int): priority queue number. Default to 0.
-    """
-    count: int = field(
-        default=1,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False
-        )
-    priority: int = 0
-    _type: str = field(
-        default='step',
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False
-        )
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-
-
-@dataclass_json
 @dataclass(repr=False)
-class Dice(BaseStuff):
+class Dice(BaseItem):
     """Rolled or fliped objects, like dices or coins.
 
     Sides attr define number of sides of roller. Default to 2.
@@ -62,16 +36,11 @@ class Dice(BaseStuff):
     Raises:
         StuffDefineError: number of sides less than 2
     """
+    sides: int = 2
     _range: List[int] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         init=False,
-        repr=False
-        )
-    sides: int = 2
-    _type: str = field(
-        default='dice',
-        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False
         )
 
@@ -101,7 +70,7 @@ class Dice(BaseStuff):
 
 @dataclass_json
 @dataclass(repr=False)
-class Card(BaseStuff):
+class Card(BaseItem):
     """Card object
 
     Args:
@@ -109,7 +78,6 @@ class Card(BaseStuff):
         - opened (bool): is card oppened. Default to False.
         - tapped (bool): is card tapped. Default to False.
         - side (str, optional): the side of tap. Default to None.
-        - counter (Counter): counter object for count any items.
 
     .. code-block::
         :caption: Example:
@@ -120,12 +88,6 @@ class Card(BaseStuff):
     opened: bool = False
     tapped: bool = False
     side: Optional[str] = None
-    counter: Counter = field(default_factory=Counter)
-    _type: str = field(
-        default='card',
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False
-        )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -180,9 +142,8 @@ class Card(BaseStuff):
         raise NotImplementedError
 
 
-STUFF = {
-    Dice._type: Dice,
-    Card._type: Card,
-    Step._type: Step,
+ITEMS = {
+    Dice.__name__.lower(): Dice,
+    Card.__name__.lower(): Card,
     }
-STUFF_TYPES = Literal['dice', 'card', 'step']
+ITEMS_TYPES = Literal['dice', 'card', ]
