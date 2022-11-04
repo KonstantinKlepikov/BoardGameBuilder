@@ -5,7 +5,7 @@ from collections import deque
 from bgameb.base import Components
 from bgameb.markers import Step
 from bgameb.items import Dice, Card, BaseItem
-from bgameb.tools import Shaker, Deck, Bag, Order, Steps, BaseTool
+from bgameb.tools import Shaker, Deck, Order, Steps, BaseTool
 from bgameb.errors import ArrangeIndexError
 
 
@@ -28,7 +28,6 @@ class TestTool:
     """Test tools classes
     """
     params = [
-        (Bag, 'bag_fy'),
         (Deck, 'deck_yeah'),
         (Shaker, 'shaker_wzzzz'),
         (Steps, 'steps_to')
@@ -231,6 +230,58 @@ class TestDeck:
             match="Wrong to_arranged parts"
                 ):
             obj_.arrange(arranged, last)
+
+    def test_get_random_from_empty_current(self, obj_: Deck) -> None:
+        """Test get_random from empty current
+        """
+        result = obj_.get_random()
+        assert isinstance(result, list), 'wrong type'
+        assert len(result) == 0, 'nonempty result'
+
+    def test_get_random_without_removing(self, obj_: Deck) -> None:
+        """Test get_random without removing cards
+        """
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
+        with FixedSeed(42):
+            obj_.deal()
+            result = obj_.get_random(4, remove=False)
+            assert isinstance(result, list), 'wrong type'
+            assert len(result) == 4, 'wrong result'
+            result_names = [card.name for card in result]
+            assert result_names == [
+                'card_nice', 'card_nice', 'card_nice', 'card_nice'
+                    ], 'not random result'
+            assert len(obj_.current) == 4, 'wrong result'
+
+    def test_get_random_with_removing(self, obj_: Deck) -> None:
+        """Test get_random with removing cards
+        """
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
+        with FixedSeed(42):
+            obj_.deal()
+            result = obj_.get_random(4)
+            assert isinstance(result, list), 'wrong type'
+            assert len(result) == 4, 'wrong result'
+            result_names = [card.name for card in result]
+            assert result_names == [
+                'card', 'card_nice', 'card_nice', 'card'
+                    ], 'not random result'
+            assert len(obj_.current) == 0, 'wrong result'
+
+    def test_get_random_with_removing_much_more(self, obj_: Deck) -> None:
+        """Test get_random with removing cards
+        and count mor than len of current
+        """
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
+        with FixedSeed(42):
+            obj_.deal()
+            result = obj_.get_random(12)
+            assert isinstance(result, list), 'wrong type'
+            assert len(result) == 4, 'wrong result'
+            assert len(obj_.current) == 0, 'wrong result'
 
 
 class TestOrder:
