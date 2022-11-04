@@ -1,9 +1,9 @@
 name: Deploy static content to Pages
 
 on:
-  workflow_run:
-    workflows: ["release"]
-    types: [completed]
+  pull_request:
+    branches: [ main ]
+    types: [ closed ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,12 +23,13 @@ jobs:
 
   public-docs-on-github-pages:
 
+    if: github.event.pull_request.merged == true
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
 
