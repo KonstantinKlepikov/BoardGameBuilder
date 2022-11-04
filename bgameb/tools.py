@@ -84,7 +84,7 @@ class Deck(BaseTool):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def deal(self) -> None:
+    def deal(self) -> Deque[Card]:
         """Deal new random shuffled deck and save it to
         self.current
         """
@@ -99,12 +99,14 @@ class Deck(BaseTool):
 
         self.shuffle()
         self._logger.debug(f'Is deal cards: {self.current}')
+        return self.current
 
-    def shuffle(self) -> None:
+    def shuffle(self) -> Deque[Card]:
         """Random shuffle current deck
         """
         random.shuffle(self.current)
         self._logger.debug(f'Is shuffled: {self.current}')
+        return self.current
 
     def to_arrange(
         self,
@@ -144,7 +146,7 @@ class Deck(BaseTool):
         self,
         arranged: List[Card],
         last: Tuple[List[Card], List[Card]]
-            ) -> None:
+            ) -> Deque[Card]:
         """Concatenate new current deck from given arranged list and last of
         deck. Use to_arrange() method to get list to arrange and last.
 
@@ -165,6 +167,7 @@ class Deck(BaseTool):
                 f'Wrong to_arranged parts: {arranged=}, {last=}',
                 logger=self._logger
                 )
+        return self.current
 
     def search(
         self,
@@ -227,18 +230,28 @@ class Deck(BaseTool):
             List[Card]: list of random cards
         """
         if not self.current:
+            self._logger.debug(
+                'Is empty current deck. Random cards not choosed.'
+                    )
             return []
         if not remove:
-            return random.choices(self.current, k=count)
+            result = random.choices(self.current, k=count)
+            self._logger.debug(
+                f'Random choised cards without remove: {result}'
+                    )
+            return result
         else:
             result = []
-            for n in range(count):
+            for _ in range(count):
                 if self.current:
                     choice = random.choice(self.current)
                     result.append(choice)
                     self.current.remove(choice)
                 else:
                     break
+            self._logger.debug(
+                f'Random choised cards with remove: {result}'
+                    )
             return result
 
 
@@ -306,7 +319,7 @@ class Steps(BaseTool):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def deal(self):
+    def deal(self) -> Order:
         """Clear current order and create new current order
         """
         self.current.clear()
@@ -316,6 +329,7 @@ class Steps(BaseTool):
                 step = replace(self[comp])
                 self.current.put(step)
         self._logger.debug(f'Is deal order of turn: {self.current}')
+        return self.current
 
 
 TOOLS = {

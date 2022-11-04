@@ -102,14 +102,14 @@ class TestDeck:
         """Test obj_ deal() randomizing
         """
         with FixedSeed(42):
-            obj_.deal()
-            assert len(obj_.current) == 40, 'wrong current len'
-            names = [stuff.name for stuff in obj_.current]
+            result = obj_.deal()
+            assert len(result) == 40, 'wrong current len'
+            names = [stuff.name for stuff in result]
             assert 'card' in names, 'wrong cards names inside current'
             assert 'card_nice' in names, 'wrong cards names inside current'
-            before = [id(card) for card in obj_.current]
-            obj_.deal()
-            after = [id(card) for card in obj_.current]
+            before = [id(card) for card in result]
+            result = obj_.deal()
+            after = [id(card) for card in result]
             assert before != after, 'not random order'
 
     def test_deck_shuffle(self, obj_: Deck) -> None:
@@ -117,8 +117,7 @@ class TestDeck:
         """
         obj_.card.count = 5
         obj_.card_nice.count = 5
-        obj_.deal()
-        current0 = obj_.current.copy()
+        current0 = obj_.deal().copy()
         obj_.shuffle()
         assert obj_.current != current0, 'not changed order'
 
@@ -213,8 +212,8 @@ class TestDeck:
             arranged, last = obj_.to_arrange(0, 3)
             arranged.sort(key=lambda x: x.name)
             before = [stuff.name for stuff in obj_.current]
-            obj_.arrange(arranged, last)
-            after = [stuff.name for stuff in obj_.current]
+            result = obj_.arrange(arranged, last)
+            after = [stuff.name for stuff in result]
             assert after != before, 'not arranged'
 
     def test_arrrange_returns_same_len(self, obj_: Deck) -> None:
@@ -352,8 +351,8 @@ class TestSteps:
     def test_steps_deal(self, obj_: Steps) -> None:
         """Test start new cycle of turn
         """
-        obj_.deal()
-        assert len(obj_.current) == 2, 'wrong len'
+        result = obj_.deal()
+        assert len(result) == 2, 'wrong len'
         current = obj_.current.get()
         assert len(obj_.current) == 1, 'wrong len'
         assert current.name == 'step1', 'wrong current step'
@@ -365,5 +364,5 @@ class TestSteps:
             match='index out of range'
                 ):
             obj_.current.get()
-        obj_.deal()
-        assert len(obj_.current) == 2, 'turn not clean'
+        result = obj_.deal()
+        assert len(result) == 2, 'turn not clean'
