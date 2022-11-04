@@ -5,7 +5,7 @@ from collections import deque
 from bgameb.base import Components
 from bgameb.markers import Step
 from bgameb.items import Dice, Card, BaseItem
-from bgameb.tools import Shaker, Deck, Bag, Order, Steps, BaseTool
+from bgameb.tools import Shaker, Deck, Order, Steps, BaseTool
 from bgameb.errors import ArrangeIndexError
 
 
@@ -28,7 +28,6 @@ class TestTool:
     """Test tools classes
     """
     params = [
-        (Bag, 'bag_fy'),
         (Deck, 'deck_yeah'),
         (Shaker, 'shaker_wzzzz'),
         (Steps, 'steps_to')

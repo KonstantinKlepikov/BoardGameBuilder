@@ -58,19 +58,7 @@ class Shaker(BaseTool):
 
 @dataclass_json
 @dataclass(repr=False)
-class Bag(BaseTool):
-    """Datastorage for ordered list of stuff. Isnt queue or stack.
-    Use it for hand with cards, graveyards, outside of the game cards
-    and etc.
-    """
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-
-
-@dataclass_json
-@dataclass(repr=False)
-class Deck(Bag):
+class Deck(BaseTool):
     """Deck object
 
     Deck ia a Bag subclass that contains Cards for
@@ -302,8 +290,7 @@ class Steps(BaseTool):
 
 TOOLS = {
     Shaker.__name__.lower(): Shaker,
-    Bag.__name__.lower(): Bag,
     Deck.__name__.lower(): Deck,
     Steps.__name__.lower(): Steps,
     }
-TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'steps']
+TOOLS_TYPES = Literal['shaker', 'deck', 'steps']
