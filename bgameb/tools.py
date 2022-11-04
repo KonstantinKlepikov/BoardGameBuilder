@@ -176,8 +176,8 @@ class Deck(BaseTool):
         Args:
             query (Dict[str, int]): dict with name of searched
                                     cards and count of searching
-            remove (bool): if True - remove cards from current deck.
-                           Default to True.
+            remove (bool): if True - remove searched cards from
+                           current deck. Default to True.
 
         Return:
             List[Card]: list of find cards
@@ -210,6 +210,36 @@ class Deck(BaseTool):
         self._logger.debug(f'Search result: {result}')
 
         return result
+
+    def get_random(
+        self,
+        count: int = 1,
+        remove: bool = True
+            ) -> List[Card]:
+        """Get random cards from current deck
+
+        Args:
+            count (int, optional): count of random cards. Defaults to 1.
+            remove (bool, optional): if True - remove random cards from
+                                    current deck. Default to True.
+
+        Returns:
+            List[Card]: list of random cards
+        """
+        if not self.current:
+            return []
+        if not remove:
+            return random.choices(self.current, k=count)
+        else:
+            result = []
+            for n in range(count):
+                if self.current:
+                    choice = random.choice(self.current)
+                    result.append(choice)
+                    self.current.remove(choice)
+                else:
+                    break
+            return result
 
 
 @dataclass_json
