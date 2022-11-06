@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.game &mdash; bgameb 0.0.22 documentation</title>
+  <title>bgameb.game &mdash; bgameb 0.0.23 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.22
+                0.0.23
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -131,7 +131,8 @@
             <span class="k">elif</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">MARKERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">MARKERS_MORE</span><span class="p">)</span> \
                     <span class="ow">or</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">ITEMS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">ITEMS_MORE</span><span class="p">)</span> \
                     <span class="ow">or</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">TOOLS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">TOOLS_MORE</span><span class="p">)</span> \
-                    <span class="ow">or</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">PLAYERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">COMPONENTS</span><span class="p">):</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">type_</span> <span class="ow">in</span> <span class="n">PLAYERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">COMPONENTS</span><span class="p">):</span>
                 <span class="bp">self</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">COMPONENTS</span><span class="p">[</span><span class="n">type_</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is added to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
@@ -167,7 +168,8 @@
 
 <span class="sd">        You can make copy in order: markers -&gt; items -&gt; tools -&gt; players</span>
 
-<span class="sd">        For example markers can be copied to tools, but players can&#39;t be copied.</span>
+<span class="sd">        For example markers can be copied to tools,</span>
+<span class="sd">        but players can&#39;t be copied.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">source_type</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -176,9 +178,14 @@
             <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">((</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> \
-                <span class="ow">and</span> <span class="p">((</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">MARKERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">MARKERS_MORE</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="p">(</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">ITEMS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">ITEMS_MORE</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="p">(</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">TOOLS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">TOOLS_MORE</span><span class="p">)):</span>
+                <span class="ow">and</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">MARKERS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">MARKERS_MORE</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">ITEMS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">ITEMS_MORE</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">source_type</span> <span class="ow">in</span> <span class="n">TOOLS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="ow">and</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">TOOLS_MORE</span><span class="p">)</span>
+                    <span class="p">):</span>
 
             <span class="n">to_copy</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
             <span class="n">to_copy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
