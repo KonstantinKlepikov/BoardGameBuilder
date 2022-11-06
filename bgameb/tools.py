@@ -58,19 +58,7 @@ class Shaker(BaseTool):
 
 @dataclass_json
 @dataclass(repr=False)
-class Bag(BaseTool):
-    """Datastorage for ordered list of stuff. Isnt queue or stack.
-    Use it for hand with cards, graveyards, outside of the game cards
-    and etc.
-    """
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-
-
-@dataclass_json
-@dataclass(repr=False)
-class Deck(Bag):
+class Deck(BaseTool):
     """Deck object
 
     Deck ia a Bag subclass that contains Cards for
@@ -96,7 +84,7 @@ class Deck(Bag):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def deal(self) -> None:
+    def deal(self) -> Deque[Card]:
         """Deal new random shuffled deck and save it to
         self.current
         """
@@ -111,12 +99,14 @@ class Deck(Bag):
 
         self.shuffle()
         self._logger.debug(f'Is deal cards: {self.current}')
+        return self.current
 
-    def shuffle(self) -> None:
+    def shuffle(self) -> Deque[Card]:
         """Random shuffle current deck
         """
         random.shuffle(self.current)
         self._logger.debug(f'Is shuffled: {self.current}')
+        return self.current
 
     def to_arrange(
         self,
@@ -156,7 +146,7 @@ class Deck(Bag):
         self,
         arranged: List[Card],
         last: Tuple[List[Card], List[Card]]
-            ) -> None:
+            ) -> Deque[Card]:
         """Concatenate new current deck from given arranged list and last of
         deck. Use to_arrange() method to get list to arrange and last.
 
@@ -177,6 +167,7 @@ class Deck(Bag):
                 f'Wrong to_arranged parts: {arranged=}, {last=}',
                 logger=self._logger
                 )
+        return self.current
 
     def search(
         self,
@@ -188,8 +179,8 @@ class Deck(Bag):
         Args:
             query (Dict[str, int]): dict with name of searched
                                     cards and count of searching
-            remove (bool): if True - remove cards from current deck.
-                           Default to True.
+            remove (bool): if True - remove searched cards from
+                           current deck. Default to True.
 
         Return:
             List[Card]: list of find cards
@@ -222,6 +213,46 @@ class Deck(Bag):
         self._logger.debug(f'Search result: {result}')
 
         return result
+
+    def get_random(
+        self,
+        count: int = 1,
+        remove: bool = True
+            ) -> List[Card]:
+        """Get random cards from current deck
+
+        Args:
+            count (int, optional): count of random cards. Defaults to 1.
+            remove (bool, optional): if True - remove random cards from
+                                    current deck. Default to True.
+
+        Returns:
+            List[Card]: list of random cards
+        """
+        if not self.current:
+            self._logger.debug(
+                'Is empty current deck. Random cards not choosed.'
+                    )
+            return []
+        if not remove:
+            result = random.choices(self.current, k=count)
+            self._logger.debug(
+                f'Random choised cards without remove: {result}'
+                    )
+            return result
+        else:
+            result = []
+            for _ in range(count):
+                if self.current:
+                    choice = random.choice(self.current)
+                    result.append(choice)
+                    self.current.remove(choice)
+                else:
+                    break
+            self._logger.debug(
+                f'Random choised cards with remove: {result}'
+                    )
+            return result
 
 
 @dataclass_json
@@ -288,7 +319,7 @@ class Steps(BaseTool):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def deal(self):
+    def deal(self) -> Order:
         """Clear current order and create new current order
         """
         self.current.clear()
@@ -298,12 +329,12 @@ class Steps(BaseTool):
                 step = replace(self[comp])
                 self.current.put(step)
         self._logger.debug(f'Is deal order of turn: {self.current}')
+        return self.current
 
 
 TOOLS = {
     Shaker.__name__.lower(): Shaker,
-    Bag.__name__.lower(): Bag,
     Deck.__name__.lower(): Deck,
     Steps.__name__.lower(): Steps,
     }
-TOOLS_TYPES = Literal['shaker', 'bag', 'deck', 'steps']
+TOOLS_TYPES = Literal['shaker', 'deck', 'steps']

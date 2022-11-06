@@ -51,19 +51,15 @@ game.new('one_card', type_='card')
 game.new('cards_deck', type_='deck')
 game.copy('one_card', 'cards_deck', count=100)
 
-# deal card from deck
-game.cards_deck.deal()
-
-# current deck is a python deque
-deck = game.cards_deck.current
+# deal card from deck. current deck is a python deque
+deck = game.cards_deck.deal()
 
 # lets create game turn structure
 game.new('phase_one', 'game_steps', priority=0)
 game.copy('phase_two', 'game_steps', priority=1)
-game.game_steps.deal()
+current_game_steps = game.game_steps.deal()
 
 # game_steps is a priority queue, that linked to priority attribute
-current_game_steps = game.game_steps.current
 current_step = current_game_steps.get()
 ```
 

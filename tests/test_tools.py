@@ -5,7 +5,7 @@ from collections import deque
 from bgameb.base import Components
 from bgameb.markers import Step
 from bgameb.items import Dice, Card, BaseItem
-from bgameb.tools import Shaker, Deck, Bag, Order, Steps, BaseTool
+from bgameb.tools import Shaker, Deck, Order, Steps, BaseTool
 from bgameb.errors import ArrangeIndexError
 
 
@@ -28,7 +28,6 @@ class TestTool:
     """Test tools classes
     """
     params = [
-        (Bag, 'bag_fy'),
         (Deck, 'deck_yeah'),
         (Shaker, 'shaker_wzzzz'),
         (Steps, 'steps_to')
@@ -103,14 +102,14 @@ class TestDeck:
         """Test obj_ deal() randomizing
         """
         with FixedSeed(42):
-            obj_.deal()
-            assert len(obj_.current) == 40, 'wrong current len'
-            names = [stuff.name for stuff in obj_.current]
+            result = obj_.deal()
+            assert len(result) == 40, 'wrong current len'
+            names = [stuff.name for stuff in result]
             assert 'card' in names, 'wrong cards names inside current'
             assert 'card_nice' in names, 'wrong cards names inside current'
-            before = [id(card) for card in obj_.current]
-            obj_.deal()
-            after = [id(card) for card in obj_.current]
+            before = [id(card) for card in result]
+            result = obj_.deal()
+            after = [id(card) for card in result]
             assert before != after, 'not random order'
 
     def test_deck_shuffle(self, obj_: Deck) -> None:
@@ -118,8 +117,7 @@ class TestDeck:
         """
         obj_.card.count = 5
         obj_.card_nice.count = 5
-        obj_.deal()
-        current0 = obj_.current.copy()
+        current0 = obj_.deal().copy()
         obj_.shuffle()
         assert obj_.current != current0, 'not changed order'
 
@@ -214,8 +212,8 @@ class TestDeck:
             arranged, last = obj_.to_arrange(0, 3)
             arranged.sort(key=lambda x: x.name)
             before = [stuff.name for stuff in obj_.current]
-            obj_.arrange(arranged, last)
-            after = [stuff.name for stuff in obj_.current]
+            result = obj_.arrange(arranged, last)
+            after = [stuff.name for stuff in result]
             assert after != before, 'not arranged'
 
     def test_arrrange_returns_same_len(self, obj_: Deck) -> None:
@@ -231,6 +229,58 @@ class TestDeck:
             match="Wrong to_arranged parts"
                 ):
             obj_.arrange(arranged, last)
+
+    def test_get_random_from_empty_current(self, obj_: Deck) -> None:
+        """Test get_random from empty current
+        """
+        result = obj_.get_random()
+        assert isinstance(result, list), 'wrong type'
+        assert len(result) == 0, 'nonempty result'
+
+    def test_get_random_without_removing(self, obj_: Deck) -> None:
+        """Test get_random without removing cards
+        """
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
+        with FixedSeed(42):
+            obj_.deal()
+            result = obj_.get_random(4, remove=False)
+            assert isinstance(result, list), 'wrong type'
+            assert len(result) == 4, 'wrong result'
+            result_names = [card.name for card in result]
+            assert result_names == [
+                'card_nice', 'card_nice', 'card_nice', 'card_nice'
+                    ], 'not random result'
+            assert len(obj_.current) == 4, 'wrong result'
+
+    def test_get_random_with_removing(self, obj_: Deck) -> None:
+        """Test get_random with removing cards
+        """
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
+        with FixedSeed(42):
+            obj_.deal()
+            result = obj_.get_random(4)
+            assert isinstance(result, list), 'wrong type'
+            assert len(result) == 4, 'wrong result'
+            result_names = [card.name for card in result]
+            assert result_names == [
+                'card', 'card_nice', 'card_nice', 'card'
+                    ], 'not random result'
+            assert len(obj_.current) == 0, 'wrong result'
+
+    def test_get_random_with_removing_much_more(self, obj_: Deck) -> None:
+        """Test get_random with removing cards
+        and count mor than len of current
+        """
+        obj_.card.count = 2
+        obj_.card_nice.count = 2
+        with FixedSeed(42):
+            obj_.deal()
+            result = obj_.get_random(12)
+            assert isinstance(result, list), 'wrong type'
+            assert len(result) == 4, 'wrong result'
+            assert len(obj_.current) == 0, 'wrong result'
 
 
 class TestOrder:
@@ -301,8 +351,8 @@ class TestSteps:
     def test_steps_deal(self, obj_: Steps) -> None:
         """Test start new cycle of turn
         """
-        obj_.deal()
-        assert len(obj_.current) == 2, 'wrong len'
+        result = obj_.deal()
+        assert len(result) == 2, 'wrong len'
         current = obj_.current.get()
         assert len(obj_.current) == 1, 'wrong len'
         assert current.name == 'step1', 'wrong current step'
@@ -314,5 +364,5 @@ class TestSteps:
             match='index out of range'
                 ):
             obj_.current.get()
-        obj_.deal()
-        assert len(obj_.current) == 2, 'turn not clean'
+        result = obj_.deal()
+        assert len(result) == 2, 'turn not clean'

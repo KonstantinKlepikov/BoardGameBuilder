@@ -3,6 +3,43 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.24 (2022-11-06)
+============================
+
+Features
+--------
+
+- #150:
+      * added get_random() method for Deck class
+      * is tested
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/150)
+- #177:
+      * deal() now return self.current
+      * arrange() now return self.current
+      * shuffle() now return self.current
+      * Steps.deal() return current Order
+      * added logging to get_random()
+      * added doc, changing readme
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/179)
+
+
+Bugfixes
+--------
+
+- #178:
+      * fix docs building
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/178)
+
+
+Deprecations and Removals
+-------------------------
+
+- #150:
+      * removed Bag class
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/150)
+
+
 Release v0.0.23 (2022-11-03)
 ============================
 
