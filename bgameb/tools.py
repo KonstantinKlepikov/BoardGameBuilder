@@ -10,6 +10,7 @@ from bgameb.base import Base
 from bgameb.markers import Step
 from bgameb.items import Card, Dice
 from bgameb.errors import ArrangeIndexError
+from bgameb._types import STUFF
 
 
 @dataclass_json
@@ -20,6 +21,7 @@ class BaseTool(Base):
 
     def __post_init__(self) -> None:
         super().__post_init__()
+        self._type_to_add = STUFF
 
 
 @dataclass_json

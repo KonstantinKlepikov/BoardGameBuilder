@@ -102,21 +102,21 @@ class TestComponents:
             comp._add(_class, name='this_is_five', sides=5)
             assert comp.this_is_five.sides == 5, 'component not added'
 
-    @pytest.mark.parametrize("_class, name", components)
-    def test_add_replace_component(self, _class: BaseItem, name: str) -> None:
-        """Test add_replace() method
-        """
-        comp = Components()
-        comp._add_replace(_class, name=name)
-        add1 = id(comp[name])
-        assert comp[name], 'component not added'
-        comp._add_replace(_class, name=name)
-        assert id(comp[name]) != add1, 'not replaced'
-        comp._add_replace(_class, name='this_is')
-        assert comp.this_is, 'component not added'
-        if isinstance(_class, BaseItem):
-            comp._add_replace(_class, name='this_is_five', sides=5)
-            assert comp.this_is_five.sides == 5, 'component not added'
+    # @pytest.mark.parametrize("_class, name", components)
+    # def test_add_replace_component(self, _class: BaseItem, name: str) -> None:
+    #     """Test add_replace() method
+    #     """
+    #     comp = Components()
+    #     comp._add_replace(_class, name=name)
+    #     add1 = id(comp[name])
+    #     assert comp[name], 'component not added'
+    #     comp._add_replace(_class, name=name)
+    #     assert id(comp[name]) != add1, 'not replaced'
+    #     comp._add_replace(_class, name='this_is')
+    #     assert comp.this_is, 'component not added'
+    #     if isinstance(_class, BaseItem):
+    #         comp._add_replace(_class, name='this_is_five', sides=5)
+    #         assert comp.this_is_five.sides == 5, 'component not added'
 
     @pytest.mark.parametrize("_class, name", components)
     def test_get_names(self, _class: BaseItem, name: str) -> None:

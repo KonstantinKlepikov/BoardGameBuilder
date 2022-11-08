@@ -1,16 +1,17 @@
 """Main engine to create game
 """
-from typing import Optional
+# from typing import Optional
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from bgameb.base import Base, log_enable
-from bgameb.types import (
-    COMPONENTS, COMPONENTS_TYPES, MARKERS_MORE,
-    ITEMS_MORE, TOOLS_MORE, MARKERS, ITEMS, TOOLS,
-    PLAYERS
-    )
+# from bgameb.types import (
+#     COMPONENTS, COMPONENTS_TYPES, MARKERS_MORE,
+#     ITEMS_MORE, TOOLS_MORE, MARKERS, ITEMS, TOOLS,
+#     PLAYERS
+#     )
+from bgameb._types import _COMPONENTS
 from bgameb.tools import Steps
-from bgameb.errors import ComponentClassError
+# from bgameb.errors import ComponentClassError
 
 
 @dataclass_json
@@ -26,104 +27,117 @@ class Game(Base):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.game_steps = Steps('game_steps')
+        self._type_to_add = _COMPONENTS
 
-    def new(
-        self,
-        name: str,
-        type_: COMPONENTS_TYPES,
-        target: Optional[str] = None,
-        **kwargs
-            ) -> None:
-        """Add new component to game or any subcomponent in game
+    # def new(
+    #     self,
+    #     name: str,
+    #     type_: COMPONENTS_TYPES,
+    #     target: Optional[str] = None,
+    #     **kwargs
+    #         ) -> None:
+    #     """Add new component to game or any subcomponent in game
 
-        Args:
-            name (str): name of new component (must be unic)
-            type_ (COMPONENTS_TYPES): type of new component
-            target (str, optional): name of class, where placed component.
-                                    Defaults to None.
+    #     Args:
+    #         name (str): name of new component (must be unic)
+    #         type_ (COMPONENTS_TYPES): type of new component
+    #         target (str, optional): name of class, where placed component.
+    #                                 Defaults to None.
 
-        Raises:
-            ComponentClassError: target or type of component not exist
-        """
-        if target:
-            try:
-                target_type = self[target].__class__.__name__.lower()
-            except KeyError:
-                raise ComponentClassError((target), self._logger)
+    #     Raises:
+    #         ComponentClassError: target or type of component not exist
+    #     """
+    #     if target:
+    #         try:
+    #             target_type = self[target].__class__.__name__.lower()
+    #         except KeyError:
+    #             raise ComponentClassError((target), self._logger)
 
-        if type_ in COMPONENTS.keys():
+    #     if type_ in COMPONENTS.keys():
 
-            if not target:
-                self._add(COMPONENTS[type_], name=name, **kwargs)
-                self._logger.info(f'{name} is added to game.')
+    #         if not target:
+    #             self._add(COMPONENTS[type_], name=name, **kwargs)
+    #             self._logger.info(f'{name} is added to game.')
 
-            elif (type_ in MARKERS.keys() and target_type in MARKERS_MORE) \
-                    or (type_ in ITEMS.keys() and target_type in ITEMS_MORE) \
-                    or (type_ in TOOLS.keys() and target_type in TOOLS_MORE) \
-                    or (type_ in PLAYERS.keys()
-                        and target_type not in COMPONENTS):
-                self[target]._add(COMPONENTS[type_], name=name, **kwargs)
-                self._logger.info(f'{name} is added to {target}.')
+    #         elif (type_ in MARKERS.keys() and target_type in MARKERS_MORE) \
+    #                 or (type_ in ITEMS.keys() and target_type in ITEMS_MORE) \
+    #                 or (type_ in TOOLS.keys() and target_type in TOOLS_MORE) \
+    #                 or (type_ in PLAYERS.keys()
+    #                     and target_type not in COMPONENTS):
+    #             self[target]._add(COMPONENTS[type_], name=name, **kwargs)
+    #             self._logger.info(f'{name} is added to {target}.')
 
-            else:
-                raise ComponentClassError(target, self._logger)
+    #         else:
+    #             raise ComponentClassError(target, self._logger)
 
-        else:
-            raise ComponentClassError(type_, self._logger)
+    #     else:
+    #         raise ComponentClassError(type_, self._logger)
 
-    def copy(
-        self,
-        source: str,
-        target: str,
-        **kwargs
-            ) -> None:
-        """Copy component from game object to any game-hosted component
+    # def copy(
+    #     self,
+    #     source: str,
+    #     target: str,
+    #     **kwargs
+    #         ) -> None:
+    #     """Copy component from game object to any game-hosted component
 
-        Args:
-            source (str): name of copied stuff
-            target (str): name of stuff, where placed copy
+    #     Args:
+    #         source (str): name of copied stuff
+    #         target (str): name of stuff, where placed copy
 
-        Raises:
-            ComponentClassError: target or source not exist
+    #     Raises:
+    #         ComponentClassError: target or source not exist
 
-        As result this operation we need two classes inside Game object:
-        - target component
-        - source component
+    #     As result this operation we need two classes inside Game object:
+    #     - target component
+    #     - source component
 
-        All this classes must be a Components instances.
+    #     All this classes must be a Components instances.
 
-        When method was execute, it create new component with all
-        attributes of source stuff and place it in target component.
+    #     When method was execute, it create new component with all
+    #     attributes of source stuff and place it in target component.
 
-        You can make copy in order: markers -> items -> tools -> players
+    #     You can make copy in order: markers -> items -> tools -> players
 
-        For example markers can be copied to tools,
-        but players can't be copied.
-        """
-        try:
-            source_type = self[source].__class__.__name__.lower()
-            target_type = self[target].__class__.__name__.lower()
-        except KeyError:
-            raise ComponentClassError((source, target), self._logger)
+    #     For example markers can be copied to tools,
+    #     but players can't be copied.
+    #     """
+    #     try:
+    #         source_type = self[source].__class__.__name__.lower()
+    #         target_type = self[target].__class__.__name__.lower()
+    #     except KeyError:
+    #         raise ComponentClassError((source, target), self._logger)
 
-        if source in self.keys() and target in self.keys() \
-                and (
-                    (source_type in MARKERS.keys()
-                        and target_type in MARKERS_MORE)
-                    or (source_type in ITEMS.keys()
-                        and target_type in ITEMS_MORE)
-                    or (source_type in TOOLS.keys()
-                        and target_type in TOOLS_MORE)
-                    ):
+    #     if source in self.keys() and target in self.keys() \
+    #             and (
+    #                 (source_type in MARKERS.keys()
+    #                     and target_type in MARKERS_MORE)
+    #                 or (source_type in ITEMS.keys()
+    #                     and target_type in ITEMS_MORE)
+    #                 or (source_type in TOOLS.keys()
+    #                     and target_type in TOOLS_MORE)
+    #                 ):
 
-            to_copy: dict = self[source].to_dict()
-            to_copy.update(kwargs)
-            to_copy = self[source].__class__(**to_copy)
-            self[target]._update(to_copy)
-            self._logger.info(f'{source} is added to {target}.')
+    #         to_copy: dict = self[source].to_dict()
+    #         to_copy.update(kwargs)
+    #         to_copy = self[source].__class__(**to_copy)
+    #         self[target]._update(to_copy)
+    #         self._logger.info(f'{source} is added to {target}.')
 
-        else:
-            raise ComponentClassError((source, target), self._logger)
+    #     else:
+    #         raise ComponentClassError((source, target), self._logger)
+
+    # def add(self, component) -> None:
+    #     """_summary_
+
+    #     Args:
+    #         component (_type_): _description_
+    #     """
+    #     if component.__class__.__name__.lower() in ['dice', 'card', 'counter', 'player', 'shaker', 'deck']:
+    #         self._update(component)
+    #     else:
+    #         raise ComponentClassError(component, self._logger)
+
 
 
 if __name__ == '__main__':

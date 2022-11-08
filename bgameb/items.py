@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
+from bgameb._types import MARKERS
 
 
 @dataclass_json
@@ -18,6 +19,10 @@ class BaseItem(Base):
         - count (int): count of items. Default to 1.
     """
     count: int = 1
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self._type_to_add = MARKERS
 
 
 @dataclass_json
