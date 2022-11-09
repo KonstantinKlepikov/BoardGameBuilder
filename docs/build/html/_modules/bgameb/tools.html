@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.tools &mdash; bgameb 0.0.23 documentation</title>
+  <title>bgameb.tools &mdash; bgameb 0.0.24 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.23
+                0.0.24
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -74,13 +74,14 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">heapq</span> <span class="kn">import</span> <span class="n">heappop</span><span class="p">,</span> <span class="n">heappush</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Deque</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Deque</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">replace</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">dataclass_json</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
 <span class="kn">from</span> <span class="nn">bgameb.markers</span> <span class="kn">import</span> <span class="n">Step</span>
 <span class="kn">from</span> <span class="nn">bgameb.items</span> <span class="kn">import</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Dice</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span>
+<span class="kn">from</span> <span class="nn">bgameb.types</span> <span class="kn">import</span> <span class="n">MARKERS_ITEMS</span>
 
 
 <div class="viewcode-block" id="BaseTool"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool">[docs]</a><span class="nd">@dataclass_json</span>
@@ -90,7 +91,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_types_to_add</span> <span class="o">=</span> <span class="n">MARKERS_ITEMS</span></div>
 
 
 <div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker">[docs]</a><span class="nd">@dataclass_json</span>
@@ -295,7 +297,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            count (int, optional): count of random cards. Defaults to 1.</span>
 <span class="sd">            remove (bool, optional): if True - remove random cards from</span>
-<span class="sd">                                    current deck. Default to True.</span>
+<span class="sd">                                     current deck. Default to True.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Card]: list of random cards</span>
@@ -332,8 +334,7 @@
     <span class="sd">&quot;&quot;&quot;Order of steps priority queue. Isnt tradesafe.</span>
 <span class="sd">    Is used only for define game steps order.</span>
 
-<span class="sd">    Args:</span>
-
+<span class="sd">    Attr:</span>
 <span class="sd">        - current List[Tuple[int, Components]]: priority queue list</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">current</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Step</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
@@ -377,8 +378,7 @@
 <span class="k">class</span> <span class="nc">Steps</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Game steps order object</span>
 
-<span class="sd">    Args:</span>
-
+<span class="sd">    Attr:</span>
 <span class="sd">        - current (Order): current order of steps.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">current</span><span class="p">:</span> <span class="n">Order</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
@@ -401,14 +401,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is deal order of turn: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span></div></div>
-
-
-<span class="n">TOOLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">Shaker</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">Shaker</span><span class="p">,</span>
-    <span class="n">Deck</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">Deck</span><span class="p">,</span>
-    <span class="n">Steps</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">Steps</span><span class="p">,</span>
-    <span class="p">}</span>
-<span class="n">TOOLS_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;shaker&#39;</span><span class="p">,</span> <span class="s1">&#39;deck&#39;</span><span class="p">,</span> <span class="s1">&#39;steps&#39;</span><span class="p">]</span>
 </pre></div>
 
            </div>

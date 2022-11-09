@@ -1,5 +1,6 @@
 import json
 from bgameb.players import Player
+from bgameb.types import MARKERS_ITEMS_TOOLS
 
 
 class TestPlayer:
@@ -11,6 +12,8 @@ class TestPlayer:
         """
         obj_ = Player(name='player')
         assert obj_.name == 'player', 'not set name for instance'
+        assert obj_._types_to_add == MARKERS_ITEMS_TOOLS, \
+            'wrong _type_to_add'
 
     def test_players_classes_are_converted_to_json(self) -> None:
         """Test to json convertatrion
@@ -25,4 +28,3 @@ class TestPlayer:
         obj_ = Player(name='player')
         assert obj_.has_priority is False, 'wrong priority'
         assert obj_.team is None, 'wrong tram'
-        assert obj_.owner_of == [], 'wrong owner of'

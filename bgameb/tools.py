@@ -3,13 +3,14 @@
 import random
 from collections import deque
 from heapq import heappop, heappush
-from typing import Tuple, Dict, Literal, List, Deque
+from typing import Tuple, Dict, List, Deque
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.markers import Step
 from bgameb.items import Card, Dice
 from bgameb.errors import ArrangeIndexError
+from bgameb.types import MARKERS_ITEMS
 
 
 @dataclass_json
@@ -20,6 +21,7 @@ class BaseTool(Base):
 
     def __post_init__(self) -> None:
         super().__post_init__()
+        self._types_to_add = MARKERS_ITEMS
 
 
 @dataclass_json
@@ -224,7 +226,7 @@ class Deck(BaseTool):
         Args:
             count (int, optional): count of random cards. Defaults to 1.
             remove (bool, optional): if True - remove random cards from
-                                    current deck. Default to True.
+                                     current deck. Default to True.
 
         Returns:
             List[Card]: list of random cards
@@ -261,8 +263,7 @@ class Order:
     """Order of steps priority queue. Isnt tradesafe.
     Is used only for define game steps order.
 
-    Args:
-
+    Attr:
         - current List[Tuple[int, Components]]: priority queue list
     """
     current: List[Tuple[int, Step]] = field(
@@ -306,8 +307,7 @@ class Order:
 class Steps(BaseTool):
     """Game steps order object
 
-    Args:
-
+    Attr:
         - current (Order): current order of steps.
     """
     current: Order = field(
@@ -330,11 +330,3 @@ class Steps(BaseTool):
                 self.current.put(step)
         self._logger.debug(f'Is deal order of turn: {self.current}')
         return self.current
-
-
-TOOLS = {
-    Shaker.__name__.lower(): Shaker,
-    Deck.__name__.lower(): Deck,
-    Steps.__name__.lower(): Steps,
-    }
-TOOLS_TYPES = Literal['shaker', 'deck', 'steps']

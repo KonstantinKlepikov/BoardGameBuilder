@@ -1,7 +1,9 @@
 import json
 import pytest
-from bgameb.items import Dice, Card
-from bgameb.errors import StuffDefineError
+from bgameb.items import Dice, Card, BaseItem
+from bgameb.markers import Counter, BaseMarker
+from bgameb.errors import StuffDefineError, ComponentClassError
+from bgameb.types import MARKERS
 
 
 class TestBaseStuff:
@@ -13,22 +15,63 @@ class TestBaseStuff:
         ]
 
     @pytest.mark.parametrize("_class, name", params)
-    def test_stuff_classes_created_with_name(self, _class, name: str) -> None:
-        """Test stuff classes instancing
+    def test_items_classes_created_with_name(
+        self, _class: BaseItem, name: str
+            ) -> None:
+        """Test items classes instancing
         """
         obj_ = _class(name=name)
         assert obj_.name == name, 'not set name for instance'
         assert obj_.count == 1, 'wrong count'
+        assert obj_._types_to_add == MARKERS, 'wrong _type_to_add'
 
     @pytest.mark.parametrize("_class, name", params)
-    def test_stuff_classes_are_converted_to_json(
-        self, _class, name: str
+    def test_items_classes_are_converted_to_json(
+        self, _class: BaseItem, name: str
             ) -> None:
         """Test to json convertatrion
         """
         obj_ = _class(name=name)
         j = json.loads(obj_.to_json())
         assert j['name'] == name, 'not converted to json'
+
+    components = [
+        (Counter, 'counter_less'),
+        ]
+
+    @pytest.mark.parametrize("_class1, name1", components)
+    @pytest.mark.parametrize("_class, name", params)
+    def test_add_new_component_to_item(
+        self,
+        _class: BaseItem,
+        name: str,
+        _class1: BaseMarker,
+        name1: str
+            ) -> None:
+        """Test add new component to item
+        """
+        obj_ = _class(name=name)
+        cl = _class1(name1)
+        obj_.add(component=cl)
+        assert obj_[name1].name == name1, \
+            'component not added'
+
+    @pytest.mark.parametrize("_class, name", params)
+    def test_add_new_wrong_component_to_item(
+        self, _class: BaseItem, name: str
+            ) -> None:
+        """Test cant add new wrong component to item
+        """
+        obj_ = _class(name=name)
+
+        class G():
+            _type = 'wrong'
+
+        with pytest.raises(
+            ComponentClassError,
+            match='not a component'
+                ):
+            obj_.add(G())
 
 
 class TestDices:
@@ -42,6 +85,7 @@ class TestDices:
         assert obj_.name == 'dice', 'wrong name'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
+        assert obj_._type == 'dice', 'wrong _type'
         assert len(obj_._range) == 2, 'wrong range'
 
     def test_dice_type_have_sides_defined_less_than_two(self) -> None:
@@ -74,6 +118,7 @@ class TestCard:
         """
         obj_ = Card(name='card')
         assert obj_.name == 'card', 'wrong name'
+        assert obj_._type == 'card', 'wrong _type'
         assert obj_.opened is False, 'card is opened'
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'

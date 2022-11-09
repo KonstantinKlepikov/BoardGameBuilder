@@ -7,6 +7,7 @@ from bgameb.markers import Step
 from bgameb.items import Dice, Card, BaseItem
 from bgameb.tools import Shaker, Deck, Order, Steps, BaseTool
 from bgameb.errors import ArrangeIndexError
+from bgameb.types import MARKERS_ITEMS
 
 
 class FixedSeed:
@@ -34,15 +35,16 @@ class TestTool:
         ]
 
     @pytest.mark.parametrize("_class, name", params)
-    def test_tool_classes_created_with_name(
+    def test_tool_init(
         self,
         _class: BaseTool,
         name: str,
             ) -> None:
-        """Test stuff classes instancing
+        """Test tool classes instancing
         """
         obj_ = _class(name=name)
         assert obj_.name == name, 'not set name for instance'
+        assert obj_._types_to_add == MARKERS_ITEMS, 'wrong _type_to_add'
 
     @pytest.mark.parametrize("_class, name", params)
     def test_stuff_classes_are_converted_to_json(
@@ -66,7 +68,7 @@ class TestShaker:
         """
         obj_ = Shaker(name='shaker')
         obj_['dice'] = Dice('dice', count=5)
-        obj_['dice_nice'] = Dice('dice_nice', count=5)
+        obj_.add(Dice('dice_nice', count=5))
         roll = obj_.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
@@ -87,7 +89,7 @@ class TestDeck:
     def obj_(self) -> Deck:
         obj_ = Deck(name='deck')
         obj_['card'] = Card('card', count=20)
-        obj_['card_nice'] = Card('card_nice', count=20)
+        obj_.add(Card('card_nice', count=20))
         return obj_
 
     def test_deck_instanciation(self) -> None:
@@ -330,7 +332,7 @@ class TestSteps:
     def obj_(self) -> Steps:
         obj_ = Steps('game_turns')
         obj_['step1'] = Step('step1', priority=1)
-        obj_['astep'] = Step('astep', priority=2)
+        obj_.add(Step('astep', priority=2))
         return obj_
 
     def test_steps_instance(self) -> None:
