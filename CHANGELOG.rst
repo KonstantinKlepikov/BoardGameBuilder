@@ -3,6 +3,35 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.25 (2022-11-09)
+============================
+
+Features
+--------
+
+- 180:
+      * method add() added to Base class
+      * _types_to_add attr and _type for check added components
+      * redefined types.py - is removed Literal types and classes collections
+      * added game stuff to __init__.py
+      * redefine README Example
+      * docs fixes
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/180)
+
+
+Deprecations and Removals
+-------------------------
+
+- 180:
+      * _add_replace() is removed from Componenys
+      * _add method is removed from Components
+      * new() and copy() methods are removed from Game
+      * owner_off attr removed from Players class
+      * game_steps attr is removed from Game
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/180)
+
+
 Release v0.0.24 (2022-11-06)
 ============================
 
