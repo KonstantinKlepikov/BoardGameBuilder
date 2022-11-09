@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.markers &mdash; bgameb 0.0.22 documentation</title>
+  <title>bgameb.markers &mdash; bgameb 0.0.24 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.22
+                0.0.24
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,7 +71,6 @@
   <h1>Source code for bgameb.markers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Game markers, like counters and etc</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span><span class="p">,</span> <span class="n">config</span>
@@ -81,7 +80,7 @@
 <div class="viewcode-block" id="BaseMarker"><a class="viewcode-back" href="../../bgameb.html#bgameb.markers.BaseMarker">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseMarker</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for game stuff (like dices or cards)</span>
+    <span class="sd">&quot;&quot;&quot;Base class for game markers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -95,9 +94,9 @@
 <span class="sd">    objects. It use `python collections/Counter</span>
 <span class="sd">    &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_</span>
 
-<span class="sd">    Aargs:</span>
-<span class="sd">        current (Counter): collections.Counter obkject</span>
-<span class="sd">                           is a current order of steps.</span>
+<span class="sd">    Attr:</span>
+<span class="sd">        - current (Counter): collections.Counter obkject</span>
+<span class="sd">                             is a current order of steps.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">current</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">,</span>
@@ -119,21 +118,13 @@
 <span class="k">class</span> <span class="nc">Step</span><span class="p">(</span><span class="n">BaseMarker</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Game steps or turns</span>
 
-<span class="sd">    Args:</span>
-
+<span class="sd">    Attr:</span>
 <span class="sd">        - priority (int): priority queue number. Default to 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
-
-
-<span class="n">MARKERS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">Counter</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">Counter</span><span class="p">,</span>
-    <span class="n">Step</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">Step</span><span class="p">,</span>
-    <span class="p">}</span>
-<span class="n">MARKERS_TYPES</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;counter&#39;</span><span class="p">,</span> <span class="s1">&#39;step&#39;</span><span class="p">,</span> <span class="p">]</span>
 </pre></div>
 
            </div>
