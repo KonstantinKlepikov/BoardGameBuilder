@@ -1,23 +1,28 @@
 """Game dices, coins, cards and other items
 """
 import random
-from typing import List, Optional, Literal
+from typing import List, Optional
 from dataclasses import dataclass, field
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
+from bgameb.types import MARKERS
 
 
 @dataclass_json
 @dataclass(repr=False)
 class BaseItem(Base):
-    """Base class for game stuff (like dices or cards)
+    """Base class for game items (like dices or cards)
 
-    Args:
-
+    Attr:
         - count (int): count of items. Default to 1.
+
     """
     count: int = 1
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self._types_to_add = MARKERS
 
 
 @dataclass_json
@@ -73,8 +78,7 @@ class Dice(BaseItem):
 class Card(BaseItem):
     """Card object
 
-    Args:
-
+    Attr:
         - opened (bool): is card oppened. Default to False.
         - tapped (bool): is card tapped. Default to False.
         - side (str, optional): the side of tap. Default to None.
@@ -140,10 +144,3 @@ class Card(BaseItem):
         to each other.
         """
         raise NotImplementedError
-
-
-ITEMS = {
-    Dice.__name__.lower(): Dice,
-    Card.__name__.lower(): Card,
-    }
-ITEMS_TYPES = Literal['dice', 'card', ]

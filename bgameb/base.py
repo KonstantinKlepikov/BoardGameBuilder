@@ -3,8 +3,8 @@
 from typing import List, Optional, Iterator
 from collections.abc import Mapping
 from dataclasses import dataclass, field, make_dataclass
-from dataclasses_json import dataclass_json
-from bgameb.errors import ComponentNameError
+from dataclasses_json import dataclass_json, config
+from bgameb.errors import ComponentNameError, ComponentClassError
 from loguru import logger
 
 
@@ -113,6 +113,9 @@ class Components(Mapping):
         Args:
             comp: component instance
         """
+        if self._chek_in(comp.name):
+            comp = comp.__class__(**comp.to_dict())
+
         if comp.name not in self.__dataclass_fields__.keys():
             self.__class__ = make_dataclass(
                 self.__class__.__name__,
@@ -122,41 +125,6 @@ class Components(Mapping):
                 )
 
         self.__dict__.update({comp.name: comp})
-
-    def _add(self, component, **kwargs) -> None:
-        """Add component to Components dict. Components with
-        same names as existed in Components cant be added.
-
-        Raises:
-            ComponentNameError: name not unique
-
-        Args:
-            component: component class
-            kwargs: additional args for component
-        """
-        if kwargs.get('name'):
-            self._chek_in(kwargs['name'])
-        else:
-            self._chek_in(component.name)
-            kwargs['name'] = component.name
-
-        comp = component(**kwargs)
-
-        self._update(comp)
-
-    def _add_replace(self, component, **kwargs) -> None:
-        """Add or replace component in Components dict.
-
-        Args:
-            component: component class
-            kwargs: additional args for component
-        """
-        if not kwargs.get('name'):
-            kwargs['name'] = component.name
-
-        comp = component(**kwargs)
-
-        self._update(comp)
 
     def get_names(self) -> List[str]:
         """Get names of all components in Components
@@ -172,11 +140,20 @@ class Components(Mapping):
 class Base(Components):
     """Base class for game, stuff, tools players and other components
 
-    Args:
-
+    Attr:
         - name (str): name of component
+        - _type (Optional[str]): type for check when this component
+          can be added
+        - _types_to_add (List[str]): types of components, that can
+          be added
     """
     name: str
+    _type: Optional[str] = field(default=None)
+    _types_to_add: List[str] = field(
+        default_factory=list,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
 
     def __post_init__(self) -> None:
         # check name
@@ -185,6 +162,9 @@ class Base(Components):
                 name=self.name
             )
 
+        # set self_type
+        self._type = self.__class__.__name__.lower()
+
         # set logger
         self._logger = logger.bind(
             classname=self.__class__.__name__,
@@ -192,3 +172,15 @@ class Base(Components):
         self._logger.info(
             f'{self.__class__.__name__} created with {self.name=}.'
             )
+
+    def add(self, component) -> None:
+        """Add another component to this component
+
+        Args:
+            component (Components): component instance
+        """
+        if component._type in self._types_to_add:
+            self._update(component)
+            self._logger.info(f'{component.name} is added to {self.name}.')
+        else:
+            raise ComponentClassError(component, self._logger)

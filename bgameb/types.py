@@ -1,39 +1,14 @@
 """Types of package objects
 """
-from typing import Literal, Dict
-from bgameb.base import Base
-from bgameb.markers import MARKERS, MARKERS_TYPES
-from bgameb.items import ITEMS, ITEMS_TYPES
-from bgameb.tools import TOOLS, TOOLS_TYPES
-from bgameb.players import PLAYERS, PLAERS_TYPES
+from typing import List
 
 
-COMPONENTS_TYPES = Literal[
-    MARKERS_TYPES,
-    ITEMS_TYPES,
-    TOOLS_TYPES,
-    PLAERS_TYPES,
-    ]
+MARKERS: List[str] = ['counter', 'step']
+ITEMS: List[str] = ['dice', 'card', ]
+TOOLS: List[str] = ['shaker', 'deck', 'steps']
+PLAYERS: List[str] = ['player', ]
+GAMES: List[str] = ['game', ]
 
-COMPONENTS: Dict[COMPONENTS_TYPES, Base] = {}
-for d in (MARKERS, TOOLS, ITEMS, PLAYERS):
-    COMPONENTS.update(d)  # type: ignore
-
-MARKERS_MORE = [
-    n for n
-    in COMPONENTS.keys() if
-    n not in MARKERS.keys()
-    ]
-ITEMS_MORE = [
-    n for n
-    in COMPONENTS.keys() if
-    n not in MARKERS.keys()
-    and n not in ITEMS.keys()
-    ]
-TOOLS_MORE = [
-    n for n
-    in COMPONENTS.keys() if
-    n not in MARKERS.keys()
-    and n not in ITEMS.keys()
-    and n not in TOOLS.keys()
-    ]
+MARKERS_ITEMS = MARKERS + ITEMS
+MARKERS_ITEMS_TOOLS = MARKERS_ITEMS + TOOLS
+COMPONENTS = MARKERS_ITEMS_TOOLS + PLAYERS + GAMES
