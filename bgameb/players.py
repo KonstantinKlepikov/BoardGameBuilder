@@ -29,5 +29,5 @@ class Player(Base):
         super().__post_init__()
 
 
-PLAYERS = {Player.__name__.lower(): Player, }
-PLAERS_TYPES = Literal['player', ]
+# PLAYERS = {Player.__name__.lower(): Player, }
+# PLAERS_TYPES = Literal['player', ]

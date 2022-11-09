@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
-from bgameb._types import MARKERS
+from bgameb.types import MARKERS
 
 
 @dataclass_json
@@ -147,8 +147,8 @@ class Card(BaseItem):
         raise NotImplementedError
 
 
-ITEMS = {
-    Dice.__name__.lower(): Dice,
-    Card.__name__.lower(): Card,
-    }
-ITEMS_TYPES = Literal['dice', 'card', ]
+# ITEMS = {
+#     Dice.__name__.lower(): Dice,
+#     Card.__name__.lower(): Card,
+#     }
+# ITEMS_TYPES = Literal['dice', 'card', ]

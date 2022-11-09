@@ -3,14 +3,14 @@
 import random
 from collections import deque
 from heapq import heappop, heappush
-from typing import Tuple, Dict, Literal, List, Deque
+from typing import Tuple, Dict, List, Deque
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.markers import Step
 from bgameb.items import Card, Dice
 from bgameb.errors import ArrangeIndexError
-from bgameb._types import STUFF
+from bgameb.types import STUFF
 
 
 @dataclass_json
@@ -334,9 +334,9 @@ class Steps(BaseTool):
         return self.current
 
 
-TOOLS = {
-    Shaker.__name__.lower(): Shaker,
-    Deck.__name__.lower(): Deck,
-    Steps.__name__.lower(): Steps,
-    }
-TOOLS_TYPES = Literal['shaker', 'deck', 'steps']
+# TOOLS = {
+#     Shaker.__name__.lower(): Shaker,
+#     Deck.__name__.lower(): Deck,
+#     Steps.__name__.lower(): Steps,
+#     }
+# TOOLS_TYPES = Literal['shaker', 'deck', 'steps']

@@ -1,3 +1,5 @@
 180:
     * _add_replace() is removed from Componenys
+    * _add method is removed from Components
+    * new() and copy() methods are removed from Game
     * ->

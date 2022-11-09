@@ -58,8 +58,8 @@ class Step(BaseMarker):
         super().__post_init__()
 
 
-MARKERS = {
-    Counter.__name__.lower(): Counter,
-    Step.__name__.lower(): Step,
-    }
-MARKERS_TYPES = Literal['counter', 'step', ]
+# MARKERS = {
+#     Counter.__name__.lower(): Counter,
+#     Step.__name__.lower(): Step,
+#     }
+# MARKERS_TYPES = Literal['counter', 'step', ]

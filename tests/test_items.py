@@ -2,6 +2,7 @@ import json
 import pytest
 from bgameb.items import Dice, Card
 from bgameb.errors import StuffDefineError
+from bgameb.types import MARKERS
 
 
 class TestBaseStuff:
@@ -19,6 +20,7 @@ class TestBaseStuff:
         obj_ = _class(name=name)
         assert obj_.name == name, 'not set name for instance'
         assert obj_.count == 1, 'wrong count'
+        assert obj_._type_to_add == MARKERS, 'wrong _type_to_add'
 
     @pytest.mark.parametrize("_class, name", params)
     def test_stuff_classes_are_converted_to_json(
@@ -42,6 +44,7 @@ class TestDices:
         assert obj_.name == 'dice', 'wrong name'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
+        assert obj_._type == 'dice', 'wrong _type'
         assert len(obj_._range) == 2, 'wrong range'
 
     def test_dice_type_have_sides_defined_less_than_two(self) -> None:
@@ -74,6 +77,7 @@ class TestCard:
         """
         obj_ = Card(name='card')
         assert obj_.name == 'card', 'wrong name'
+        assert obj_._type == 'card', 'wrong _type'
         assert obj_.opened is False, 'card is opened'
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'

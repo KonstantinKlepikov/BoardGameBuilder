@@ -113,6 +113,11 @@ class Components(Mapping):
         Args:
             comp: component instance
         """
+        if self._chek_in(comp.name):
+            comp = comp.__class__(**comp.to_dict())
+
+        # self._chek_in(comp.name)
+
         if comp.name not in self.__dataclass_fields__.keys():
             self.__class__ = make_dataclass(
                 self.__class__.__name__,
@@ -123,26 +128,26 @@ class Components(Mapping):
 
         self.__dict__.update({comp.name: comp})
 
-    def _add(self, component, **kwargs) -> None:
-        """Add component to Components dict. Components with
-        same names as existed in Components cant be added.
+    # def _add(self, component, **kwargs) -> None:
+    #     """Add component to Components dict. Components with
+    #     same names as existed in Components cant be added.
 
-        Raises:
-            ComponentNameError: name not unique
+    #     Raises:
+    #         ComponentNameError: name not unique
 
-        Args:
-            component: component class
-            kwargs: additional args for component
-        """
-        if kwargs.get('name'):
-            self._chek_in(kwargs['name'])
-        else:
-            self._chek_in(component.name)
-            kwargs['name'] = component.name
+    #     Args:
+    #         component: component class
+    #         kwargs: additional args for component
+    #     """
+    #     if kwargs.get('name'):
+    #         self._chek_in(kwargs['name'])
+    #     else:
+    #         self._chek_in(component.name)
+    #         kwargs['name'] = component.name
 
-        comp = component(**kwargs)
+    #     comp = component(**kwargs)
 
-        self._update(comp)
+    #     self._update(comp)
 
     # def _add_replace(self, component, **kwargs) -> None:
     #     """Add or replace component in Components dict.

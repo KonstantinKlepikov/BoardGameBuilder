@@ -9,7 +9,7 @@ from bgameb.base import Base, log_enable
 #     ITEMS_MORE, TOOLS_MORE, MARKERS, ITEMS, TOOLS,
 #     PLAYERS
 #     )
-from bgameb._types import _COMPONENTS
+from bgameb.types import COMPONENTS
 from bgameb.tools import Steps
 # from bgameb.errors import ComponentClassError
 
@@ -22,12 +22,12 @@ class Game(Base):
     Args:
         game_steps (Steps): game turn steps order
     """
-    game_steps: Steps = field(init=False)
+    game_steps: Steps = field(default=None)
 
     def __post_init__(self) -> None:
         super().__post_init__()
         self.game_steps = Steps('game_steps')
-        self._type_to_add = _COMPONENTS
+        self._types_to_add = COMPONENTS
 
     # def new(
     #     self,
@@ -141,30 +141,31 @@ class Game(Base):
 
 
 if __name__ == '__main__':
+    import bgameb
     from pprint import pprint
     log_enable()
     game = Game('one_board_game')
-    game.new(
-        'step0',
-        type_='step',
-        target='game_steps'
-            )
-    game.new(
-        'step1',
-        type_='step',
-        target='game_steps',
-        priority=1
-            )
-    game.new('one_card', type_='card')
-    game.new('yellow', type_='counter', target='one_card')
-    game.new('cards_deck', type_='deck')
-    game.copy('one_card', 'cards_deck', count=3)
-    game.game_steps.deal()
-    game.cards_deck.deal()
-    game.is_active = True  # type: ignore
-    game.new('blue_shaker', type_='shaker')
-    game.new('eight', type_='dice', target='blue_shaker', sides=8, count=10)
-    result = game.blue_shaker.eight.roll()
+    # game.new(
+    #     'step0',
+    #     type_='step',
+    #     target='game_steps'
+    #         )
+    # game.new(
+    #     'step1',
+    #     type_='step',
+    #     target='game_steps',
+    #     priority=1
+    #         )
+    # game.new('one_card', type_='card')
+    # game.new('yellow', type_='counter', target='one_card')
+    # game.new('cards_deck', type_='deck')
+    # game.copy('one_card', 'cards_deck', count=3)
+    # game.game_steps.deal()
+    # game.cards_deck.deal()
+    # game.is_active = True  # type: ignore
+    # game.new('blue_shaker', type_='shaker')
+    # game.new('eight', type_='dice', target='blue_shaker', sides=8, count=10)
+    # result = game.blue_shaker.eight.roll()
 
     print(repr(game))
     print('='*20 + '\n')

@@ -1,6 +1,6 @@
 """Types of package objects
 """
-from typing import List
+# from typing import Literal, Dict
 # from bgameb.base import Base
 # from bgameb.markers import MARKERS, MARKERS_TYPES
 # from bgameb.items import ITEMS, ITEMS_TYPES
@@ -37,12 +37,3 @@ from typing import List
 #     and n not in ITEMS.keys()
 #     and n not in TOOLS.keys()
 #     ]
-
-
-MARKERS: List[str] = ['counter', ],
-ITEMS: List[str] = ['dice', 'card', ],
-TOOLS: List[str] = ['shaker', 'deck', ],
-PLAYERS: List[str] = ['player', ],
-
-STUFF = MARKERS + ITEMS
-_COMPONENTS = STUFF + TOOLS + PLAYERS
