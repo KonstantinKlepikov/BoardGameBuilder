@@ -3,7 +3,7 @@
 from typing import List
 
 
-MARKERS: List[str] = ['counter', 'step']
+MARKERS: List[str] = ['step']
 ITEMS: List[str] = ['dice', 'card', ]
 TOOLS: List[str] = ['shaker', 'deck', 'steps']
 PLAYERS: List[str] = ['player', ]
