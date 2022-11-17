@@ -1,7 +1,6 @@
 import json
 import pytest
-import collections
-from bgameb.markers import Step, Counter
+from bgameb.markers import Step
 
 
 class TestBaseMarker:
@@ -9,7 +8,6 @@ class TestBaseMarker:
     """
     params = [
         (Step, 'step_bep'),
-        (Counter, 'counter_my'),
         ]
 
     @pytest.mark.parametrize("_class, name", params)
@@ -30,22 +28,6 @@ class TestBaseMarker:
         obj_ = _class(name=name)
         j = json.loads(obj_.to_json())
         assert j['name'] == name, 'not converted to json'
-
-
-class TestCounter:
-    """Test counter object
-    """
-
-    def test_counter_instance(self) -> None:
-        """Test Step class instance
-        """
-        obj_ = Counter(name='yellow')
-        assert isinstance(obj_.current, collections.Counter), 'wrong current'
-        assert obj_.__class__.__name__.lower() == 'counter', 'wrong type'
-        obj_.current['bacon'] = 1
-        assert len(obj_.current) == 1, 'wrong len of counter'
-        obj_.clear()
-        assert len(obj_.current) == 0, 'wrong len of counter'
 
 
 class TestStep:

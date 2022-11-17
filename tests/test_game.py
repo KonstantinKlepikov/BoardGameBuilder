@@ -4,7 +4,6 @@ from bgameb.game import Game
 from bgameb.base import Components, Base
 from bgameb.items import Dice, Card
 from bgameb.tools import Steps, Deck, Shaker
-from bgameb.markers import Counter
 from bgameb.types import COMPONENTS
 from bgameb.errors import ComponentClassError, ComponentNameError
 
@@ -35,7 +34,6 @@ class TestGame:
         (Steps, 'steps_new'),
         (Deck, 'deck_some'),
         (Shaker, 'shaker_this'),
-        (Counter, 'counter_less'),
         ]
 
     @pytest.mark.parametrize("_class, name", components)

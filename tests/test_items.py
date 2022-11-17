@@ -1,8 +1,7 @@
 import json
 import pytest
 from bgameb.items import Dice, Card, BaseItem
-from bgameb.markers import Counter, BaseMarker
-from bgameb.errors import StuffDefineError, ComponentClassError
+from bgameb.errors import StuffDefineError
 from bgameb.types import MARKERS
 
 
@@ -34,44 +33,6 @@ class TestBaseStuff:
         obj_ = _class(name=name)
         j = json.loads(obj_.to_json())
         assert j['name'] == name, 'not converted to json'
-
-    components = [
-        (Counter, 'counter_less'),
-        ]
-
-    @pytest.mark.parametrize("_class1, name1", components)
-    @pytest.mark.parametrize("_class, name", params)
-    def test_add_new_component_to_item(
-        self,
-        _class: BaseItem,
-        name: str,
-        _class1: BaseMarker,
-        name1: str
-            ) -> None:
-        """Test add new component to item
-        """
-        obj_ = _class(name=name)
-        cl = _class1(name1)
-        obj_.add(component=cl)
-        assert obj_[name1].name == name1, \
-            'component not added'
-
-    @pytest.mark.parametrize("_class, name", params)
-    def test_add_new_wrong_component_to_item(
-        self, _class: BaseItem, name: str
-            ) -> None:
-        """Test cant add new wrong component to item
-        """
-        obj_ = _class(name=name)
-
-        class G():
-            _type = 'wrong'
-
-        with pytest.raises(
-            ComponentClassError,
-            match='not a component'
-                ):
-            obj_.add(G())
 
 
 class TestDices:

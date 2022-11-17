@@ -2,6 +2,7 @@
 """
 from typing import List, Optional, Iterator
 from collections.abc import Mapping
+from collections import Counter
 from dataclasses import dataclass, field, make_dataclass
 from dataclasses_json import dataclass_json, config
 from bgameb.errors import ComponentNameError, ComponentClassError
@@ -81,8 +82,10 @@ class Components(Mapping):
         items = (
             f"{k}={v!r}" for k, v
             in self.__dict__.items()
-            if not k.startswith('_') and not k.startswith('current')
-            )
+            if not k.startswith('_')
+            and not k.startswith('current')
+            and not k.startswith('name')
+                )
         return "{}({})".format(type(self).__name__, ", ".join(items))
 
     def __len__(self) -> int:
@@ -142,13 +145,23 @@ class Base(Components):
 
     Attr:
         - name (str): name of component
+        - counter (Counter): counter object
         - _type (Optional[str]): type for check when this component
           can be added
         - _types_to_add (List[str]): types of components, that can
           be added
+
+    Counter is a 'collection.Counter
+    <https://docs.python.org/3/library/collections.html#collections.Counter>'
+    object
     """
     name: str
-    _type: Optional[str] = field(default=None)
+    counter: Counter = field(default_factory=dict)  # type: ignore
+    _type: Optional[str] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+        )
     _types_to_add: List[str] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
@@ -161,6 +174,9 @@ class Base(Components):
             raise ComponentNameError(
                 name=self.name
             )
+
+        # int counter
+        self.counter = Counter()
 
         # set self_type
         self._type = self.__class__.__name__.lower()
