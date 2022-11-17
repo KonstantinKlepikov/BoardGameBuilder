@@ -1,4 +1,4 @@
-from bgameb.markers import Counter, Step
+from bgameb.markers import Step
 from bgameb.items import Dice, Card
 from bgameb.tools import Shaker, Deck, Steps
 from bgameb.players import Player

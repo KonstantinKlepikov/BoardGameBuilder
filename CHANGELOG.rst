@@ -3,6 +3,39 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.26 (2022-11-17)
+============================
+
+Features
+--------
+
+- #187:
+      * all object inherited from Base gain counter attr that contains Counter() from collections
+      * name now isnt in __repr__ and __str__ of dataclasses
+      * test all
+      * changes in docs
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/187)
+
+
+Bugfixes
+--------
+
+- #186:
+      * fix doc deplot workflow
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/186)
+- #192:
+      *fix readme example
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/192)
+
+
+Deprecations and Removals
+-------------------------
+
+- #187:
+      * Counter() dataclass is removed
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/187)
+
+
 Release v0.0.25 (2022-11-09)
 ============================
 

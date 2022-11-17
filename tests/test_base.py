@@ -1,5 +1,7 @@
 import pytest
-from bgameb.base import Components
+import json
+from collections import Counter
+from bgameb.base import Components, Base
 from bgameb.items import Dice, Card, BaseItem
 from bgameb.errors import ComponentNameError
 
@@ -95,3 +97,26 @@ class TestComponents:
         assert comp.get_names() == [name], 'empty list of names'
         comp._update(_class('this'))
         assert comp.get_names() == [name, 'this'], 'empty list of names'
+
+
+class TestBase:
+    """Test Base class
+    """
+
+    def test_base_class_created_with_name(self) -> None:
+        """Test Base name instancing
+        """
+        obj_ = Base(name='this')
+        assert obj_.name == 'this', 'not set name for instance'
+        assert isinstance(obj_, Components), 'isnt component'
+        assert obj_._types_to_add == [], 'wrong _types_to_add'
+        assert obj_._type == 'base', 'wrong type'
+        assert isinstance(obj_.counter, Counter), 'wrong counter type'
+        assert len(obj_.counter) == 0, 'counter not empty'
+
+    def test_base_class_is_converted_to_json(self) -> None:
+        """Test to json convertatrion
+        """
+        obj_ = Base(name='this')
+        j = json.loads(obj_.to_json())
+        assert j['name'] == 'this', 'not converted to json'

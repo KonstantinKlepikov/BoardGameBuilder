@@ -21,6 +21,7 @@ if __name__ == '__main__':
     import bgameb
     from pprint import pprint
     log_enable()
+
     game = bgameb.Game('one_board_game')
     game.add(bgameb.Steps('game_steps'))
     game.game_steps.add(bgameb.Step('step0'))
@@ -28,13 +29,14 @@ if __name__ == '__main__':
 
     game.add(bgameb.Deck('cards_deck'))
     card = bgameb.Card('one_card')
-    card.add(bgameb.Counter('yellow'))
 
     game.cards_deck.add(card)
     game.cards_deck.one_card.count = 3
+    game.cards_deck.one_card.counter['yellow'] = 12
+    game.cards_deck.one_card.counter['banana'] = 0
 
-    game.game_steps.deal()
-    game.cards_deck.deal()
+    steps = game.game_steps.deal()
+    deck = game.cards_deck.deal()
 
     game.is_active = True  # type: ignore
 
@@ -50,5 +52,7 @@ if __name__ == '__main__':
     print(game)
     print('='*20 + '\n')
     pprint(game.to_dict())
+    print('='*20 + '\n')
+    pprint(deck)
     print('='*20 + '\n')
     print(dir(game))

@@ -12,51 +12,44 @@ Object-oriented framework for build board game logic in python
 ## Short example
 
 ```python
-from bgameb import Game
+import bgameb
 
 # create the game
-game = Game('one_board_game')
+game = bgameb.Game('one_board_game')
 
 # add dice and coin types to game
-game.new('six', type_='dice', sides=6)
-game.new('twenty', type_='dice', sides=20)
-game.new('coin', type_='dice') # 2 is default number of sides
-
-# or define sides for dice and coin types
-game.coin.sides = 3
+six = bgameb.Dice('six', sides=6)
+twenty = bgameb.Dice('twenty', sides=20)
+coin = bgameb.Dice('coin') # 2 is default number of sides
 
 # add shaker and add count of stuff to shaker
-game.new('red_shaker', type_='shaker')
-game.copy('six', 'red_shaker', count=50)
-game.copy('twenty', 'red_shaker', count=10)
-game.copy('coin', 'red_shaker', count=42)
+game.add(bgameb.Shaker('red_shaker'))
+for stuff in [six, twenty, coin]:
+    game.red_shaker.add(stuff)
+    # change coont of dices in shaker
+    game.red_shaker[stuff.name].count = 50
 
 # roll all stuff and get result
 result = game.red_shaker.roll()
 
-# or define new shaker and add stuff directly
-game.new('blue_shaker', type_='shaker')
-game.new('eight', type_='dice', target='blue_shaker', sides=8, count=10)
-result = game.blue_shaker.eight.roll()
-
 # you can use dict notation offcourse
-result = game['blue_shaker']['coin'].roll()
+result = game['red_shaker']['coin'].roll()
 
 # delete components from any collections
-del game.blue_shaker
-del game.six
+del game.red_shaker.six
+del game.red_shaker
 
 # define a cards and decks
-game.new('one_card', type_='card')
-game.new('cards_deck', type_='deck')
-game.copy('one_card', 'cards_deck', count=100)
+game.add(bgameb.Deck('cards_deck'))
+game.cards_deck.add(bgameb.Card('one_card', count=100))
 
 # deal card from deck. current deck is a python deque
-deck = game.cards_deck.deal()
+current = game.cards_deck.deal()
 
-# lets create game turn structure
-game.new('phase_one', 'game_steps', priority=0)
-game.copy('phase_two', 'game_steps', priority=1)
+# lets create game turn structure and start turn
+game.add(bgameb.Steps('game_steps'))
+game.game_steps.add(bgameb.Step('phase_one', priority=0))
+game.game_steps.add(bgameb.Step('phase_two', priority=1))
 current_game_steps = game.game_steps.deal()
 
 # game_steps is a priority queue, that linked to priority attribute

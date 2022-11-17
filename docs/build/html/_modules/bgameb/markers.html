@@ -71,9 +71,8 @@
   <h1>Source code for bgameb.markers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Game markers, like counters and etc</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">collections</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span><span class="p">,</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
 
 
@@ -85,32 +84,6 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="Counter"><a class="viewcode-back" href="../../bgameb.html#bgameb.markers.Counter">[docs]</a><span class="nd">@dataclass_json</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="n">BaseMarker</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Counter is a class that count some statistics for other</span>
-<span class="sd">    objects. It use `python collections/Counter</span>
-<span class="sd">    &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_</span>
-
-<span class="sd">    Attr:</span>
-<span class="sd">        - current (Counter): collections.Counter obkject</span>
-<span class="sd">                             is a current order of steps.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">current</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Counter.clear"><a class="viewcode-back" href="../../bgameb.html#bgameb.markers.Counter.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Clear the current queue</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="Step"><a class="viewcode-back" href="../../bgameb.html#bgameb.markers.Step">[docs]</a><span class="nd">@dataclass_json</span>
