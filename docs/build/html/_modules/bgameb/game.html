@@ -93,13 +93,13 @@
     <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
     <span class="n">log_enable</span><span class="p">()</span>
 
-    <span class="n">game</span> <span class="o">=</span> <span class="n">bgameb</span><span class="o">.</span><span class="n">Game</span><span class="p">(</span><span class="s1">&#39;one_board_game&#39;</span><span class="p">)</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Steps</span><span class="p">(</span><span class="s1">&#39;game_steps&#39;</span><span class="p">))</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Step</span><span class="p">(</span><span class="s1">&#39;step0&#39;</span><span class="p">))</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Step</span><span class="p">(</span><span class="s1">&#39;step1&#39;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">game</span> <span class="o">=</span> <span class="n">bgameb</span><span class="o">.</span><span class="n">Game</span><span class="p">(</span><span class="s1">&#39;one board game&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Steps</span><span class="p">(</span><span class="s1">&#39;Game Steps&#39;</span><span class="p">))</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Step</span><span class="p">(</span><span class="s1">&#39;step 0&#39;</span><span class="p">))</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Step</span><span class="p">(</span><span class="s1">&#39;step 1&#39;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
-    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Deck</span><span class="p">(</span><span class="s1">&#39;cards_deck&#39;</span><span class="p">))</span>
-    <span class="n">card</span> <span class="o">=</span> <span class="n">bgameb</span><span class="o">.</span><span class="n">Card</span><span class="p">(</span><span class="s1">&#39;one_card&#39;</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Deck</span><span class="p">(</span><span class="s1">&#39;Cards Deck&#39;</span><span class="p">))</span>
+    <span class="n">card</span> <span class="o">=</span> <span class="n">bgameb</span><span class="o">.</span><span class="n">Card</span><span class="p">(</span><span class="s1">&#39;One card&#39;</span><span class="p">)</span>
 
     <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
     <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">one_card</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">3</span>
@@ -109,12 +109,12 @@
     <span class="n">steps</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
     <span class="n">deck</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
 
-    <span class="n">game</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># type: ignore</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">IS_ACTIVE</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># type: ignore</span>
 
-    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Shaker</span><span class="p">(</span><span class="s1">&#39;blue_shaker&#39;</span><span class="p">))</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">blue_shaker</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Dice</span><span class="p">(</span><span class="s1">&#39;eight&#39;</span><span class="p">,</span> <span class="n">sides</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Shaker</span><span class="p">(</span><span class="s1">&#39;blue shaker&#39;</span><span class="p">))</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">blue_shaker</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Dice</span><span class="p">(</span><span class="s1">&#39;dice#8&#39;</span><span class="p">,</span> <span class="n">sides</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">blue_shaker</span><span class="o">.</span><span class="n">eight</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">blue_shaker</span><span class="o">.</span><span class="n">dice_8</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -125,6 +125,8 @@
     <span class="n">pprint</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">deck</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">get_names</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">game</span><span class="p">))</span>
 </pre></div>

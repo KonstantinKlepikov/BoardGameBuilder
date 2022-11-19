@@ -51,7 +51,7 @@ class Shaker(BaseTool):
 
         for comp in self:
             if isinstance(self[comp], Dice):
-                roll[self[comp].name] = self[comp].roll()
+                roll[self[comp].id] = self[comp].roll()
 
         self._logger.debug(f'Result of roll: {roll}')
 
@@ -140,7 +140,7 @@ class Deck(BaseTool):
                 )
         to_split = list(self.current)
         splited = (to_split[start:end], (to_split[0:start], to_split[end:]))
-        self._logger.debug(f'To arrange result: {splited=}')
+        self._logger.debug(f'To arrange result: {splited}')
 
         return splited
 
@@ -163,7 +163,7 @@ class Deck(BaseTool):
 
         if len(reorranged) == len(self.current):
             self.current = reorranged
-            self._logger.debug(f'Arrange result: {reorranged=}')
+            self._logger.debug(f'Arrange result: {reorranged}')
         else:
             raise ArrangeIndexError(
                 f'Wrong to_arranged parts: {arranged=}, {last=}',
@@ -179,7 +179,7 @@ class Deck(BaseTool):
         """Search for cards in current deck
 
         Args:
-            query (Dict[str, int]): dict with name of searched
+            query (Dict[str, int]): dict with id of searched
                                     cards and count of searching
             remove (bool): if True - remove searched cards from
                            current deck. Default to True.
@@ -202,9 +202,9 @@ class Deck(BaseTool):
         while True:
             try:
                 card = self.current.popleft()
-                if card.name in query.keys() and query[card.name] > 0:
+                if card.id in query.keys() and query[card.id] > 0:
                     result.append(card)
-                    query[card.name] -= 1
+                    query[card.id] -= 1
                     if not remove:
                         for_deque.append(card)
                 else:
@@ -264,7 +264,7 @@ class Order:
     Is used only for define game steps order.
 
     Attr:
-        - current List[Tuple[int, Components]]: priority queue list
+        - current List[Tuple[int, Component]]: priority queue list
     """
     current: List[Tuple[int, Step]] = field(
         default_factory=list,
@@ -328,5 +328,5 @@ class Steps(BaseTool):
             if isinstance(self[comp], Step):
                 step = replace(self[comp])
                 self.current.put(step)
-        self._logger.debug(f'Is deal order of turn: {self.current}')
+        self._logger.debug(f'Is deal order of turn: {self.current.current}')
         return self.current

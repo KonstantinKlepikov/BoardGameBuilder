@@ -22,13 +22,13 @@ if __name__ == '__main__':
     from pprint import pprint
     log_enable()
 
-    game = bgameb.Game('one_board_game')
-    game.add(bgameb.Steps('game_steps'))
-    game.game_steps.add(bgameb.Step('step0'))
-    game.game_steps.add(bgameb.Step('step1', priority=1))
+    game = bgameb.Game('one board game')
+    game.add(bgameb.Steps('Game Steps'))
+    game.game_steps.add(bgameb.Step('step 0'))
+    game.game_steps.add(bgameb.Step('step 1', priority=1))
 
-    game.add(bgameb.Deck('cards_deck'))
-    card = bgameb.Card('one_card')
+    game.add(bgameb.Deck('Cards Deck'))
+    card = bgameb.Card('One card')
 
     game.cards_deck.add(card)
     game.cards_deck.one_card.count = 3
@@ -38,12 +38,12 @@ if __name__ == '__main__':
     steps = game.game_steps.deal()
     deck = game.cards_deck.deal()
 
-    game.is_active = True  # type: ignore
+    game.IS_ACTIVE = True  # type: ignore
 
-    game.add(bgameb.Shaker('blue_shaker'))
-    game.blue_shaker.add(bgameb.Dice('eight', sides=8, count=10))
+    game.add(bgameb.Shaker('blue shaker'))
+    game.blue_shaker.add(bgameb.Dice('dice#8', sides=8, count=10))
 
-    result = game.blue_shaker.eight.roll()
+    result = game.blue_shaker.dice_8.roll()
 
     print(result)
     print('='*20 + '\n')
@@ -54,5 +54,7 @@ if __name__ == '__main__':
     pprint(game.to_dict())
     print('='*20 + '\n')
     pprint(deck)
+    print('='*20 + '\n')
+    print(game.get_names())
     print('='*20 + '\n')
     print(dir(game))

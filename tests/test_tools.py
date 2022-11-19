@@ -2,7 +2,7 @@ import json
 import pytest
 import random
 from collections import deque
-from bgameb.base import Components
+from bgameb.base import Component
 from bgameb.markers import Step
 from bgameb.items import Dice, Card, BaseItem
 from bgameb.tools import Shaker, Deck, Order, Steps, BaseTool
@@ -34,29 +34,29 @@ class TestTool:
         (Steps, 'steps_to')
         ]
 
-    @pytest.mark.parametrize("_class, name", params)
+    @pytest.mark.parametrize("_class, _id", params)
     def test_tool_init(
         self,
         _class: BaseTool,
-        name: str,
+        _id: str,
             ) -> None:
         """Test tool classes instancing
         """
-        obj_ = _class(name=name)
-        assert obj_.name == name, 'not set name for instance'
+        obj_ = _class(_id)
+        assert obj_.id == _id, 'not set ID for instance'
         assert obj_._types_to_add == MARKERS_ITEMS, 'wrong _type_to_add'
 
-    @pytest.mark.parametrize("_class, name", params)
+    @pytest.mark.parametrize("_class, _id", params)
     def test_stuff_classes_are_converted_to_json(
         self,
         _class: BaseTool,
-        name: str,
+        _id: str,
             ) -> None:
         """Test to json convertatrion
         """
-        obj_ = _class(name=name)
+        obj_ = _class(_id)
         j = json.loads(obj_.to_json())
-        assert j['name'] == name, 'not converted to json'
+        assert j['id'] == _id, 'not converted to json'
 
 
 class TestShaker:
@@ -66,7 +66,7 @@ class TestShaker:
     def test_roll_shaker(self) -> None:
         """Test roll shaker
         """
-        obj_ = Shaker(name='shaker')
+        obj_ = Shaker('shaker')
         obj_['dice'] = Dice('dice', count=5)
         obj_.add(Dice('dice_nice', count=5))
         roll = obj_.roll()
@@ -76,7 +76,7 @@ class TestShaker:
     def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
         """
-        obj_ = Shaker(name='shaker')
+        obj_ = Shaker('shaker')
         roll = obj_.roll()
         assert roll == {}, 'wrong roll result'
 
@@ -87,7 +87,7 @@ class TestDeck:
 
     @pytest.fixture
     def obj_(self) -> Deck:
-        obj_ = Deck(name='deck')
+        obj_ = Deck('deck')
         obj_['card'] = Card('card', count=20)
         obj_.add(Card('card_nice', count=20))
         return obj_
@@ -95,8 +95,8 @@ class TestDeck:
     def test_deck_instanciation(self) -> None:
         """Test deck correct created
         """
-        obj_ = Deck(name='deck')
-        assert obj_.name == 'deck', 'wrong name'
+        obj_ = Deck('deck')
+        assert obj_.id == 'deck', 'wrong id'
         assert isinstance(obj_.current, deque), 'wrong type of current'
         assert len(obj_.current) == 0, 'nonempty current'
 
@@ -106,9 +106,9 @@ class TestDeck:
         with FixedSeed(42):
             result = obj_.deal()
             assert len(result) == 40, 'wrong current len'
-            names = [stuff.name for stuff in result]
-            assert 'card' in names, 'wrong cards names inside current'
-            assert 'card_nice' in names, 'wrong cards names inside current'
+            ids = [stuff.id for stuff in result]
+            assert 'card' in ids, 'wrong cards ids inside current'
+            assert 'card_nice' in ids, 'wrong cards ids inside current'
             before = [id(card) for card in result]
             result = obj_.deal()
             after = [id(card) for card in result]
@@ -141,12 +141,12 @@ class TestDeck:
         search = obj_.search(query={'card': 1})
         assert len(search) == 1, 'wrong search len'
         assert isinstance(search[0], BaseItem), 'wrong search type'
-        assert search[0].name == 'card', 'wrong finded name'
+        assert search[0].id == 'card', 'wrong finded id'
         assert len(obj_.current) == 3, 'wrong current len'
 
         search = obj_.search(query={'card_nice': 2}, remove=False)
         assert len(search) == 2, 'wrong search len'
-        assert search[0].name == 'card_nice', 'wrong finded name'
+        assert search[0].id == 'card_nice', 'wrong finded id'
         assert len(obj_.current) == 3, 'wrong current len'
 
         search = obj_.search(query={'card': 1, 'card_nice': 1})
@@ -174,7 +174,7 @@ class TestDeck:
         assert isinstance(last[0], list), 'wrong left'
         assert isinstance(last[1], list), 'wrong right'
         assert isinstance(arranged, list), 'wrong center'
-        assert arranged[0].name == obj_.current[0].name, 'wrong arranged'
+        assert arranged[0].id == obj_.current[0].id, 'wrong arranged'
         assert last[0] == [], 'wrong split'
         assert len(last[1]) == 3, 'wrong split'
 
@@ -212,10 +212,10 @@ class TestDeck:
         with FixedSeed(42):
             obj_.deal()
             arranged, last = obj_.to_arrange(0, 3)
-            arranged.sort(key=lambda x: x.name)
-            before = [stuff.name for stuff in obj_.current]
+            arranged.sort(key=lambda x: x.id)
+            before = [stuff.id for stuff in obj_.current]
             result = obj_.arrange(arranged, last)
-            after = [stuff.name for stuff in result]
+            after = [stuff.id for stuff in result]
             assert after != before, 'not arranged'
 
     def test_arrrange_returns_same_len(self, obj_: Deck) -> None:
@@ -249,7 +249,7 @@ class TestDeck:
             result = obj_.get_random(4, remove=False)
             assert isinstance(result, list), 'wrong type'
             assert len(result) == 4, 'wrong result'
-            result_names = [card.name for card in result]
+            result_names = [card.id for card in result]
             assert result_names == [
                 'card_nice', 'card_nice', 'card_nice', 'card_nice'
                     ], 'not random result'
@@ -265,7 +265,7 @@ class TestDeck:
             result = obj_.get_random(4)
             assert isinstance(result, list), 'wrong type'
             assert len(result) == 4, 'wrong result'
-            result_names = [card.name for card in result]
+            result_names = [card.id for card in result]
             assert result_names == [
                 'card', 'card_nice', 'card_nice', 'card'
                     ], 'not random result'
@@ -339,7 +339,7 @@ class TestSteps:
         """Test Steps class instance
         """
         obj_ = Steps('game_turns')
-        assert isinstance(obj_, Components), 'wrong turn type'
+        assert isinstance(obj_, Component), 'wrong turn type'
         assert isinstance(obj_.current, Order), 'wrong current type'
         assert len(obj_.current) == 0, 'wrong current len'
 
@@ -347,7 +347,7 @@ class TestSteps:
         """Test add step to steps
         """
         assert isinstance(obj_.step1, Step), 'wrong type'
-        assert obj_.step1.name == 'step1', 'wrong name'
+        assert obj_.step1.id == 'step1', 'wrong id'
         assert obj_.step1.priority == 1, 'wrong priority'
 
     def test_steps_deal(self, obj_: Steps) -> None:
@@ -357,10 +357,10 @@ class TestSteps:
         assert len(result) == 2, 'wrong len'
         current = obj_.current.get()
         assert len(obj_.current) == 1, 'wrong len'
-        assert current.name == 'step1', 'wrong current step'
+        assert current.id == 'step1', 'wrong current step'
         current = obj_.current.get()
         assert len(obj_.current) == 0, 'wrong len'
-        assert current.name == 'astep', 'wrong current step'
+        assert current.id == 'astep', 'wrong current step'
         with pytest.raises(
             IndexError,
             match='index out of range'

@@ -1,11 +1,15 @@
 """Base constructs for build package objects
 """
+import re
+import string
 from typing import List, Optional, Iterator
 from collections.abc import Mapping
 from collections import Counter
 from dataclasses import dataclass, field, make_dataclass
 from dataclasses_json import dataclass_json, config
-from bgameb.errors import ComponentNameError, ComponentClassError
+from bgameb.errors import (
+    ComponentNameError, ComponentClassError, ComponentIdError
+        )
 from loguru import logger
 
 
@@ -35,8 +39,8 @@ def log_enable(
 
 @dataclass_json
 @dataclass(repr=False)
-class Components(Mapping):
-    """Components mapping
+class Component(Mapping):
+    """Component mapping
     """
     def __init__(
         self,
@@ -69,7 +73,8 @@ class Components(Mapping):
         except KeyError:
             raise AttributeError(attr)
 
-    def __setitem__(self, attr: str, value) -> None:
+    def __setitem__(self, attr: str, value):
+        attr = self._make_name(attr)
         self.__dict__.update({attr: value})
 
     def __getitem__(self, attr: str):
@@ -84,67 +89,121 @@ class Components(Mapping):
             in self.__dict__.items()
             if not k.startswith('_')
             and not k.startswith('current')
-            and not k.startswith('name')
                 )
         return "{}({})".format(type(self).__name__, ", ".join(items))
 
     def __len__(self) -> int:
         return len(self.__dict__)
 
-    def _chek_in(self, name: str) -> Optional[bool]:
-        """Chek is name of component is unique
+    def _is_unique(self, name: str) -> Optional[bool]:
+        """Chek is name of nested component is unique
+        for based component __dict__
 
         Args:
             name (str): name of component
 
         Raises:
-            ComponentNameError: name id not unique
+            ComponentNameError: name not unique
 
         Returns:
-            Optional[bool]: if it is in Components and unique
+            True: is unique
         """
-        if name in self.__dict__.keys():
-            raise ComponentNameError(name=name)
-        return True
+        if name not in self.__dict__.keys():
+            return True
+        raise ComponentNameError(name)
+
+    def _is_valid(self, name: str) -> bool:
+        """Chek is name of component contains correct symbols
+        match [a-zA-Z_][a-zA-Z0-9_]*$ expression:
+
+            * a-z, A-Z, 0-9 symbols
+            * first letter not a number amd not a _
+            * can be used _ symbol in subsequent symbols
+
+        Args:
+            name (str): name of component
+
+        Raises:
+            ComponentNameError: name is not valid
+
+        Returns:
+            bool: is valid
+        """
+        if re.match("[a-z][a-z0-9_]*$", str(name)):
+            return True
+        return False
+
+    def _make_name(self, name: str) -> str:
+        """
+        Replace spaces and other specific characters
+        in the name with _
+
+        Args:
+            name (str): name of component
+
+        Returns:
+            name (str): safe name of component
+        """
+        name = str(name).lower()
+        available = set(string.ascii_letters.lower() + string.digits + '_')
+
+        if " " in name:
+            name = name.replace(' ', '_')
+
+        diff = set(name).difference(available)
+        if diff:
+            for char in diff:
+                name = name.replace(char, '_')
+
+        if not self._is_valid(name):
+            raise ComponentNameError(name)
+
+        return name
 
     def _update(
         self,
-        comp,
+        component,
             ) -> None:
-        """Update Components dict
+        """Update Component dict with safe name
 
         Args:
-            comp: component instance
+            component: component instance
         """
-        if self._chek_in(comp.name):
-            comp = comp.__class__(**comp.to_dict())
+        name = self._make_name(component.id)
 
-        if comp.name not in self.__dataclass_fields__.keys():
+        if self._is_unique(name):
+            comp = component.__class__(**component.to_dict())
+
+        if name not in self.__dataclass_fields__.keys():
             self.__class__ = make_dataclass(
                 self.__class__.__name__,
-                fields=[(comp.name, type(comp), field(default=comp))],
+                fields=[(name, type(comp), field(default=comp))],
                 bases=(self.__class__, ),
                 repr=False
                 )
 
-        self.__dict__.update({comp.name: comp})
+        self.__dict__.update({name: comp})
 
     def get_names(self) -> List[str]:
-        """Get names of all components in Components
+        """Get names of all components in Component
 
         Returns:
             List[str]: list of components names
         """
-        return list(self.__dict__)
+        return [
+            name for name
+            in self.__dict__.keys()
+            if not name.startswith('_')
+                ]
 
 
 @dataclass_json
 @dataclass(repr=False)
-class Base(Components):
+class Base(Component):
     """Base class for game, stuff, tools players and other components
 
     Attr:
-        - name (str): name of component
+        - id (str): id of component
         - counter (Counter): counter object
         - _type (Optional[str]): type for check when this component
           can be added
@@ -155,7 +214,7 @@ class Base(Components):
     <https://docs.python.org/3/library/collections.html#collections.Counter>'
     object
     """
-    name: str
+    id: str
     counter: Counter = field(default_factory=dict)  # type: ignore
     _type: Optional[str] = field(
         default=None,
@@ -169,11 +228,9 @@ class Base(Components):
             )
 
     def __post_init__(self) -> None:
-        # check name
-        if not isinstance(self.name, str):
-            raise ComponentNameError(
-                name=self.name
-            )
+        # check id
+        if not isinstance(self.id, str):
+            raise ComponentIdError(self.id)
 
         # int counter
         self.counter = Counter()
@@ -184,19 +241,21 @@ class Base(Components):
         # set logger
         self._logger = logger.bind(
             classname=self.__class__.__name__,
-            name=self.name)
+            name=self.id)
+        if self._type == 'game':
+            self._logger.info('===========NEW GAME============')
         self._logger.info(
-            f'{self.__class__.__name__} created with {self.name=}.'
+            f'{self.__class__.__name__} created with id="{self.id}".'
             )
 
     def add(self, component) -> None:
         """Add another component to this component
 
         Args:
-            component (Components): component instance
+            component (Component): component instance
         """
         if component._type in self._types_to_add:
             self._update(component)
-            self._logger.info(f'{component.name} is added to {self.name}.')
+            self._logger.info(f'"{component.id}" is added to "{self.id}".')
         else:
             raise ComponentClassError(component, self._logger)
