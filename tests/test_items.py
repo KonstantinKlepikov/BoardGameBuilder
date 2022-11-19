@@ -6,33 +6,33 @@ from bgameb.types import MARKERS
 
 
 class TestBaseStuff:
-    """Test creation with names and json schemes
+    """Test creation with id and json schemes
     """
     params = [
         (Dice, 'dice_me'),
         (Card, 'card_you'),
         ]
 
-    @pytest.mark.parametrize("_class, name", params)
+    @pytest.mark.parametrize("_class, _id", params)
     def test_items_classes_created_with_name(
-        self, _class: BaseItem, name: str
+        self, _class: BaseItem, _id: str
             ) -> None:
         """Test items classes instancing
         """
-        obj_ = _class(name=name)
-        assert obj_.name == name, 'not set name for instance'
+        obj_ = _class(_id)
+        assert obj_.id == _id, 'not set id for instance'
         assert obj_.count == 1, 'wrong count'
         assert obj_._types_to_add == MARKERS, 'wrong _type_to_add'
 
-    @pytest.mark.parametrize("_class, name", params)
+    @pytest.mark.parametrize("_class, _id", params)
     def test_items_classes_are_converted_to_json(
-        self, _class: BaseItem, name: str
+        self, _class: BaseItem, _id: str
             ) -> None:
         """Test to json convertatrion
         """
-        obj_ = _class(name=name)
+        obj_ = _class(_id)
         j = json.loads(obj_.to_json())
-        assert j['name'] == name, 'not converted to json'
+        assert j['id'] == _id, 'not converted to json'
 
 
 class TestDices:
@@ -42,8 +42,8 @@ class TestDices:
     def test_dice_instanciation(self) -> None:
         """Test dice correct created
         """
-        obj_ = Dice(name='dice')
-        assert obj_.name == 'dice', 'wrong name'
+        obj_ = Dice('dice nice')
+        assert obj_.id == 'dice nice', 'wrong id'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
         assert obj_._type == 'dice', 'wrong _type'
@@ -56,17 +56,17 @@ class TestDices:
             StuffDefineError,
             match='Needed >= 2'
                 ):
-            Dice(name='base', sides=1)
+            Dice('base', sides=1)
 
     def test_dice_roll(self) -> None:
         """Test dice roll return result
         """
-        obj_ = Dice(name='dice', count=5)
+        obj_ = Dice('dice', count=5)
         result = obj_.roll()
         assert isinstance(result, list), 'roll returns not list'
         assert len(result) == 5, 'wrong count of rolls'
         assert isinstance(result[0], int), 'ot an int in a list'
-        obj_ = Dice(name='dice')
+        obj_ = Dice('dice')
         result = obj_.roll()
         assert len(result) == 1, 'is rolled, but count is 0'
 
@@ -77,8 +77,8 @@ class TestCard:
     def test_card_instanciation(self) -> None:
         """Test card correct created
         """
-        obj_ = Card(name='card')
-        assert obj_.name == 'card', 'wrong name'
+        obj_ = Card('card')
+        assert obj_.id == 'card', 'wrong name'
         assert obj_._type == 'card', 'wrong _type'
         assert obj_.opened is False, 'card is opened'
         assert obj_.tapped is False, 'card is tapped'
@@ -88,7 +88,7 @@ class TestCard:
     def test_flip(self) -> None:
         """Test flip card
         """
-        obj_ = Card(name='card')
+        obj_ = Card('card')
         obj_.flip()
         assert obj_.opened, 'card not oppened'
         obj_.flip()
@@ -97,14 +97,14 @@ class TestCard:
     def test_open(self) -> None:
         """Test face up opened card
         """
-        obj_ = Card(name='card')
+        obj_ = Card('card')
         obj_.open()
         assert obj_.opened, 'card not opened'
 
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
-        obj_ = Card(name='card')
+        obj_ = Card('card')
         obj_.opened = True
         obj_.hide()
         assert not obj_.opened, 'card not opened'
@@ -112,7 +112,7 @@ class TestCard:
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
         """
-        obj_ = Card(name='card')
+        obj_ = Card('card')
         obj_.tap(side='left')
         assert obj_.tapped, 'card not tapped'
         assert obj_.side == 'left', 'wrong side'
@@ -120,7 +120,7 @@ class TestCard:
     def test_untap_card(self) -> None:
         """Test tap card tap and set side
         """
-        obj_ = Card(name='card')
+        obj_ = Card('card')
         obj_.tapped = True
         assert obj_.tapped, 'card not tapped'
         obj_.side = 'left'

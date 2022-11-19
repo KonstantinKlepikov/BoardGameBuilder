@@ -9,12 +9,20 @@ class CustomRuntimeError(RuntimeError):
     """
 
 
+class ComponentIdError(CustomRuntimeError):
+    """Component with given name has not wrong name or name isnt unique.
+    """
+    def __init__(self, id: str) -> None:
+        self.message = f'{id=} is not a string.'
+        super().__init__(self.message)
+
+
 class ComponentNameError(CustomRuntimeError):
     """Component with given name has not wrong name or name isnt unique.
     """
     def __init__(self, name: str) -> None:
         self.message = f'Component with {name=} is exist in ' + \
-                        'Components class instance or wrong name'
+                        'Component class instance or wrong name'
         super().__init__(self.message)
 
 
