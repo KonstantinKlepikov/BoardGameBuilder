@@ -3,6 +3,26 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.27 (2022-11-20)
+============================
+
+Features
+--------
+
+- #36:
+      * _is_unique() method for Component class
+      * _is_valid() method for Component class
+      * Components renamed to Component
+      * added ComponentIdError
+      * name attr of Base class is id now
+      * all id is converted to safe before making attributes fir dot interface of Component
+      * convertation with snake case
+      * test all
+      * change docks and readme
+      * som fixes for logging
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/36)
+
+
 Release v0.0.26 (2022-11-17)
 ============================
 
