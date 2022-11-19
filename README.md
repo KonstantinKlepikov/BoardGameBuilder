@@ -15,7 +15,7 @@ Object-oriented framework for build board game logic in python
 import bgameb
 
 # create the game
-game = bgameb.Game('one_board_game')
+game = bgameb.Game('one board game')
 
 # add dice and coin types to game
 six = bgameb.Dice('six', sides=6)
@@ -23,16 +23,17 @@ twenty = bgameb.Dice('twenty', sides=20)
 coin = bgameb.Dice('coin') # 2 is default number of sides
 
 # add shaker and add count of stuff to shaker
-game.add(bgameb.Shaker('red_shaker'))
+game.add(bgameb.Shaker('red shaker'))
 for stuff in [six, twenty, coin]:
     game.red_shaker.add(stuff)
     # change coont of dices in shaker
-    game.red_shaker[stuff.name].count = 50
+    game.red_shaker[stuff.id].count = 50
 
 # roll all stuff and get result
 result = game.red_shaker.roll()
 
-# you can use dict notation offcourse
+# you can use dict notation offcourse, but remember -
+# the name of attr is converted from id to snake case
 result = game['red_shaker']['coin'].roll()
 
 # delete components from any collections
@@ -40,20 +41,27 @@ del game.red_shaker.six
 del game.red_shaker
 
 # define a cards and decks
-game.add(bgameb.Deck('cards_deck'))
-game.cards_deck.add(bgameb.Card('one_card', count=100))
+game.add(bgameb.Deck('cards deck'))
+game.cards_deck.add(bgameb.Card('one card', count=100))
 
 # deal card from deck. current deck is a python deque
 current = game.cards_deck.deal()
 
 # lets create game turn structure and start turn
-game.add(bgameb.Steps('game_steps'))
-game.game_steps.add(bgameb.Step('phase_one', priority=0))
-game.game_steps.add(bgameb.Step('phase_two', priority=1))
+game.add(bgameb.Steps('game steps'))
+game.game_steps.add(bgameb.Step('phase one', priority=0))
+game.game_steps.add(bgameb.Step('phase two', priority=1))
 current_game_steps = game.game_steps.deal()
 
 # game_steps is a priority queue, that linked to priority attribute
 current_step = current_game_steps.get()
+
+# get the schema
+schema = game.to_json()
+
+# if you wont, you can add attrs directly, without snake case
+# this attributes not added to the schema
+game.red_chaker.IS_ACTIVE = True
 ```
 
 ## Documentation

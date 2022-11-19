@@ -54,7 +54,7 @@ class Dice(BaseItem):
         if self.sides < 2:
             raise StuffDefineError(
                 message=f'Number of sides={self.sides} '
-                        f'for {self.name}. Needed >= 2.',
+                        f'for "{self.id}". Needed >= 2.',
                 logger=self._logger
                 )
         self._range = list(range(1, self.sides + 1))

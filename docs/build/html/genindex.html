@@ -81,7 +81,6 @@
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
- | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
@@ -185,11 +184,13 @@
 </li>
       <li><a href="bgameb.html#bgameb.tools.Order.clear">clear() (bgameb.tools.Order method)</a>
 </li>
+      <li><a href="bgameb.html#bgameb.base.Component">Component (class in bgameb.base)</a>
+</li>
       <li><a href="bgameb.html#bgameb.errors.ComponentClassError">ComponentClassError</a>
 </li>
-      <li><a href="bgameb.html#bgameb.errors.ComponentNameError">ComponentNameError</a>
+      <li><a href="bgameb.html#bgameb.errors.ComponentIdError">ComponentIdError</a>
 </li>
-      <li><a href="bgameb.html#bgameb.base.Components">Components (class in bgameb.base)</a>
+      <li><a href="bgameb.html#bgameb.errors.ComponentNameError">ComponentNameError</a>
 </li>
       <li><a href="bgameb.html#bgameb.items.BaseItem.count">count (bgameb.items.BaseItem attribute)</a>
 </li>
@@ -246,7 +247,7 @@
       <li><a href="bgameb.html#bgameb.base.Base.from_dict">from_dict() (bgameb.base.Base class method)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.base.Components.from_dict">(bgameb.base.Components class method)</a>
+        <li><a href="bgameb.html#bgameb.base.Component.from_dict">(bgameb.base.Component class method)</a>
 </li>
         <li><a href="bgameb.html#bgameb.game.Game.from_dict">(bgameb.game.Game class method)</a>
 </li>
@@ -278,7 +279,7 @@
       <li><a href="bgameb.html#bgameb.base.Base.from_json">from_json() (bgameb.base.Base class method)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.base.Components.from_json">(bgameb.base.Components class method)</a>
+        <li><a href="bgameb.html#bgameb.base.Component.from_json">(bgameb.base.Component class method)</a>
 </li>
         <li><a href="bgameb.html#bgameb.game.Game.from_json">(bgameb.game.Game class method)</a>
 </li>
@@ -317,7 +318,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.base.Components.get_names">get_names() (bgameb.base.Components method)</a>
+      <li><a href="bgameb.html#bgameb.base.Component.get_names">get_names() (bgameb.base.Component method)</a>
 </li>
       <li><a href="bgameb.html#bgameb.tools.Deck.get_random">get_random() (bgameb.tools.Deck method)</a>
 </li>
@@ -338,6 +339,20 @@
 
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.base.Base.id">id (bgameb.base.Base attribute)</a>
+
+      <ul>
+        <li><a href="bgameb.html#bgameb.game.Game.id">(bgameb.game.Game attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.markers.BaseMarker.id">(bgameb.markers.BaseMarker attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.tools.BaseTool.id">(bgameb.tools.BaseTool attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.tools.Shaker.id">(bgameb.tools.Shaker attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.players.Player.is_active">is_active (bgameb.players.Player attribute)</a>
 </li>
@@ -374,24 +389,6 @@
         <li><a href="bgameb.html#module-bgameb.tools">bgameb.tools</a>
 </li>
         <li><a href="bgameb.html#module-bgameb.types">bgameb.types</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="N">N</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.base.Base.name">name (bgameb.base.Base attribute)</a>
-
-      <ul>
-        <li><a href="bgameb.html#bgameb.game.Game.name">(bgameb.game.Game attribute)</a>
-</li>
-        <li><a href="bgameb.html#bgameb.markers.BaseMarker.name">(bgameb.markers.BaseMarker attribute)</a>
-</li>
-        <li><a href="bgameb.html#bgameb.tools.BaseTool.name">(bgameb.tools.BaseTool attribute)</a>
-</li>
-        <li><a href="bgameb.html#bgameb.tools.Shaker.name">(bgameb.tools.Shaker attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -443,7 +440,7 @@
       <li><a href="bgameb.html#bgameb.base.Base.schema">schema() (bgameb.base.Base class method)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.base.Components.schema">(bgameb.base.Components class method)</a>
+        <li><a href="bgameb.html#bgameb.base.Component.schema">(bgameb.base.Component class method)</a>
 </li>
         <li><a href="bgameb.html#bgameb.game.Game.schema">(bgameb.game.Game class method)</a>
 </li>
@@ -505,7 +502,7 @@
       <li><a href="bgameb.html#bgameb.base.Base.to_dict">to_dict() (bgameb.base.Base method)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.base.Components.to_dict">(bgameb.base.Components method)</a>
+        <li><a href="bgameb.html#bgameb.base.Component.to_dict">(bgameb.base.Component method)</a>
 </li>
         <li><a href="bgameb.html#bgameb.game.Game.to_dict">(bgameb.game.Game method)</a>
 </li>
@@ -537,7 +534,7 @@
       <li><a href="bgameb.html#bgameb.base.Base.to_json">to_json() (bgameb.base.Base method)</a>
 
       <ul>
-        <li><a href="bgameb.html#bgameb.base.Components.to_json">(bgameb.base.Components method)</a>
+        <li><a href="bgameb.html#bgameb.base.Component.to_json">(bgameb.base.Component method)</a>
 </li>
         <li><a href="bgameb.html#bgameb.game.Game.to_json">(bgameb.game.Game method)</a>
 </li>
