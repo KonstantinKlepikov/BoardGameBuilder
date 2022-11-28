@@ -3,6 +3,31 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.28 (2022-11-28)
+============================
+
+Features
+--------
+
+- #9:
+
+      * added github-release workflow that starts after deoloy documentations and create github tagged release
+      * changed Makefile - now `make release` makes tagged commit and push to origin
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/9)
+
+
+Bugfixes
+--------
+
+- #200
+
+      * fix version in docs and links fixes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/200)
+- #178_1:
+      * change version of actions/setup-python to @4 for release.yml
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/1781)
+
+
 Release v0.0.27 (2022-11-20)
 ============================
 
