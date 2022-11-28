@@ -17,7 +17,7 @@ Create virtual environment for project and activate it:
 
 .. code-block:: console
 
-   virualenv -p python3.8 venv
+   virualenv -p python venv
 
    pip install bgameb[dev]
 
