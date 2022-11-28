@@ -1,6 +1,6 @@
 # BoardGameBuilder
 
-!!! Project now in very early stage. Dont use it in any apps :)
+!!! Project now is in very early stage. Dont use it in any apps :)
 
 [![Release and upload to pypi](https://github.com/KonstantinKlepikov/BoardGameBuilder/actions/workflows/release.yml/badge.svg)](https://github.com/KonstantinKlepikov/BoardGameBuilder/actions/workflows/release.yml)
 [![Deploy static content to Pages](https://github.com/KonstantinKlepikov/BoardGameBuilder/actions/workflows/build-docs.yml/badge.svg)](https://github.com/KonstantinKlepikov/BoardGameBuilder/actions/workflows/build-docs.yml)
@@ -95,6 +95,6 @@ Available fragmet naming:
 - .removal: Signifying a deprecation or removal of public API.
 - .misc: A ticket has been closed, but it is not of interest to users.
 
-`make release` - to bump version and build changelog. You can use `towncrier build --draft` to check changelog output
+`make release` - to bump version, build changelog, commit, push tags and changes. You can use `towncrier build --draft` to check changelog output before release.
 
 \* for version management are used [incremental](https://github.com/twisted/incremental) and [towncrier](https://pypi.org/project/towncrier/) for changelog

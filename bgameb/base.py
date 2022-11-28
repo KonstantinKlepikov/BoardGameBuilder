@@ -210,9 +210,8 @@ class Base(Component):
         - _types_to_add (List[str]): types of components, that can
           be added
 
-    Counter is a 'collection.Counter
-    <https://docs.python.org/3/library/collections.html#collections.Counter>'
-    object
+    Counter is a `collection.Counter
+    <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
     counter: Counter = field(default_factory=dict)  # type: ignore
