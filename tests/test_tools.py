@@ -5,7 +5,7 @@ from collections import deque
 from bgameb.base import Component
 from bgameb.markers import Step
 from bgameb.items import Dice, Card, BaseItem
-from bgameb.tools import Shaker, Deck, Order, Steps, BaseTool
+from bgameb.tools import Shaker, Deck, Steps, BaseTool
 from bgameb.errors import ArrangeIndexError
 from bgameb.types import MARKERS_ITEMS
 
@@ -113,6 +113,9 @@ class TestDeck:
             result = obj_.deal()
             after = [id(card) for card in result]
             assert before != after, 'not random order'
+            assert len(obj_.get_current_names()) == 40, \
+                'wrong current names len'
+            assert obj_.get_current_names()[0] == 'card', 'wrong current names'
 
     def test_deck_shuffle(self, obj_: Deck) -> None:
         """Test deck shuffle()
@@ -285,45 +288,6 @@ class TestDeck:
             assert len(obj_.current) == 0, 'wrong result'
 
 
-class TestOrder:
-    """Test order class
-    """
-
-    def test_init_order(self) -> None:
-        """Test correct inity order
-        """
-        obj_ = Order()
-        assert isinstance(obj_.current, list), 'wrong current'
-        assert len(obj_.current) == 0, 'wrong len current'
-
-    def test_order_methods(self) -> None:
-        """Test order methods
-        """
-        obj_ = Order()
-        item_in = Step('one', priority=0)
-        assert len(obj_) == 0, 'wrong len Order'
-        obj_.put(item_in)
-        assert len(obj_) == 1, 'wrong len Order'
-        item_out = obj_.get()
-        assert len(obj_) == 0, 'wrong len Order'
-        assert item_out is item_in, 'wrong item'
-        obj_.put(item_in)
-        obj_.clear()
-        assert len(obj_) == 0, 'wrong len Order'
-        assert isinstance(obj_.current, list), 'wrong current'
-
-    def test_order_ordering(self) -> None:
-        """Test order priority ordering
-        """
-        obj_ = Order()
-        for i in range(3):
-            item_in = Step('step', priority=i)
-            obj_.put(item_in)
-        for i in range(3):
-            item_out = obj_.get()
-            assert item_out.priority == i, 'wrong priority'
-
-
 class TestSteps:
     """Test Steps class
     """
@@ -335,36 +299,38 @@ class TestSteps:
         obj_.add(Step('astep', priority=2))
         return obj_
 
-    def test_steps_instance(self) -> None:
+    def testSteps_instance(self) -> None:
         """Test Steps class instance
         """
         obj_ = Steps('game_turns')
         assert isinstance(obj_, Component), 'wrong turn type'
-        assert isinstance(obj_.current, Order), 'wrong current type'
+        assert isinstance(obj_.current, list), 'wrong current type'
         assert len(obj_.current) == 0, 'wrong current len'
 
-    def test_steps_add_steps(self, obj_: Steps) -> None:
+    def testSteps_addSteps(self, obj_: Steps) -> None:
         """Test add step to steps
         """
         assert isinstance(obj_.step1, Step), 'wrong type'
         assert obj_.step1.id == 'step1', 'wrong id'
         assert obj_.step1.priority == 1, 'wrong priority'
 
-    def test_steps_deal(self, obj_: Steps) -> None:
+    def testSteps_deal(self, obj_: Steps) -> None:
         """Test start new cycle of turn
         """
         result = obj_.deal()
         assert len(result) == 2, 'wrong len'
-        current = obj_.current.get()
+        assert len(obj_.get_current_names()) == 2, 'wrong current names len'
+        assert obj_.get_current_names()[0] == 'step1', 'wrong current names'
+        current = obj_.pull()
         assert len(obj_.current) == 1, 'wrong len'
         assert current.id == 'step1', 'wrong current step'
-        current = obj_.current.get()
+        current = obj_.pull()
         assert len(obj_.current) == 0, 'wrong len'
         assert current.id == 'astep', 'wrong current step'
         with pytest.raises(
             IndexError,
             match='index out of range'
                 ):
-            obj_.current.get()
+            obj_.pull()
         result = obj_.deal()
         assert len(result) == 2, 'turn not clean'

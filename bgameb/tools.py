@@ -256,50 +256,13 @@ class Deck(BaseTool):
                     )
             return result
 
-
-@dataclass_json
-@dataclass
-class Order:
-    """Order of steps priority queue. Isnt tradesafe.
-    Is used only for define game steps order.
-
-    Attr:
-        - current List[Tuple[int, Component]]: priority queue list
-    """
-    current: List[Tuple[int, Step]] = field(
-        default_factory=list,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-
-    def __len__(self) -> int:
-        """Len of queue
+    def get_current_names(self) -> List[str]:
+        """Get ids of current objects
 
         Returns:
-            int: len of current queue
+            List[str]: list ids in current attribut of tool
         """
-        return len(self.current)
-
-    def clear(self) -> None:
-        """Clear the current queue
-        """
-        self.current = []
-
-    def put(self, item) -> None:
-        """Put Step object to queue
-
-        Args:
-            item (Step): Step class instance
-        """
-        heappush(self.current, (item.priority, item))
-
-    def get(self) -> Step:
-        """Get Sеep object from queue with lowest priority
-
-        Returns:
-            Step: Step instance object
-        """
-        return heappop(self.current)[1]
+        return [obj.id for obj in self.current]
 
 
 @dataclass_json
@@ -308,25 +271,51 @@ class Steps(BaseTool):
     """Game steps order object
 
     Attr:
-        - current (Order): current order of steps.
+        - current (List[Tuple[int, Step]]): current order of steps.
     """
-    current: Order = field(
-        default_factory=Order,
+    current: List[Tuple[int, Step]] = field(
+        default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
-        )
+            )
 
-    def __post_init__(self) -> None:
-        super().__post_init__()
+    def clear(self) -> None:
+        """Clear the current queue
+        """
+        self.current = []
 
-    def deal(self) -> Order:
+    def push(self, item: Step) -> None:
+        """Push Step object to queue
+
+        Args:
+            item (Step): Step class instance
+        """
+        heappush(self.current, (item.priority, item))
+
+    def pull(self) -> Step:
+        """Pull Step object from queue with lowest priority
+
+        Returns:
+            Step: Step instance object
+        """
+        return heappop(self.current)[1]
+
+    def deal(self) -> List[Tuple[int, Step]]:
         """Clear current order and create new current order
         """
-        self.current.clear()
+        self.clear()
 
         for comp in self:
             if isinstance(self[comp], Step):
                 step = replace(self[comp])
-                self.current.put(step)
-        self._logger.debug(f'Is deal order of turn: {self.current.current}')
+                self.push(step)
+        self._logger.debug(f'Is deal order of turn: {self.current}')
         return self.current
+
+    def get_current_names(self) -> List[str]:
+        """Get ids of current objects
+
+        Returns:
+            List[str]: list ids in current attribut of tool
+        """
+        return [obj[1].id for obj in self.current]
