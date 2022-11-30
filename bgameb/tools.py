@@ -284,16 +284,16 @@ class Steps(BaseTool):
         """
         self.current = []
 
-    def put(self, item: Step) -> None:
-        """Put Step object to queue
+    def push(self, item: Step) -> None:
+        """Push Step object to queue
 
         Args:
             item (Step): Step class instance
         """
         heappush(self.current, (item.priority, item))
 
-    def get(self) -> Step:
-        """Get Sеep object from queue with lowest priority
+    def pull(self) -> Step:
+        """Pull Step object from queue with lowest priority
 
         Returns:
             Step: Step instance object
@@ -308,7 +308,7 @@ class Steps(BaseTool):
         for comp in self:
             if isinstance(self[comp], Step):
                 step = replace(self[comp])
-                self.put(step)
+                self.push(step)
         self._logger.debug(f'Is deal order of turn: {self.current}')
         return self.current
 

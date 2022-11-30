@@ -113,7 +113,8 @@ class TestDeck:
             result = obj_.deal()
             after = [id(card) for card in result]
             assert before != after, 'not random order'
-            assert len(obj_.get_current_names()) == 40, 'wrong current names len'
+            assert len(obj_.get_current_names()) == 40, \
+                'wrong current names len'
             assert obj_.get_current_names()[0] == 'card', 'wrong current names'
 
     def test_deck_shuffle(self, obj_: Deck) -> None:
@@ -320,16 +321,16 @@ class TestSteps:
         assert len(result) == 2, 'wrong len'
         assert len(obj_.get_current_names()) == 2, 'wrong current names len'
         assert obj_.get_current_names()[0] == 'step1', 'wrong current names'
-        current = obj_.get()
+        current = obj_.pull()
         assert len(obj_.current) == 1, 'wrong len'
         assert current.id == 'step1', 'wrong current step'
-        current = obj_.get()
+        current = obj_.pull()
         assert len(obj_.current) == 0, 'wrong len'
         assert current.id == 'astep', 'wrong current step'
         with pytest.raises(
             IndexError,
             match='index out of range'
                 ):
-            obj_.get()
+            obj_.pull()
         result = obj_.deal()
         assert len(result) == 2, 'turn not clean'
