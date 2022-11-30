@@ -256,15 +256,22 @@ class Deck(BaseTool):
                     )
             return result
 
+    def get_current_names(self) -> List[str]:
+        """Get ids of current objects
+
+        Returns:
+            List[str]: list ids in current attribut of tool
+        """
+        return [obj.id for obj in self.current]
+
 
 @dataclass_json
-@dataclass
-class Order:
-    """Order of steps priority queue. Isnt tradesafe.
-    Is used only for define game steps order.
+@dataclass(repr=False)
+class Steps(BaseTool):
+    """Game steps order object
 
     Attr:
-        - current List[Tuple[int, Component]]: priority queue list
+        - current (List[Tuple[int, Step]]): current order of steps.
     """
     current: List[Tuple[int, Step]] = field(
         default_factory=list,
@@ -272,20 +279,12 @@ class Order:
         repr=False,
             )
 
-    def __len__(self) -> int:
-        """Len of queue
-
-        Returns:
-            int: len of current queue
-        """
-        return len(self.current)
-
     def clear(self) -> None:
         """Clear the current queue
         """
         self.current = []
 
-    def put(self, item) -> None:
+    def put(self, item: Step) -> None:
         """Put Step object to queue
 
         Args:
@@ -301,32 +300,22 @@ class Order:
         """
         return heappop(self.current)[1]
 
-
-@dataclass_json
-@dataclass(repr=False)
-class Steps(BaseTool):
-    """Game steps order object
-
-    Attr:
-        - current (Order): current order of steps.
-    """
-    current: Order = field(
-        default_factory=Order,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-        )
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
-
-    def deal(self) -> Order:
+    def deal(self) -> List[Tuple[int, Step]]:
         """Clear current order and create new current order
         """
-        self.current.clear()
+        self.clear()
 
         for comp in self:
             if isinstance(self[comp], Step):
                 step = replace(self[comp])
-                self.current.put(step)
-        self._logger.debug(f'Is deal order of turn: {self.current.current}')
+                self.put(step)
+        self._logger.debug(f'Is deal order of turn: {self.current}')
         return self.current
+
+    def get_current_names(self) -> List[str]:
+        """Get ids of current objects
+
+        Returns:
+            List[str]: list ids in current attribut of tool
+        """
+        return [obj[1].id for obj in self.current]

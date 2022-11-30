@@ -63,6 +63,7 @@ class TestComponent:
         comp1 = Component()
         comp2 = Component()
         comp1.__dict__.update({'some': _class(_id)})
+        comp2.__dict__.update({'_some': _class(_id)})
         assert len(comp1) == 1, 'wrong len'
         assert len(comp2) == 0, 'wrong len'
 

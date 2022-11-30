@@ -2,7 +2,7 @@
 """
 import re
 import string
-from typing import List, Optional, Iterator
+from typing import List, Optional, Iterator, Dict
 from collections.abc import Mapping
 from collections import Counter
 from dataclasses import dataclass, field, make_dataclass
@@ -58,6 +58,16 @@ class Component(Mapping):
         if kwargs:
             self.__dict__.update(kwargs)
 
+    @property
+    def inclusion(self) -> Dict[str, str]:
+        return {
+            k: v for k, v
+            in self.__dict__.items()
+            if not k.startswith('_')
+            and not k.startswith('current')
+            # and k not in ['id', 'counter', ]
+                }
+
     def __iter__(self) -> Iterator:
         return iter(self.__dict__)
 
@@ -83,17 +93,12 @@ class Component(Mapping):
     def __delitem__(self, attr: str) -> None:
         del self.__dict__[attr]
 
-    def __repr__(self):
-        items = (
-            f"{k}={v!r}" for k, v
-            in self.__dict__.items()
-            if not k.startswith('_')
-            and not k.startswith('current')
-                )
+    def __repr__(self) -> str:
+        items = {f"{k}={v!r}" for k, v in self.inclusion.items()}
         return "{}({})".format(type(self).__name__, ", ".join(items))
 
     def __len__(self) -> int:
-        return len(self.__dict__)
+        return len(self.inclusion)
 
     def _is_unique(self, name: str) -> Optional[bool]:
         """Chek is name of nested component is unique
@@ -190,11 +195,7 @@ class Component(Mapping):
         Returns:
             List[str]: list of components names
         """
-        return [
-            name for name
-            in self.__dict__.keys()
-            if not name.startswith('_')
-                ]
+        return [name for name in self.inclusion]
 
 
 @dataclass_json
