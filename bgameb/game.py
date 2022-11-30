@@ -37,7 +37,8 @@ if __name__ == '__main__':
     game.cards_deck.one_card.counter['banana'] = 0
 
     steps = game.game_steps.deal()
-    deck = game.cards_deck.deal()
+    game.cards_deck.deal()
+    deck = game.cards_deck.shuffle()
 
     game.IS_ACTIVE = True  # type: ignore
 
