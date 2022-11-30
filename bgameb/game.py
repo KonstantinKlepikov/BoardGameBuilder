@@ -28,10 +28,11 @@ if __name__ == '__main__':
     game.game_steps.add(bgameb.Step('step 1', priority=1))
 
     game.add(bgameb.Deck('Cards Deck'))
-    card = bgameb.Card('One card')
-
+    card = bgameb.Card('One card', description='story')  # type: ignore
     game.cards_deck.add(card)
     game.cards_deck.one_card.count = 3
+
+    print(f'Other: {game.cards_deck.one_card.other}')
     game.cards_deck.one_card.counter['yellow'] = 12
     game.cards_deck.one_card.counter['banana'] = 0
 
@@ -41,11 +42,13 @@ if __name__ == '__main__':
     game.IS_ACTIVE = True  # type: ignore
 
     game.add(bgameb.Shaker('blue shaker'))
-    game.blue_shaker.add(bgameb.Dice('dice#8', sides=8, count=10))
+    game.blue_shaker.add(
+        bgameb.Dice('dice#8', sides=8, count=10)
+            )
 
     result = game.blue_shaker.dice_8.roll()
 
-    print(f'result: {result}')
+    print(f'Result of shke: {result}')
     print('='*20 + '\n')
     print(f'Repr: {repr(game)}')
     print('='*20 + '\n')
