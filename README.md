@@ -45,7 +45,8 @@ game.add(bgameb.Deck('cards deck'))
 game.cards_deck.add(bgameb.Card('one card', count=100))
 
 # deal card from deck. current deck is a python deque
-current = game.cards_deck.deal()
+game.cards_deck.deal()
+current = game.cards_deck.shuffle()
 
 # lets create game turn structure and start turn
 game.add(bgameb.Steps('game steps'))
