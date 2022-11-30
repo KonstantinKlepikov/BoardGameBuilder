@@ -7,7 +7,7 @@ class TestPlayer:
     """Test creation with id and json schemes
     """
 
-    def test_players_classes_created_with_name(self) -> None:
+    def test_players_classes_created(self) -> None:
         """Test players classes instancing
         """
         obj_ = Player('player')

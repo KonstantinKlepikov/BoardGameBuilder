@@ -11,7 +11,7 @@ class TestBaseMarker:
         ]
 
     @pytest.mark.parametrize("_class, _id", params)
-    def test_markers_classes_created_with_name(
+    def test_markers_classes_created(
         self, _class, _id: str
             ) -> None:
         """Test marker classes instancing
