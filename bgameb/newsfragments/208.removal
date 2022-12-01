@@ -1,5 +1,0 @@
-#208:
-    * removed technical attributes of Component from len and get_names methods
-    * removed Order class. Now Steps has an heapq interface
-    * test all
-    * ->

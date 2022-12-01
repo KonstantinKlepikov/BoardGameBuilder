@@ -3,6 +3,47 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.29 (2022-12-01)
+============================
+
+Features
+--------
+
+- #208:
+      * added get_current_names to Deck and Steps classes
+      * methods put() and get() for Steps renamed to push() and pull() (for compatibility with dict)
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/208)
+- #209:
+      * add Undefined.INCLUDE in Base class. Now all undefined attributes is saved in other attribute
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/209)
+- #210:
+      * added to Deck and Steps deal() method posibility to deal with list of stuff names
+      * deal() now are not shuffle deck by defolt
+      * test it
+      * docs and readme changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/210)
+
+
+Bugfixes
+--------
+
+- #206:
+      * changed github-release actions - added latest tag and removed autogeneration of changelog
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/206)
+
+
+Deprecations and Removals
+-------------------------
+
+- #208:
+      * removed technical attributes of Component from len and get_names methods
+      * removed Order class. Now Steps has an heapq interface
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/208)
+
+
 Release v0.0.28 (2022-11-28)
 ============================
 
