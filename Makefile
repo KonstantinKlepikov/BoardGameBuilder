@@ -9,10 +9,16 @@ proj-doc:
 	sphinx-apidoc -o docs/source bgameb
 	$(MAKE) -C ./docs html
 
+draft:
+	# read release notes draft
+	towncrier build --draft
+
 release:
 	@read -p "Enter final version as X.Y.Z:" bump; \
 	python -m incremental.update bgameb --newversion=$$bump; \
 	towncrier build --yes; \
+	sphinx-apidoc -o docs/source bgameb; \
+	$(MAKE) -C ./docs html; \
 	git add .; \
 	git status; \
 	git commit -m "release $$bump"; \

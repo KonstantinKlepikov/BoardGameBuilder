@@ -35,6 +35,6 @@ jobs:
         with:
           tag_name: ${{ steps.get-latest-tag.outputs.tag }}
           body: |
-            [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.rst).
+            [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.rst)
           draft: false
           prerelease: false
