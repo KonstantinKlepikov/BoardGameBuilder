@@ -1,0 +1,3 @@
+#218:
+    * added ``make draft`` to makefile and now with ``make release`` is bulded doc after version bump but before taged and push to github
+    * ->

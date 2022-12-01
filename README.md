@@ -101,6 +101,9 @@ Available fragmet naming:
 - .removal: Signifying a deprecation or removal of public API.
 - .misc: A ticket has been closed, but it is not of interest to users.
 
-`make release` - to bump version, build changelog, commit, push tags and changes. You can use `towncrier build --draft` to check changelog output before release.
+`make draft` - to check changelog output before release.
+
+`make release` - to bump version, build changelog, commit, push tags and changes.
 
 \* for version management are used [incremental](https://github.com/twisted/incremental) and [towncrier](https://pypi.org/project/towncrier/) for changelog
+\* project based on [dataclasses-json](https://github.com/lidatong/dataclasses-json)
