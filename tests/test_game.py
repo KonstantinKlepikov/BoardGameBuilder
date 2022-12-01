@@ -74,5 +74,4 @@ class TestGame:
             ComponentNameError,
             match='is exist in'
                 ):
-
             obj_.add(component=cl)
