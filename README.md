@@ -45,7 +45,8 @@ game.add(bgameb.Deck('cards deck'))
 game.cards_deck.add(bgameb.Card('one card', count=100))
 
 # deal card from deck. current deck is a python deque
-current = game.cards_deck.deal()
+game.cards_deck.deal()
+current = game.cards_deck.shuffle()
 
 # lets create game turn structure and start turn
 game.add(bgameb.Steps('game steps'))
@@ -53,15 +54,20 @@ game.game_steps.add(bgameb.Step('phase one', priority=0))
 game.game_steps.add(bgameb.Step('phase two', priority=1))
 current_game_steps = game.game_steps.deal()
 
-# game_steps is a priority queue, that linked to priority attribute
-current_step = current_game_steps.get()
+# game_steps is a priority queue, that linked with priority attribute
+current_step = current_game_steps.pull()
 
 # get the schema
 schema = game.to_json()
 
-# if you wont, you can add attrs directly, without snake case
+# if you want, you can add his own attrs directly, but
 # this attributes not added to the schema
 game.red_chaker.IS_ACTIVE = True
+
+# you can add any own data as declaration of object instance.
+# This data is store in other attribute, it is a dict and is in schema
+dice = bgameb.Dice('six', sides=6, description='my important data')
+deacription = dice.other['deacription']
 ```
 
 ## Documentation

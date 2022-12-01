@@ -19,35 +19,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # https://github.com/heinrichreimer/action-github-changelog-generator
-      - name: Generate release changelog
-        id: generate_release_changelog
-        uses: heinrichreimer/github-changelog-generator-action@v2.3
+      # https://github.com/actions-ecosystem/action-get-latest-tag
+      - name: Get latest tag
+        uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          headerLabel: "# 📑 Changelog"
-          breakingLabel: '### 💥 Breaking'
-          enhancementLabel: '### 🚀 Enhancements'
-          bugsLabel: '### 🐛 Bug fixes'
-          deprecatedLabel: '### ⚠️ Deprecations'
-          removedLabel: '### 🔥 Removals'
-          securityLabel: '### 🛡️ Security'
-          issuesLabel: '### 📁 Other issues'
-          prLabel: '### 📁 Other pull requests'
-          addSections: '{"documentation":{"prefix":"### 📖 Documentation","labels":["documentation"]},"tests":{"prefix":"### ✅ Testing","labels":["tests"]}}'
-          issues: true
-          issuesWoLabels: true
-          pullRequests: true
-          prWoLabels: true
-          author: true
-          unreleased: false
-          compareLink: true
-          verbose: true
-          onlyLastTag: true
-          stripGeneratorNotice: true
-
-      - name: Print changelog to console
-        run: cat CHANGELOG.md
+          semver_only: true
 
       # https://github.com/softprops/action-gh-release
       - name: Create Release
@@ -56,6 +33,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          body: ${{ steps.generate_release_changelog.outputs.changelog }}
+          tag_name: ${{ steps.get-latest-tag.outputs.tag }}
+          body: |
+            [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.rst).
           draft: false
           prerelease: false

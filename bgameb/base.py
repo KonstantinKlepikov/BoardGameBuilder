@@ -2,11 +2,11 @@
 """
 import re
 import string
-from typing import List, Optional, Iterator
+from typing import List, Optional, Iterator, Dict
 from collections.abc import Mapping
 from collections import Counter
 from dataclasses import dataclass, field, make_dataclass
-from dataclasses_json import dataclass_json, config
+from dataclasses_json import dataclass_json, config, Undefined, CatchAll
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, ComponentIdError
         )
@@ -58,6 +58,15 @@ class Component(Mapping):
         if kwargs:
             self.__dict__.update(kwargs)
 
+    @property
+    def inclusion(self) -> Dict[str, str]:
+        return {
+            k: v for k, v
+            in self.__dict__.items()
+            if not k.startswith('_')
+            and not k.startswith('current')
+                }
+
     def __iter__(self) -> Iterator:
         return iter(self.__dict__)
 
@@ -83,17 +92,12 @@ class Component(Mapping):
     def __delitem__(self, attr: str) -> None:
         del self.__dict__[attr]
 
-    def __repr__(self):
-        items = (
-            f"{k}={v!r}" for k, v
-            in self.__dict__.items()
-            if not k.startswith('_')
-            and not k.startswith('current')
-                )
+    def __repr__(self) -> str:
+        items = {f"{k}={v!r}" for k, v in self.inclusion.items()}
         return "{}({})".format(type(self).__name__, ", ".join(items))
 
     def __len__(self) -> int:
-        return len(self.__dict__)
+        return len(self.inclusion)
 
     def _is_unique(self, name: str) -> Optional[bool]:
         """Chek is name of nested component is unique
@@ -190,20 +194,18 @@ class Component(Mapping):
         Returns:
             List[str]: list of components names
         """
-        return [
-            name for name
-            in self.__dict__.keys()
-            if not name.startswith('_')
-                ]
+        return [name for name in self.inclusion]
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(repr=False)
 class Base(Component):
     """Base class for game, stuff, tools players and other components
 
     Attr:
         - id (str): id of component
+        - other (Dict[str, Any]): all other data, added to instance
+                                  at declaration
         - counter (Counter): counter object
         - _type (Optional[str]): type for check when this component
           can be added
@@ -214,6 +216,7 @@ class Base(Component):
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
+    other: CatchAll = field(default_factory=dict)
     counter: Counter = field(default_factory=dict)  # type: ignore
     _type: Optional[str] = field(
         default=None,

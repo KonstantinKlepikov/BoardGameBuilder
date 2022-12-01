@@ -12,7 +12,7 @@ class TestGame:
     """Test Game class
     """
 
-    def test_game_class_created_with_name(self) -> None:
+    def test_game_class_created(self) -> None:
         """Test Game instancing
         """
         obj_ = Game('this game')

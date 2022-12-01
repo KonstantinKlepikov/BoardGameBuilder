@@ -14,7 +14,7 @@ class TestBaseStuff:
         ]
 
     @pytest.mark.parametrize("_class, _id", params)
-    def test_items_classes_created_with_name(
+    def test_items_classes_created(
         self, _class: BaseItem, _id: str
             ) -> None:
         """Test items classes instancing

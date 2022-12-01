@@ -63,6 +63,7 @@ class TestComponent:
         comp1 = Component()
         comp2 = Component()
         comp1.__dict__.update({'some': _class(_id)})
+        comp2.__dict__.update({'_some': _class(_id)})
         assert len(comp1) == 1, 'wrong len'
         assert len(comp2) == 0, 'wrong len'
 
@@ -170,8 +171,8 @@ class TestBaseClass:
     """Test Base class
     """
 
-    def test_base_class_created_with_name(self) -> None:
-        """Test Base name instancing
+    def test_base_class_creation(self) -> None:
+        """Test Base instancing
         """
         obj_ = Base('9 this is Fine #')
         assert obj_.id == '9 this is Fine #', 'not set id for instance'
@@ -180,11 +181,23 @@ class TestBaseClass:
         assert obj_._type == 'base', 'wrong type'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_.other, dict), 'wrong other'
+
+    def test_base_class_creation_with_other(self) -> None:
+        """Test Base instancing with other
+        """
+        obj_ = Base('9 this is Fine #', this_is='fine')
+        assert len(obj_.other) == 1, 'wrong other len'
+        assert obj_.other['this_is'] == 'fine', 'wrong other'
+        del obj_.other['this_is']
+        assert len(obj_.other) == 0, 'wrong other len'
+        del obj_.other
+        with pytest.raises(AttributeError, match='other'):
+            obj_.other
 
     def test_base_class_is_converted_to_json(self) -> None:
         """Test to json convertatrion
         """
         obj_ = Base('9 this is Fine #')
         j = json.loads(obj_.to_json())
-        print(j)
         assert j['id'] == '9 this is Fine #', 'not converted to json'

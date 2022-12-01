@@ -3,6 +3,47 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.29 (2022-12-01)
+============================
+
+Features
+--------
+
+- #208:
+      * added get_current_names to Deck and Steps classes
+      * methods put() and get() for Steps renamed to push() and pull() (for compatibility with dict)
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/208)
+- #209:
+      * add Undefined.INCLUDE in Base class. Now all undefined attributes is saved in other attribute
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/209)
+- #210:
+      * added to Deck and Steps deal() method posibility to deal with list of stuff names
+      * deal() now are not shuffle deck by defolt
+      * test it
+      * docs and readme changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/210)
+
+
+Bugfixes
+--------
+
+- #206:
+      * changed github-release actions - added latest tag and removed autogeneration of changelog
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/206)
+
+
+Deprecations and Removals
+-------------------------
+
+- #208:
+      * removed technical attributes of Component from len and get_names methods
+      * removed Order class. Now Steps has an heapq interface
+      * test all
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/208)
+
+
 Release v0.0.28 (2022-11-28)
 ============================
 
@@ -10,7 +51,6 @@ Features
 --------
 
 - #9:
-
       * added github-release workflow that starts after deoloy documentations and create github tagged release
       * changed Makefile - now `make release` makes tagged commit and push to origin
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/9)
@@ -19,13 +59,12 @@ Features
 Bugfixes
 --------
 
-- #200
-
+- #200:
       * fix version in docs and links fixes
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/200)
-- #178_1:
+- #178:
       * change version of actions/setup-python to @4 for release.yml
-      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/1781)
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/178)
 
 
 Release v0.0.27 (2022-11-20)
@@ -69,7 +108,7 @@ Bugfixes
       * fix doc deplot workflow
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/186)
 - #192:
-      *fix readme example
+      * fix readme example
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/192)
 
 
@@ -188,7 +227,7 @@ Features
 - #147:
       * tests.yml for grid tests
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/147)
-- # 167:
+- #167:
       * added mypy check to test.yml workflow
       * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/167)
 
@@ -253,7 +292,7 @@ Release v0.0.20 (2022-10-18)
 Features
 --------
 
-- # 139:
+- #139:
       * To Game object added methods new() and copy() for create new components and copy components
       * Added make check to check flake8 and mypy to Makefile
       * add nonstuff types to types.py

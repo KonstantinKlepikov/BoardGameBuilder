@@ -3,7 +3,7 @@
 import random
 from collections import deque
 from heapq import heappop, heappush
-from typing import Tuple, Dict, List, Deque
+from typing import Tuple, Dict, List, Deque, Optional
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
@@ -86,20 +86,46 @@ class Deck(BaseTool):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def deal(self) -> Deque[Card]:
+    def _card_replace(self, card: Card) -> None:
+        """Replace card in current
+        """
+        replaced = replace(card)
+        del replaced.count
+        self.current.append(replaced)
+
+    def deal(self, source: Optional[List[str]] = None) -> Deque[Card]:
         """Deal new random shuffled deck and save it to
         self.current
+
+        Args:
+            source (Optional[List[str]]): list of stuff ids
         """
         self.current.clear()
 
-        for comp in self:
-            if isinstance(self[comp], Card):
-                for _ in range(self[comp].count):
-                    card = replace(self[comp])
-                    card.count = 1
-                    self.current.append(self[comp])
+        if not source:
 
-        self.shuffle()
+            for comp in self:
+                if isinstance(self[comp], Card):
+                    for _ in range(self[comp].count):
+                        self._card_replace(self[comp])
+
+        else:
+
+            names = self.get_names()
+            used: Dict[str, Card] = {}
+
+            for name in source:
+                if name in names:
+                    if not used.get(name):
+                        for comp in self:
+                            if isinstance(self[comp], Card) \
+                                    and self[comp].id == name:
+                                self._card_replace(self[comp])
+                                used[name] = self[comp]
+                                break
+                    else:
+                        self._card_replace(self[comp])
+
         self._logger.debug(f'Is deal cards: {self.current}')
         return self.current
 
@@ -131,13 +157,13 @@ class Deck(BaseTool):
         method.
 
         Return:
-            Tuple[List[Card], Tuple[List[Card]]: part to arrange
+            Tuple[List[Card], Tuple[List[Card]]: parts to arrange
         """
         if start < 0 or end < 0 or end < start:
             raise ArrangeIndexError(
                 message=f'Nonpositive or broken {start=} or {end=}',
                 logger=self._logger
-                )
+                    )
         to_split = list(self.current)
         splited = (to_split[start:end], (to_split[0:start], to_split[end:]))
         self._logger.debug(f'To arrange result: {splited}')
@@ -168,7 +194,7 @@ class Deck(BaseTool):
             raise ArrangeIndexError(
                 f'Wrong to_arranged parts: {arranged=}, {last=}',
                 logger=self._logger
-                )
+                    )
         return self.current
 
     def search(
@@ -256,50 +282,13 @@ class Deck(BaseTool):
                     )
             return result
 
-
-@dataclass_json
-@dataclass
-class Order:
-    """Order of steps priority queue. Isnt tradesafe.
-    Is used only for define game steps order.
-
-    Attr:
-        - current List[Tuple[int, Component]]: priority queue list
-    """
-    current: List[Tuple[int, Step]] = field(
-        default_factory=list,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-
-    def __len__(self) -> int:
-        """Len of queue
+    def get_current_names(self) -> List[str]:
+        """Get ids of current objects
 
         Returns:
-            int: len of current queue
+            List[str]: list ids in current attribut of tool
         """
-        return len(self.current)
-
-    def clear(self) -> None:
-        """Clear the current queue
-        """
-        self.current = []
-
-    def put(self, item) -> None:
-        """Put Step object to queue
-
-        Args:
-            item (Step): Step class instance
-        """
-        heappush(self.current, (item.priority, item))
-
-    def get(self) -> Step:
-        """Get Sеep object from queue with lowest priority
-
-        Returns:
-            Step: Step instance object
-        """
-        return heappop(self.current)[1]
+        return [obj.id for obj in self.current]
 
 
 @dataclass_json
@@ -308,25 +297,83 @@ class Steps(BaseTool):
     """Game steps order object
 
     Attr:
-        - current (Order): current order of steps.
+        - current (List[Tuple[int, Step]]): current order of steps.
     """
-    current: Order = field(
-        default_factory=Order,
+    current: List[Tuple[int, Step]] = field(
+        default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
-        )
+            )
 
-    def __post_init__(self) -> None:
-        super().__post_init__()
-
-    def deal(self) -> Order:
-        """Clear current order and create new current order
+    def clear(self) -> None:
+        """Clear the current queue
         """
-        self.current.clear()
+        self.current = []
 
-        for comp in self:
-            if isinstance(self[comp], Step):
-                step = replace(self[comp])
-                self.current.put(step)
-        self._logger.debug(f'Is deal order of turn: {self.current.current}')
+    def push(self, item: Step) -> None:
+        """Push Step object to queue
+
+        Args:
+            item (Step): Step class instance
+        """
+        heappush(self.current, (item.priority, item))
+
+    def pull(self) -> Step:
+        """Pull Step object from queue with lowest priority
+
+        Returns:
+            Step: Step instance object
+        """
+        return heappop(self.current)[1]
+
+    def _step_replace(self, step: Step) -> None:
+        """Replace card in current
+        """
+        replaced = replace(step)
+        self.push(replaced)
+
+    def deal(
+        self,
+        source: Optional[List[str]] = None
+            ) -> List[Tuple[int, Step]]:
+        """Clear current order and create new current order
+
+        Args:
+            source (Optional[List[str]]): list of stuff ids
+
+        Returns:
+            List[Tuple[int, Step]] - list of priority and steps
+        """
+        self.clear()
+
+        if not source:
+            for comp in self:
+                if isinstance(self[comp], Step):
+                    self._step_replace(self[comp])
+
+        else:
+
+            names = self.get_names()
+            used: Dict[str, Step] = {}
+
+            for name in source:
+                if name in names:
+                    if not used.get(name):
+                        for comp in self:
+                            if isinstance(self[comp], Step) \
+                                    and self[comp].id == name:
+                                self._step_replace(self[comp])
+                                break
+                    else:
+                        self._step_replace(self[comp])
+
+        self._logger.debug(f'Is deal order of turn: {self.current}')
         return self.current
+
+    def get_current_names(self) -> List[str]:
+        """Get ids of current objects
+
+        Returns:
+            List[str]: list ids in current attribut of tool
+        """
+        return [obj[1].id for obj in self.current]
