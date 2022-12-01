@@ -6,23 +6,30 @@ from dataclasses import dataclass, field
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
-from bgameb.types import MARKERS
 
 
 @dataclass_json
 @dataclass(repr=False)
 class BaseItem(Base):
     """Base class for game items (like dices or cards)
-
-    Attr:
-        - count (int): count of items. Default to 1.
-
     """
-    count: int = 1
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._types_to_add = MARKERS
+
+
+@dataclass_json
+@dataclass(order=True, repr=False)
+class Step(BaseItem):
+    """Game steps or turns
+
+    Attr:
+        - priority (int): priority queue number. Default to 0.
+    """
+    priority: int = 0
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
 
 
 @dataclass_json
@@ -38,9 +45,14 @@ class Dice(BaseItem):
 
             dice = Dice('coin', sides=2)
 
+    Attr:
+        - count (int): count of items. Default to 1.
+        - sides (int): sides of dice or coin. Default to 2.
+
     Raises:
         StuffDefineError: number of sides less than 2
     """
+    count: int = 1
     sides: int = 2
     _range: List[int] = field(
         default_factory=list,
@@ -79,6 +91,7 @@ class Card(BaseItem):
     """Card object
 
     Attr:
+        - count (int): count of items. Default to 1.
         - opened (bool): is card oppened. Default to False.
         - tapped (bool): is card tapped. Default to False.
         - side (str, optional): the side of tap. Default to None.
@@ -89,6 +102,7 @@ class Card(BaseItem):
             card = CardType('unique_card')
             card.tap(side='left')
     """
+    count: int = 1
     opened: bool = False
     tapped: bool = False
     side: Optional[str] = None

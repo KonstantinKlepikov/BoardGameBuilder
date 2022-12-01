@@ -3,12 +3,10 @@
 from typing import List
 
 
-MARKERS: List[str] = ['step']
-ITEMS: List[str] = ['dice', 'card', ]
+ITEMS: List[str] = ['dice', 'card', 'step', ]
 TOOLS: List[str] = ['shaker', 'deck', 'steps']
 PLAYERS: List[str] = ['player', ]
 GAMES: List[str] = ['game', ]
 
-MARKERS_ITEMS = MARKERS + ITEMS
-MARKERS_ITEMS_TOOLS = MARKERS_ITEMS + TOOLS
-COMPONENTS = MARKERS_ITEMS_TOOLS + PLAYERS + GAMES
+ITEMS_TOOLS = ITEMS + TOOLS
+COMPONENTS = ITEMS_TOOLS + PLAYERS + GAMES

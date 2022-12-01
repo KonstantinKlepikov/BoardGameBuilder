@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.items &mdash; bgameb 0.0.24 documentation</title>
+  <title>bgameb.items &mdash; bgameb 0.0.27 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.24
+                0.0.27
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -77,23 +77,30 @@
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">dataclass_json</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">StuffDefineError</span>
-<span class="kn">from</span> <span class="nn">bgameb.types</span> <span class="kn">import</span> <span class="n">MARKERS</span>
 
 
 <div class="viewcode-block" id="BaseItem"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.BaseItem">[docs]</a><span class="nd">@dataclass_json</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BaseItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game items (like dices or cards)</span>
-
-<span class="sd">    Attr:</span>
-<span class="sd">        - count (int): count of items. Default to 1.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_types_to_add</span> <span class="o">=</span> <span class="n">MARKERS</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Step"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Step">[docs]</a><span class="nd">@dataclass_json</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Step</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Game steps or turns</span>
+
+<span class="sd">    Attr:</span>
+<span class="sd">        - priority (int): priority queue number. Default to 0.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Dice"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Dice">[docs]</a><span class="nd">@dataclass_json</span>
@@ -109,9 +116,14 @@
 
 <span class="sd">            dice = Dice(&#39;coin&#39;, sides=2)</span>
 
+<span class="sd">    Attr:</span>
+<span class="sd">        - count (int): count of items. Default to 1.</span>
+<span class="sd">        - sides (int): sides of dice or coin. Default to 2.</span>
+
 <span class="sd">    Raises:</span>
 <span class="sd">        StuffDefineError: number of sides less than 2</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">_range</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
@@ -150,6 +162,7 @@
     <span class="sd">&quot;&quot;&quot;Card object</span>
 
 <span class="sd">    Attr:</span>
+<span class="sd">        - count (int): count of items. Default to 1.</span>
 <span class="sd">        - opened (bool): is card oppened. Default to False.</span>
 <span class="sd">        - tapped (bool): is card tapped. Default to False.</span>
 <span class="sd">        - side (str, optional): the side of tap. Default to None.</span>
@@ -160,6 +173,7 @@
 <span class="sd">            card = CardType(&#39;unique_card&#39;)</span>
 <span class="sd">            card.tap(side=&#39;left&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">opened</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">tapped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">side</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>

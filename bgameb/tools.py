@@ -7,10 +7,9 @@ from typing import Tuple, Dict, List, Deque, Optional
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
-from bgameb.markers import Step
-from bgameb.items import Card, Dice
+from bgameb.items import Card, Dice, Step
 from bgameb.errors import ArrangeIndexError
-from bgameb.types import MARKERS_ITEMS
+from bgameb.types import ITEMS
 
 
 @dataclass_json
@@ -21,7 +20,7 @@ class BaseTool(Base):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._types_to_add = MARKERS_ITEMS
+        self._types_to_add = ITEMS
 
 
 @dataclass_json
@@ -71,6 +70,9 @@ class Deck(BaseTool):
     has all methods of
     `python deque
     <https://docs.python.org/3/library/collections.html#deque-objects>`_
+
+    Attr:
+        - current (Deque[Card]): current cards deque.
 
     .. code-block::
         :caption: Example:

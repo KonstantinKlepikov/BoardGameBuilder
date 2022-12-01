@@ -3,6 +3,36 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.30 (2022-12-01)
+============================
+
+Features
+--------
+
+- #219:
+      * Step now is an item
+      * BaseIteme now hasnt count attr - this attribute moved to Card and Dice classes
+      * tests all
+      * docs changes
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/219)
+
+
+Bugfixes
+--------
+
+- #218:
+      * added ``make draft`` to makefile and now with ``make release`` is bulded doc after version bump but before taged and push to github
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/218)
+
+
+Deprecations and Removals
+-------------------------
+
+- #219:
+      * markers.py, markers types and test are removed.
+      * -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/219)
+
+
 Release v0.0.29 (2022-12-01)
 ============================
 

@@ -17,14 +17,6 @@ bgameb.game module
    :undoc-members:
    :show-inheritance:
 
-bgameb.markers module
----------------------
-
-.. automodule:: bgameb.markers
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 bgameb.items module
 -------------------
 
