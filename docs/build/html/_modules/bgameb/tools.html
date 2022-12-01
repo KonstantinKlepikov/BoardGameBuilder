@@ -78,10 +78,9 @@
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">replace</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">config</span><span class="p">,</span> <span class="n">dataclass_json</span>
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
-<span class="kn">from</span> <span class="nn">bgameb.markers</span> <span class="kn">import</span> <span class="n">Step</span>
-<span class="kn">from</span> <span class="nn">bgameb.items</span> <span class="kn">import</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Dice</span>
+<span class="kn">from</span> <span class="nn">bgameb.items</span> <span class="kn">import</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Dice</span><span class="p">,</span> <span class="n">Step</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span>
-<span class="kn">from</span> <span class="nn">bgameb.types</span> <span class="kn">import</span> <span class="n">MARKERS_ITEMS</span>
+<span class="kn">from</span> <span class="nn">bgameb.types</span> <span class="kn">import</span> <span class="n">ITEMS</span>
 
 
 <div class="viewcode-block" id="BaseTool"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool">[docs]</a><span class="nd">@dataclass_json</span>
@@ -92,7 +91,7 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_types_to_add</span> <span class="o">=</span> <span class="n">MARKERS_ITEMS</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_types_to_add</span> <span class="o">=</span> <span class="n">ITEMS</span></div>
 
 
 <div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker">[docs]</a><span class="nd">@dataclass_json</span>
@@ -142,6 +141,9 @@
 <span class="sd">    has all methods of</span>
 <span class="sd">    `python deque</span>
 <span class="sd">    &lt;https://docs.python.org/3/library/collections.html#deque-objects&gt;`_</span>
+
+<span class="sd">    Attr:</span>
+<span class="sd">        - current (Deque[Card]): current cards deque.</span>
 
 <span class="sd">    .. code-block::</span>
 <span class="sd">        :caption: Example:</span>

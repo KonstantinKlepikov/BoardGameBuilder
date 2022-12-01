@@ -2,7 +2,7 @@ import pytest
 import json
 from collections import Counter
 from bgameb.base import Component, Base
-from bgameb.items import Dice, Card, BaseItem
+from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.errors import ComponentNameError
 
 
@@ -12,6 +12,7 @@ class TestComponent:
     components = [
         (Dice, 'dice_nice'),
         (Card, 'card_ward'),
+        (Step, 'wild_step'),
         ]
 
     @pytest.mark.parametrize("_class, _id", components)

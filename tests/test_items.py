@@ -1,8 +1,7 @@
 import json
 import pytest
-from bgameb.items import Dice, Card, BaseItem
+from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.errors import StuffDefineError
-from bgameb.types import MARKERS
 
 
 class TestBaseStuff:
@@ -11,6 +10,7 @@ class TestBaseStuff:
     params = [
         (Dice, 'dice_me'),
         (Card, 'card_you'),
+        (Step, 'step_me')
         ]
 
     @pytest.mark.parametrize("_class, _id", params)
@@ -21,8 +21,6 @@ class TestBaseStuff:
         """
         obj_ = _class(_id)
         assert obj_.id == _id, 'not set id for instance'
-        assert obj_.count == 1, 'wrong count'
-        assert obj_._types_to_add == MARKERS, 'wrong _type_to_add'
 
     @pytest.mark.parametrize("_class, _id", params)
     def test_items_classes_are_converted_to_json(
@@ -127,3 +125,18 @@ class TestCard:
         obj_.untap()
         assert not obj_.tapped, 'card not untapped'
         assert obj_.side is None, 'wrong side'
+
+
+class TestStep:
+    """Test Step class
+    """
+
+    def test_step_instance(self) -> None:
+        """Test Step class instance
+        """
+        obj_ = Step('first_step')
+        assert obj_.priority == 0, 'wrong priority'
+        assert obj_.__class__.__name__.lower() == 'step', 'wrong type'
+        obj1 = Step('first_step', priority=20)
+        assert obj1.priority == 20, 'wrong priority'
+        assert obj1 > obj_, 'wong comparison'

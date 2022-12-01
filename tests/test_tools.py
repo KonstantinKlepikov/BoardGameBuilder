@@ -3,11 +3,10 @@ import pytest
 import random
 from collections import deque
 from bgameb.base import Component
-from bgameb.markers import Step
-from bgameb.items import Dice, Card, BaseItem
+from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, BaseTool
 from bgameb.errors import ArrangeIndexError
-from bgameb.types import MARKERS_ITEMS
+from bgameb.types import ITEMS
 
 
 class FixedSeed:
@@ -31,8 +30,8 @@ class TestTool:
     params = [
         (Deck, 'deck_yeah'),
         (Shaker, 'shaker_wzzzz'),
-        (Steps, 'steps_to')
-        ]
+        (Steps, 'steps_to'),
+            ]
 
     @pytest.mark.parametrize("_class, _id", params)
     def test_tool_init(
@@ -44,7 +43,7 @@ class TestTool:
         """
         obj_ = _class(_id)
         assert obj_.id == _id, 'not set ID for instance'
-        assert obj_._types_to_add == MARKERS_ITEMS, 'wrong _type_to_add'
+        assert obj_._types_to_add == ITEMS, 'wrong _type_to_add'
 
     @pytest.mark.parametrize("_class, _id", params)
     def test_stuff_classes_are_converted_to_json(
@@ -333,7 +332,7 @@ class TestSteps:
         assert isinstance(obj_.current, list), 'wrong current type'
         assert len(obj_.current) == 0, 'wrong current len'
 
-    def test_steps_addSteps(self, obj_: Steps) -> None:
+    def test_steps_add_step(self, obj_: Steps) -> None:
         """Test add step to steps
         """
         assert isinstance(obj_.step1, Step), 'wrong type'
@@ -369,7 +368,7 @@ class TestSteps:
         result = obj_.deal()
         assert len(result) == 2, 'turn not clean'
 
-    def test_steos__deal_from_list(self, obj_: Steps) -> None:
+    def test_steps_deal_from_list(self, obj_: Steps) -> None:
         """Test steps deal() from source
         """
         source = ['step1', 'astep', 'astep']

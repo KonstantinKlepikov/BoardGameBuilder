@@ -4,7 +4,7 @@ from typing import Optional
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from bgameb.base import Base
-from bgameb.types import MARKERS_ITEMS_TOOLS
+from bgameb.types import ITEMS_TOOLS
 
 
 @dataclass_json
@@ -24,4 +24,4 @@ class Player(Base):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self._types_to_add = MARKERS_ITEMS_TOOLS
+        self._types_to_add = ITEMS_TOOLS
