@@ -13,13 +13,13 @@ class Player(Base):
     """Base class for game players and bots
 
     Attr:
-        - name (str): player name
-        - has_priority (bool): Priority flag. Default to False
+        - is_active (bool, optioanl): Activity flag. Default to None
+        - has_priority (bool, optioanl): Priority flag. Default to None
         - team (str, optioanl): team name for player. Default to None
 
     """
-    is_active: bool = True
-    has_priority: bool = False
+    is_active: Optional[bool] = None
+    has_priority: Optional[bool] = None
     team: Optional[str] = None
 
     def __post_init__(self) -> None:
