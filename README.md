@@ -52,10 +52,12 @@ current = game.cards_deck.shuffle()
 game.add(bgameb.Steps('game steps'))
 game.game_steps.add(bgameb.Step('phase one', priority=0))
 game.game_steps.add(bgameb.Step('phase two', priority=1))
-current_game_steps = game.game_steps.deal()
+current = game.game_steps.deal()
 
 # game_steps is a priority queue, that linked with priority attribute
-current_step = current_game_steps.pull()
+current_step = game.game_steps.pull()
+#current_step is available in game object
+current_step = game.game_steps.current_step
 
 # get the schema
 schema = game.to_json()
