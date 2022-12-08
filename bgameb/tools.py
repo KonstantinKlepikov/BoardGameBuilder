@@ -7,7 +7,7 @@ from typing import Tuple, Dict, List, Deque, Optional, Iterable
 from dataclasses import dataclass, field, replace
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
-from bgameb.items import Card, Dice, Step
+from bgameb.items import Card, Dice, Step, BaseItem
 from bgameb.errors import ArrangeIndexError
 from bgameb.types import ITEMS
 
@@ -59,6 +59,186 @@ class Shaker(BaseTool):
 
 @dataclass_json
 @dataclass(repr=False)
+class Bag(BaseTool):
+    """_summary_
+    """
+    current: List[BaseItem] = field(
+        default_factory=list,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+        )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+    def _item_replace(self, item: BaseItem) -> BaseItem:
+        """Replace item in a current
+        """
+        return replace(item)
+
+    def append(self, item: BaseItem) -> List[BaseItem]:
+        """_summary_
+
+        Args:
+            item (BaseItem): _description_
+
+        Returns:
+            List[BaseItem]: _description_
+        """
+        item = self._item_replace(item)
+        self.current.append(item)
+        self._logger.debug(f'To current is appended item: {item.id}')
+        return self.current
+
+    def clear(self) -> None:
+        """Clear the current bag
+        """
+        self.current.clear()
+        self._logger.debug('Bag is clear')
+
+    def count(self, item_id: str) -> int:
+        """Count the number of current bag items with by id.
+
+        Args:
+            item_id (str: an item id
+
+        Returns:
+            int: count of items
+        """
+        count = self.get_current_names().count(item_id)
+        self._logger.debug(f'Count of {item_id} in current is {count}')
+        return count
+
+    def get_current_names(self) -> List[str]:
+        """Get ids of current items
+
+        Returns:
+            List[str]: list ids in current attribut of tool
+        """
+        return [obj.id for obj in self.current]
+
+    def extend(self, items: Iterable[BaseItem]) -> List[BaseItem]:
+        """Extend the the current deck by appending items
+        started from the left side of iterable.
+
+        Args:
+            items (Iterable[Card]): iterable with items
+
+        Returns:
+            List[BaseItem]: current bag
+        """
+        items = [self._item_replace(item) for item in items]
+        self.current.extend(items)
+        self._logger.debug(
+            f'Current are extended by {[item.id for item in items]} from right'
+                )
+        return self.current
+
+    def index(
+        self,
+        item_id: str,
+        start: int = 0,
+        end: Optional[int] = None
+            ) -> int:
+        """Return the position of item_id in the current deck
+        (at or after index start and before index stop).
+        Returns the first match or raises ValueError if not found.
+
+        Args:
+            item_id (str): an item id
+            start (int): start index. Default to 0.
+            end (int, optional): stop index. Default to None.
+
+        Returns:
+            int: index of the the first match
+        """
+        names = self.get_current_names()
+        ind = names.index(item_id, start) if end is None \
+                else names.index(item_id, start, end)
+        self._logger.debug(f'Index of {item_id} in current is {ind}')
+        return ind
+
+    def insert(self, item: BaseItem, pos: int) -> List[BaseItem]:
+        """Insert item into the current bag at position pos.
+
+        Args:
+            item (BaseItem): an item object
+            pos (int): position
+
+        Returns:
+            List[BaseItem]: current bag
+        """
+        item = self._item_replace(item)
+        self.current.insert(pos, item)
+        self._logger.debug(f'To current is inserted {item.id} on {pos=}')
+        return self.current
+
+    def pop(self) -> BaseItem:
+        """Remove and return an item from the current bag.
+        If no cards are present, raises an IndexError.
+
+        Returns:
+            BaseItem: an item object
+        """
+        item = self.current.pop()
+        self._logger.debug(f'{item.id} is poped from current')
+        return item
+
+    def remove(self, item_id: str) -> List[BaseItem]:
+        """Remove the first occurrence of item from current bag.
+        If not found, raises a ValueError.
+        Args:
+            item_id (str): an item id
+
+        Returns:
+            List[BaseItem]: current bag
+        """
+        ind = self.index(item_id)
+        item = self.current[ind]
+        self.current.remove(item)
+        self._logger.debug(f'Is removed from current {item_id}')
+        return self.current
+
+    def reverse(self) -> List[BaseItem]:
+        """Reverse the items of the current bag.
+
+        Returns:
+            List[BaseItem]: current bag
+        """
+        self.current.reverse()
+        self._logger.debug('Current is reversed')
+        return self.current
+
+    def deal(self, items: Optional[List[str]] = None) -> List[BaseItem]:
+        """Deal new bag and save it to current
+
+        Args:
+            items (Optional[List[str]]): list of items ids
+        """
+        self.current.clear()
+
+        # FIXME: ambiculous
+        if not items:
+
+            for comp in self:
+                if issubclass(type(self[comp]), BaseItem):
+                    self.append(self[comp])
+
+        else:
+
+            for name in items:
+                for comp in self:
+                    if issubclass(type(self[comp]), BaseItem) \
+                            and self[comp].id == name:
+                        self.append(self[comp])
+                        break
+
+        self._logger.debug(f'Is deal cards: {self.current}')
+        return self.current
+
+
+@dataclass_json
+@dataclass(repr=False)
 class Deck(BaseTool):
     """Deck object
 
@@ -88,39 +268,45 @@ class Deck(BaseTool):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def _card_replace(self, card: Card) -> Card:
-        """Replace card in current
-        """
-        replaced = replace(card)
-        del replaced.count
-        return replaced
+    def _item_replace(self, item: Card) -> Card:
+        """Replace item in a current
 
-    def append(self, card: Card) -> Deque[Card]:
+        Args:
+            item (Card): a card object
+
+        Returns:
+            Card: a card object
+        """
+        item = replace(item)
+        del item.count
+        return item
+
+    def append(self, item: Card) -> Deque[Card]:
         """Add card to the right side of the current deck.
 
         Args:
-            card (Card): a card object
+            item (Card): a card object
 
         Returns:
             Deque[Card]: current deck
         """
-        card = self._card_replace(card)
-        self.current.append(card)
-        self._logger.debug(f'To right of current is appended card: {card.id}')
+        item = self._item_replace(item)
+        self.current.append(item)
+        self._logger.debug(f'To right of current is appended card: {item.id}')
         return self.current
 
-    def appendleft(self, card: Card) -> Deque[Card]:
+    def appendleft(self, item: Card) -> Deque[Card]:
         """Add card to the left side of the current deck.
 
         Args:
-            card (Card): a card object
+            item (Card): a card object
 
         Returns:
             Deque[Card]: current deck
         """
-        card = self._card_replace(card)
-        self.current.appendleft(card)
-        self._logger.debug(f'To left of current is appended card: {card.id}')
+        item = self._item_replace(item)
+        self.current.appendleft(item)
+        self._logger.debug(f'To left of current is appended card: {item.id}')
         return self.current
 
     def clear(self) -> None:
@@ -129,88 +315,95 @@ class Deck(BaseTool):
         self.current.clear()
         self._logger.debug('Deck is clear')
 
-    def count(self, card_id: str) -> int:
+    def count(self, item_id: str) -> int:
         """Count the number of current deck cards with card id.
 
         Args:
-            card_id (str: a card id
+            item_id (str: a card id
 
         Returns:
             int: count of cards
         """
-        count = self.get_current_names().count(card_id)
-        self._logger.debug(f'Count of {card_id} in current is {count}')
+        count = self.get_current_names().count(item_id)
+        self._logger.debug(f'Count of {item_id} in current is {count}')
         return count
 
-    def extend(self, cards: Iterable[Card]) -> Deque[Card]:
+    def extend(self, items: Iterable[Card]) -> Deque[Card]:
         """Extend the right side of the current
         deck by appending cards started from the left side of iterable.
 
         Args:
-            cards (Iterable[Card]): iterable with cards
+            items (Iterable[Card]): iterable with cards
 
         Returns:
             Deque[Card]: current deck
         """
-        cards = [self._card_replace(card) for card in cards]
-        self.current.extend(cards)
+        items = [self._item_replace(item) for item in items]
+        self.current.extend(items)
         self._logger.debug(
-            f'Current are extended by {[card.id for card in cards]} from right'
+            f'Current are extended by {[item.id for item in items]} from right'
                 )
         return self.current
 
-    def extendleft(self, cards: Iterable[Card]) -> Deque[Card]:
+    def extendleft(self, items: Iterable[Card]) -> Deque[Card]:
         """Extend the left side of the current deck by appending
         cards started from the right side of iterable.
         The series of left appends results in reversing the order
         of cards in the iterable argument.
 
         Args:
-            cards (Iterable[Card]): iterable with cards
+            items (Iterable[Card]): iterable with cards
 
         Returns:
             Deque[Card]: current deck
         """
-        cards = [self._card_replace(card) for card in cards]
-        self.current.extendleft(cards)
+        items = [self._item_replace(item) for item in items]
+        self.current.extendleft(items)
         self._logger.debug(
-            f'Current are extended by {[card.id for card in cards]} from left'
+            f'Current are extended by {[item.id for item in items]} from left'
                 )
         return self.current
 
-    def index(self, card_id: str, start: int = 0, end: int = -1) -> int:
-        """Return the position of x in the current deck
+    def index(
+        self,
+        item_id: str,
+        start: int = 0,
+        end: Optional[int] = None
+            ) -> int:
+        """Return the position of item_id in the current deck
         (at or after index start and before index stop).
         Returns the first match or raises ValueError if not found.
 
         Args:
-            card_id (str): a card id
+            item_id (str): a card id
             start (int): start index. Default to 0.
-            end (int): stop index. Default to -1.
+            end (int, optional): stop index. Default to None.
 
         Returns:
             int: index of the the first match
         """
-        ind = self.get_current_names().index(card_id, start, end)
-        self._logger.debug(f'Index of {card_id} in current is {ind}')
+        names = self.get_current_names()
+        ind = names.index(item_id, start) if end is None \
+                else names.index(item_id, start, end)
+        self._logger.debug(f'Index of {item_id} in current is {ind}')
         return ind
 
-    def insert(self, card: Card, pos: int) -> Deque[Card]:
+    def insert(self, item: Card, pos: int) -> Deque[Card]:
         """Insert card into the current deck at position pos.
 
         If the insertion would cause deck to grow beyond maxlen,
         an IndexError is raised.
 
         Args:
-            card (Card): a card object
+            item (Card): a card object
             pos (int): position
 
         Returns:
             Deque[Card]: current deck
         """
-        card = self._card_replace(card)
-        self.current.insert(pos, card)
-        self._logger.debug(f'To current is inserted {card.id} on {pos=}')
+        item = self._item_replace(item)
+        self.current.insert(pos, item)
+        self._logger.debug(f'To current is inserted {item.id} on {pos=}')
         return self.current
 
     def pop(self) -> Card:
@@ -220,9 +413,9 @@ class Deck(BaseTool):
         Returns:
             Card: a card object
         """
-        card = self.current.pop()
-        self._logger.debug(f'{card.id} is poped from right of current')
-        return card
+        item = self.current.pop()
+        self._logger.debug(f'{item.id} is poped from right of current')
+        return item
 
     def popleft(self) -> Card:
         """Remove and return a card from the left side of the current deck.
@@ -231,27 +424,27 @@ class Deck(BaseTool):
         Returns:
             Card: a card object
         """
-        card = self.current.popleft()
-        self._logger.debug(f'{card.id} is poped from left of current')
-        return card
+        item = self.current.popleft()
+        self._logger.debug(f'{item.id} is poped from left of current')
+        return item
 
-    def remove(self, card_id: str) -> Deque[Card]:
+    def remove(self, item_id: str) -> Deque[Card]:
         """Remove the first occurrence of card from current deck.
         If not found, raises a ValueError.
         Args:
-            card_id (str): a card id
+            item_id (str): a card id
 
         Returns:
             Deque[Card]: current deck
         """
-        ind = self.index(card_id)
-        card = self.current[ind]
-        self.current.remove(card)
-        self._logger.debug(f'Is removed from current {card_id}')
+        ind = self.index(item_id)
+        item = self.current[ind]
+        self.current.remove(item)
+        self._logger.debug(f'Is removed from current {item_id}')
         return self.current
 
     def reverse(self) -> Deque[Card]:
-        """Reverse the cards of the current deck in-place and then return None.
+        """Reverse the cards of the current deck.
 
         Returns:
             Deque[Card]: current deck
@@ -274,16 +467,16 @@ class Deck(BaseTool):
         self._logger.debug(f'Current is rotate by {n}')
         return self.current
 
-    def deal(self, source: Optional[List[str]] = None) -> Deque[Card]:
-        """Deal new random shuffled deck and save it to
-        self.current
+    def deal(self, items: Optional[List[str]] = None) -> Deque[Card]:
+        """Deal new deck and save it to current
 
         Args:
-            source (Optional[List[str]]): list of stuff ids
+            items (Optional[List[str]]): list of cards ids
         """
         self.current.clear()
 
-        if not source:
+        # FIXME: ambiculous
+        if not items:
 
             for comp in self:
                 if isinstance(self[comp], Card):
@@ -295,7 +488,7 @@ class Deck(BaseTool):
             names = self.get_names()
             used: Dict[str, Card] = {}
 
-            for name in source:
+            for name in items:
                 if name in names:
                     if not used.get(name):
                         for comp in self:
@@ -520,30 +713,31 @@ class Steps(BaseTool):
 
     def deal(
         self,
-        source: Optional[List[str]] = None
+        items: Optional[List[str]] = None
             ) -> List[Tuple[int, Step]]:
         """Clear current order and create new current order
 
         Args:
-            source (Optional[List[str]]): list of stuff ids
+            items (Optional[List[str]]): list of stuff ids
 
         Returns:
             List[Tuple[int, Step]] - list of priority and steps
         """
         self.clear()
 
-        if not source:
+        # FIXME: ambiculous
+        if not items:
             for comp in self:
                 if comp != 'current_step' \
                         and isinstance(self[comp], Step):
                     self.push(self[comp])
 
         else:
-            # FIXME: ambiculous
+
             names = self.get_names()
             used: Dict[str, Step] = {}
 
-            for name in source:
+            for name in items:
                 if name != 'current_step' and name in names:
                     if not used.get(name):
                         for comp in self:
