@@ -132,7 +132,7 @@ class TestBag:
         assert isinstance(dealt_obj_.current, list), 'wrong current'
         assert len(dealt_obj_.current) == 0, 'wrong current len'
 
-    def test_count(self, dealt_obj_:Bag) -> None:
+    def test_count(self, dealt_obj_: Bag) -> None:
         """Test current count of given item
         """
         assert dealt_obj_.count('card') == 1, 'wrong count'
@@ -160,6 +160,43 @@ class TestBag:
             dealt_obj_.index('imposible')
         with pytest.raises(ValueError):
             dealt_obj_.index('card', start=6, end=10)
+
+    def test_insert(self, dealt_obj_: Bag) -> None:
+        """Test insert into currend
+        """
+        item = Card('unique')
+        obj_ = dealt_obj_.insert(item, 2)
+        assert obj_[2].id == 'unique', 'not inserted'
+        assert id(item) != id(obj_[2]), 'not replaced'
+        obj_ = dealt_obj_.insert(item, 55)
+        assert obj_[3].id == 'unique', 'not inserted'
+
+    def test_pop(self, dealt_obj_: Bag) -> None:
+        """Test pop
+        """
+        assert dealt_obj_.pop().id == 'dice', 'wrong pop'
+        dealt_obj_.current.clear()
+        with pytest.raises(IndexError):
+            dealt_obj_.pop()
+
+    def test_remove(self, dealt_obj_: Bag) -> None:
+        """Test remove
+        """
+        assert dealt_obj_.current[1].id == 'dice', 'wrong order'
+        obj_ = dealt_obj_.remove('dice')
+        assert len(obj_) == 1, 'wrong len'
+        assert obj_[0].id == 'card', 'not removed'
+        obj_ = dealt_obj_.remove('card')
+        assert len(obj_) == 0, 'wrong len'
+        with pytest.raises(ValueError):
+            dealt_obj_.remove('not_exist')
+
+    def test_reverse(self, dealt_obj_: Bag) -> None:
+        """Test reverse
+        """
+        items = list(dealt_obj_.current)
+        items.reverse()
+        assert list(dealt_obj_.reverse()) == items, 'not reversed'
 
     def test_bag_deal(self, dealt_obj_: Bag) -> None:
         """Test obj_ deal()

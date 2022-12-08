@@ -154,7 +154,7 @@ class Bag(BaseTool):
         """
         names = self.get_current_names()
         ind = names.index(item_id, start) if end is None \
-                else names.index(item_id, start, end)
+            else names.index(item_id, start, end)
         self._logger.debug(f'Index of {item_id} in current is {ind}')
         return ind
 
@@ -384,7 +384,7 @@ class Deck(BaseTool):
         """
         names = self.get_current_names()
         ind = names.index(item_id, start) if end is None \
-                else names.index(item_id, start, end)
+            else names.index(item_id, start, end)
         self._logger.debug(f'Index of {item_id} in current is {ind}')
         return ind
 
