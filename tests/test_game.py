@@ -4,7 +4,7 @@ from bgameb.game import Game
 from bgameb.base import Component, Base
 from bgameb.items import Dice, Card
 from bgameb.tools import Steps, Deck, Shaker
-from bgameb.types import COMPONENTS
+from bgameb.constraints import COMPONENTS
 from bgameb.errors import ComponentClassError, ComponentNameError
 
 

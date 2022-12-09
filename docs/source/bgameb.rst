@@ -41,10 +41,10 @@ bgameb.players module
    :undoc-members:
    :show-inheritance:
 
-bgameb.types module
--------------------
+bgameb.constraints module
+-------------------------
 
-.. automodule:: bgameb.types
+.. automodule:: bgameb.constraints
    :members:
    :undoc-members:
    :show-inheritance:

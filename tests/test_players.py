@@ -1,6 +1,6 @@
 import json
 from bgameb.players import Player
-from bgameb.types import ITEMS_TOOLS
+from bgameb.constraints import ITEMS_TOOLS
 
 
 class TestPlayer:

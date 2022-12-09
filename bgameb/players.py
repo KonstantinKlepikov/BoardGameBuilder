@@ -4,7 +4,7 @@ from typing import Optional
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from bgameb.base import Base
-from bgameb.types import ITEMS_TOOLS
+from bgameb.constraints import ITEMS_TOOLS
 
 
 @dataclass_json

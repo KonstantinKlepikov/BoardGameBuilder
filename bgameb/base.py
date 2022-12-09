@@ -2,11 +2,12 @@
 """
 import re
 import string
-from typing import List, Optional, Iterator, Dict
+from typing import List, Optional, Iterator, Dict, Any
 from collections.abc import Mapping
 from collections import Counter
 from dataclasses import dataclass, field, make_dataclass
 from dataclasses_json import dataclass_json, config, Undefined, CatchAll
+from bgameb.constraints import COMPONENTS
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, ComponentIdError
         )
@@ -248,7 +249,7 @@ class Base(Component):
             self._logger.info('===========NEW GAME============')
         self._logger.info(
             f'{self.__class__.__name__} created with id="{self.id}".'
-            )
+                )
 
     def add(self, component) -> None:
         """Add another component to this component
@@ -261,3 +262,21 @@ class Base(Component):
             self._logger.info(f'"{component.id}" is added to "{self.id}".')
         else:
             raise ComponentClassError(component, self._logger)
+
+    def get_component_by_id(self, id: str) -> Optional[Any]:
+        """Get nested component by its id
+
+        Args:
+            id (str): component id
+
+        Returns:
+            Component, optional: result of search
+        """
+        for comp in self:
+            try:
+                if self[comp].get('_type') in COMPONENTS \
+                        and self[comp].get('id') == id:
+                    return self[comp]
+            except AttributeError:
+                continue
+        return None

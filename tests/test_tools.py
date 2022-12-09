@@ -6,7 +6,7 @@ from bgameb.base import Component
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
 from bgameb.errors import ArrangeIndexError
-from bgameb.types import ITEMS
+from bgameb.constraints import ITEMS
 
 
 class FixedSeed:
@@ -202,14 +202,14 @@ class TestBag:
         """Test obj_ deal()
         """
         assert len(dealt_obj_.current) == 2, 'wrong current len'
-        ids1 = dealt_obj_.get_current_names()
+        ids1 = dealt_obj_.get_current_ids()
         assert 'card' in ids1, 'wrong cards ids inside current'
         assert 'card' in ids1, 'wrong dice ids inside current'
         before = [id(item) for item in dealt_obj_.current]
         dealt_obj_.deal()
         after = [id(item) for item in dealt_obj_.current]
         assert before != after, 'dont created new instances'
-        ids2 = dealt_obj_.get_current_names()
+        ids2 = dealt_obj_.get_current_ids()
         assert ids1 == ids2, 'wrong order'
 
     def test_bag_deal_from_list(self, obj_: Bag) -> None:
@@ -218,7 +218,7 @@ class TestBag:
         items = ['card', 'card', 'card', 'dice']
         result = obj_.deal(items)
         assert len(result) == 4, 'wrong current len'
-        ids = obj_.get_current_names()
+        ids = obj_.get_current_ids()
         assert ids == items, 'wrong deal'
         assert 'card' in ids, 'wrong cards ids inside current'
         assert 'dice' in ids, 'wrong dice id inside current'
@@ -573,12 +573,12 @@ class TestDeck:
             assert len(result) == 4, 'wrong result'
             assert len(obj_.current) == 0, 'wrong result'
 
-    def test_get_current_names(self, dealt_obj_: Deck) -> None:
+    def test_get_current_ids(self, dealt_obj_: Deck) -> None:
         """Test get_curren_names()
         """
-        assert len(dealt_obj_.get_current_names()) == 10, \
+        assert len(dealt_obj_.get_current_ids()) == 10, \
             'wrong current names len'
-        assert dealt_obj_.get_current_names()[0] == 'card', \
+        assert dealt_obj_.get_current_ids()[0] == 'card', \
             'wrong current names'
 
 
@@ -631,8 +631,8 @@ class TestSteps:
         """
         result = obj_.deal()
         assert len(result) == 2, 'wrong len'
-        assert len(obj_.get_current_names()) == 2, 'wrong current names len'
-        assert obj_.get_current_names()[0] == 'step1', 'wrong current names'
+        assert len(obj_.get_current_ids()) == 2, 'wrong current names len'
+        assert obj_.get_current_ids()[0] == 'step1', 'wrong current names'
         current = obj_.pull()
         assert len(obj_.current) == 1, 'wrong len'
         assert current.id == 'step1', 'wrong current step'
@@ -656,8 +656,8 @@ class TestSteps:
         result = obj_.deal(items)
 
         assert len(result) == 3, 'wrong current len'
-        assert len(obj_.get_current_names()) == 3, 'wrong current names len'
-        assert obj_.get_current_names()[0] == 'step1', 'wrong current names'
+        assert len(obj_.get_current_ids()) == 3, 'wrong current names len'
+        assert obj_.get_current_ids()[0] == 'step1', 'wrong current names'
         obj_.pull()
         assert len(result) == 2, 'wrong current len'
-        assert obj_.get_current_names()[0] == 'astep', 'wrong current names'
+        assert obj_.get_current_ids()[0] == 'astep', 'wrong current names'

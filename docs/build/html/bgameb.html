@@ -50,7 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.items">bgameb.items module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.tools">bgameb.tools module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.players">bgameb.players module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.types">bgameb.types module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.constraints">bgameb.constraints module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bgameb.errors">bgameb.errors module</a></li>
 </ul>
 </li>
@@ -200,6 +200,23 @@ be added</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>component</strong> (<a class="reference internal" href="#bgameb.base.Component" title="bgameb.base.Component"><em>Component</em></a>) – component instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bgameb.base.Base.get_component_by_id">
+<span class="sig-name descname"><span class="pre">get_component_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/base.html#Base.get_component_by_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.base.Base.get_component_by_id" title="Permalink to this definition"></a></dt>
+<dd><p>Get nested component by its id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – component id</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result of search</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bgameb.base.Component" title="bgameb.base.Component">Component</a>, optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -691,8 +708,8 @@ to each other.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="bgameb.tools.Bag.get_current_names">
-<span class="sig-name descname"><span class="pre">get_current_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Bag.get_current_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Bag.get_current_names" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="bgameb.tools.Bag.get_current_ids">
+<span class="sig-name descname"><span class="pre">get_current_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Bag.get_current_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Bag.get_current_ids" title="Permalink to this definition"></a></dt>
 <dd><p>Get ids of current items</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1210,8 +1227,8 @@ current deck. Default to True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="bgameb.tools.Deck.get_current_names">
-<span class="sig-name descname"><span class="pre">get_current_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.get_current_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.get_current_names" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="bgameb.tools.Deck.get_current_ids">
+<span class="sig-name descname"><span class="pre">get_current_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Deck.get_current_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Deck.get_current_ids" title="Permalink to this definition"></a></dt>
 <dd><p>Get ids of current objects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1319,8 +1336,8 @@ current deck. Default to True.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="bgameb.tools.Steps.get_current_names">
-<span class="sig-name descname"><span class="pre">get_current_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Steps.get_current_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Steps.get_current_names" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="bgameb.tools.Steps.get_current_ids">
+<span class="sig-name descname"><span class="pre">get_current_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/bgameb/tools.html#Steps.get_current_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bgameb.tools.Steps.get_current_ids" title="Permalink to this definition"></a></dt>
 <dd><p>Get ids of current objects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1420,8 +1437,8 @@ current deck. Default to True.</p></li>
 </dd></dl>
 
 </section>
-<section id="module-bgameb.types">
-<span id="bgameb-types-module"></span><h2>bgameb.types module<a class="headerlink" href="#module-bgameb.types" title="Permalink to this heading"></a></h2>
+<section id="module-bgameb.constraints">
+<span id="bgameb-constraints-module"></span><h2>bgameb.constraints module<a class="headerlink" href="#module-bgameb.constraints" title="Permalink to this heading"></a></h2>
 <p>Types of package objects</p>
 </section>
 <section id="module-bgameb.errors">
