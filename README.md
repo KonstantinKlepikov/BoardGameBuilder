@@ -17,17 +17,13 @@ import bgameb
 # create the game
 game = bgameb.Game('one board game')
 
-# add dice and coin types to game
-six = bgameb.Dice('six', sides=6)
-twenty = bgameb.Dice('twenty', sides=20)
-coin = bgameb.Dice('coin') # 2 is default number of sides
-
-# add shaker and add count of stuff to shaker
+# add shaker to game
 game.add(bgameb.Shaker('red shaker'))
-for stuff in [six, twenty, coin]:
-    game.red_shaker.add(stuff)
-    # change coont of dices in shaker
-    game.red_shaker[stuff.id].count = 50
+
+# add dices and coin to shaker
+game.red_shaker.add(bgameb.Dice('six', sides=6, count=50))
+game.red_shaker.add(bgameb.Dice('twenty', sides=20, count=50))
+game.red_shaker.add(bgameb.Dice('coin', count=10))
 
 # roll all stuff and get result
 result = game.red_shaker.roll()
@@ -52,19 +48,22 @@ current = game.cards_deck.shuffle()
 game.add(bgameb.Steps('game steps'))
 game.game_steps.add(bgameb.Step('phase one', priority=0))
 game.game_steps.add(bgameb.Step('phase two', priority=1))
-current_game_steps = game.game_steps.deal()
+current = game.game_steps.deal()
 
-# game_steps is a priority queue, that linked with priority attribute
-current_step = current_game_steps.pull()
+# game_steps is a priority queue, linked with priority attribute
+current_step = game.game_steps.pull()
+
+# last pulled step is available as current_step to
+current_step = game.game_steps.current_step
 
 # get the schema
 schema = game.to_json()
 
-# if you want, you can add his own attrs directly, but
+# if you want, you can add additional attrs directly, but
 # this attributes not added to the schema
 game.red_chaker.IS_ACTIVE = True
 
-# you can add any own data as declaration of object instance.
+# you can add any data as declaration of object instance.
 # This data is store in other attribute, it is a dict and is in schema
 dice = bgameb.Dice('six', sides=6, description='my important data')
 deacription = dice.other['deacription']

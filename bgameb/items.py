@@ -1,7 +1,7 @@
 """Game dices, coins, cards and other items
 """
 import random
-from typing import List, Optional
+from typing import List, Optional, NoReturn
 from dataclasses import dataclass, field
 from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
@@ -149,7 +149,7 @@ class Card(BaseItem):
         self.side = None
         self._logger.debug('Card untaped. Side set to None.')
 
-    def alter(self) -> None:
+    def alter(self) -> NoReturn:
         """Many cards have alter views. For example
         card can have main view, that apply most time of the game
         and second view, that apply only if card played as

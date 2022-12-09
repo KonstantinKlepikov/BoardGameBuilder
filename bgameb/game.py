@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from bgameb.base import Base, log_enable
-from bgameb.types import COMPONENTS
+from bgameb.constraints import COMPONENTS
 
 
 @dataclass_json
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     result = game.blue_shaker.dice_8.roll()
 
-    print(f'Result of shke: {result}')
+    print(f'Result of shake: {result}')
     print('='*20 + '\n')
     print(f'Repr: {repr(game)}')
     print('='*20 + '\n')
@@ -59,10 +59,13 @@ if __name__ == '__main__':
     print('='*20 + '\n')
     pprint(deck)
     print('='*20 + '\n')
-    print(game.cards_deck.get_current_names())
+    print(f'Current deck ids: {game.cards_deck.get_current_ids()}')
     print('='*20 + '\n')
-    print(f' Get_ids(): {game.get_names()}')
+    print(f'Names in game: {game.get_names()}')
     print('='*20 + '\n')
-    pprint(f'Len: {len(game)}')
+    print(
+        'Get by id "Game Steps" in game: '
+        f'{game.get_component_by_id("Game Steps")}'
+            )
     print('='*20 + '\n')
     print(f'Dir: {dir(game)}')

@@ -1,6 +1,6 @@
 import json
 from bgameb.players import Player
-from bgameb.types import ITEMS_TOOLS
+from bgameb.constraints import ITEMS_TOOLS
 
 
 class TestPlayer:
@@ -26,5 +26,6 @@ class TestPlayer:
         """Test players attributes
         """
         obj_ = Player('player')
-        assert obj_.has_priority is False, 'wrong priority'
+        assert obj_.has_priority is None, 'wrong priority'
+        assert obj_.is_active is None, 'wrong priority'
         assert obj_.team is None, 'wrong tram'

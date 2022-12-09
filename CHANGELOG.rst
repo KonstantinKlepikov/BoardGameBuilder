@@ -3,6 +3,33 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.31 (2022-12-09)
+============================
+
+Features
+--------
+
+- #225:
+      - is renamed get_current_names() method to get_current_ids() method
+      - implemented get_component_by_id() method in Base class
+      - test all
+      - docs changes
+      - readme changes
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/225)
+- #226:
+      * attributes for Player are optional
+      - added current_step attr to Steps
+      - rewrited _card_replace() for Deck
+      - to Deck added deque methods: append(), appendleft(), pop(), popleft(), insert(), index(), remove(). reverse(), clear(), count(), extend(), extendleft(), rotate()
+      - test all
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/226)
+- #227:
+      - added Bag class
+      - to Deck added list methods: append(), pop(), insert(), index(), remove(). reverse(), clear(), count(), extend()
+      - test all
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/227)
+
+
 Release v0.0.30 (2022-12-01)
 ============================
 
