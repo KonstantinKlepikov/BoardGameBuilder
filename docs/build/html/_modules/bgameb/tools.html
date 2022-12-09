@@ -80,7 +80,7 @@
 <span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
 <span class="kn">from</span> <span class="nn">bgameb.items</span> <span class="kn">import</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Dice</span><span class="p">,</span> <span class="n">Step</span><span class="p">,</span> <span class="n">BaseItem</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span>
-<span class="kn">from</span> <span class="nn">bgameb.types</span> <span class="kn">import</span> <span class="n">ITEMS</span>
+<span class="kn">from</span> <span class="nn">bgameb.constraints</span> <span class="kn">import</span> <span class="n">ITEMS</span>
 
 
 <div class="viewcode-block" id="BaseTool"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool">[docs]</a><span class="nd">@dataclass_json</span>
@@ -176,11 +176,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: count of items</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_names</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_ids</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Count of </span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s1"> in current is </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">count</span></div>
 
-<div class="viewcode-block" id="Bag.get_current_names"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag.get_current_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="Bag.get_current_ids"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag.get_current_ids">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get ids of current items</span>
 
 <span class="sd">        Returns:</span>
@@ -223,7 +223,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: index of the the first match</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_names</span><span class="p">()</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_ids</span><span class="p">()</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span> <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span> \
             <span class="k">else</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Index of </span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s1"> in current is </span><span class="si">{</span><span class="n">ind</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -395,7 +395,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: count of cards</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_names</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_ids</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Count of </span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s1"> in current is </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">count</span></div>
 
@@ -453,7 +453,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: index of the the first match</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_names</span><span class="p">()</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_ids</span><span class="p">()</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span> <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span> \
             <span class="k">else</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Index of </span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s1"> in current is </span><span class="si">{</span><span class="n">ind</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -727,7 +727,7 @@
                     <span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Deck.get_current_names"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.get_current_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="Deck.get_current_ids"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.get_current_ids">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get ids of current objects</span>
 
 <span class="sd">        Returns:</span>
@@ -822,7 +822,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is deal order of turn: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span></div>
 
-<div class="viewcode-block" id="Steps.get_current_names"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.get_current_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="Steps.get_current_ids"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.get_current_ids">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get ids of current objects</span>
 
 <span class="sd">        Returns:</span>

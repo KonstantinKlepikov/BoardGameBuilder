@@ -9,7 +9,7 @@ from dataclasses_json import config, dataclass_json
 from bgameb.base import Base
 from bgameb.items import Card, Dice, Step, BaseItem
 from bgameb.errors import ArrangeIndexError
-from bgameb.types import ITEMS
+from bgameb.constraints import ITEMS
 
 
 @dataclass_json
@@ -105,11 +105,11 @@ class Bag(BaseTool):
         Returns:
             int: count of items
         """
-        count = self.get_current_names().count(item_id)
+        count = self.get_current_ids().count(item_id)
         self._logger.debug(f'Count of {item_id} in current is {count}')
         return count
 
-    def get_current_names(self) -> List[str]:
+    def get_current_ids(self) -> List[str]:
         """Get ids of current items
 
         Returns:
@@ -152,7 +152,7 @@ class Bag(BaseTool):
         Returns:
             int: index of the the first match
         """
-        names = self.get_current_names()
+        names = self.get_current_ids()
         ind = names.index(item_id, start) if end is None \
             else names.index(item_id, start, end)
         self._logger.debug(f'Index of {item_id} in current is {ind}')
@@ -324,7 +324,7 @@ class Deck(BaseTool):
         Returns:
             int: count of cards
         """
-        count = self.get_current_names().count(item_id)
+        count = self.get_current_ids().count(item_id)
         self._logger.debug(f'Count of {item_id} in current is {count}')
         return count
 
@@ -382,7 +382,7 @@ class Deck(BaseTool):
         Returns:
             int: index of the the first match
         """
-        names = self.get_current_names()
+        names = self.get_current_ids()
         ind = names.index(item_id, start) if end is None \
             else names.index(item_id, start, end)
         self._logger.debug(f'Index of {item_id} in current is {ind}')
@@ -656,7 +656,7 @@ class Deck(BaseTool):
                     )
             return result
 
-    def get_current_names(self) -> List[str]:
+    def get_current_ids(self) -> List[str]:
         """Get ids of current objects
 
         Returns:
@@ -751,7 +751,7 @@ class Steps(BaseTool):
         self._logger.debug(f'Is deal order of turn: {self.current}')
         return self.current
 
-    def get_current_names(self) -> List[str]:
+    def get_current_ids(self) -> List[str]:
         """Get ids of current objects
 
         Returns:
