@@ -204,13 +204,13 @@ class TestBaseClass:
         j = json.loads(obj_.to_json())
         assert j['id'] == '9 this is Fine #', 'not converted to json'
 
-    def test_get_component_by_id(self) -> None:
+    def test_by_id(self) -> None:
         """Test get component by id
         """
         obj_ = Base('9 this is Fine #')
         obj_._types_to_add = COMPONENTS
         obj_.add(Dice('dice'))
-        result = obj_.get_component_by_id('dice')
+        result = obj_.by_id('dice')
         assert result.id == 'dice', 'wrong component'
-        result = obj_.get_component_by_id('notexist')
+        result = obj_.by_id('notexist')
         assert result is None, 'wrong component'

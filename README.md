@@ -51,10 +51,10 @@ game.game_steps.add(bgameb.Step('phase two', priority=1))
 current = game.game_steps.deal()
 
 # game_steps is a priority queue, linked with priority attribute
-current_step = game.game_steps.pull()
+last = game.game_steps.pull()
 
-# last pulled step is available as current_step to
-current_step = game.game_steps.current_step
+# last pulled step is available as last to
+last = game.game_steps.last
 
 # get the schema
 schema = game.to_json()

@@ -21,11 +21,3 @@ class TestPlayer:
         obj_ = Player('player')
         j = json.loads(obj_.to_json())
         assert j['id'] == 'player', 'not converted to json'
-
-    def test_players_attributes(self) -> None:
-        """Test players attributes
-        """
-        obj_ = Player('player')
-        assert obj_.has_priority is None, 'wrong priority'
-        assert obj_.is_active is None, 'wrong priority'
-        assert obj_.team is None, 'wrong tram'

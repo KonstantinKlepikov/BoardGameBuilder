@@ -2,7 +2,7 @@
 """
 import re
 import string
-from typing import List, Optional, Iterator, Dict, Any
+from typing import List, Optional, Iterator, Dict, Any, Type
 from collections.abc import Mapping
 from collections import Counter
 from dataclasses import dataclass, field, make_dataclass
@@ -65,7 +65,8 @@ class Component(Mapping):
             k: v for k, v
             in self.__dict__.items()
             if not k.startswith('_')
-            and not k.startswith('current')
+            and k != 'current'
+            and k != 'last'
                 }
 
     def __iter__(self) -> Iterator:
@@ -87,7 +88,7 @@ class Component(Mapping):
         attr = self._make_name(attr)
         self.__dict__.update({attr: value})
 
-    def __getitem__(self, attr: str):
+    def __getitem__(self, attr: str) -> 'Base':
         return self.__dict__[attr]
 
     def __delitem__(self, attr: str) -> None:
@@ -263,7 +264,7 @@ class Base(Component):
         else:
             raise ComponentClassError(component, self._logger)
 
-    def get_component_by_id(self, id: str) -> Optional[Any]:
+    def by_id(self, id: str) -> Optional[Any]:
         """Get nested component by its id
 
         Args:
