@@ -41,14 +41,6 @@ bgameb.players module
    :undoc-members:
    :show-inheritance:
 
-bgameb.constraints module
--------------------------
-
-.. automodule:: bgameb.constraints
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 bgameb.errors module
 --------------------
 

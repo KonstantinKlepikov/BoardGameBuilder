@@ -15,58 +15,75 @@ Object-oriented framework for build board game logic in python
 import bgameb
 
 # create the game
-game = bgameb.Game('one board game')
+G = bgameb.Game('one board game')
 
-# add shaker to game
-game.add(bgameb.Shaker('red shaker'))
+# add player
+G.add(bgameb.Player('Player'))
 
-# add dices and coin to shaker
-game.red_shaker.add(bgameb.Dice('six', sides=6, count=50))
-game.red_shaker.add(bgameb.Dice('twenty', sides=20, count=50))
-game.red_shaker.add(bgameb.Dice('coin', count=10))
+# The players object is in attribute p, items -> i, tools -> t.
+# Names are converted to snake case
+player = G.p.player
 
-# roll all stuff and get result
-result = game.red_shaker.roll()
+# add game tuns order
+G.add(bgameb.Steps('Steps'))
+G.t.steps.add(bgameb.Step('step0'))
+G.t.steps.add(bgameb.Step('step1', priority=1))
 
-# you can use dict notation offcourse, but remember -
-# the name of attr is converted from id to snake case
-result = game['red_shaker']['coin'].roll()
+# start new turn
+current_steps = G.t.steps.deal()
 
-# delete components from any collections
-del game.red_shaker.six
-del game.red_shaker
+# Game_steps is a priority queue, linked with priority attribute
+last = G.t.steps.pull()
 
-# define a cards and decks
-game.add(bgameb.Deck('cards deck'))
-game.cards_deck.add(bgameb.Card('one card', count=100))
+# add deck object and cards
+G.add(bgameb.Deck('Deck'))
+G.t.deck.add(
+    bgameb.Card('First', description='story', count=3)
+        )
+G.t.deck.add(bgameb.Card('Second', count=1))
 
-# deal card from deck. current deck is a python deque
-game.cards_deck.deal()
-current = game.cards_deck.shuffle()
+# Specific arguments is stored to dict attribute `other`
+description = G.t.deck.i.first.other['description']
 
-# lets create game turn structure and start turn
-game.add(bgameb.Steps('game steps'))
-game.game_steps.add(bgameb.Step('phase one', priority=0))
-game.game_steps.add(bgameb.Step('phase two', priority=1))
-current = game.game_steps.deal()
+# If you need more clear schema, inherite from any class
+@dataclass(repr=False)
+class MyCard(bgameb.Card):
+    description: Optional[str] = None
 
-# game_steps is a priority queue, linked with priority attribute
-last = game.game_steps.pull()
+    def __post_init__(self) -> None:
+        super().__post_init__()
 
-# last pulled step is available as last to
-last = game.game_steps.last
+G.t.deck.add(
+    MyCard('Thierd', description='story', count=12)
+        )
+
+# Use default counters of cards
+G.t.deck.i.first.counter['yellow'] = 12
+G.t.deck.i.second.counter['banana'] = 0
+
+# Deal and shuffle deck
+G.t.deck.deal().shuffle()
+
+# You can add additional attributes directly, but
+# this attributes can not added to the schema
+G.IS_ACTIVE = True
+
+# Add shaker and dices
+G.add(bgameb.Shaker('blue shaker'))
+G.t.blue_shaker.add(
+    bgameb.Dice('dice#8', info='some important', sides=8, count=10)
+        )
+
+# and roll dices
+result = G.t.blue_shaker.i.dice_8.roll()
+
+# Use bag as collection of any items
+G.add(bgameb.Bag('Bag'))
+G.t.bag.add(bgameb.Dice('dice'))
+G.t.bag.add(bgameb.Card('card'))
 
 # get the schema
-schema = game.to_json()
-
-# if you want, you can add additional attrs directly, but
-# this attributes not added to the schema
-game.red_chaker.IS_ACTIVE = True
-
-# you can add any data as declaration of object instance.
-# This data is store in other attribute, it is a dict and is in schema
-dice = bgameb.Dice('six', sides=6, description='my important data')
-deacription = dice.other['deacription']
+schema = G.to_json()
 ```
 
 ## Documentation
@@ -83,6 +100,8 @@ deacription = dice.other['deacription']
 `make proj-doc`
 
 `make test`
+
+to check simple scenario use `python tests/check.py`
 
 `make test-pypi` to test deploy to testpypi
 

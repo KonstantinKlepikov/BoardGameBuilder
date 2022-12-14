@@ -16,7 +16,6 @@ class TestPlayer:
         assert len(obj_.counter) == 0, 'counter not empty'
         assert isinstance(obj_.other, dict), 'wrong other'
 
-
     def test_players_classes_are_converted_to_json(self) -> None:
         """Test to json convertatrion
         """

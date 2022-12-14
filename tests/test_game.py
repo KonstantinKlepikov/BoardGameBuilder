@@ -25,7 +25,6 @@ class TestGame:
         assert len(game.counter) == 0, 'counter not empty'
         assert isinstance(game.other, dict), 'wrong other'
 
-
     def test_game_class_is_converted_to_json(self, game: Game) -> None:
         """Test to json convertatrion
         """
@@ -77,7 +76,7 @@ class TestGame:
 
         with pytest.raises(
             ComponentClassError,
-            match='not a component'
+            match='cant be used as part of Component.'
                 ):
             game.add(G())
 
@@ -88,6 +87,6 @@ class TestGame:
         game.add(p)
         with pytest.raises(
             ComponentNameError,
-            match='is exist in'
+            match='wrong name of stuff'
                 ):
             game.add(p)
