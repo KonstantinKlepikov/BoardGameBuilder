@@ -1,6 +1,6 @@
 """Main engine to create game
 """
-from typing import Union, TypeAlias
+from typing import Union
 from dataclasses import dataclass, field
 from dataclasses_json import (
     DataClassJsonMixin, dataclass_json, Undefined
@@ -12,9 +12,9 @@ from bgameb.tools import Shaker, Deck, Bag, Steps, BaseTool
 from bgameb.errors import ComponentClassError
 
 
-Item: TypeAlias = Union[Card, Dice, Step]
-Tool: TypeAlias = Union[Steps, Shaker, Bag, Deck]
-Stuff: TypeAlias = Union[Player, Item, Tool]
+Item = Union[Card, Dice, Step]
+Tool = Union[Steps, Shaker, Bag, Deck]
+Stuff = Union[Player, Item, Tool]
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)

@@ -4,7 +4,7 @@ import random
 from collections import deque
 from heapq import heappop, heappush
 from typing import (
-    Tuple, Dict, List, Deque, Optional, Iterable, Union, TypeAlias
+    Tuple, Dict, List, Deque, Optional, Iterable, Union
         )
 from dataclasses import dataclass, field, replace
 from dataclasses_json import (
@@ -15,7 +15,7 @@ from bgameb.items import Card, Dice, Step, BaseItem
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 
-Item: TypeAlias = Union[Card, Dice, Step]
+Item = Union[Card, Dice, Step]
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
