@@ -3,6 +3,47 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.32 (2022-12-14)
+============================
+
+Features
+--------
+
+- #233:
+      - to all subclasses is added base classes (BasePlayer and etc)
+      - Component - now is a dict, used as base for store some players, items or tools
+      - Game obgect gains attributes p, t, i - are Component() for players, tools or items objects
+      - tool classes gained i attributr to for item storage
+      - Game and tools classes now have add() methods to add objects to his components
+      - you cant get access to write attributes of components directly. Use add()
+      - all now is typed, except dynamicaly added objects to Components
+      - to some methods added pipeline interface
+      - tested all
+      - changed docs and README
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/233)
+
+
+Bugfixes
+--------
+
+- #233:
+      - project now suported python 3.9+
+      - security: some package upgrades
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/233)
+
+
+Deprecations and Removals
+-------------------------
+
+- #233:
+      - is removed additional args from Player class
+      - get_component_by_id() renamed to by_id()
+      - get_current_ids() -> current_id()
+      - current_step attr -> last
+      - consttraint.py is removed
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/233)
+
+
 Release v0.0.31 (2022-12-09)
 ============================
 
