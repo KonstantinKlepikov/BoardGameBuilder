@@ -1,5 +1,5 @@
 from bgameb.items import Dice, Card, Step
-from bgameb.tools import Shaker, Deck, Steps
+from bgameb.tools import Shaker, Deck, Steps, Bag
 from bgameb.players import Player
 from bgameb.game import Game
 from bgameb.base import log_enable

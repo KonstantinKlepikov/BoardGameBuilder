@@ -1,0 +1,12 @@
+#233:
+    - to all subclasses is added base classes (BasePlayer and etc)
+    - Component - now is a dict, used as base for store some players, items or tools
+    - Game obgect gains attributes p, t, i - are Component() for players, tools or items objects
+    - tool classes gained i attributr to for item storage
+    - Game and tools classes now have add() methods to add objects to his components
+    - you cant get access to write attributes of components directly. Use add()
+    - all now is typed, except dynamicaly added objects to Components
+    - to some methods added pipeline interface
+    - tested all
+    - changed docs and README
+    - ->

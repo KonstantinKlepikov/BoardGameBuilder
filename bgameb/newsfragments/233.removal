@@ -1,0 +1,7 @@
+#233:
+    - is removed additional args from Player class
+    - get_component_by_id() renamed to by_id()
+    - get_current_ids() -> current_id()
+    - current_step attr -> last
+    - consttraint.py is removed
+    - ->

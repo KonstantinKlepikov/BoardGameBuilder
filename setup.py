@@ -59,7 +59,7 @@ setup(
     ],
     keywords="framework",
     license='MIT',
-    python_requires='>=3.8.10',
+    python_requires='>=3.9',
     packages=find_packages(exclude=('tests*',)),
     use_incremental=True,
 )

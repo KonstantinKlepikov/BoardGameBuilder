@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.game &mdash; bgameb 0.0.30 documentation</title>
+  <title>bgameb.game &mdash; bgameb 0.0.31 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.30
+                0.0.31
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,75 +71,65 @@
   <h1>Source code for bgameb.game</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Main engine to create game</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="n">dataclass_json</span>
-<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">log_enable</span>
-<span class="kn">from</span> <span class="nn">bgameb.constraints</span> <span class="kn">import</span> <span class="n">COMPONENTS</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DataClassJsonMixin</span><span class="p">,</span> <span class="n">dataclass_json</span><span class="p">,</span> <span class="n">Undefined</span>
+        <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">bgameb.players</span> <span class="kn">import</span> <span class="n">Player</span><span class="p">,</span> <span class="n">BasePlayer</span>
+<span class="kn">from</span> <span class="nn">bgameb.items</span> <span class="kn">import</span> <span class="n">Dice</span><span class="p">,</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Step</span><span class="p">,</span> <span class="n">BaseItem</span>
+<span class="kn">from</span> <span class="nn">bgameb.tools</span> <span class="kn">import</span> <span class="n">Shaker</span><span class="p">,</span> <span class="n">Deck</span><span class="p">,</span> <span class="n">Bag</span><span class="p">,</span> <span class="n">Steps</span><span class="p">,</span> <span class="n">BaseTool</span>
+<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ComponentClassError</span>
 
 
-<div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game">[docs]</a><span class="nd">@dataclass_json</span>
+<span class="n">Item</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Card</span><span class="p">,</span> <span class="n">Dice</span><span class="p">,</span> <span class="n">Step</span><span class="p">]</span>
+<span class="n">Tool</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Steps</span><span class="p">,</span> <span class="n">Shaker</span><span class="p">,</span> <span class="n">Bag</span><span class="p">,</span> <span class="n">Deck</span><span class="p">]</span>
+<span class="n">Stuff</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Player</span><span class="p">,</span> <span class="n">Item</span><span class="p">,</span> <span class="n">Tool</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="BaseGame"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">BaseGame</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for game object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="n">Player</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">)</span>
+    <span class="n">i</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">)</span>
+    <span class="n">t</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="n">Tool</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseGame.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Stuff</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stuff (Stuff): game stuff</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BasePlayer</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
+                <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.Game">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">BaseGame</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The main game object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_types_to_add</span> <span class="o">=</span> <span class="n">COMPONENTS</span></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">bgameb</span>
-    <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
-    <span class="n">log_enable</span><span class="p">()</span>
-
-    <span class="n">game</span> <span class="o">=</span> <span class="n">bgameb</span><span class="o">.</span><span class="n">Game</span><span class="p">(</span><span class="s1">&#39;one board game&#39;</span><span class="p">)</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Steps</span><span class="p">(</span><span class="s1">&#39;Game Steps&#39;</span><span class="p">))</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Step</span><span class="p">(</span><span class="s1">&#39;step 0&#39;</span><span class="p">))</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Step</span><span class="p">(</span><span class="s1">&#39;step 1&#39;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-
-    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Deck</span><span class="p">(</span><span class="s1">&#39;Cards Deck&#39;</span><span class="p">))</span>
-    <span class="n">card</span> <span class="o">=</span> <span class="n">bgameb</span><span class="o">.</span><span class="n">Card</span><span class="p">(</span><span class="s1">&#39;One card&#39;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;story&#39;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">one_card</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">3</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Other: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">one_card</span><span class="o">.</span><span class="n">other</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">one_card</span><span class="o">.</span><span class="n">counter</span><span class="p">[</span><span class="s1">&#39;yellow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">one_card</span><span class="o">.</span><span class="n">counter</span><span class="p">[</span><span class="s1">&#39;banana&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="n">steps</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">game_steps</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">deal</span><span class="p">()</span>
-    <span class="n">deck</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">shuffle</span><span class="p">()</span>
-
-    <span class="n">game</span><span class="o">.</span><span class="n">IS_ACTIVE</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># type: ignore</span>
-
-    <span class="n">game</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bgameb</span><span class="o">.</span><span class="n">Shaker</span><span class="p">(</span><span class="s1">&#39;blue shaker&#39;</span><span class="p">))</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">blue_shaker</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-        <span class="n">bgameb</span><span class="o">.</span><span class="n">Dice</span><span class="p">(</span><span class="s1">&#39;dice#8&#39;</span><span class="p">,</span> <span class="n">sides</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-            <span class="p">)</span>
-
-    <span class="n">result</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">blue_shaker</span><span class="o">.</span><span class="n">dice_8</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of shake: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Repr: </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">game</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Print: </span><span class="si">{</span><span class="n">game</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">pprint</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">pprint</span><span class="p">(</span><span class="n">deck</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Current deck ids: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">cards_deck</span><span class="o">.</span><span class="n">get_current_ids</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Names in game: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">get_names</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="s1">&#39;Get by id &quot;Game Steps&quot; in game: &#39;</span>
-        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">get_component_by_id</span><span class="p">(</span><span class="s2">&quot;Game Steps&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">20</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Dir: </span><span class="si">{</span><span class="nb">dir</span><span class="p">(</span><span class="n">game</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span></div>
 </pre></div>
 
            </div>
