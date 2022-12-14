@@ -1,5 +1,6 @@
 import json
 import pytest
+from collections import Counter
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.errors import StuffDefineError
 
@@ -7,30 +8,36 @@ from bgameb.errors import StuffDefineError
 class TestBaseStuff:
     """Test creation with id and json schemes
     """
-    params = [
-        (Dice, 'dice_me'),
-        (Card, 'card_you'),
-        (Step, 'step_me')
-        ]
 
-    @pytest.mark.parametrize("_class, _id", params)
-    def test_items_classes_created(
-        self, _class: BaseItem, _id: str
-            ) -> None:
+    def test_items_classes_created(self) -> None:
         """Test items classes instancing
         """
-        obj_ = _class(_id)
-        assert obj_.id == _id, 'not set id for instance'
+        obj_ = BaseItem('item')
+        assert obj_.id == 'item', 'not set id for instance'
+        assert isinstance(obj_.counter, Counter), 'wrong counter type'
+        assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_.other, dict), 'wrong other'
 
-    @pytest.mark.parametrize("_class, _id", params)
-    def test_items_classes_are_converted_to_json(
-        self, _class: BaseItem, _id: str
-            ) -> None:
+    def test_items_classes_are_converted_to_json(self) -> None:
         """Test to json convertatrion
         """
-        obj_ = _class(_id)
+        obj_ = BaseItem('item')
         j = json.loads(obj_.to_json())
-        assert j['id'] == _id, 'not converted to json'
+        assert j['id'] == 'item', 'not converted to json'
+
+
+class TestStep:
+    """Test Step class
+    """
+
+    def test_step_instance(self) -> None:
+        """Test Step class instance
+        """
+        obj_ = Step('first_step')
+        assert obj_.priority == 0, 'wrong priority'
+        obj1 = Step('first_step', priority=20)
+        assert obj1.priority == 20, 'wrong priority'
+        assert obj1 > obj_, 'wong comparison'
 
 
 class TestDices:
@@ -44,7 +51,6 @@ class TestDices:
         assert obj_.id == 'dice nice', 'wrong id'
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
-        assert obj_._type == 'dice', 'wrong _type'
         assert len(obj_._range) == 2, 'wrong range'
 
     def test_dice_type_have_sides_defined_less_than_two(self) -> None:
@@ -63,7 +69,7 @@ class TestDices:
         result = obj_.roll()
         assert isinstance(result, list), 'roll returns not list'
         assert len(result) == 5, 'wrong count of rolls'
-        assert isinstance(result[0], int), 'ot an int in a list'
+        assert isinstance(result[0], int), 'not an int in a list'
         obj_ = Dice('dice')
         result = obj_.roll()
         assert len(result) == 1, 'is rolled, but count is 0'
@@ -77,7 +83,6 @@ class TestCard:
         """
         obj_ = Card('card')
         assert obj_.id == 'card', 'wrong name'
-        assert obj_._type == 'card', 'wrong _type'
         assert obj_.opened is False, 'card is opened'
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
@@ -87,7 +92,8 @@ class TestCard:
         """Test flip card
         """
         obj_ = Card('card')
-        obj_.flip()
+        obj_ = obj_.flip()
+        assert isinstance(obj_, Card), 'wrong return'
         assert obj_.opened, 'card not oppened'
         obj_.flip()
         assert not obj_.opened, 'card oppened'
@@ -96,7 +102,8 @@ class TestCard:
         """Test face up opened card
         """
         obj_ = Card('card')
-        obj_.open()
+        obj_ = obj_.open()
+        assert isinstance(obj_, Card), 'wrong return'
         assert obj_.opened, 'card not opened'
 
     def test_fase_down(self) -> None:
@@ -104,14 +111,16 @@ class TestCard:
         """
         obj_ = Card('card')
         obj_.opened = True
-        obj_.hide()
+        obj_ = obj_.hide()
+        assert isinstance(obj_, Card), 'wrong return'
         assert not obj_.opened, 'card not opened'
 
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
         """
         obj_ = Card('card')
-        obj_.tap(side='left')
+        obj_ = obj_.tap(side='left')
+        assert isinstance(obj_, Card), 'wrong return'
         assert obj_.tapped, 'card not tapped'
         assert obj_.side == 'left', 'wrong side'
 
@@ -122,21 +131,7 @@ class TestCard:
         obj_.tapped = True
         assert obj_.tapped, 'card not tapped'
         obj_.side = 'left'
-        obj_.untap()
+        obj_ = obj_.untap()
+        assert isinstance(obj_, Card), 'wrong return'
         assert not obj_.tapped, 'card not untapped'
         assert obj_.side is None, 'wrong side'
-
-
-class TestStep:
-    """Test Step class
-    """
-
-    def test_step_instance(self) -> None:
-        """Test Step class instance
-        """
-        obj_ = Step('first_step')
-        assert obj_.priority == 0, 'wrong priority'
-        assert obj_.__class__.__name__.lower() == 'step', 'wrong type'
-        obj1 = Step('first_step', priority=20)
-        assert obj1.priority == 20, 'wrong priority'
-        assert obj1 > obj_, 'wong comparison'

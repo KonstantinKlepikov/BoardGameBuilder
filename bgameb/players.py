@@ -1,13 +1,12 @@
 """Game players classes
 """
 from dataclasses import dataclass
-from dataclasses_json import dataclass_json, DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin
 from bgameb.base import Base
 
 
-@dataclass_json
 @dataclass(repr=False)
-class BasePlayer(Base):
+class BasePlayer(Base, DataClassJsonMixin):
     """Base class for game players and bots
     """
 

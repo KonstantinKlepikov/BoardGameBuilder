@@ -5,7 +5,7 @@ from collections import deque
 from heapq import heappop, heappush
 from typing import Tuple, Dict, List, Deque, Optional, Iterable, Union
 from dataclasses import dataclass, field, replace
-from dataclasses_json import config, dataclass_json, DataClassJsonMixin
+from dataclasses_json import config, DataClassJsonMixin
 from bgameb.base import Base, Component
 from bgameb.items import Card, Dice, Step, BaseItem
 from bgameb.errors import ArrangeIndexError, ComponentClassError
@@ -14,9 +14,8 @@ from bgameb.errors import ArrangeIndexError, ComponentClassError
 Item = Union[Card, Dice, Step]
 
 
-@dataclass_json
 @dataclass(repr=False)
-class BaseTool(Base):
+class BaseTool(Base, DataClassJsonMixin):
     """Base class for game tools (like decks or shakers)
     """
     current: List[Item] = field(
@@ -154,7 +153,7 @@ class BaseTool(Base):
 class Bag(BaseTool, DataClassJsonMixin):
     """Bag object
     """
-    i: Component[str, Item] = field(default_factory=Component)
+    i: Component[Item] = field(default_factory=Component)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -193,7 +192,6 @@ class Bag(BaseTool, DataClassJsonMixin):
         self._logger.info(f'"{stuff.id}" is added to i".')
 
 
-
 @dataclass(repr=False)
 class Shaker(BaseTool, DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
@@ -203,7 +201,7 @@ class Shaker(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    i: Component[str, Dice] = field(default_factory=Component)
+    i: Component[Dice] = field(default_factory=Component)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -294,7 +292,7 @@ class Deck(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    i: Component[str, Card] = field(default_factory=Component)
+    i: Component[Card] = field(default_factory=Component)
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -378,8 +376,7 @@ class Deck(BaseTool, DataClassJsonMixin):
         else:
             for id in items:
                 if id in self.i.keys():
-                    for _ in range(stuff.count):
-                        self.append(stuff)
+                    self.append(self.i[id])
 
         self._logger.debug(f'Is deal current: {self.current}')
         return self
@@ -574,7 +571,7 @@ class Steps(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
     )
-    i: Component[str, Step] = field(default_factory=Component)
+    i: Component[Step] = field(default_factory=Component)
 
     def __post_init__(self) -> None:
         super().__post_init__()

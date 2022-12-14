@@ -88,11 +88,10 @@ class Base:
         return f"{type(self).__name__}({', '.join(items)})"
 
 
-K = TypeVar('K', bound=str)
 V = TypeVar('V', bound=Base)
 
 
-class Component(Mapping[K, V]):
+class Component(Mapping[str, V]):
     """Component mapping
     """
 
@@ -120,7 +119,7 @@ class Component(Mapping[K, V]):
                 )})
 
     @property
-    def _inclusion(self) -> Dict[K, V]:
+    def _inclusion(self) -> Dict[str, V]:
         """Only stuff objects
 
         Returns:
@@ -135,28 +134,28 @@ class Component(Mapping[K, V]):
     def __iter__(self) -> Iterator:
         return iter(self._inclusion)
 
-    def __setattr__(self, attr: K, value: V) -> None:
+    def __setattr__(self, attr: str, value: V) -> None:
         raise NotImplementedError
 
-    def __getattr__(self, attr: K) -> V:
+    def __getattr__(self, attr: str) -> V:
         try:
             return self.__getitem__(attr)
         except KeyError:
             raise AttributeError(attr)
 
-    def __delattr__(self, attr: K) -> None: # type: ignore[override]
+    def __delattr__(self, attr: str) -> None: # type: ignore[override]
         try:
             del self.__dict__[attr]
         except KeyError:
             raise AttributeError(attr)
 
-    def __setitem__(self, attr: K, value: V) -> None:
+    def __setitem__(self, attr: str, value: V) -> None:
         raise NotImplementedError
 
-    def __getitem__(self, attr: K) -> V:
+    def __getitem__(self, attr: str) -> V:
         return self._inclusion[attr]
 
-    def __delitem__(self, attr: K) -> None:
+    def __delitem__(self, attr: str) -> None:
         del self.__dict__[attr]
 
     def __repr__(self) -> str:

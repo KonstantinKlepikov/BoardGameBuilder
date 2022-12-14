@@ -2,7 +2,7 @@
 """
 from typing import Union
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json, DataClassJsonMixin
+from dataclasses_json import DataClassJsonMixin
 from bgameb.base import Base, Component, log_enable
 from bgameb.players import Player, BasePlayer
 from bgameb.items import Dice, Card, Step, BaseItem
@@ -15,14 +15,13 @@ Tool = Union[Shaker, Bag, Deck, Steps]
 Stuff = Union[Player, Item, Tool]
 
 
-@dataclass_json
 @dataclass(repr=False)
-class BaseGame(Base):
+class BaseGame(Base, DataClassJsonMixin):
     """The main game object
     """
-    p: Component[str, Player] = field(default_factory=Component)
-    i: Component[str, Item] = field(default_factory=Component)
-    t: Component[str, Tool] = field(default_factory=Component)
+    p: Component[Player] = field(default_factory=Component)
+    i: Component[Item] = field(default_factory=Component)
+    t: Component[Tool] = field(default_factory=Component)
 
     def __post_init__(self) -> None:
         super().__post_init__()

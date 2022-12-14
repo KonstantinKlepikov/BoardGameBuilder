@@ -1,11 +1,12 @@
 import json
 import pytest
 import random
+from typing import Union
 from collections import deque
+from bgameb.base import Component
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
 from bgameb.errors import ArrangeIndexError
-from bgameb.constraints import ITEMS
 
 
 class FixedSeed:
@@ -30,9 +31,10 @@ class TestTool:
     @pytest.fixture
     def obj_(self) -> BaseTool:
         tool = BaseTool('this')
-        tool.add(Dice('dice'))
-        tool.add(Card('card'))
-        return BaseTool('this')
+        tool.i = Component(
+            dice=Dice('dice'), card=Card('card')
+                )
+        return tool
 
     @pytest.fixture
     def dealt_obj_(self, obj_: BaseTool) -> BaseTool:
@@ -46,7 +48,7 @@ class TestTool:
         assert isinstance(obj_.current, list), 'wrong type of current'
         assert len(obj_.current) == 0, 'wrong current len'
         assert obj_.id == 'this', 'not set ID for instance'
-        assert obj_._types_to_add == ITEMS, 'wrong _type_to_add'
+        assert len(obj_.i) == 2, 'wrong items'
 
     def test_stuff_classes_are_converted_to_json(self, obj_: BaseTool) -> None:
         """Test to json convertatrion
@@ -164,17 +166,34 @@ class TestBag:
     """Test Bag class
     """
 
-    @pytest.fixture
+    @pytest.fixture(scope='function')
     def obj_(self) -> Bag:
         obj_ = Bag('bag')
-        obj_.add(Card('card'))
-        obj_.add(Dice('dice'))
+        obj_.i = Component(
+            card=Card('card'), dice=Dice('dice')
+                )
         return obj_
 
-    @pytest.fixture
+    @pytest.fixture(scope='function')
     def dealt_obj_(self, obj_: Bag) -> Bag:
         obj_.deal()
         return obj_
+
+    @pytest.mark.parametrize(
+        "_class,_id",
+        [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step, 'next_step')]
+            )
+    def test_add_new_item_to_bag(
+        self,
+        _class: Union[Card, Dice, Step],
+        _id: str,
+        obj_: Bag
+            ) -> None:
+        """Test add new item to bag
+        """
+        cl = _class(_id)
+        obj_.add(cl)
+        assert obj_.i[cl.id].id == _id, 'stuff not added'
 
     def test_bag_deal(self, dealt_obj_: Bag) -> None:
         """Test obj_ deal()
@@ -214,14 +233,21 @@ class TestShaker:
     @pytest.fixture
     def obj_(self) -> Shaker:
         obj_ = Shaker('shaker')
-        obj_.add(Dice('dice', count=5))
-        obj_.add(Dice('dice_nice', count=5))
+        obj_.i = Component(
+            dice=Dice('dice', count=5), dice_nice=Dice('dice_nice', count=5)
+                )
         return obj_
 
     @pytest.fixture
     def dealt_obj_(self, obj_: Shaker) -> Shaker:
         obj_.deal()
         return obj_
+
+    def test_add_new_item_to_shaker(self, obj_: Bag) -> None:
+        """Test add new item to bag
+        """
+        obj_.add(Dice('omg'))
+        assert obj_.i.omg.id == 'omg', 'stuff not added'
 
     def test_roll_shaker(self, dealt_obj_: Shaker) -> None:
         """Test roll shaker
@@ -245,8 +271,9 @@ class TestDeck:
     @pytest.fixture
     def obj_(self) -> Deck:
         obj_ = Deck('deck')
-        obj_.add(Card('card', count=5))
-        obj_.add(Card('card_nice', count=5))
+        obj_.i = Component(
+            card=Card('card', count=5), card_nice=Card('card_nice', count=5)
+                )
         return obj_
 
     @pytest.fixture
@@ -261,13 +288,20 @@ class TestDeck:
         assert isinstance(obj_.current, deque), 'wrong type of current'
         assert len(obj_.current) == 0, 'nonempty current'
 
+    def test_add_new_item_to_deck(self, obj_: Bag) -> None:
+        """Test add new item to bag
+        """
+        obj_.add(Card('omg'))
+        assert obj_.i.omg.id == 'omg', 'stuff not added'
+
     def test_item_replace(self, obj_: Deck) -> None:
         """Test _item_replace()
         """
-        card = obj_._item_replace(obj_.card)
-        assert card.id == 'card', 'wrong id'
+        c = Card('wow')
+        card = obj_._item_replace(c)
+        assert card.id == 'wow', 'wrong id'
         assert card.count == 1, 'wrong count'
-        assert id(card) != id(obj_.card), 'not replaced'
+        assert id(card) != id(c), 'not replaced'
 
     def test_appendleft(self, dealt_obj_: Deck) -> None:
         """Test current append left
@@ -349,8 +383,8 @@ class TestDeck:
     def test_search(self, obj_: Deck) -> None:
         """Test deck search() one or many or no one cards
         """
-        obj_.card.count = 2
-        obj_.card_nice.count = 2
+        obj_.i.card.count = 2
+        obj_.i.card_nice.count = 2
         obj_.deal()
         search = obj_.search(query={'card': 1})
         assert len(search) == 1, 'wrong search len'
@@ -379,8 +413,8 @@ class TestDeck:
     def test_to_arrange(self, obj_: Deck) -> None:
         """Test to_arrange() deck
         """
-        obj_.card.count = 2
-        obj_.card_nice.count = 2
+        obj_.i.card.count = 2
+        obj_.i.card_nice.count = 2
         obj_.deal()
 
         arranged, last = obj_.to_arrange(0, 1)
@@ -433,8 +467,8 @@ class TestDeck:
     def test_arrrange_returns_same_len(self, obj_: Deck) -> None:
         """Test arrange() returns same len
         """
-        obj_.card.count = 2
-        obj_.card_nice.count = 2
+        obj_.i.card.count = 2
+        obj_.i.card_nice.count = 2
         obj_.deal().shuffle()
         arranged, last = obj_.to_arrange(0, 4)
         arranged.pop()
@@ -454,8 +488,8 @@ class TestDeck:
     def test_get_random_without_removing(self, obj_: Deck) -> None:
         """Test get_random without removing cards
         """
-        obj_.card.count = 2
-        obj_.card_nice.count = 2
+        obj_.i.card.count = 2
+        obj_.i.card_nice.count = 2
         with FixedSeed(42):
             obj_.deal().shuffle()
             result = obj_.get_random(4, remove=False)
@@ -470,8 +504,8 @@ class TestDeck:
     def test_get_random_with_removing(self, obj_: Deck) -> None:
         """Test get_random with removing cards
         """
-        obj_.card.count = 2
-        obj_.card_nice.count = 2
+        obj_.i.card.count = 2
+        obj_.i.card_nice.count = 2
         with FixedSeed(42):
             obj_.deal().shuffle()
             result = obj_.get_random(4)
@@ -487,8 +521,8 @@ class TestDeck:
         """Test get_random with removing cards
         and count mor than len of current
         """
-        obj_.card.count = 2
-        obj_.card_nice.count = 2
+        obj_.i.card.count = 2
+        obj_.i.card_nice.count = 2
         with FixedSeed(42):
             obj_.deal().shuffle()
             result = obj_.get_random(12)
@@ -504,8 +538,9 @@ class TestSteps:
     @pytest.fixture
     def obj_(self) -> Steps:
         obj_ = Steps('game_turns')
-        obj_.add(Step('step1', priority=1))
-        obj_.add(Step('astep', priority=2))
+        obj_.i = Component(
+            step1=Step('step1', priority=1), astep=Step('astep', priority=2)
+                )
         return obj_
 
     def test_steps_instance(self) -> None:
@@ -519,25 +554,26 @@ class TestSteps:
     def test_steps_add_step(self, obj_: Steps) -> None:
         """Test add step to steps
         """
-        assert isinstance(obj_.step1, Step), 'wrong type'
-        assert obj_.step1.id == 'step1', 'wrong id'
-        assert obj_.step1.priority == 1, 'wrong priority'
+        obj_.add(Step('omg', priority=42))
+        assert obj_.i.omg.id == 'omg', 'stuff not added'
 
     def test_push(self, obj_: Steps) -> None:
         """Test push to steps
         """
-        obj_.push(obj_.step1)
+        s = Step('omg', priority=42)
+        obj_.push(s)
         assert len(obj_.current) == 1, 'not pushed'
-        assert obj_.current[0][1].id == 'step1', 'wrong id'
-        assert id(obj_.step1) != id(obj_.current[0][1]), 'not replaced'
+        assert obj_.current[0][1].id == 'omg', 'wrong id'
+        assert id(obj_.current[0][1].id) != id(s), 'not replaced'
 
     def test_pull(self, obj_: Steps) -> None:
         """Test pull step from steps
         """
-        obj_.push(obj_.step1)
+        s = Step('omg', priority=42)
+        obj_.push(s)
         step = obj_.pull()
-        assert step.id == 'step1', 'wrong step'
-        assert obj_.last.id == 'step1', 'wrong step'
+        assert step.id == 'omg', 'wrong step'
+        assert obj_.last.id == 'omg', 'wrong step'
         assert id(step) == id(obj_.last), 'wrong steps ids'
 
     def test_steps_deal(self, obj_: Steps) -> None:
