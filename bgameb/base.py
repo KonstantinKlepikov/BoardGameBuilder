@@ -2,12 +2,13 @@
 """
 import re
 import string
-from typing import List, Optional, Iterator, Dict, Any
+from typing import List, Optional, Iterator, Dict, TypeVar
 from collections.abc import Mapping
 from collections import Counter
-from dataclasses import dataclass, field, make_dataclass
-from dataclasses_json import dataclass_json, config, Undefined, CatchAll
-from bgameb.constraints import COMPONENTS
+from dataclasses import dataclass, field
+from dataclasses_json import (
+    dataclass_json, DataClassJsonMixin, Undefined, CatchAll
+        )
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, ComponentIdError
         )
@@ -38,11 +39,65 @@ def log_enable(
     logger.enable('bgameb')
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(repr=False)
-class Component(Mapping):
+class Base(DataClassJsonMixin):
+    """Base class for game, stuff, tools players and other stuff
+
+    Attr:
+        - id (str): id of stuff
+        - other (Dict[str, Any]): all other data, added to instance
+                                  at declaration
+        - counter (Counter): counter object
+
+    Counter is a `collection.Counter
+    <https://docs.python.org/3/library/collections.html#collections.Counter>`_
+    """
+    id: str
+    other: CatchAll = field(default_factory=dict)
+    counter: Counter = field(default_factory=dict)  # type: ignore
+
+    def __post_init__(self) -> None:
+        # check id
+        if not isinstance(self.id, str):
+            raise ComponentIdError(self.id)
+
+        # int counter
+        self.counter = Counter()
+
+        # set logger
+        self._logger = logger.bind(
+            classname=self.__class__.__name__,
+            name=self.id)
+        # NOTE: ambiculous
+        if 'BaseGame' in [cl.__name__ for cl in self.__class__.__mro__]:
+            self._logger.info('===========NEW GAME============')
+            self._logger.info(
+                f'{self.__class__.__name__} created with id="{self.id}".'
+                    )
+
+    @property
+    def _inclusion(self) -> Dict[str, str]:
+        return {
+            k: v for k, v
+            in self.__dict__.items()
+            if not k.startswith('_')
+            and k != 'current'
+            and k != 'last'
+                }
+
+    def __repr__(self) -> str:
+        items = {f"{k}={v!r}" for k, v in self._inclusion.items()}
+        return f"{type(self).__name__}({', '.join(items)})"
+
+
+V = TypeVar('V', bound=Base)
+
+
+class Component(Mapping[str, V]):
     """Component mapping
     """
+
     def __init__(
         self,
         *args,
@@ -50,30 +105,44 @@ class Component(Mapping):
             ) -> None:
         """Args must be a dicts
         """
-        super().__init__(*args, **kwargs)
         for arg in args:
             if isinstance(arg, dict):
-                self.__dict__.update(arg)
+                for k, v, in arg.items():
+                    self._update(stuff=v, name=k)
             else:
-                raise AttributeError('Args must be a dicts')
+                raise AttributeError('Args must be a dict of dicts')
         if kwargs:
-            self.__dict__.update(kwargs)
+            for k, v, in kwargs.items():
+                self._update(stuff=v, name=k)
+
+        # set logger
+        self.__dict__.update({'_logger': logger.bind(
+            classname=self.__class__.__name__,
+            name='component'
+                )})
 
     @property
-    def inclusion(self) -> Dict[str, str]:
+    def _inclusion(self) -> Dict[str, V]:
+        """Only stuff objects
+
+        Returns:
+            Dict[K, V]: dict with stuff
+        """
         return {
-            k: v for k, v
+            key: val for key, val
             in self.__dict__.items()
-            if not k.startswith('_')
-            and not k.startswith('current')
+            if issubclass(val.__class__, Base)
                 }
 
     def __iter__(self) -> Iterator:
-        return iter(self.__dict__)
+        return iter(self._inclusion)
 
-    def __getattr__(self, attr: str):
+    def __setattr__(self, attr: str, value: V) -> None:
+        raise NotImplementedError
+
+    def __getattr__(self, attr: str) -> V:
         try:
-            return self.__dict__[attr]
+            return self.__getitem__(attr)
         except KeyError:
             raise AttributeError(attr)
 
@@ -83,29 +152,27 @@ class Component(Mapping):
         except KeyError:
             raise AttributeError(attr)
 
-    def __setitem__(self, attr: str, value):
-        attr = self._make_name(attr)
-        self.__dict__.update({attr: value})
+    def __setitem__(self, attr: str, value: V) -> None:
+        raise NotImplementedError
 
-    def __getitem__(self, attr: str):
-        return self.__dict__[attr]
+    def __getitem__(self, attr: str) -> V:
+        return self._inclusion[attr]
 
     def __delitem__(self, attr: str) -> None:
         del self.__dict__[attr]
 
     def __repr__(self) -> str:
-        items = {f"{k}={v!r}" for k, v in self.inclusion.items()}
-        return "{}({})".format(type(self).__name__, ", ".join(items))
+        items = list({f"{k}={v!r}" for k, v in self._inclusion.items()})
+        return f"{{{', '.join(items)}}}"
 
     def __len__(self) -> int:
-        return len(self.inclusion)
+        return len(self._inclusion)
 
-    def _is_unique(self, name: str) -> Optional[bool]:
-        """Chek is name of nested component is unique
-        for based component __dict__
+    def _is_unique(self, name: str) -> bool:
+        """Chek is name of nested stuff is unique
 
         Args:
-            name (str): name of component
+            name (str): name of stuff
 
         Raises:
             ComponentNameError: name not unique
@@ -113,12 +180,12 @@ class Component(Mapping):
         Returns:
             True: is unique
         """
-        if name not in self.__dict__.keys():
-            return True
-        raise ComponentNameError(name)
+        if name in self._inclusion.keys():
+            raise ComponentNameError(name)
+        return True
 
     def _is_valid(self, name: str) -> bool:
-        """Chek is name of component contains correct symbols
+        """Chek is name of stuff contains correct symbols
         match [a-zA-Z_][a-zA-Z0-9_]*$ expression:
 
             * a-z, A-Z, 0-9 symbols
@@ -126,17 +193,17 @@ class Component(Mapping):
             * can be used _ symbol in subsequent symbols
 
         Args:
-            name (str): name of component
+            name (str): name of stuff
 
         Raises:
             ComponentNameError: name is not valid
 
         Returns:
-            bool: is valid
+            Trye: is valid
         """
-        if re.match("[a-z][a-z0-9_]*$", str(name)):
-            return True
-        return False
+        if not re.match("[a-z][a-z0-9_]*$", str(name)):
+            raise ComponentNameError(name)
+        return True
 
     def _make_name(self, name: str) -> str:
         """
@@ -144,10 +211,10 @@ class Component(Mapping):
         in the name with _
 
         Args:
-            name (str): name of component
+            name (str): name of stuff
 
         Returns:
-            name (str): safe name of component
+            name (str): safe name of stuff
         """
         name = str(name).lower()
         available = set(string.ascii_letters.lower() + string.digits + '_')
@@ -160,123 +227,51 @@ class Component(Mapping):
             for char in diff:
                 name = name.replace(char, '_')
 
-        if not self._is_valid(name):
-            raise ComponentNameError(name)
+        self._is_valid(name)
+        self._is_unique(name)
 
         return name
 
     def _update(
         self,
-        component,
+        stuff: V,
+        name: Optional[str] = None,
             ) -> None:
         """Update Component dict with safe name
 
         Args:
-            component: component instance
+            stuff (Type[Base]): Base subclass instance
+            name (Optional[str]). key to update dict. Defult to None.
         """
-        name = self._make_name(component.id)
+        if not issubclass(stuff.__class__,  Base):
+            raise ComponentClassError(stuff, self._logger)
 
-        if self._is_unique(name):
-            comp = component.__class__(**component.to_dict())
+        if name is None:
+            name = self._make_name(stuff.id)
+        else:
+            name = self._make_name(name)
 
-        if name not in self.__dataclass_fields__.keys():
-            self.__class__ = make_dataclass(
-                self.__class__.__name__,
-                fields=[(name, type(comp), field(default=comp))],
-                bases=(self.__class__, ),
-                repr=False
-                )
-
+        comp = stuff.__class__(**stuff.to_dict())  # type: ignore
         self.__dict__.update({name: comp})
 
     def get_names(self) -> List[str]:
-        """Get names of all components in Component
+        """Get names of all added stuff in Component
 
         Returns:
-            List[str]: list of components names
+            List[str]: list of stuff names
         """
-        return [name for name in self.inclusion]
+        return [name for name in self._inclusion.keys()]
 
-
-@dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
-class Base(Component):
-    """Base class for game, stuff, tools players and other components
-
-    Attr:
-        - id (str): id of component
-        - other (Dict[str, Any]): all other data, added to instance
-                                  at declaration
-        - counter (Counter): counter object
-        - _type (Optional[str]): type for check when this component
-          can be added
-        - _types_to_add (List[str]): types of components, that can
-          be added
-
-    Counter is a `collection.Counter
-    <https://docs.python.org/3/library/collections.html#collections.Counter>`_
-    """
-    id: str
-    other: CatchAll = field(default_factory=dict)
-    counter: Counter = field(default_factory=dict)  # type: ignore
-    _type: Optional[str] = field(
-        default=None,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-        )
-    _types_to_add: List[str] = field(
-        default_factory=list,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-
-    def __post_init__(self) -> None:
-        # check id
-        if not isinstance(self.id, str):
-            raise ComponentIdError(self.id)
-
-        # int counter
-        self.counter = Counter()
-
-        # set self_type
-        self._type = self.__class__.__name__.lower()
-
-        # set logger
-        self._logger = logger.bind(
-            classname=self.__class__.__name__,
-            name=self.id)
-        if self._type == 'game':
-            self._logger.info('===========NEW GAME============')
-        self._logger.info(
-            f'{self.__class__.__name__} created with id="{self.id}".'
-                )
-
-    def add(self, component) -> None:
-        """Add another component to this component
+    def by_id(self, id: str) -> Optional[V]:
+        """Get stuff object by its id
 
         Args:
-            component (Component): component instance
-        """
-        if component._type in self._types_to_add:
-            self._update(component)
-            self._logger.info(f'"{component.id}" is added to "{self.id}".')
-        else:
-            raise ComponentClassError(component, self._logger)
-
-    def get_component_by_id(self, id: str) -> Optional[Any]:
-        """Get nested component by its id
-
-        Args:
-            id (str): component id
+            id (str): stuff id
 
         Returns:
-            Component, optional: result of search
+            V, optional: stuff object
         """
-        for comp in self:
-            try:
-                if self[comp].get('_type') in COMPONENTS \
-                        and self[comp].get('id') == id:
-                    return self[comp]
-            except AttributeError:
-                continue
+        for comp in self._inclusion.values():
+            if issubclass(comp.__class__,  Base) and comp.id == id:
+                return comp
         return None

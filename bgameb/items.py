@@ -3,14 +3,16 @@
 import random
 from typing import List, Optional, NoReturn
 from dataclasses import dataclass, field
-from dataclasses_json import config, dataclass_json
+from dataclasses_json import (
+    config, DataClassJsonMixin, dataclass_json, Undefined
+        )
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(repr=False)
-class BaseItem(Base):
+class BaseItem(Base, DataClassJsonMixin):
     """Base class for game items (like dices or cards)
     """
 
@@ -18,9 +20,9 @@ class BaseItem(Base):
         super().__post_init__()
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(order=True, repr=False)
-class Step(BaseItem):
+class Step(BaseItem, DataClassJsonMixin):
     """Game steps or turns
 
     Attr:
@@ -32,9 +34,9 @@ class Step(BaseItem):
         super().__post_init__()
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(repr=False)
-class Dice(BaseItem):
+class Dice(BaseItem, DataClassJsonMixin):
     """Rolled or fliped objects, like dices or coins.
 
     Sides attr define number of sides of roller. Default to 2.
@@ -81,13 +83,12 @@ class Dice(BaseItem):
             random.choices(self._range, k=1)[0] for _
             in list(range(self.count))
             ]
-        self._logger.debug(f'Is rolled {roll=}')
         return roll
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(repr=False)
-class Card(BaseItem):
+class Card(BaseItem, DataClassJsonMixin):
     """Card object
 
     Attr:
@@ -110,8 +111,11 @@ class Card(BaseItem):
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def flip(self) -> None:
+    def flip(self) -> 'Card':
         """Face up or face down the card regardles of it condition
+
+        Returns:
+            Card
         """
         if self.opened:
             self.opened = False
@@ -119,35 +123,52 @@ class Card(BaseItem):
         else:
             self.opened = True
             self._logger.debug('Card face up.')
+        return self
 
-    def open(self) -> None:
+    def open(self) -> 'Card':
         """Face up the card
+
+        Returns:
+            Card
         """
         self.opened = True
         self._logger.debug('Card face up.')
+        return self
 
-    def hide(self) -> None:
+    def hide(self) -> 'Card':
         """Face down the card
+
+        Returns:
+            Card
         """
         self.opened = False
         self._logger.debug('Card face down.')
+        return self
 
-    def tap(self, side='right') -> None:
+    def tap(self, side='right') -> 'Card':
         """Tap the card to the given side
 
         Args:
             side (str, optional): side to tap. Defaults to 'right'.
+
+        Returns:
+            Card
         """
         self.tapped = True
         self.side = side
         self._logger.debug(f'Card taped to side {side}.')
+        return self
 
-    def untap(self) -> None:
+    def untap(self) -> 'Card':
         """Untap the card
+
+        Returns:
+            Card
         """
         self.tapped = False
         self.side = None
         self._logger.debug('Card untaped. Side set to None.')
+        return self
 
     def alter(self) -> NoReturn:
         """Many cards have alter views. For example

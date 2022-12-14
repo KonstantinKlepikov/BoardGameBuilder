@@ -1,6 +1,6 @@
 import json
+from collections import Counter
 from bgameb.players import Player
-from bgameb.constraints import ITEMS_TOOLS
 
 
 class TestPlayer:
@@ -12,8 +12,9 @@ class TestPlayer:
         """
         obj_ = Player('player')
         assert obj_.id == 'player', 'not set id for instance'
-        assert obj_._types_to_add == ITEMS_TOOLS, \
-            'wrong _type_to_add'
+        assert isinstance(obj_.counter, Counter), 'wrong counter type'
+        assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_.other, dict), 'wrong other'
 
     def test_players_classes_are_converted_to_json(self) -> None:
         """Test to json convertatrion
@@ -21,11 +22,3 @@ class TestPlayer:
         obj_ = Player('player')
         j = json.loads(obj_.to_json())
         assert j['id'] == 'player', 'not converted to json'
-
-    def test_players_attributes(self) -> None:
-        """Test players attributes
-        """
-        obj_ = Player('player')
-        assert obj_.has_priority is None, 'wrong priority'
-        assert obj_.is_active is None, 'wrong priority'
-        assert obj_.team is None, 'wrong tram'
