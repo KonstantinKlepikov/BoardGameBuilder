@@ -4,7 +4,7 @@ import random
 from collections import deque
 from heapq import heappop, heappush
 from typing import (
-    Tuple, Dict, List, Deque, Optional, Iterable, Union
+    Tuple, Dict, List, Deque, Optional, Iterable, TypeVar
         )
 from dataclasses import dataclass, field, replace
 from dataclasses_json import (
@@ -15,7 +15,10 @@ from bgameb.items import Card, Dice, Step, BaseItem
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 
-Item = Union[Card, Dice, Step]
+# Item = Union[Card, Dice, Step]
+Item = TypeVar('Item', bound=BaseItem)
+# Tool = TypeVar('Tool', bound=BaseTool)
+# Stuff = TypeVar('Stuff', bound=BaseItem|BaseTool)
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
@@ -159,11 +162,21 @@ class BaseTool(Base, DataClassJsonMixin):
 class Bag(BaseTool, DataClassJsonMixin):
     """Bag object
     """
-    i: Component[Item] = field(default_factory=Component)
+    c: Component[Item] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
+
+    def get_items(self) -> Dict[str, Item]:
+        return {
+            key: val for key, val
+            in self.__dict__.items()
+            if issubclass(val.__class__, Item)
+                }
 
     def deal(self, items: Optional[List[str]] = None) -> 'Bag':
         """Deal new bag current
@@ -177,13 +190,13 @@ class Bag(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), BaseItem):
                     self.append(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.append(self.i[id])
+                if id in self.c.keys():
+                    self.append(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
@@ -194,7 +207,10 @@ class Bag(BaseTool, DataClassJsonMixin):
         Args:
             stuff (Item): game stuff
         """
-        self.i._update(stuff)
+        self.c._update(stuff)
+        self._logger.info(
+            f'Component updated by stuff with id="{stuff.id}".'
+                )
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
@@ -207,11 +223,14 @@ class Shaker(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    i: Component[Dice] = field(default_factory=Component)
+    c: Component[Dice] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
 
     def deal(self, items: Optional[List[str]] = None) -> 'Shaker':
         """Deal new shaker current
@@ -225,13 +244,13 @@ class Shaker(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), Dice):
                     self.append(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.append(self.i[id])
+                if id in self.c.keys():
+                    self.append(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
@@ -267,7 +286,10 @@ class Shaker(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Dice) \
                 or issubclass(stuff.__class__, Dice):
-            self.i._update(stuff)
+            self.c._update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
         else:
             raise ComponentClassError(stuff, self._logger)
 
@@ -299,11 +321,14 @@ class Deck(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    i: Component[Card] = field(default_factory=Component)
+    c: Component[Card] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
 
     def _item_replace(self, item: Card) -> Card:  # type: ignore[override]
         """Replace item in a current
@@ -376,14 +401,14 @@ class Deck(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), Card):
                     for _ in range(stuff.count):
                         self.append(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.append(self.i[id])
+                if id in self.c.keys():
+                    self.append(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
@@ -555,7 +580,10 @@ class Deck(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Card) \
                 or issubclass(stuff.__class__, Card):
-            self.i._update(stuff)
+            self.c._update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
         else:
             raise ComponentClassError(stuff, self._logger)
 
@@ -579,11 +607,14 @@ class Steps(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
     )
-    i: Component[Step] = field(default_factory=Component)
+    c: Component[Card] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
 
     def push(self, item: Step) -> None:
         """Push Step object to current
@@ -618,13 +649,13 @@ class Steps(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), Step):
                     self.push(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.push(self.i[id])
+                if id in self.c.keys():
+                    self.push(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
@@ -645,6 +676,9 @@ class Steps(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Step) \
                 or issubclass(stuff.__class__, Step):
-            self.i._update(stuff)
+            self.c._update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
         else:
             raise ComponentClassError(stuff, self._logger)

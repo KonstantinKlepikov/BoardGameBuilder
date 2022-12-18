@@ -2,12 +2,13 @@
 """
 import re
 import string
-from typing import List, Optional, Iterator, Dict, TypeVar
+from typing import List, Optional, Iterator, TypeVar, Any
 from collections.abc import Mapping
 from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import (
-    dataclass_json, DataClassJsonMixin, Undefined, CatchAll
+    dataclass_json, DataClassJsonMixin, Undefined, CatchAll,
+    config, Exclude
         )
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, ComponentIdError
@@ -54,8 +55,14 @@ class Base(DataClassJsonMixin):
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
-    other: CatchAll = field(default_factory=dict)
-    counter: Counter = field(default_factory=dict)  # type: ignore
+    other: CatchAll = field(
+        default_factory=dict,
+        metadata=config(exclude=lambda x: True),
+            )
+    counter: Counter = field(
+        default_factory=Counter,
+        metadata=config(exclude=Exclude.ALWAYS),
+            )
 
     def __post_init__(self) -> None:
         # check id
@@ -77,7 +84,7 @@ class Base(DataClassJsonMixin):
                     )
 
     @property
-    def _inclusion(self) -> Dict[str, str]:
+    def _inclusion(self) -> dict[str, Any]:
         return {
             k: v for k, v
             in self.__dict__.items()
@@ -122,7 +129,7 @@ class Component(Mapping[str, V]):
                 )})
 
     @property
-    def _inclusion(self) -> Dict[str, V]:
+    def _inclusion(self) -> dict[str, V]:
         """Only stuff objects
 
         Returns:
@@ -272,6 +279,6 @@ class Component(Mapping[str, V]):
             V, optional: stuff object
         """
         for comp in self._inclusion.values():
-            if issubclass(comp.__class__,  Base) and comp.id == id:
+            if comp.id == id:
                 return comp
         return None

@@ -11,11 +11,12 @@ class TestComponent:
 
     @pytest.fixture(scope='function')
     def comp(self) -> Component:
-        return Component(some=Base('some'))
+        return Component(some=Base(id='some'))
 
     def test_components_access_to_attr(self, comp: Component) -> None:
         """Test components acces to attrs
         """
+        print(comp)
         assert comp.some.id == 'some', 'not set or cant get'
         assert comp['some'].id == 'some', 'not set or cant get'
 
