@@ -1,6 +1,5 @@
 """Main engine to create game
 """
-from typing import TypeVar
 from dataclasses import dataclass, field
 from dataclasses_json import (
     DataClassJsonMixin, dataclass_json, Undefined, config
@@ -8,20 +7,14 @@ from dataclasses_json import (
 from bgameb.base import Base, Component
 from bgameb.players import BasePlayer
 from bgameb.items import BaseItem
-from bgameb.tools import  BaseTool
-
-
-Item = TypeVar('Item', bound=BaseItem)
-Tool = TypeVar('Tool', bound=BaseTool)
-Player_ = TypeVar('Player_', bound=BasePlayer)
-Stuff = TypeVar('Stuff', bound=BaseItem|BaseTool|BasePlayer)
+from bgameb.tools import BaseTool
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(repr=False)
 class BaseGame(Base):
 
-    c: Component[Stuff] = field(
+    c: Component[BaseItem | BaseTool | BasePlayer] = field(
         default_factory=Component,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
@@ -30,32 +23,32 @@ class BaseGame(Base):
         super().__post_init__()
         self.c = Component()
 
-    def add(self, stuff: Stuff) -> None:
+    def add(self, stuff: BaseItem | BaseTool | BasePlayer) -> None:
         """Add stuff to component
 
         Args:
-            stuff (Stuff): game stuff
+            stuff (BaseItem|BaseTool|BasePlayer): game stuff
         """
         self.c._update(stuff)
         self._logger.info(
             f'Component updated by stuff with id="{stuff.id}".'
                 )
 
-    def get_items(self) -> dict[str, Item]:
+    def get_items(self) -> dict[str, BaseItem]:
         return {
             key: val for key, val
             in self.c.__dict__.items()
             if issubclass(val.__class__, BaseItem)
                 }
 
-    def get_tools(self) -> dict[str, Tool]:
+    def get_tools(self) -> dict[str, BaseTool]:
         return {
             key: val for key, val
             in self.c.__dict__.items()
             if issubclass(val.__class__, BaseTool)
                 }
 
-    def get_players(self) -> dict[str, Player_]:
+    def get_players(self) -> dict[str, BasePlayer]:
         return {
             key: val for key, val
             in self.c.__dict__.items()

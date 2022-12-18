@@ -2,13 +2,13 @@
 """
 import re
 import string
-from typing import List, Optional, Iterator, TypeVar, Any
+from typing import Optional, Iterator, TypeVar, Any
 from collections.abc import Mapping
 from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import (
     dataclass_json, DataClassJsonMixin, Undefined, CatchAll,
-    config, Exclude
+    config
         )
 from bgameb.errors import (
     ComponentNameError, ComponentClassError, ComponentIdError
@@ -57,11 +57,11 @@ class Base(DataClassJsonMixin):
     id: str
     other: CatchAll = field(
         default_factory=dict,
-        metadata=config(exclude=lambda x: True),
+        metadata=config(exclude=lambda x: True),  # type: ignore
             )
     counter: Counter = field(
         default_factory=Counter,
-        metadata=config(exclude=Exclude.ALWAYS),
+        metadata=config(exclude=lambda x: True),  # type: ignore
             )
 
     def __post_init__(self) -> None:
@@ -261,7 +261,7 @@ class Component(Mapping[str, V]):
         comp = stuff.__class__(**stuff.to_dict())  # type: ignore
         self.__dict__.update({name: comp})
 
-    def get_names(self) -> List[str]:
+    def get_names(self) -> list[str]:
         """Get names of all added stuff in Component
 
         Returns:

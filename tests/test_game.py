@@ -1,6 +1,5 @@
 import json
 import pytest
-from typing import Union
 from collections import Counter
 from bgameb.game import Game
 from bgameb.items import Dice, Card, Step
@@ -46,7 +45,7 @@ class TestGame:
         [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step, 'next_step')]
             )
     def test_add_new_item_to_game(
-        self, _class: Union[Card, Dice, Step], _id: str, game: Game
+        self, _class: Card | Dice | Step, _id: str, game: Game
             ) -> None:
         """Test add new item to Game
         """
@@ -60,7 +59,7 @@ class TestGame:
          (Bag, 'my_bag'), (Steps, 'steps_new'), ]
             )
     def test_add_new_tool_to_game(
-        self, _class: Union[Card, Dice, Step], _id: str, game: Game
+        self, _class: Card | Dice | Step, _id: str, game: Game
             ) -> None:
         """Test add new tool to Game
         """

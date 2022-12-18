@@ -1,7 +1,6 @@
 import json
 import pytest
 import random
-from typing import Union
 from collections import deque
 from bgameb.base import Component
 from bgameb.items import Dice, Card, Step, BaseItem
@@ -185,7 +184,7 @@ class TestBag:
             )
     def test_add_new_item_to_bag(
         self,
-        _class: Union[Card, Dice, Step],
+        _class: Card | Dice | Step,
         _id: str,
         obj_: Bag
             ) -> None:
