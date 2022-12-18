@@ -1,5 +1,6 @@
 """Main engine to create game
 """
+from typing import Union
 from dataclasses import dataclass, field
 from dataclasses_json import (
     DataClassJsonMixin, dataclass_json, Undefined, config
@@ -14,7 +15,7 @@ from bgameb.tools import BaseTool
 @dataclass(repr=False)
 class BaseGame(Base):
 
-    c: Component[BaseItem | BaseTool | BasePlayer] = field(
+    c: Component[Union[BaseItem, BaseTool, BasePlayer]] = field(
         default_factory=Component,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
@@ -23,7 +24,7 @@ class BaseGame(Base):
         super().__post_init__()
         self.c = Component()
 
-    def add(self, stuff: BaseItem | BaseTool | BasePlayer) -> None:
+    def add(self, stuff: Union[BaseItem, BaseTool, BasePlayer]) -> None:
         """Add stuff to component
 
         Args:

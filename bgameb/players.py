@@ -1,5 +1,6 @@
 """Game players classes
 """
+from typing import Union
 from dataclasses import dataclass, field
 from dataclasses_json import (
     DataClassJsonMixin, dataclass_json, Undefined, config
@@ -13,7 +14,7 @@ from bgameb.tools import BaseTool
 @dataclass(repr=False)
 class BasePlayer(Base):
 
-    c: Component[BaseItem | BaseTool] = field(
+    c: Component[Union[BaseItem, BaseTool]] = field(
         default_factory=Component,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
@@ -22,7 +23,7 @@ class BasePlayer(Base):
         super().__post_init__()
         self.c = Component()
 
-    def add(self, stuff: BaseItem | BaseTool) -> None:
+    def add(self, stuff: Union[BaseItem, BaseTool]) -> None:
         """Add stuff to component
 
         Args:
