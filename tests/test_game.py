@@ -39,7 +39,7 @@ class TestGame:
         """
         cl = _class(_id)
         game.add(cl)
-        assert game.p[cl.id].id == _id, 'stuff not added'
+        assert game.c[cl.id].id == _id, 'stuff not added'
 
     @pytest.mark.parametrize(
         "_class,_id",
@@ -52,7 +52,7 @@ class TestGame:
         """
         cl = _class(_id)
         game.add(cl)
-        assert game.i[cl.id].id == _id, 'stuff not added'
+        assert game.c[cl.id].id == _id, 'stuff not added'
 
     @pytest.mark.parametrize(
         "_class,_id",
@@ -66,7 +66,7 @@ class TestGame:
         """
         cl = _class(_id)
         game.add(cl)
-        assert game.t[cl.id].id == _id, 'stuff not added'
+        assert game.c[cl.id].id == _id, 'stuff not added'
 
     def test_add_new_wrong_component_to_game(self, game: Game) -> None:
         """Test cant add new wrong component to game

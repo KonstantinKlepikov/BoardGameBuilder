@@ -3,9 +3,7 @@
 import random
 from collections import deque
 from heapq import heappop, heappush
-from typing import (
-    Tuple, Dict, List, Deque, Optional, Iterable, Union
-        )
+from typing import Optional, Iterable
 from dataclasses import dataclass, field, replace
 from dataclasses_json import (
     config, DataClassJsonMixin, dataclass_json, Undefined
@@ -15,28 +13,25 @@ from bgameb.items import Card, Dice, Step, BaseItem
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 
-Item = Union[Card, Dice, Step]
-
-
 @dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass(repr=False)
 class BaseTool(Base, DataClassJsonMixin):
     """Base class for game tools (like decks or shakers)
     """
-    current: List[Item] = field(
+    current: list[BaseItem] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
-        )
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
 
-    def _item_replace(self, item: Item) -> Item:
+    def _item_replace(self, item: BaseItem) -> BaseItem:
         """Replace item in a current
 
         Returns:
-            Item: an item object
+            Item (BaseItem): an item object
         """
         return replace(item)
 
@@ -46,7 +41,7 @@ class BaseTool(Base, DataClassJsonMixin):
         self.current.clear()
         self._logger.debug('Current clear!')
 
-    def current_ids(self) -> List[str]:
+    def current_ids(self) -> list[str]:
         """Get ids of current objects
 
         Returns:
@@ -54,7 +49,7 @@ class BaseTool(Base, DataClassJsonMixin):
         """
         return [item.id for item in self.current]
 
-    def append(self, item: Item) -> None:
+    def append(self, item: BaseItem) -> None:
         """Append item to current
 
         Args:
@@ -77,7 +72,7 @@ class BaseTool(Base, DataClassJsonMixin):
         self._logger.debug(f'Count of {item_id} in current is {count}')
         return count
 
-    def extend(self, items: Iterable[Item]) -> None:
+    def extend(self, items: Iterable[BaseItem]) -> None:
         """Extend the current by appending items
         started from the left side of iterable.
 
@@ -114,7 +109,7 @@ class BaseTool(Base, DataClassJsonMixin):
         self._logger.debug(f'Index of {item_id} in current is {ind}')
         return ind
 
-    def insert(self, item: Item, pos: int) -> None:
+    def insert(self, item: BaseItem, pos: int) -> None:
         """Insert item into the current at position pos.
 
         Args:
@@ -125,7 +120,7 @@ class BaseTool(Base, DataClassJsonMixin):
         self.current.insert(pos, item)
         self._logger.debug(f'To current is inserted {item.id} on {pos=}')
 
-    def pop(self) -> Item:
+    def pop(self) -> BaseItem:
         """Remove and return an item from the current.
         If no cards are present, raises an IndexError.
 
@@ -159,13 +154,23 @@ class BaseTool(Base, DataClassJsonMixin):
 class Bag(BaseTool, DataClassJsonMixin):
     """Bag object
     """
-    i: Component[Item] = field(default_factory=Component)
+    c: Component[BaseItem] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
 
-    def deal(self, items: Optional[List[str]] = None) -> 'Bag':
+    def get_items(self) -> dict[str, BaseItem]:
+        return {
+            key: val for key, val
+            in self.__dict__.items()
+            if issubclass(val.__class__, BaseItem)
+                }
+
+    def deal(self, items: Optional[list[str]] = None) -> 'Bag':
         """Deal new bag current
 
         Args:
@@ -177,24 +182,27 @@ class Bag(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), BaseItem):
                     self.append(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.append(self.i[id])
+                if id in self.c.keys():
+                    self.append(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
 
-    def add(self, stuff: Item) -> None:
+    def add(self, stuff: BaseItem) -> None:
         """Add stuff to component
 
         Args:
-            stuff (Item): game stuff
+            stuff (BaseItem): game stuff
         """
-        self.i._update(stuff)
+        self.c._update(stuff)
+        self._logger.info(
+            f'Component updated by stuff with id="{stuff.id}".'
+                )
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
@@ -202,18 +210,21 @@ class Bag(BaseTool, DataClassJsonMixin):
 class Shaker(BaseTool, DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
     """
-    current: List[Dice] = field(
+    current: list[Dice] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    i: Component[Dice] = field(default_factory=Component)
+    c: Component[Dice] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
 
-    def deal(self, items: Optional[List[str]] = None) -> 'Shaker':
+    def deal(self, items: Optional[list[str]] = None) -> 'Shaker':
         """Deal new shaker current
 
         Args:
@@ -225,18 +236,18 @@ class Shaker(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), Dice):
                     self.append(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.append(self.i[id])
+                if id in self.c.keys():
+                    self.append(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
 
-    def roll(self) -> Dict[str, List[int]]:
+    def roll(self) -> dict[str, list[int]]:
         """Roll all stuff in shaker and return results
 
         Return:
@@ -267,7 +278,10 @@ class Shaker(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Dice) \
                 or issubclass(stuff.__class__, Dice):
-            self.i._update(stuff)
+            self.c._update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
         else:
             raise ComponentClassError(stuff, self._logger)
 
@@ -294,16 +308,19 @@ class Deck(BaseTool, DataClassJsonMixin):
 
             deque(Card1, Card3, Card2, Card4)
     """
-    current: Deque[Card] = field(
+    current: deque[Card] = field(
         default_factory=deque,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
         )
-    i: Component[Card] = field(default_factory=Component)
+    c: Component[Card] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
 
     def _item_replace(self, item: Card) -> Card:  # type: ignore[override]
         """Replace item in a current
@@ -364,7 +381,7 @@ class Deck(BaseTool, DataClassJsonMixin):
         self.current.rotate(n)
         self._logger.debug(f'Current is rotate by {n}')
 
-    def deal(self, items: Optional[List[str]] = None) -> 'Deck':
+    def deal(self, items: Optional[list[str]] = None) -> 'Deck':
         """Deal new deck current
 
         Args:
@@ -376,14 +393,14 @@ class Deck(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), Card):
                     for _ in range(stuff.count):
                         self.append(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.append(self.i[id])
+                if id in self.c.keys():
+                    self.append(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
@@ -402,9 +419,9 @@ class Deck(BaseTool, DataClassJsonMixin):
         self,
         start: int,
         end: int
-            ) -> Tuple[
-                List[Card],
-                Tuple[List[Card], List[Card]]
+            ) -> tuple[
+                list[Card],
+                tuple[list[Card], list[Card]]
                     ]:
         """Prepare current deck to arrange
 
@@ -434,8 +451,8 @@ class Deck(BaseTool, DataClassJsonMixin):
 
     def arrange(
         self,
-        arranged: List[Card],
-        last: Tuple[List[Card], List[Card]]
+        arranged: list[Card],
+        last: tuple[list[Card], list[Card]]
             ) -> 'Deck':
         """Concatenate new current deck from given arranged list and last of
         deck. Use to_arrange() method to get list to arrange and last.
@@ -447,7 +464,7 @@ class Deck(BaseTool, DataClassJsonMixin):
         Returns:
             Deck
         """
-        reorranged: Deque = deque()
+        reorranged: deque = deque()
         reorranged.extend(last[0])
         reorranged.extend(arranged)
         reorranged.extend(last[1])
@@ -464,9 +481,9 @@ class Deck(BaseTool, DataClassJsonMixin):
 
     def search(
         self,
-        query: Dict[str, int],
+        query: dict[str, int],
         remove: bool = True
-            ) -> List[Card]:
+            ) -> list[Card]:
         """Search for cards in current deck
 
         Args:
@@ -487,7 +504,7 @@ class Deck(BaseTool, DataClassJsonMixin):
                     remove=False
                     )
         """
-        for_deque: Deque = deque()
+        for_deque: deque = deque()
         result = []
 
         while True:
@@ -511,7 +528,7 @@ class Deck(BaseTool, DataClassJsonMixin):
         self,
         count: int = 1,
         remove: bool = True
-            ) -> List[Card]:
+            ) -> list[Card]:
         """Get random cards from current deck
 
         Args:
@@ -555,7 +572,10 @@ class Deck(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Card) \
                 or issubclass(stuff.__class__, Card):
-            self.i._update(stuff)
+            self.c._update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
         else:
             raise ComponentClassError(stuff, self._logger)
 
@@ -569,7 +589,7 @@ class Steps(BaseTool, DataClassJsonMixin):
         - current (List[Tuple[int, Step]]): current order of steps.
         - last (Step): last pulled from current step
     """
-    current: List[Tuple[int, Step]] = field(
+    current: list[tuple[int, Step]] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
@@ -579,11 +599,14 @@ class Steps(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
     )
-    i: Component[Step] = field(default_factory=Component)
+    c: Component[Step] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        self.i = Component()
+        self.c = Component()
 
     def push(self, item: Step) -> None:
         """Push Step object to current
@@ -605,7 +628,7 @@ class Steps(BaseTool, DataClassJsonMixin):
 
     def deal(
         self,
-        items: Optional[List[str]] = None
+        items: Optional[list[str]] = None
             ) -> 'Steps':
         """Clear current order and create new current order
 
@@ -618,18 +641,18 @@ class Steps(BaseTool, DataClassJsonMixin):
         self.clear()
 
         if not items:
-            for stuff in self.i.values():
+            for stuff in self.c.values():
                 if issubclass(type(stuff), Step):
                     self.push(stuff)
         else:
             for id in items:
-                if id in self.i.keys():
-                    self.push(self.i[id])
+                if id in self.c.keys():
+                    self.push(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
 
-    def current_ids(self) -> List[str]:
+    def current_ids(self) -> list[str]:
         """Get ids of current objects
 
         Returns:
@@ -645,6 +668,9 @@ class Steps(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Step) \
                 or issubclass(stuff.__class__, Step):
-            self.i._update(stuff)
+            self.c._update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
         else:
             raise ComponentClassError(stuff, self._logger)

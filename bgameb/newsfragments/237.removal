@@ -1,0 +1,4 @@
+#237:
+    - is removed t, i, p attrs
+    - now we not used union of classes for annotation - only union of base classes
+    - ->
