@@ -303,6 +303,14 @@ class TestDeck:
         assert card.count == 1, 'wrong count'
         assert id(card) != id(c), 'not replaced'
 
+    def test_steps_clear_last(self, dealt_obj_: Deck) -> None:
+        """Test clear() clear last
+        """
+        dealt_obj_.pop()
+        assert dealt_obj_.last, 'empty last'
+        dealt_obj_.clear()
+        assert dealt_obj_.last is None, 'nonempty last'
+
     def test_appendleft(self, dealt_obj_: Deck) -> None:
         """Test current append left
         """
@@ -326,6 +334,16 @@ class TestDeck:
         """Test pop left
         """
         assert dealt_obj_.popleft().id == 'card', 'wrong pop'
+        assert dealt_obj_.last.id == 'card', 'empty last'
+        dealt_obj_.current.clear()
+        with pytest.raises(IndexError):
+            dealt_obj_.pop()
+
+    def test_pop(self, dealt_obj_: Deck) -> None:
+        """Test pop left
+        """
+        assert dealt_obj_.pop().id == 'card_nice', 'wrong pop'
+        assert dealt_obj_.last.id == 'card_nice', 'empty last'
         dealt_obj_.current.clear()
         with pytest.raises(IndexError):
             dealt_obj_.pop()
@@ -550,6 +568,15 @@ class TestSteps:
         assert isinstance(obj_.current, list), 'wrong current type'
         assert len(obj_.current) == 0, 'wrong current len'
         assert obj_.last is None, 'wrong last'
+
+    def test_steps_clear_last(self, obj_: Steps) -> None:
+        """Test clear() clear last
+        """
+        obj_.deal()
+        obj_.pull()
+        assert obj_.last, 'empty last'
+        obj_.clear()
+        assert obj_.last is None, 'nonempty last'
 
     def test_steps_add_step(self, obj_: Steps) -> None:
         """Test add step to steps

@@ -317,6 +317,11 @@ class Deck(BaseTool, DataClassJsonMixin):
         default_factory=Component,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
+    last: Optional[Card] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -334,6 +339,13 @@ class Deck(BaseTool, DataClassJsonMixin):
         item = replace(item)
         del item.count
         return item
+
+    def clear(self) -> None:
+        """Clear the current and last of Deck
+        """
+        self.current.clear()
+        self.last = None
+        self._logger.debug('Current and last are clear!')
 
     def appendleft(self, item: Card) -> None:
         """Add card to the left side of the current deck.
@@ -360,6 +372,17 @@ class Deck(BaseTool, DataClassJsonMixin):
             f'Current are extended by {[item.id for item in items]} from left'
                 )
 
+    def pop(self) -> Card:
+        """Remove and return an item from the current.
+        If no cards are present, raises an IndexError.
+
+        Returns:
+            Item: an item object
+        """
+        self.last = self.current.pop()
+        self._logger.debug(f'{self.last.id} is poped from current')
+        return self.last
+
     def popleft(self) -> Card:
         """Remove and return a card from the left side of the current deck.
         If no cards are present, raises an IndexError.
@@ -367,9 +390,9 @@ class Deck(BaseTool, DataClassJsonMixin):
         Returns:
             Card: a card object
         """
-        item = self.current.popleft()
-        self._logger.debug(f'{item.id} is poped from left of current')
-        return item
+        self.last = self.current.popleft()
+        self._logger.debug(f'{self.last.id} is poped from left of current')
+        return self.last
 
     def rotate(self, n: int) -> None:
         """Rotate the current deck n steps to the right.
@@ -594,7 +617,7 @@ class Steps(BaseTool, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
             )
-    last: Step = field(
+    last: Optional[Step] = field(
         default=None,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
@@ -607,6 +630,13 @@ class Steps(BaseTool, DataClassJsonMixin):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.c = Component()
+
+    def clear(self) -> None:
+        """Clear the current and last of Steps
+        """
+        self.current.clear()
+        self.last = None
+        self._logger.debug('Current and last are clear!')
 
     def push(self, item: Step) -> None:
         """Push Step object to current
