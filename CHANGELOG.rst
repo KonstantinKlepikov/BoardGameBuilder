@@ -3,6 +3,33 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.33 (2022-12-19)
+============================
+
+Features
+--------
+
+- #236:
+      - clear last when current is clear for Steps
+      - to Deck added last, last is clear with clear() and changed with pop() and popleft()
+      - test all, add docs for some objects
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/236)
+- #237:
+      - added attr c to Game, Player, and tools - is a Component classsfor any stuff
+      - added methods to get dict of Olayers, Tools and Items from game c
+      - test all and docs changing
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/237)
+
+
+Deprecations and Removals
+-------------------------
+
+- #237:
+      - is removed t, i, p attrs
+      - now we not used union of classes for annotation - only union of base classes
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/237)
+
+
 Release v0.0.32 (2022-12-14)
 ============================
 
