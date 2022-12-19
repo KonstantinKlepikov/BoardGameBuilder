@@ -90,3 +90,18 @@ class TestGame:
             match='wrong name of stuff'
                 ):
             game.add(p)
+
+    def test_game_get_from_component(self, game: Game) -> None:
+        """Test Game get stuff from component
+        """
+        game.add(Dice('this'))
+        game.add(Card('one'))
+        game.add(Step('fy'))
+        game.add(Player('that'))
+        game.add(Deck('some'))
+        game.add(Shaker('width'))
+        game.add(Steps('err'))
+        game.add(Bag('pff'))
+        assert len(game.get_items()) == 3, 'wrong items'
+        assert len(game.get_tools()) == 4, 'wrong tools'
+        assert len(game.get_players()) == 1, 'wrong players'

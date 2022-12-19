@@ -36,6 +36,11 @@ class BaseGame(Base):
                 )
 
     def get_items(self) -> dict[str, BaseItem]:
+        """Get items from Component
+
+        Returns:
+            dict[str, BaseItem]: items mapping
+        """
         return {
             key: val for key, val
             in self.c.__dict__.items()
@@ -43,6 +48,11 @@ class BaseGame(Base):
                 }
 
     def get_tools(self) -> dict[str, BaseTool]:
+        """Get tools from Component
+
+        Returns:
+            dict[str, BaseTool]: tools mapping
+        """
         return {
             key: val for key, val
             in self.c.__dict__.items()
@@ -50,6 +60,11 @@ class BaseGame(Base):
                 }
 
     def get_players(self) -> dict[str, BasePlayer]:
+        """Get players from Component
+
+        Returns:
+            dict[str, BasePlayer]: players mapping
+        """
         return {
             key: val for key, val
             in self.c.__dict__.items()

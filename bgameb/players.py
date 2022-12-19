@@ -35,16 +35,26 @@ class BasePlayer(Base):
                 )
 
     def get_items(self) -> dict[str, BaseItem]:
+        """Get items from Component
+
+        Returns:
+            dict[str, BaseItem]: items mapping
+        """
         return {
             key: val for key, val
-            in self.__dict__.items()
+            in self.c.__dict__.items()
             if issubclass(val.__class__, BaseItem)
                 }
 
     def get_tools(self) -> dict[str, BaseTool]:
+        """Get tools from Component
+
+        Returns:
+            dict[str, BaseTool]: tools mapping
+        """
         return {
             key: val for key, val
-            in self.__dict__.items()
+            in self.c.__dict__.items()
             if issubclass(val.__class__, BaseTool)
                 }
 
