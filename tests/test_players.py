@@ -1,6 +1,8 @@
 import json
 from collections import Counter
 from bgameb.players import Player
+from bgameb.items import Dice, Card, Step
+from bgameb.tools import Steps, Deck, Shaker, Bag
 
 
 class TestPlayer:
@@ -22,3 +24,17 @@ class TestPlayer:
         obj_ = Player('player')
         j = json.loads(obj_.to_json())
         assert j['id'] == 'player', 'not converted to json'
+
+    def test_player_get_from_component(self) -> None:
+        """Test Player get stuff from component
+        """
+        obj_ = Player('player')
+        obj_.add(Dice('this'))
+        obj_.add(Card('one'))
+        obj_.add(Step('fy'))
+        obj_.add(Deck('some'))
+        obj_.add(Shaker('width'))
+        obj_.add(Steps('err'))
+        obj_.add(Bag('pff'))
+        assert len(obj_.get_items()) == 3, 'wrong items'
+        assert len(obj_.get_tools()) == 4, 'wrong tools'

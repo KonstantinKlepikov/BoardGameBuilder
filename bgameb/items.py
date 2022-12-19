@@ -1,7 +1,7 @@
 """Game dices, coins, cards and other items
 """
 import random
-from typing import List, Optional, NoReturn
+from typing import Optional, NoReturn
 from dataclasses import dataclass, field
 from dataclasses_json import (
     config, DataClassJsonMixin, dataclass_json, Undefined
@@ -56,7 +56,7 @@ class Dice(BaseItem, DataClassJsonMixin):
     """
     count: int = 1
     sides: int = 2
-    _range: List[int] = field(
+    _range: list[int] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         init=False,
@@ -73,7 +73,7 @@ class Dice(BaseItem, DataClassJsonMixin):
                 )
         self._range = list(range(1, self.sides + 1))
 
-    def roll(self) -> List[int]:
+    def roll(self) -> list[int]:
         """Roll and return result
 
         Returns:

@@ -16,6 +16,7 @@ class TestComponent:
     def test_components_access_to_attr(self, comp: Component) -> None:
         """Test components acces to attrs
         """
+        print(comp)
         assert comp.some.id == 'some', 'not set or cant get'
         assert comp['some'].id == 'some', 'not set or cant get'
 

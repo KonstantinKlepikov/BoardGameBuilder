@@ -39,7 +39,7 @@ class TestGame:
         """
         cl = _class(_id)
         game.add(cl)
-        assert game.p[cl.id].id == _id, 'stuff not added'
+        assert game.c[cl.id].id == _id, 'stuff not added'
 
     @pytest.mark.parametrize(
         "_class,_id",
@@ -52,7 +52,7 @@ class TestGame:
         """
         cl = _class(_id)
         game.add(cl)
-        assert game.i[cl.id].id == _id, 'stuff not added'
+        assert game.c[cl.id].id == _id, 'stuff not added'
 
     @pytest.mark.parametrize(
         "_class,_id",
@@ -66,7 +66,7 @@ class TestGame:
         """
         cl = _class(_id)
         game.add(cl)
-        assert game.t[cl.id].id == _id, 'stuff not added'
+        assert game.c[cl.id].id == _id, 'stuff not added'
 
     def test_add_new_wrong_component_to_game(self, game: Game) -> None:
         """Test cant add new wrong component to game
@@ -90,3 +90,18 @@ class TestGame:
             match='wrong name of stuff'
                 ):
             game.add(p)
+
+    def test_game_get_from_component(self, game: Game) -> None:
+        """Test Game get stuff from component
+        """
+        game.add(Dice('this'))
+        game.add(Card('one'))
+        game.add(Step('fy'))
+        game.add(Player('that'))
+        game.add(Deck('some'))
+        game.add(Shaker('width'))
+        game.add(Steps('err'))
+        game.add(Bag('pff'))
+        assert len(game.get_items()) == 3, 'wrong items'
+        assert len(game.get_tools()) == 4, 'wrong tools'
+        assert len(game.get_players()) == 1, 'wrong players'
