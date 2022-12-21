@@ -3,6 +3,32 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.34 (2022-12-21)
+============================
+
+Features
+--------
+
+- #243:
+      - added keys(), keys(), items() methods to Component
+      - added __inclusion__ attr to Component - all stuff is placed here, all operation get/repr/len and ets is maked with this attribute
+      - _update() renamed to update
+      - fix some problems with get_{stuff} methods
+      - fix bug with replace - add type check to yools add() methods, remove check from deal()
+      - changed docs
+      - tests
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/243)
+
+
+Bugfixes
+--------
+
+- #242:
+      - fix Bag get_items()
+      - some changes in example of code in README and check.py
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/242)
+
+
 Release v0.0.33 (2022-12-19)
 ============================
 
