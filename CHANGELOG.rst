@@ -3,6 +3,20 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.35 (2022-12-22)
+============================
+
+Bugfixes
+--------
+
+- #247:
+      - get_names() renamed to ids()
+      - ids() return ids ov __included__ of Component
+      - deal() methods of rools changed - now used ids() mor fill current from list
+      - all tests
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/247)
+
+
 Release v0.0.34 (2022-12-21)
 ============================
 
