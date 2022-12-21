@@ -330,13 +330,13 @@
         <span class="n">comp</span> <span class="o">=</span> <span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">**</span><span class="n">stuff</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="Component.get_names"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.get_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get names of all added stuff in Component</span>
+<div class="viewcode-block" id="Component.ids"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.ids">[docs]</a>    <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get ids of all added stuff in Component</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[str]: list of stuff names</span>
+<span class="sd">            List[str]: list of stuff ids</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
 
 <div class="viewcode-block" id="Component.by_id"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.by_id">[docs]</a>    <span class="k">def</span> <span class="nf">by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get stuff object by its id</span>
