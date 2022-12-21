@@ -29,7 +29,7 @@ class BasePlayer(Base):
         Args:
             stuff (BaseItem|BaseTool): game stuff
         """
-        self.c._update(stuff)
+        self.c.update(stuff)
         self._logger.info(
             f'Component updated by stuff with id="{stuff.id}".'
                 )
@@ -42,7 +42,7 @@ class BasePlayer(Base):
         """
         return {
             key: val for key, val
-            in self.c.__dict__.items()
+            in self.c.items()
             if issubclass(val.__class__, BaseItem)
                 }
 
@@ -54,7 +54,7 @@ class BasePlayer(Base):
         """
         return {
             key: val for key, val
-            in self.c.__dict__.items()
+            in self.c.items()
             if issubclass(val.__class__, BaseTool)
                 }
 

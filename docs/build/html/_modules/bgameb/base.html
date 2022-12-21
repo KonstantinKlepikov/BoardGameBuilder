@@ -74,7 +74,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">string</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">KeysView</span><span class="p">,</span> <span class="n">ValuesView</span><span class="p">,</span> <span class="n">ItemsView</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="p">(</span>
@@ -160,8 +160,7 @@
             <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span>
             <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;current&#39;</span>
-            <span class="ow">and</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;last&#39;</span>
+            <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;current&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="s1">&#39;other&#39;</span><span class="p">]</span>
                 <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -175,6 +174,7 @@
 <div class="viewcode-block" id="Component"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component">[docs]</a><span class="k">class</span> <span class="nc">Component</span><span class="p">(</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Component mapping</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__inclusion__</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">V</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -183,15 +183,17 @@
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Args must be a dicts</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">__inclusion__</span><span class="o">=</span><span class="p">{})</span>
+
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="ow">in</span> <span class="n">arg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">stuff</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Args must be a dict of dicts&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">stuff</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
 
         <span class="c1"># set logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;_logger&#39;</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
@@ -199,21 +201,8 @@
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;component&#39;</span>
                 <span class="p">)})</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_inclusion</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Only stuff objects</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Dict[K, V]: dict with stuff</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
-            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span>
-                <span class="p">}</span>
-
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inclusion</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">V</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
@@ -226,7 +215,7 @@
 
     <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
@@ -234,17 +223,26 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">V</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inclusion</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inclusion</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="si">}</span><span class="se">}}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inclusion</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Component.keys"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KeysView</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Component.values"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValuesView</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Component.items"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ItemsView</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">V</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_is_unique</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Chek is name of nested stuff is unique</span>
@@ -258,7 +256,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True: is unique</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inclusion</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">ComponentNameError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
@@ -310,7 +308,7 @@
 
         <span class="k">return</span> <span class="n">name</span>
 
-    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span>
+<div class="viewcode-block" id="Component.update"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">stuff</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -330,7 +328,7 @@
             <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
         <span class="n">comp</span> <span class="o">=</span> <span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">**</span><span class="n">stuff</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__inclusion__</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="n">comp</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="Component.get_names"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.get_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get names of all added stuff in Component</span>
@@ -338,7 +336,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            List[str]: list of stuff names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inclusion</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
 
 <div class="viewcode-block" id="Component.by_id"><a class="viewcode-back" href="../../bgameb.html#bgameb.base.Component.by_id">[docs]</a>    <span class="k">def</span> <span class="nf">by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">V</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get stuff object by its id</span>
@@ -349,7 +347,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            V, optional: stuff object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inclusion</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">comp</span>
         <span class="k">return</span> <span class="kc">None</span></div></div>

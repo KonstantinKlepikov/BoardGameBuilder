@@ -166,7 +166,7 @@ class Bag(BaseTool, DataClassJsonMixin):
     def get_items(self) -> dict[str, BaseItem]:
         return {
             key: val for key, val
-            in self.c.__dict__.items()
+            in self.c.items()
             if issubclass(val.__class__, BaseItem)
                 }
 
@@ -183,8 +183,7 @@ class Bag(BaseTool, DataClassJsonMixin):
 
         if not items:
             for stuff in self.c.values():
-                if issubclass(type(stuff), BaseItem):
-                    self.append(stuff)
+                self.append(stuff)
         else:
             for id in items:
                 if id in self.c.keys():
@@ -199,10 +198,13 @@ class Bag(BaseTool, DataClassJsonMixin):
         Args:
             stuff (BaseItem): game stuff
         """
-        self.c._update(stuff)
-        self._logger.info(
-            f'Component updated by stuff with id="{stuff.id}".'
-                )
+        if issubclass(stuff.__class__, BaseItem):
+            self.c.update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
+        else:
+            raise ComponentClassError(stuff, self._logger)
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
@@ -237,8 +239,7 @@ class Shaker(BaseTool, DataClassJsonMixin):
 
         if not items:
             for stuff in self.c.values():
-                if issubclass(type(stuff), Dice):
-                    self.append(stuff)
+                self.append(stuff)
         else:
             for id in items:
                 if id in self.c.keys():
@@ -278,7 +279,7 @@ class Shaker(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Dice) \
                 or issubclass(stuff.__class__, Dice):
-            self.c._update(stuff)
+            self.c.update(stuff)
             self._logger.info(
                 f'Component updated by stuff with id="{stuff.id}".'
                     )
@@ -417,9 +418,8 @@ class Deck(BaseTool, DataClassJsonMixin):
 
         if not items:
             for stuff in self.c.values():
-                if issubclass(type(stuff), Card):
-                    for _ in range(stuff.count):
-                        self.append(stuff)
+                for _ in range(stuff.count):
+                    self.append(stuff)
         else:
             for id in items:
                 if id in self.c.keys():
@@ -595,7 +595,7 @@ class Deck(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Card) \
                 or issubclass(stuff.__class__, Card):
-            self.c._update(stuff)
+            self.c.update(stuff)
             self._logger.info(
                 f'Component updated by stuff with id="{stuff.id}".'
                     )
@@ -672,8 +672,7 @@ class Steps(BaseTool, DataClassJsonMixin):
 
         if not items:
             for stuff in self.c.values():
-                if issubclass(type(stuff), Step):
-                    self.push(stuff)
+                self.push(stuff)
         else:
             for id in items:
                 if id in self.c.keys():
@@ -698,7 +697,7 @@ class Steps(BaseTool, DataClassJsonMixin):
         """
         if isinstance(stuff.__class__, Step) \
                 or issubclass(stuff.__class__, Step):
-            self.c._update(stuff)
+            self.c.update(stuff)
             self._logger.info(
                 f'Component updated by stuff with id="{stuff.id}".'
                     )
