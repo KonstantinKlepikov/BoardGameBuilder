@@ -106,13 +106,13 @@ class TestComponent:
         """
         comp = Component()
         cl = Base('that')
-        comp._update(cl)
+        comp.update(cl)
         comp['that'].id == 'that', 'wrong id'
         with pytest.raises(
             ComponentNameError,
             match='is exist in'
                 ):
-            comp._update(cl)
+            comp.update(cl)
         assert id(cl) != id(comp['that']), 'not a copy'
 
     def test_get_names(self) -> None:
@@ -120,9 +120,9 @@ class TestComponent:
         """
         comp = Component()
         assert comp.get_names() == [], 'nonempty list of names'
-        comp._update(Base('that'))
+        comp.update(Base('that'))
         assert comp.get_names() == ['that', ], 'empty list of names'
-        comp._update(Base('this'))
+        comp.update(Base('this'))
         assert comp.get_names() == ['that', 'this'], 'empty list of names'
 
     def test_by_id(self, comp: Component) -> None:
