@@ -3,7 +3,7 @@
 import re
 import string
 from typing import Optional, Iterator, TypeVar, Any
-from collections.abc import Mapping
+from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
 from dataclasses import dataclass, field
 from dataclasses_json import (
@@ -89,8 +89,7 @@ class Base(DataClassJsonMixin):
             k: v for k, v
             in self.__dict__.items()
             if not k.startswith('_')
-            and k != 'current'
-            and k != 'last'
+            and k not in ['current', 'last', 'other']
                 }
 
     def __repr__(self) -> str:
@@ -104,6 +103,7 @@ V = TypeVar('V', bound=Base)
 class Component(Mapping[str, V]):
     """Component mapping
     """
+    __inclusion__: dict[str, V]
 
     def __init__(
         self,
@@ -112,15 +112,17 @@ class Component(Mapping[str, V]):
             ) -> None:
         """Args must be a dicts
         """
+        self.__dict__.update(__inclusion__={})
+
         for arg in args:
             if isinstance(arg, dict):
                 for k, v, in arg.items():
-                    self._update(stuff=v, name=k)
+                    self.update(stuff=v, name=k)
             else:
                 raise AttributeError('Args must be a dict of dicts')
         if kwargs:
             for k, v, in kwargs.items():
-                self._update(stuff=v, name=k)
+                self.update(stuff=v, name=k)
 
         # set logger
         self.__dict__.update({'_logger': logger.bind(
@@ -128,21 +130,8 @@ class Component(Mapping[str, V]):
             name='component'
                 )})
 
-    @property
-    def _inclusion(self) -> dict[str, V]:
-        """Only stuff objects
-
-        Returns:
-            Dict[K, V]: dict with stuff
-        """
-        return {
-            key: val for key, val
-            in self.__dict__.items()
-            if issubclass(val.__class__, Base)
-                }
-
     def __iter__(self) -> Iterator:
-        return iter(self._inclusion)
+        return iter(self.__inclusion__)
 
     def __setattr__(self, attr: str, value: V) -> None:
         raise NotImplementedError
@@ -155,7 +144,7 @@ class Component(Mapping[str, V]):
 
     def __delattr__(self, attr: str) -> None:
         try:
-            del self.__dict__[attr]
+            self.__delitem__(attr)
         except KeyError:
             raise AttributeError(attr)
 
@@ -163,17 +152,26 @@ class Component(Mapping[str, V]):
         raise NotImplementedError
 
     def __getitem__(self, attr: str) -> V:
-        return self._inclusion[attr]
+        return self.__inclusion__[attr]
 
     def __delitem__(self, attr: str) -> None:
-        del self.__dict__[attr]
+        del self.__inclusion__[attr]
 
     def __repr__(self) -> str:
-        items = list({f"{k}={v!r}" for k, v in self._inclusion.items()})
+        items = list({f"{k}={v!r}" for k, v in self.items()})
         return f"{{{', '.join(items)}}}"
 
     def __len__(self) -> int:
-        return len(self._inclusion)
+        return len(self.__inclusion__)
+
+    def keys(self) -> KeysView[str]:
+        return self.__inclusion__.keys()
+
+    def values(self) -> ValuesView[V]:
+        return self.__inclusion__.values()
+
+    def items(self) -> ItemsView[str, V]:
+        return self.__inclusion__.items()
 
     def _is_unique(self, name: str) -> bool:
         """Chek is name of nested stuff is unique
@@ -187,7 +185,7 @@ class Component(Mapping[str, V]):
         Returns:
             True: is unique
         """
-        if name in self._inclusion.keys():
+        if name in self.keys():
             raise ComponentNameError(name)
         return True
 
@@ -239,7 +237,7 @@ class Component(Mapping[str, V]):
 
         return name
 
-    def _update(
+    def update(
         self,
         stuff: V,
         name: Optional[str] = None,
@@ -259,7 +257,7 @@ class Component(Mapping[str, V]):
             name = self._make_name(name)
 
         comp = stuff.__class__(**stuff.to_dict())  # type: ignore
-        self.__dict__.update({name: comp})
+        self.__inclusion__.update({name: comp})
 
     def get_names(self) -> list[str]:
         """Get names of all added stuff in Component
@@ -267,7 +265,7 @@ class Component(Mapping[str, V]):
         Returns:
             List[str]: list of stuff names
         """
-        return [name for name in self._inclusion.keys()]
+        return [name for name in self.keys()]
 
     def by_id(self, id: str) -> Optional[V]:
         """Get stuff object by its id
@@ -278,7 +276,7 @@ class Component(Mapping[str, V]):
         Returns:
             V, optional: stuff object
         """
-        for comp in self._inclusion.values():
+        for comp in self.values():
             if comp.id == id:
                 return comp
         return None
