@@ -170,7 +170,7 @@ class TestBag:
     def obj_(self) -> Bag:
         obj_ = Bag('bag')
         obj_.c = Component(
-            card=Card('card'), dice=Dice('dice')
+            card=Card('card'), dice=Dice('Dice')
                 )
         return obj_
 
@@ -201,7 +201,7 @@ class TestBag:
         assert len(dealt_obj_.current) == 2, 'wrong current len'
         ids1 = dealt_obj_.current_ids()
         assert 'card' in ids1, 'wrong cards ids inside current'
-        assert 'dice' in ids1, 'wrong dice ids inside current'
+        assert 'Dice' in ids1, 'wrong dice ids inside current'
         dealt_obj_.deal()
         comp = [id(item) for item in dealt_obj_.c.values()]
         cur = [id(item) for item in dealt_obj_.current]
@@ -212,13 +212,13 @@ class TestBag:
     def test_bag_deal_from_list(self, obj_: Bag) -> None:
         """Test bag deal() from items
         """
-        items = ['card', 'card', 'card', 'dice']
+        items = ['card', 'card', 'card', 'Dice']
         result = obj_.deal(items).current
         assert len(result) == 4, 'wrong current len'
         ids = obj_.current_ids()
         assert ids == items, 'wrong deal'
         assert 'card' in ids, 'wrong cards ids inside current'
-        assert 'dice' in ids, 'wrong dice id inside current'
+        assert 'Dice' in ids, 'wrong dice id inside current'
         result = obj_.deal(items).current
         comp = [id(item) for item in obj_.c.values()]
         cur = [id(item) for item in result]
@@ -272,7 +272,7 @@ class TestDeck:
     def obj_(self) -> Deck:
         obj_ = Deck('deck')
         obj_.c = Component(
-            card=Card('card', count=5), card_nice=Card('card_nice', count=5)
+            card=Card('card', count=5), card_nice=Card('Card_nice', count=5)
                 )
         return obj_
 
@@ -342,8 +342,8 @@ class TestDeck:
     def test_pop(self, dealt_obj_: Deck) -> None:
         """Test pop left
         """
-        assert dealt_obj_.pop().id == 'card_nice', 'wrong pop'
-        assert dealt_obj_.last.id == 'card_nice', 'empty last'
+        assert dealt_obj_.pop().id == 'Card_nice', 'wrong pop'
+        assert dealt_obj_.last.id == 'Card_nice', 'empty last'
         dealt_obj_.current.clear()
         with pytest.raises(IndexError):
             dealt_obj_.pop()
@@ -353,7 +353,7 @@ class TestDeck:
         """
         dealt_obj_.rotate(1)
         assert len(dealt_obj_.current) == 10, 'not rotated'
-        assert dealt_obj_.current[0].id == 'card_nice', \
+        assert dealt_obj_.current[0].id == 'Card_nice', \
             'wrong side of rotation'
         dealt_obj_.rotate(-1)
         assert len(dealt_obj_.current) == 10, 'not rotated'
@@ -366,7 +366,7 @@ class TestDeck:
         assert len(result) == 10, 'wrong current len'
         ids1 = [stuff.id for stuff in result]
         assert 'card' in ids1, 'wrong cards ids inside current'
-        assert 'card_nice' in ids1, 'wrong cards ids inside current'
+        assert 'Card_nice' in ids1, 'wrong cards ids inside current'
         result = obj_.deal().current
         comp = [id(card) for card in obj_.c.values()]
         cur = [id(card) for card in result]
@@ -377,13 +377,13 @@ class TestDeck:
     def test_deck_deal_from_list(self, obj_: Deck) -> None:
         """Test deck deal() from items
         """
-        items = ['card', 'card', 'card', 'card_nice']
+        items = ['card', 'card', 'card', 'Card_nice']
         result = obj_.deal(items).current
         assert len(result) == 4, 'wrong current len'
         ids = [stuff.id for stuff in result]
         assert ids == items, 'wrong deal'
         assert 'card' in ids, 'wrong cards ids inside current'
-        assert 'card_nice' in ids, 'wrong cards ids inside current'
+        assert 'Card_nice' in ids, 'wrong cards ids inside current'
         result = obj_.deal(items).current
         comp = [id(card) for card in obj_.c.values()]
         cur = [id(card) for card in result]
@@ -410,16 +410,16 @@ class TestDeck:
         assert search[0].id == 'card', 'wrong finded id'
         assert len(obj_.current) == 3, 'wrong current len'
 
-        search = obj_.search(query={'card_nice': 2}, remove=False)
+        search = obj_.search(query={'Card_nice': 2}, remove=False)
         assert len(search) == 2, 'wrong search len'
-        assert search[0].id == 'card_nice', 'wrong finded id'
+        assert search[0].id == 'Card_nice', 'wrong finded id'
         assert len(obj_.current) == 3, 'wrong current len'
 
-        search = obj_.search(query={'card': 1, 'card_nice': 1})
+        search = obj_.search(query={'card': 1, 'Card_nice': 1})
         assert len(search) == 2, 'wrong search len'
         assert len(obj_.current) == 1, 'wrong current len'
 
-        search = obj_.search(query={'card_nice': 50})
+        search = obj_.search(query={'Card_nice': 50})
         assert len(search) == 1, 'wrong search len'
         assert len(obj_.current) == 0, 'wrong current len'
 
@@ -474,9 +474,9 @@ class TestDeck:
         """Test arrange()
         """
         with FixedSeed(42):
-            obj_.deal(['card_nice', 'card', 'card'])
+            obj_.deal(['Card_nice', 'card', 'card'])
             arranged, last = obj_.to_arrange(0, 2)
-            arranged.sort(key=lambda x: x.id)
+            arranged.reverse()
             before = [stuff.id for stuff in obj_.current]
             result = obj_.arrange(arranged, last).current
             after = [stuff.id for stuff in result]
@@ -513,9 +513,9 @@ class TestDeck:
             result = obj_.get_random(4, remove=False)
             assert isinstance(result, list), 'wrong type'
             assert len(result) == 4, 'wrong result'
-            result_names = [card.id for card in result]
-            assert result_names == [
-                'card_nice', 'card_nice', 'card_nice', 'card_nice'
+            result_ids = [card.id for card in result]
+            assert result_ids == [
+                'Card_nice', 'Card_nice', 'Card_nice', 'Card_nice'
                     ], 'not random result'
             assert len(obj_.current) == 4, 'wrong result'
 
@@ -529,9 +529,9 @@ class TestDeck:
             result = obj_.get_random(4)
             assert isinstance(result, list), 'wrong type'
             assert len(result) == 4, 'wrong result'
-            result_names = [card.id for card in result]
-            assert result_names == [
-                'card', 'card_nice', 'card_nice', 'card'
+            result_ids = [card.id for card in result]
+            assert result_ids == [
+                'card', 'Card_nice', 'Card_nice', 'card'
                     ], 'not random result'
             assert len(obj_.current) == 0, 'wrong result'
 
@@ -557,7 +557,7 @@ class TestSteps:
     def obj_(self) -> Steps:
         obj_ = Steps('game_turns')
         obj_.c = Component(
-            step1=Step('step1', priority=1), astep=Step('astep', priority=2)
+            step1=Step('step1', priority=1), astep=Step('asteP', priority=2)
                 )
         return obj_
 
@@ -616,8 +616,8 @@ class TestSteps:
         assert obj_.last.id == 'step1', 'wrong current step'
         current = obj_.pull()
         assert len(obj_.current) == 0, 'wrong len'
-        assert current.id == 'astep', 'wrong current step'
-        assert obj_.last.id == 'astep', 'wrong current step'
+        assert current.id == 'asteP', 'wrong current step'
+        assert obj_.last.id == 'asteP', 'wrong current step'
         with pytest.raises(
             IndexError,
             match='index out of range'
@@ -629,11 +629,11 @@ class TestSteps:
     def test_steps_deal_from_list(self, obj_: Steps) -> None:
         """Test steps deal() from items
         """
-        items = ['step1', 'astep', 'astep']
+        items = ['step1', 'asteP', 'asteP']
         result = obj_.deal(items).current
         assert len(result) == 3, 'wrong current len'
         assert len(obj_.current_ids()) == 3, 'wrong current names len'
         assert obj_.current_ids()[0] == 'step1', 'wrong current names'
         obj_.pull()
         assert len(result) == 2, 'wrong current len'
-        assert obj_.current_ids()[0] == 'astep', 'wrong current names'
+        assert obj_.current_ids()[0] == 'asteP', 'wrong current names'

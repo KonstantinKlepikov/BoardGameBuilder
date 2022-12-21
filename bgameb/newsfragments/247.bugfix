@@ -1,0 +1,6 @@
+#247:
+    - get_names() renamed to ids()
+    - ids() return ids ov __included__ of Component
+    - deal() methods of rools changed - now used ids() mor fill current from list
+    - all tests
+    - ->

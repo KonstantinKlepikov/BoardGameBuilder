@@ -115,15 +115,15 @@ class TestComponent:
             comp.update(cl)
         assert id(cl) != id(comp['that']), 'not a copy'
 
-    def test_get_names(self) -> None:
-        """Test get_names() method
+    def test_ids(self) -> None:
+        """Test ids() method
         """
         comp = Component()
-        assert comp.get_names() == [], 'nonempty list of names'
+        assert comp.ids() == [], 'nonempty list of names'
         comp.update(Base('that'))
-        assert comp.get_names() == ['that', ], 'empty list of names'
+        assert comp.ids() == ['that', ], 'empty list of names'
         comp.update(Base('this'))
-        assert comp.get_names() == ['that', 'this'], 'empty list of names'
+        assert comp.ids() == ['that', 'this'], 'empty list of names'
 
     def test_by_id(self, comp: Component) -> None:
         """Test get stuff by id

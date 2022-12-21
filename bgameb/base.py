@@ -259,13 +259,13 @@ class Component(Mapping[str, V]):
         comp = stuff.__class__(**stuff.to_dict())  # type: ignore
         self.__inclusion__.update({name: comp})
 
-    def get_names(self) -> list[str]:
-        """Get names of all added stuff in Component
+    def ids(self) -> list[str]:
+        """Get ids of all added stuff in Component
 
         Returns:
-            List[str]: list of stuff names
+            List[str]: list of stuff ids
         """
-        return [name for name in self.keys()]
+        return [stuff.id for stuff in self.values()]
 
     def by_id(self, id: str) -> Optional[V]:
         """Get stuff object by its id

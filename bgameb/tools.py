@@ -186,8 +186,9 @@ class Bag(BaseTool, DataClassJsonMixin):
                 self.append(stuff)
         else:
             for id in items:
-                if id in self.c.keys():
-                    self.append(self.c[id])
+                comp = self.c.by_id(id)
+                if comp:
+                    self.append(comp)
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
@@ -242,7 +243,7 @@ class Shaker(BaseTool, DataClassJsonMixin):
                 self.append(stuff)
         else:
             for id in items:
-                if id in self.c.keys():
+                if id in self.c.ids():
                     self.append(self.c[id])
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
@@ -422,8 +423,9 @@ class Deck(BaseTool, DataClassJsonMixin):
                     self.append(stuff)
         else:
             for id in items:
-                if id in self.c.keys():
-                    self.append(self.c[id])
+                comp = self.c.by_id(id)
+                if comp:
+                    self.append(comp)
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
@@ -675,8 +677,9 @@ class Steps(BaseTool, DataClassJsonMixin):
                 self.push(stuff)
         else:
             for id in items:
-                if id in self.c.keys():
-                    self.push(self.c[id])
+                comp = self.c.by_id(id)
+                if comp:
+                    self.push(comp)
 
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
