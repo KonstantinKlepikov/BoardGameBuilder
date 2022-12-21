@@ -1,26 +1,29 @@
 from pprint import pprint
 from typing import Optional
 from dataclasses import dataclass
-import bgameb
+from bgameb import (
+    Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
+    Bag, log_enable
+)
 
 
 if __name__ == '__main__':
-    bgameb.log_enable()
+    log_enable()
 
     # create the game
-    G = bgameb.Game('one board game')
+    G = Game('one board game')
 
     # add player
-    G.add(bgameb.Player('Player'))
+    G.add(Player('Player'))
 
     # The players object is in attribute p, items -> i, tools -> t.
     # Names are converted to snake case
     player = G.c.player
 
     # add game tuns order
-    G.add(bgameb.Steps('Steps'))
-    G.c.steps.add(bgameb.Step('step0'))
-    G.c.steps.add(bgameb.Step('step1', priority=1))
+    G.add(Steps('Steps'))
+    G.c.steps.add(Step('step0'))
+    G.c.steps.add(Step('step1', priority=1))
 
     # start new turn
     current_steps = G.c.steps.deal()
@@ -29,18 +32,18 @@ if __name__ == '__main__':
     last = G.c.steps.pull()
 
     # add deck object and cards
-    G.add(bgameb.Deck('Deck'))
+    G.add(Deck('Deck'))
     G.c.deck.add(
-        bgameb.Card('First', description='story', count=3)
+        Card('First', description='story', count=3)
             )
-    G.c.deck.add(bgameb.Card('Second', count=1))
+    G.c.deck.add(Card('Second', count=1))
 
     # Specific arguments is stored to dict attribute `other`
     description = G.c.deck.c.first.other['description']
 
     # If you need more clear schema, inherite from any class
     @dataclass(repr=False)
-    class MyCard(bgameb.Card):
+    class MyCard(Card):
         description: Optional[str] = None
         some_text: Optional[str] = 'some texts'
 
@@ -63,18 +66,18 @@ if __name__ == '__main__':
     G.IS_ACTIVE = True
 
     # Add shaker and dices
-    G.add(bgameb.Shaker('blue shaker'))
+    G.add(Shaker('blue shaker'))
     G.c.blue_shaker.add(
-        bgameb.Dice('dice#8', info='some important', sides=8, count=10)
+        Dice('dice#8', info='some important', sides=8, count=10)
             )
 
     # and roll dices
     result = G.c.blue_shaker.c.dice_8.roll()
 
     # Use bag as collection of any items
-    G.add(bgameb.Bag('Bag'))
-    G.c.bag.add(bgameb.Dice('dice'))
-    G.c.bag.add(bgameb.Card('card'))
+    G.add(Bag('Bag'))
+    G.c.bag.add(Dice('dice'))
+    G.c.bag.add(Card('card'))
 
     # get the schema
     schema = G.to_json()
@@ -88,7 +91,7 @@ if __name__ == '__main__':
     game['decks'] = [
         val.to_dict() for val
         in G.get_tools().values()
-        if isinstance(val, bgameb.Deck)
+        if isinstance(val, Deck)
             ]
     game['cards'] = [
         val.to_dict() for val

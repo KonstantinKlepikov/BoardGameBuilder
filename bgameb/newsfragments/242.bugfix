@@ -1,0 +1,4 @@
+#242:
+    - fix Bag get_items()
+    - some changes in example of code in README and check.py
+    - ->

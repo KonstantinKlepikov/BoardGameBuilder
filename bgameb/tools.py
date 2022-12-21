@@ -166,7 +166,7 @@ class Bag(BaseTool, DataClassJsonMixin):
     def get_items(self) -> dict[str, BaseItem]:
         return {
             key: val for key, val
-            in self.__dict__.items()
+            in self.c.__dict__.items()
             if issubclass(val.__class__, BaseItem)
                 }
 
