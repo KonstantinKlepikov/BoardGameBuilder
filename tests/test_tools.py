@@ -201,11 +201,11 @@ class TestBag:
         assert len(dealt_obj_.current) == 2, 'wrong current len'
         ids1 = dealt_obj_.current_ids()
         assert 'card' in ids1, 'wrong cards ids inside current'
-        assert 'card' in ids1, 'wrong dice ids inside current'
-        before = [id(item) for item in dealt_obj_.current]
+        assert 'dice' in ids1, 'wrong dice ids inside current'
         dealt_obj_.deal()
-        after = [id(item) for item in dealt_obj_.current]
-        assert before != after, 'dont created new instances'
+        comp = [id(item) for item in dealt_obj_.c.values()]
+        cur = [id(item) for item in dealt_obj_.current]
+        assert comp != cur, 'dont created new instances'
         ids2 = dealt_obj_.current_ids()
         assert ids1 == ids2, 'wrong order'
 
@@ -219,10 +219,10 @@ class TestBag:
         assert ids == items, 'wrong deal'
         assert 'card' in ids, 'wrong cards ids inside current'
         assert 'dice' in ids, 'wrong dice id inside current'
-        before = [id(item) for item in result]
         result = obj_.deal(items).current
-        after = [id(item) for item in result]
-        assert before != after, 'dont created new instances'
+        comp = [id(item) for item in obj_.c.values()]
+        cur = [id(item) for item in result]
+        assert comp != cur, 'dont created new instances'
         assert ids == items, 'wrong order'
 
 
@@ -367,10 +367,10 @@ class TestDeck:
         ids1 = [stuff.id for stuff in result]
         assert 'card' in ids1, 'wrong cards ids inside current'
         assert 'card_nice' in ids1, 'wrong cards ids inside current'
-        before = [id(card) for card in result]
         result = obj_.deal().current
-        after = [id(card) for card in result]
-        assert before != after, 'dont created new instances'
+        comp = [id(card) for card in obj_.c.values()]
+        cur = [id(card) for card in result]
+        assert comp != cur, 'dont created new instances'
         ids2 = [stuff.id for stuff in result]
         assert ids1 == ids2, 'wrong order'
 
@@ -384,10 +384,10 @@ class TestDeck:
         assert ids == items, 'wrong deal'
         assert 'card' in ids, 'wrong cards ids inside current'
         assert 'card_nice' in ids, 'wrong cards ids inside current'
-        before = [id(card) for card in result]
         result = obj_.deal(items).current
-        after = [id(card) for card in result]
-        assert before != after, 'dont created new instances'
+        comp = [id(card) for card in obj_.c.values()]
+        cur = [id(card) for card in result]
+        assert comp != cur, 'dont created new instances'
         assert ids == items, 'wrong order'
 
     def test_deck_shuffle(self, obj_: Deck) -> None:
