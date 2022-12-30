@@ -2,8 +2,9 @@
 """
 import random
 from collections import deque
+from collections.abc import KeysView
 from heapq import heappop, heappush
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Union
 from dataclasses import dataclass, field, replace
 from dataclasses_json import (
     config, DataClassJsonMixin, dataclass_json, Undefined
@@ -440,68 +441,146 @@ class Deck(BaseTool, DataClassJsonMixin):
         self._logger.debug(f'Is shuffled: {self.current}')
         return self
 
-    def to_arrange(
-        self,
-        start: int,
-        end: int
-            ) -> tuple[
-                list[Card],
-                tuple[list[Card], list[Card]]
-                    ]:
-        """Prepare current deck to arrange
+    def _check_order_len(self, len_: int) -> None:
+        """Check is order len valid
 
         Args:
-            start (int): start of slice
-            end (int): end of slice
+            l (int): len of order of cards
 
-        Start and end cant be less than 0 and end must be greater than start.
-        Arranged deck are splited to two part - center (used for arrange part
-        of deck) and tupple with last part of deck. You can rearrange center
-        part and then concatenate it with last part in new deque by arrange()
-        method.
-
-        Return:
-            Tuple[List[Card], Tuple[List[Card]]: parts to arrange
+        Raises:
+            ArrangeIndexError: Is given empty order
+            ArrangeIndexError: The len of current deque not match order len
         """
-        if start < 0 or end < 0 or end < start:
+        if not len_:
             raise ArrangeIndexError(
-                message=f'Nonpositive or broken {start=} or {end=}',
+                'Given empty order',
                 logger=self._logger
                     )
-        to_split = list(self.current)
-        splited = (to_split[start:end], (to_split[0:start], to_split[end:]))
-        self._logger.debug(f'To arrange result: {splited}')
 
-        return splited
+        if len_ > len(self.current):
+            raise ArrangeIndexError(
+                f'The len of current deque is {len(self.current)} '
+                f'but given order has len {len_}.',
+                logger=self._logger
+                    )
 
-    def arrange(
+    def _check_is_to_arrange_valid(
         self,
-        arranged: list[Card],
-        last: tuple[list[Card], list[Card]]
-            ) -> 'Deck':
-        """Concatenate new current deck from given arranged list and last of
-        deck. Use to_arrange() method to get list to arrange and last.
+        order: list[str],
+        to_arrange: Union[list[str], KeysView[str]]
+            ) -> None:
+        """Chek is order and deque contains sa,e elements
 
         Args:
-            arranged (List[Card]): arranged list of cards
-            last: (Tuple[List[Card], List[Card]]): last of deck
+            order (List[str]): ordered list of cards ids
+            to_arrange (list[str]): list of deque ids
+
+        Raises:
+            ArrangeIndexError: Given card ids and deque ids not match
+        """
+        if set(to_arrange) ^ set(order):
+            raise ArrangeIndexError(
+                'Given card ids and deque ids not match.',
+                logger=self._logger
+                    )
+
+    def reorder(
+        self,
+        order: list[str],
+            ) -> 'Deck':
+        """Reorder current deque from right side.
+
+        Args:
+            order (List[str]): ordered list of cards ids
+            ordered from left side to right
 
         Returns:
             Deck
         """
-        reorranged: deque = deque()
-        reorranged.extend(last[0])
-        reorranged.extend(arranged)
-        reorranged.extend(last[1])
+        len_ = len(order)
+        self._check_order_len(len_)
 
-        if len(reorranged) == len(self.current):
-            self.current = reorranged
-            self._logger.debug(f'Arrange result: {reorranged}')
-        else:
+        to_arrange = {
+            self.current[len_-ind-1].id: self.current[len_-ind-1]
+            for ind in range(len_)
+                }
+        self._check_is_to_arrange_valid(order, to_arrange.keys())
+
+        for _ in range(len_):
+            self.pop()
+
+        for card in order:
+            self.append(to_arrange[card])
+
+        self._logger.debug(f'Is reordered right side of deque: {order}')
+
+        return self
+
+    def reorderleft(
+        self,
+        order: list[str],
+            ) -> 'Deck':
+        """Reorder current deque from left side.
+
+        Args:
+            order (List[str]): ordered list of cards ids
+            ordered from left side to right
+
+        Returns:
+            Deck
+        """
+        len_ = len(order)
+        self._check_order_len(len_)
+
+        to_arrange = {
+            self.current[ind].id: self.current[ind]
+            for ind in range(len_)
+                }
+        self._check_is_to_arrange_valid(order, to_arrange.keys())
+
+        for _ in range(len_):
+            self.popleft()
+
+        for card in reversed(order):
+            self.appendleft(to_arrange[card])
+
+        self._logger.debug(f'Is reordered left side of deque: {order}')
+
+        return self
+
+    def reorderfrom(
+        self,
+        order: list[str],
+        start: int,
+            ) -> 'Deck':
+        """Reorder current deque from left side.
+
+        Args:
+            start (int): start of reordering
+            order (List[str]): ordered list of cards ids
+            ordered from left side to right
+
+        Returns:
+            Deck
+        """
+        len_ = len(order)
+        self._check_order_len(len_)
+        if start <= 0 or start > len(self.current)-len_:
             raise ArrangeIndexError(
-                f'Wrong to_arranged parts: {arranged=}, {last=}',
+                'Given range is out of current index.',
                 logger=self._logger
                     )
+
+        old_deck = list(self.current)
+        to_arrange = {
+            card.id: card
+            for card in old_deck[start:start+len_]
+                }
+        self._check_is_to_arrange_valid(order, to_arrange.keys())
+
+        for ind1, ind2 in enumerate(range(start, start+len_)):
+            self.current[ind2] = to_arrange[order[ind1]]
+
         return self
 
     def search(
