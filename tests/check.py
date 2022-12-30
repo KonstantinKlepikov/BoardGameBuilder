@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from bgameb import (
     Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
     Bag, log_enable
-)
+        )
 
 
 if __name__ == '__main__':
@@ -46,9 +46,6 @@ if __name__ == '__main__':
     class MyCard(Card):
         description: Optional[str] = None
         some_text: Optional[str] = 'some texts'
-
-        def __post_init__(self) -> None:
-            super().__post_init__()
 
     G.c.deck.add(
         MyCard('Thierd', description='story', count=12)
