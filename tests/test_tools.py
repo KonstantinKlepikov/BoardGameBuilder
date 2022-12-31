@@ -1,27 +1,12 @@
 import json
 import pytest
-import random
 from typing import Union
 from collections import deque
 from bgameb.base import Component
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
 from bgameb.errors import ArrangeIndexError
-
-
-class FixedSeed:
-    """Context manager to set random seed
-    """
-    def __init__(self, seed):
-        self.seed = seed
-        self.state = None
-
-    def __enter__(self):
-        self.state = random.getstate()
-        random.seed(self.seed)
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        random.setstate(self.state)
+from tests.conftest import FixedSeed
 
 
 class TestTool:
@@ -256,11 +241,23 @@ class TestShaker:
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
 
+    def test_roll_mapped_shaker(self, obj_: Shaker) -> None:
+        """Test roll mapped shaker
+        """
+        obj_.c.dice.mapping = {n: str(n) for n in obj_.c.dice._range}
+        obj_.deal()
+        roll = obj_.roll_mapped()
+        assert len(roll) == 2, 'wrong roll result'
+        assert len(roll['dice']) == 5, 'wrong roll result'
+        assert len(roll['dice_nice']) == 0, 'wrong roll result'
+
     def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
         """
         obj_ = Shaker('shaker')
         roll = obj_.roll()
+        assert roll == {}, 'wrong roll result'
+        roll = obj_.roll_mapped()
         assert roll == {}, 'wrong roll result'
 
 

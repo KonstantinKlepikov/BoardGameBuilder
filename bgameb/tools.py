@@ -4,7 +4,7 @@ import random
 from collections import deque
 from collections.abc import KeysView
 from heapq import heappop, heappush
-from typing import Optional, Iterable, Union
+from typing import Optional, Iterable, Union, Any
 from dataclasses import dataclass, field, replace
 from dataclasses_json import (
     config, DataClassJsonMixin, dataclass_json, Undefined
@@ -268,6 +268,22 @@ class Shaker(BaseTool, DataClassJsonMixin):
 
         for item in self.current:
             roll[item.id] = item.roll()
+
+        self._logger.debug(f'Result of roll: {roll}')
+
+        return roll
+
+    def roll_mapped(self) -> dict[str, list[Any]]:
+        """Roll all stuff in shaker and return mapped results.
+        If any stuff unmaped - empty list returned for this item.
+
+        Returns:
+            dict[str, list[Any]]: result of roll
+        """
+        roll = {}
+
+        for item in self.current:
+            roll[item.id] = item.roll_mapped()
 
         self._logger.debug(f'Result of roll: {roll}')
 

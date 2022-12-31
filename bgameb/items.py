@@ -1,7 +1,7 @@
 """Game dices, coins, cards and other items
 """
 import random
-from typing import Optional, NoReturn
+from typing import Optional, NoReturn, Any
 from dataclasses import dataclass, field
 from dataclasses_json import (
     config, DataClassJsonMixin, dataclass_json, Undefined
@@ -50,12 +50,17 @@ class Dice(BaseItem, DataClassJsonMixin):
     Attr:
         - count (int): count of items. Default to 1.
         - sides (int): sides of dice or coin. Default to 2.
+        - mapping(dict[int, Any]): nonnumerik mapping of roll result.
 
     Raises:
-        StuffDefineError: number of sides less than 2
+        StuffDefineError: number of sides less than 2.
+        StuffDefineError: mapping keys is not equal of roll range.
     """
     count: int = 1
     sides: int = 2
+    mapping: dict[int, Any] = field(
+        default_factory=dict,
+    )
     _range: list[int] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
@@ -72,6 +77,11 @@ class Dice(BaseItem, DataClassJsonMixin):
                 logger=self._logger
                 )
         self._range = list(range(1, self.sides + 1))
+        if self.mapping and set(self.mapping.keys()) ^ set(self._range):
+            raise StuffDefineError(
+                message='Mapping must define values for each side.',
+                logger=self._logger
+                    )
 
     def roll(self) -> list[int]:
         """Roll and return result
@@ -79,11 +89,21 @@ class Dice(BaseItem, DataClassJsonMixin):
         Returns:
             List[int]: result of roll
         """
-        roll = [
+        return [
             random.choices(self._range, k=1)[0] for _
             in list(range(self.count))
             ]
-        return roll
+
+    def roll_mapped(self) -> list[Any]:
+        """Roll and return mapped result
+
+        Returns:
+            list[Any]: result of roll
+        """
+        return [
+            self.mapping[roll] for roll in self.roll()
+            if self.mapping.get(roll)
+                ]
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
