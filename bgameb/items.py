@@ -11,7 +11,7 @@ from bgameb.errors import StuffDefineError
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class BaseItem(Base, DataClassJsonMixin):
     """Base class for game items (like dices or cards)
     """
@@ -21,7 +21,7 @@ class BaseItem(Base, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(order=True, repr=False)
+@dataclass(order=True)
 class Step(BaseItem, DataClassJsonMixin):
     """Game steps or turns
 
@@ -35,7 +35,7 @@ class Step(BaseItem, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Dice(BaseItem, DataClassJsonMixin):
     """Rolled or fliped objects, like dices or coins.
 
@@ -60,6 +60,7 @@ class Dice(BaseItem, DataClassJsonMixin):
     sides: int = 2
     mapping: dict[int, Any] = field(
         default_factory=dict,
+        repr=False,
     )
     _range: list[int] = field(
         default_factory=list,
@@ -107,7 +108,7 @@ class Dice(BaseItem, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Card(BaseItem, DataClassJsonMixin):
     """Card object
 

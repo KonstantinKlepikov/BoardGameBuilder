@@ -15,7 +15,7 @@ from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class BaseTool(Base, DataClassJsonMixin):
     """Base class for game tools (like decks or shakers)
     """
@@ -151,7 +151,7 @@ class BaseTool(Base, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Bag(BaseTool, DataClassJsonMixin):
     """Bag object
     """
@@ -210,7 +210,7 @@ class Bag(BaseTool, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Shaker(BaseTool, DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
     """
@@ -306,7 +306,7 @@ class Shaker(BaseTool, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Deck(BaseTool, DataClassJsonMixin):
     """Deck object
 
@@ -454,7 +454,7 @@ class Deck(BaseTool, DataClassJsonMixin):
             Deck
         """
         random.shuffle(self.current)
-        self._logger.debug(f'Is shuffled: {self.current}')
+        self._logger.debug(f'Is shuffled: {self.current_ids()}')
         return self
 
     def _check_order_len(self, len_: int) -> None:
@@ -701,7 +701,7 @@ class Deck(BaseTool, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Steps(BaseTool, DataClassJsonMixin):
     """Game steps order object
 

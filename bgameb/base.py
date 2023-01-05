@@ -2,7 +2,7 @@
 """
 import re
 import string
-from typing import Optional, Iterator, TypeVar, Any
+from typing import Optional, Iterator, TypeVar, Any, Callable, Union
 from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
 from dataclasses import dataclass, field
@@ -41,7 +41,7 @@ def log_enable(
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Base(DataClassJsonMixin):
     """Base class for game, stuff, tools players and other stuff
 
@@ -50,6 +50,8 @@ class Base(DataClassJsonMixin):
         - other (Dict[str, Any]): all other data, added to instance
                                   at declaration
         - counter (Counter): counter object
+        - _to_relocate (Union[str, Callable]): mapping for relocation any data
+                                         to attributes inside dataclass
 
     Counter is a `collection.Counter
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
@@ -63,6 +65,11 @@ class Base(DataClassJsonMixin):
         default_factory=Counter,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
+    _to_relocate: dict[str, Union[str, Callable]] = field(
+        default_factory=dict,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+    )
 
     def __post_init__(self) -> None:
         # check id
@@ -76,12 +83,6 @@ class Base(DataClassJsonMixin):
         self._logger = logger.bind(
             classname=self.__class__.__name__,
             name=self.id)
-        # NOTE: ambiculous
-        if 'BaseGame' in [cl.__name__ for cl in self.__class__.__mro__]:
-            self._logger.info('===========NEW GAME============')
-            self._logger.info(
-                f'{self.__class__.__name__} created with id="{self.id}".'
-                    )
 
     @property
     def _inclusion(self) -> dict[str, Any]:
@@ -95,6 +96,21 @@ class Base(DataClassJsonMixin):
     def __repr__(self) -> str:
         items = {f"{k}={v!r}" for k, v in self._inclusion.items()}
         return f"{type(self).__name__}({', '.join(items)})"
+
+    def relocate(self) -> None:
+        """Relocate data. For this vall is used mapping from
+        _to_relocate attribute
+        """
+        for key, val in self._to_relocate.items():
+            if key in self._inclusion:
+
+                if isinstance(val, str) and val in self._inclusion:
+                    self.__dict__[key] = self.__dict__[val]
+                    self._logger.info(f'"{val}" is relocated to "{key}".')
+
+                elif callable(val):
+                    self.__dict__[key] = val()
+                    self._logger.info(f'Is used "{val}" to fill "{key}".')
 
 
 V = TypeVar('V', bound=Base)
