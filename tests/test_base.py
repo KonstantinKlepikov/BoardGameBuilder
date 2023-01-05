@@ -1,6 +1,7 @@
 import pytest
 import json
 from collections import Counter
+from dataclasses import dataclass, field
 from bgameb.base import Component, Base
 from bgameb.errors import ComponentNameError
 
@@ -143,6 +144,7 @@ class TestBaseClass:
         assert obj_.id == '9 this is Fine #', 'not set id for instance'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(obj_.other, dict), 'wrong other'
 
     def test_base_class_creation_with_other(self) -> None:
@@ -163,3 +165,37 @@ class TestBaseClass:
         obj_ = Base('9 this is Fine #')
         j = json.loads(obj_.to_json())
         assert j['id'] == '9 this is Fine #', 'not converted to json'
+
+    def test_relocate(self) -> None:
+        """Test relocations of attrs in dataclass
+        """
+        @dataclass
+        class BaseMe(Base):
+            this: str = field(default_factory=str)
+
+            def __post_init__(self) -> None:
+                super().__post_init__()
+                self._to_relocate = {
+                    'this': 'id'
+                }
+
+        obj_ = BaseMe('9 this is Fine #')
+        obj_.relocate()
+        assert obj_.this == obj_.id, 'not relocated'
+
+    def test_relocate_calable(self) -> None:
+        """Test relocations with calable in dataclass
+        """
+        @dataclass
+        class BaseMe(Base):
+            this: str = field(default_factory=str)
+
+            def __post_init__(self) -> None:
+                super().__post_init__()
+                self._to_relocate = {
+                    'this': self.id.upper
+                        }
+
+        obj_ = BaseMe('9 this is Fine #')
+        obj_.relocate()
+        assert obj_.this == obj_.id.upper(), 'not relocated'

@@ -12,7 +12,7 @@ from bgameb.tools import BaseTool
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class BaseGame(Base):
 
     c: Component[Union[BaseItem, BaseTool, BasePlayer]] = field(
@@ -23,6 +23,11 @@ class BaseGame(Base):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.c = Component()
+
+        self._logger.info('===========NEW GAME============')
+        self._logger.info(
+            f'{self.__class__.__name__} created with id="{self.id}".'
+                )
 
     def add(self, stuff: Union[BaseItem, BaseTool, BasePlayer]) -> None:
         """Add stuff to component
@@ -73,7 +78,7 @@ class BaseGame(Base):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Game(BaseGame, DataClassJsonMixin):
     """The main game object
     """

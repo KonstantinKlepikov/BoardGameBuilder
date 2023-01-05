@@ -11,7 +11,7 @@ from bgameb.tools import BaseTool
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class BasePlayer(Base):
 
     c: Component[Union[BaseItem, BaseTool]] = field(
@@ -60,7 +60,7 @@ class BasePlayer(Base):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Player(BasePlayer, DataClassJsonMixin):
     """Player or bot
     """
