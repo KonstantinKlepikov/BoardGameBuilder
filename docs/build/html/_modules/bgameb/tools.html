@@ -303,6 +303,16 @@
         <span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
             <span class="p">)</span>
+    <span class="n">last</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">last_mapped</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -359,14 +369,14 @@
 <span class="sd">                    &quot;twenty_dice&quot;: {2, 12, 4},</span>
 <span class="sd">                }</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">roll</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">:</span>
-            <span class="n">roll</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="n">roll</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">roll</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span></div>
 
 <div class="viewcode-block" id="Shaker.roll_mapped"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.roll_mapped">[docs]</a>    <span class="k">def</span> <span class="nf">roll_mapped</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;Roll all stuff in shaker and return mapped results.</span>
@@ -375,14 +385,14 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            dict[str, list[Any]]: result of roll</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">roll</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_mapped</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">:</span>
-            <span class="n">roll</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll_mapped</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_mapped</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll_mapped</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="n">roll</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_mapped</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">roll</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_mapped</span></div></div>
 
 
 <div class="viewcode-block" id="Deck"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>

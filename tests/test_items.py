@@ -55,6 +55,8 @@ class TestDices:
         assert len(obj_._range) == 2, 'wrong range'
         assert isinstance(obj_.mapping, dict), 'wrong mapping'
         assert len(obj_.mapping) == 0, 'wrong maping len'
+        assert obj_.last is None, 'wrong last'
+        assert obj_.last_mapped is None, 'wrong last_mapped'
 
     def test_dice_type_have_sides_defined_less_than_two(self) -> None:
         """Test dice class initialised with less than 2 sides
@@ -75,6 +77,7 @@ class TestDices:
             assert len(result) == 5, 'wrong count of rolls'
             assert result == [2, 1, 1, 1, 2], \
                 'wrong result'
+            assert obj_.last == result, 'wrong last'
 
     def test_mapping_must_contain_keys_equal_range(self) -> None:
         """Test mapping for dice must define correct
@@ -103,6 +106,7 @@ class TestDices:
             assert len(result) == 5, 'wrong count of rolls'
             assert result == ['that', 'this', 'this', 'this', 'that'], \
                 'wrong result'
+            assert obj_.last_mapped == result, 'wrong last_mapped'
 
     def test_roll_mapped_return_only_mapped_result(self) -> None:
         """Test roll maped return only maped result. If no mapping

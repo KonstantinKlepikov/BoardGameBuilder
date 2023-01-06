@@ -236,6 +236,15 @@ class TestShaker:
         obj_.deal()
         return obj_
 
+    def test_shaker_instanciation(self, obj_: Shaker) -> None:
+        """Test deck correct created
+        """
+        assert obj_.id == 'shaker', 'wrong id'
+        assert isinstance(obj_.current, list), 'wrong type of current'
+        assert len(obj_.current) == 0, 'nonempty current'
+        assert obj_.last is None, 'wrong last'
+        assert obj_.last_mapped is None, 'wrong last'
+
     def test_add_new_item_to_shaker(self, obj_: Bag) -> None:
         """Test add new item to bag
         """
@@ -248,6 +257,7 @@ class TestShaker:
         roll = dealt_obj_.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
+        assert len(dealt_obj_.last) == 2, 'wrong last'
 
     def test_roll_mapped_shaker(self, obj_: Shaker) -> None:
         """Test roll mapped shaker
@@ -258,6 +268,7 @@ class TestShaker:
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
         assert len(roll['dice_nice']) == 0, 'wrong roll result'
+        assert len(obj_.last_mapped) == 2, 'wrong last_mapped'
 
     def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
