@@ -3,6 +3,7 @@ import pytest
 from collections import Counter
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.errors import StuffDefineError
+from tests.conftest import FixedSeed
 
 
 class TestBaseStuff:
@@ -52,6 +53,10 @@ class TestDices:
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
         assert len(obj_._range) == 2, 'wrong range'
+        assert isinstance(obj_.mapping, dict), 'wrong mapping'
+        assert len(obj_.mapping) == 0, 'wrong maping len'
+        assert obj_.last is None, 'wrong last'
+        assert obj_.last_mapped is None, 'wrong last_mapped'
 
     def test_dice_type_have_sides_defined_less_than_two(self) -> None:
         """Test dice class initialised with less than 2 sides
@@ -63,16 +68,54 @@ class TestDices:
             Dice('base', sides=1)
 
     def test_dice_roll(self) -> None:
-        """Test dice roll return result
+        """Test dice roll()
         """
         obj_ = Dice('dice', count=5)
-        result = obj_.roll()
+        with FixedSeed(42):
+            result = obj_.roll()
+            assert isinstance(result, list), 'roll returns not list'
+            assert len(result) == 5, 'wrong count of rolls'
+            assert result == [2, 1, 1, 1, 2], \
+                'wrong result'
+            assert obj_.last == result, 'wrong last'
+
+    def test_mapping_must_contain_keys_equal_range(self) -> None:
+        """Test mapping for dice must define correct
+        number of embeddings
+        """
+        with pytest.raises(
+            StuffDefineError,
+            match='Mapping must define values for each side.'
+                ):
+            Dice('base', mapping={1: 'this'})
+        with pytest.raises(
+            StuffDefineError,
+            match='Mapping must define values for each side.'
+                ):
+            Dice('base', mapping={1: 'this', 3: 'that'})
+        dice = Dice('base', mapping={1: 'this', 2: 'that'})
+        assert dice.roll_mapped(), 'no result'
+
+    def test_dice_roll_mapping(self) -> None:
+        """Test roll_mapping()
+        """
+        obj_ = Dice('dice', count=5, mapping={1: 'this', 2: 'that'})
+        with FixedSeed(42):
+            result = obj_.roll_mapped()
+            assert isinstance(result, list), 'roll returns not list'
+            assert len(result) == 5, 'wrong count of rolls'
+            assert result == ['that', 'this', 'this', 'this', 'that'], \
+                'wrong result'
+            assert obj_.last_mapped == result, 'wrong last_mapped'
+
+    def test_roll_mapped_return_only_mapped_result(self) -> None:
+        """Test roll maped return only maped result. If no mapping
+        - is empty list returned
+        """
+        obj_ = Dice('dice', count=5)
+        result = obj_.roll_mapped()
         assert isinstance(result, list), 'roll returns not list'
-        assert len(result) == 5, 'wrong count of rolls'
-        assert isinstance(result[0], int), 'not an int in a list'
-        obj_ = Dice('dice')
-        result = obj_.roll()
-        assert len(result) == 1, 'is rolled, but count is 0'
+        assert len(result) == 0, 'wrong count of rolls'
 
 
 class TestCard:

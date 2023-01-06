@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; bgameb 0.0.32 documentation</title>
+  <title>Index &mdash; bgameb 0.0.35 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.32
+                0.0.35
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -117,8 +117,6 @@
 </li>
       <li><a href="bgameb.html#bgameb.tools.Deck.appendleft">appendleft() (bgameb.tools.Deck method)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.tools.Deck.arrange">arrange() (bgameb.tools.Deck method)</a>
-</li>
       <li><a href="bgameb.html#bgameb.errors.ArrangeIndexError">ArrangeIndexError</a>
 </li>
   </ul></td>
@@ -183,6 +181,8 @@
         <li><a href="bgameb.html#module-bgameb.tools">module</a>
 </li>
       </ul></li>
+      <li><a href="bgameb.html#bgameb.game.BaseGame.build_json">build_json() (bgameb.game.BaseGame method)</a>
+</li>
       <li><a href="bgameb.html#bgameb.base.Component.by_id">by_id() (bgameb.base.Component method)</a>
 </li>
   </ul></td>
@@ -197,6 +197,8 @@
         <li><a href="bgameb.html#bgameb.players.BasePlayer.c">(bgameb.players.BasePlayer attribute)</a>
 </li>
         <li><a href="bgameb.html#bgameb.tools.Bag.c">(bgameb.tools.Bag attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.tools.BaseTool.c">(bgameb.tools.BaseTool attribute)</a>
 </li>
         <li><a href="bgameb.html#bgameb.tools.Deck.c">(bgameb.tools.Deck attribute)</a>
 </li>
@@ -400,12 +402,16 @@
       <ul>
         <li><a href="bgameb.html#bgameb.players.BasePlayer.get_items">(bgameb.players.BasePlayer method)</a>
 </li>
-        <li><a href="bgameb.html#bgameb.tools.Bag.get_items">(bgameb.tools.Bag method)</a>
+        <li><a href="bgameb.html#bgameb.tools.BaseTool.get_items">(bgameb.tools.BaseTool method)</a>
 </li>
       </ul></li>
+      <li><a href="bgameb.html#bgameb.game.BaseGame.get_items_val">get_items_val() (bgameb.game.BaseGame static method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="bgameb.html#bgameb.game.BaseGame.get_players">get_players() (bgameb.game.BaseGame method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.game.BaseGame.get_players_val">get_players_val() (bgameb.game.BaseGame method)</a>
 </li>
       <li><a href="bgameb.html#bgameb.tools.Deck.get_random">get_random() (bgameb.tools.Deck method)</a>
 </li>
@@ -415,6 +421,8 @@
         <li><a href="bgameb.html#bgameb.players.BasePlayer.get_tools">(bgameb.players.BasePlayer method)</a>
 </li>
       </ul></li>
+      <li><a href="bgameb.html#bgameb.game.BaseGame.get_tools_val">get_tools_val() (bgameb.game.BaseGame method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -455,14 +463,24 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="bgameb.html#bgameb.tools.Deck.last">last (bgameb.tools.Deck attribute)</a>
+      <li><a href="bgameb.html#bgameb.items.Dice.last">last (bgameb.items.Dice attribute)</a>
 
       <ul>
+        <li><a href="bgameb.html#bgameb.tools.Deck.last">(bgameb.tools.Deck attribute)</a>
+</li>
+        <li><a href="bgameb.html#bgameb.tools.Shaker.last">(bgameb.tools.Shaker attribute)</a>
+</li>
         <li><a href="bgameb.html#bgameb.tools.Steps.last">(bgameb.tools.Steps attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.items.Dice.last_mapped">last_mapped (bgameb.items.Dice attribute)</a>
+
+      <ul>
+        <li><a href="bgameb.html#bgameb.tools.Shaker.last_mapped">(bgameb.tools.Shaker attribute)</a>
+</li>
+      </ul></li>
       <li><a href="bgameb.html#bgameb.base.log_enable">log_enable() (in module bgameb.base)</a>
 </li>
   </ul></td>
@@ -471,6 +489,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.items.Dice.mapping">mapping (bgameb.items.Dice attribute)</a>
+</li>
       <li>
     module
 
@@ -532,16 +552,32 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.base.Base.relocate">relocate() (bgameb.base.Base method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.game.BaseGame.relocate_all">relocate_all() (bgameb.game.BaseGame method)</a>
+</li>
       <li><a href="bgameb.html#bgameb.tools.BaseTool.remove">remove() (bgameb.tools.BaseTool method)</a>
 </li>
-      <li><a href="bgameb.html#bgameb.tools.BaseTool.reverse">reverse() (bgameb.tools.BaseTool method)</a>
+      <li><a href="bgameb.html#bgameb.tools.Deck.reorder">reorder() (bgameb.tools.Deck method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.tools.Deck.reorderfrom">reorderfrom() (bgameb.tools.Deck method)</a>
+</li>
+      <li><a href="bgameb.html#bgameb.tools.Deck.reorderleft">reorderleft() (bgameb.tools.Deck method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="bgameb.html#bgameb.tools.BaseTool.reverse">reverse() (bgameb.tools.BaseTool method)</a>
+</li>
       <li><a href="bgameb.html#bgameb.items.Dice.roll">roll() (bgameb.items.Dice method)</a>
 
       <ul>
         <li><a href="bgameb.html#bgameb.tools.Shaker.roll">(bgameb.tools.Shaker method)</a>
+</li>
+      </ul></li>
+      <li><a href="bgameb.html#bgameb.items.Dice.roll_mapped">roll_mapped() (bgameb.items.Dice method)</a>
+
+      <ul>
+        <li><a href="bgameb.html#bgameb.tools.Shaker.roll_mapped">(bgameb.tools.Shaker method)</a>
 </li>
       </ul></li>
       <li><a href="bgameb.html#bgameb.tools.Deck.rotate">rotate() (bgameb.tools.Deck method)</a>
@@ -609,8 +645,6 @@
       <li><a href="bgameb.html#bgameb.items.Card.tap">tap() (bgameb.items.Card method)</a>
 </li>
       <li><a href="bgameb.html#bgameb.items.Card.tapped">tapped (bgameb.items.Card attribute)</a>
-</li>
-      <li><a href="bgameb.html#bgameb.tools.Deck.to_arrange">to_arrange() (bgameb.tools.Deck method)</a>
 </li>
       <li><a href="bgameb.html#bgameb.base.Base.to_dict">to_dict() (bgameb.base.Base method)</a>
 
@@ -706,7 +740,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Konstantin Klepikov.</p>
+    <p>&#169; Copyright 2023, Konstantin Klepikov.</p>
   </div>
 
    

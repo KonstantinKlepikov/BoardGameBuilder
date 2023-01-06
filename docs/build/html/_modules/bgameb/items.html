@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.items &mdash; bgameb 0.0.32 documentation</title>
+  <title>bgameb.items &mdash; bgameb 0.0.35 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.32
+                0.0.35
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,7 +72,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Game dices, coins, cards and other items</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">NoReturn</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">config</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">,</span> <span class="n">dataclass_json</span><span class="p">,</span> <span class="n">Undefined</span>
@@ -82,7 +82,7 @@
 
 
 <div class="viewcode-block" id="BaseItem"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.BaseItem">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">BaseItem</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game items (like dices or cards)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -92,7 +92,7 @@
 
 
 <div class="viewcode-block" id="Step"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Step">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Step</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Game steps or turns</span>
 
@@ -106,7 +106,7 @@
 
 
 <div class="viewcode-block" id="Dice"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Dice">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Dice</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Rolled or fliped objects, like dices or coins.</span>
 
@@ -121,18 +121,35 @@
 <span class="sd">    Attr:</span>
 <span class="sd">        - count (int): count of items. Default to 1.</span>
 <span class="sd">        - sides (int): sides of dice or coin. Default to 2.</span>
+<span class="sd">        - mapping(dict[int, Any]): nonnumerik mapping of roll result.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        StuffDefineError: number of sides less than 2</span>
+<span class="sd">        StuffDefineError: number of sides less than 2.</span>
+<span class="sd">        StuffDefineError: mapping keys is not equal of roll range.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="n">last</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="n">last_mapped</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
     <span class="n">_range</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
         <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -143,6 +160,11 @@
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span>
                 <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_range</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sides</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">^</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">StuffDefineError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Mapping must define values for each side.&#39;</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span>
+                    <span class="p">)</span>
 
 <div class="viewcode-block" id="Dice.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Dice.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Roll and return result</span>
@@ -150,15 +172,27 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            List[int]: result of roll</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">roll</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span>
             <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">))</span>
-            <span class="p">]</span>
-        <span class="k">return</span> <span class="n">roll</span></div></div>
+                <span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span></div>
+
+<div class="viewcode-block" id="Dice.roll_mapped"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Dice.roll_mapped">[docs]</a>    <span class="k">def</span> <span class="nf">roll_mapped</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Roll and return mapped result</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[Any]: result of roll</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_mapped</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">roll</span><span class="p">]</span> <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span>
+                <span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_mapped</span></div></div>
 
 
 <div class="viewcode-block" id="Card"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Card">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Card object</span>
 
@@ -259,7 +293,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Konstantin Klepikov.</p>
+    <p>&#169; Copyright 2023, Konstantin Klepikov.</p>
   </div>
 
    

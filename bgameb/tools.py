@@ -2,8 +2,9 @@
 """
 import random
 from collections import deque
+from collections.abc import KeysView
 from heapq import heappop, heappush
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Union, Any
 from dataclasses import dataclass, field, replace
 from dataclasses_json import (
     config, DataClassJsonMixin, dataclass_json, Undefined
@@ -14,10 +15,14 @@ from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class BaseTool(Base, DataClassJsonMixin):
     """Base class for game tools (like decks or shakers)
     """
+    c: Component[BaseItem] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
     current: list[BaseItem] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
@@ -26,6 +31,18 @@ class BaseTool(Base, DataClassJsonMixin):
 
     def __post_init__(self) -> None:
         super().__post_init__()
+
+    def get_items(self) -> dict[str, BaseItem]:
+        """Get items from Component
+
+        Returns:
+            dict[str, BaseItem]: items mapping
+        """
+        return {
+            key: val for key, val
+            in self.c.items()
+            if issubclass(val.__class__, BaseItem)
+                }
 
     def _item_replace(self, item: BaseItem) -> BaseItem:
         """Replace item in a current
@@ -150,7 +167,7 @@ class BaseTool(Base, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Bag(BaseTool, DataClassJsonMixin):
     """Bag object
     """
@@ -162,13 +179,6 @@ class Bag(BaseTool, DataClassJsonMixin):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.c = Component()
-
-    def get_items(self) -> dict[str, BaseItem]:
-        return {
-            key: val for key, val
-            in self.c.items()
-            if issubclass(val.__class__, BaseItem)
-                }
 
     def deal(self, items: Optional[list[str]] = None) -> 'Bag':
         """Deal new bag current
@@ -209,7 +219,7 @@ class Bag(BaseTool, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Shaker(BaseTool, DataClassJsonMixin):
     """Create shaker for roll dices or flip coins
     """
@@ -222,6 +232,16 @@ class Shaker(BaseTool, DataClassJsonMixin):
         default_factory=Component,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
+    last: Optional[dict[str, list[int]]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+    )
+    last_mapped: Optional[dict[str, list[Any]]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+    )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -249,29 +269,6 @@ class Shaker(BaseTool, DataClassJsonMixin):
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
 
-    def roll(self) -> dict[str, list[int]]:
-        """Roll all stuff in shaker and return results
-
-        Return:
-            Dict[str, Tuple[int]]: result of roll
-
-        .. code-block::
-            :caption: Example:
-
-                {
-                    "six_dice": (5, 3, 2, 5),
-                    "twenty_dice": {2, 12, 4},
-                }
-        """
-        roll = {}
-
-        for item in self.current:
-            roll[item.id] = item.roll()
-
-        self._logger.debug(f'Result of roll: {roll}')
-
-        return roll
-
     def add(self, stuff: Dice) -> None:
         """Add stuff to component
 
@@ -287,9 +284,48 @@ class Shaker(BaseTool, DataClassJsonMixin):
         else:
             raise ComponentClassError(stuff, self._logger)
 
+    def roll(self) -> dict[str, list[int]]:
+        """Roll all stuff in shaker and return results
+
+        Return:
+            Dict[str, Tuple[int]]: result of roll
+
+        .. code-block::
+            :caption: Example:
+
+                {
+                    "six_dice": (5, 3, 2, 5),
+                    "twenty_dice": {2, 12, 4},
+                }
+        """
+        self.last = {}
+
+        for item in self.current:
+            self.last[item.id] = item.roll()
+
+        self._logger.debug(f'Result of roll: {self.last}')
+
+        return self.last
+
+    def roll_mapped(self) -> dict[str, list[Any]]:
+        """Roll all stuff in shaker and return mapped results.
+        If any stuff unmaped - empty list returned for this item.
+
+        Returns:
+            dict[str, list[Any]]: result of roll
+        """
+        self.last_mapped = {}
+
+        for item in self.current:
+            self.last_mapped[item.id] = item.roll_mapped()
+
+        self._logger.debug(f'Result of roll: {self.last_mapped}')
+
+        return self.last_mapped
+
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Deck(BaseTool, DataClassJsonMixin):
     """Deck object
 
@@ -328,6 +364,21 @@ class Deck(BaseTool, DataClassJsonMixin):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.c = Component()
+
+    def add(self, stuff: Card) -> None:
+        """Add stuff to component
+
+        Args:
+            stuff (Card): game stuff
+        """
+        if isinstance(stuff.__class__, Card) \
+                or issubclass(stuff.__class__, Card):
+            self.c.update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
+        else:
+            raise ComponentClassError(stuff, self._logger)
 
     def _item_replace(self, item: Card) -> Card:  # type: ignore[override]
         """Replace item in a current
@@ -437,71 +488,149 @@ class Deck(BaseTool, DataClassJsonMixin):
             Deck
         """
         random.shuffle(self.current)
-        self._logger.debug(f'Is shuffled: {self.current}')
+        self._logger.debug(f'Is shuffled: {self.current_ids()}')
         return self
 
-    def to_arrange(
-        self,
-        start: int,
-        end: int
-            ) -> tuple[
-                list[Card],
-                tuple[list[Card], list[Card]]
-                    ]:
-        """Prepare current deck to arrange
+    def _check_order_len(self, len_: int) -> None:
+        """Check is order len valid
 
         Args:
-            start (int): start of slice
-            end (int): end of slice
+            l (int): len of order of cards
 
-        Start and end cant be less than 0 and end must be greater than start.
-        Arranged deck are splited to two part - center (used for arrange part
-        of deck) and tupple with last part of deck. You can rearrange center
-        part and then concatenate it with last part in new deque by arrange()
-        method.
-
-        Return:
-            Tuple[List[Card], Tuple[List[Card]]: parts to arrange
+        Raises:
+            ArrangeIndexError: Is given empty order
+            ArrangeIndexError: The len of current deque not match order len
         """
-        if start < 0 or end < 0 or end < start:
+        if not len_:
             raise ArrangeIndexError(
-                message=f'Nonpositive or broken {start=} or {end=}',
+                'Given empty order',
                 logger=self._logger
                     )
-        to_split = list(self.current)
-        splited = (to_split[start:end], (to_split[0:start], to_split[end:]))
-        self._logger.debug(f'To arrange result: {splited}')
 
-        return splited
+        if len_ > len(self.current):
+            raise ArrangeIndexError(
+                f'The len of current deque is {len(self.current)} '
+                f'but given order has len {len_}.',
+                logger=self._logger
+                    )
 
-    def arrange(
+    def _check_is_to_arrange_valid(
         self,
-        arranged: list[Card],
-        last: tuple[list[Card], list[Card]]
-            ) -> 'Deck':
-        """Concatenate new current deck from given arranged list and last of
-        deck. Use to_arrange() method to get list to arrange and last.
+        order: list[str],
+        to_arrange: Union[list[str], KeysView[str]]
+            ) -> None:
+        """Chek is order and deque contains sa,e elements
 
         Args:
-            arranged (List[Card]): arranged list of cards
-            last: (Tuple[List[Card], List[Card]]): last of deck
+            order (List[str]): ordered list of cards ids
+            to_arrange (list[str]): list of deque ids
+
+        Raises:
+            ArrangeIndexError: Given card ids and deque ids not match
+        """
+        if set(to_arrange) ^ set(order):
+            raise ArrangeIndexError(
+                'Given card ids and deque ids not match.',
+                logger=self._logger
+                    )
+
+    def reorder(
+        self,
+        order: list[str],
+            ) -> 'Deck':
+        """Reorder current deque from right side.
+
+        Args:
+            order (List[str]): ordered list of cards ids
+            ordered from left side to right
 
         Returns:
             Deck
         """
-        reorranged: deque = deque()
-        reorranged.extend(last[0])
-        reorranged.extend(arranged)
-        reorranged.extend(last[1])
+        len_ = len(order)
+        self._check_order_len(len_)
 
-        if len(reorranged) == len(self.current):
-            self.current = reorranged
-            self._logger.debug(f'Arrange result: {reorranged}')
-        else:
+        to_arrange = {
+            self.current[len_-ind-1].id: self.current[len_-ind-1]
+            for ind in range(len_)
+                }
+        self._check_is_to_arrange_valid(order, to_arrange.keys())
+
+        for _ in range(len_):
+            self.pop()
+
+        for card in order:
+            self.append(to_arrange[card])
+
+        self._logger.debug(f'Is reordered right side of deque: {order}')
+
+        return self
+
+    def reorderleft(
+        self,
+        order: list[str],
+            ) -> 'Deck':
+        """Reorder current deque from left side.
+
+        Args:
+            order (List[str]): ordered list of cards ids
+            ordered from left side to right
+
+        Returns:
+            Deck
+        """
+        len_ = len(order)
+        self._check_order_len(len_)
+
+        to_arrange = {
+            self.current[ind].id: self.current[ind]
+            for ind in range(len_)
+                }
+        self._check_is_to_arrange_valid(order, to_arrange.keys())
+
+        for _ in range(len_):
+            self.popleft()
+
+        for card in reversed(order):
+            self.appendleft(to_arrange[card])
+
+        self._logger.debug(f'Is reordered left side of deque: {order}')
+
+        return self
+
+    def reorderfrom(
+        self,
+        order: list[str],
+        start: int,
+            ) -> 'Deck':
+        """Reorder current deque from left side.
+
+        Args:
+            start (int): start of reordering
+            order (List[str]): ordered list of cards ids
+            ordered from left side to right
+
+        Returns:
+            Deck
+        """
+        len_ = len(order)
+        self._check_order_len(len_)
+        if start <= 0 or start > len(self.current)-len_:
             raise ArrangeIndexError(
-                f'Wrong to_arranged parts: {arranged=}, {last=}',
+                'Given range is out of current index.',
                 logger=self._logger
                     )
+
+        old_deck = list(self.current)
+        to_arrange = {
+            card.id: card
+            for card in old_deck[start:start+len_]
+                }
+        self._check_is_to_arrange_valid(order, to_arrange.keys())
+
+        for ind1, ind2 in enumerate(range(start, start+len_)):
+            self.current[ind2] = to_arrange[order[ind1]]
+
         return self
 
     def search(
@@ -589,24 +718,9 @@ class Deck(BaseTool, DataClassJsonMixin):
                     )
             return result
 
-    def add(self, stuff: Card) -> None:
-        """Add stuff to component
-
-        Args:
-            stuff (Card): game stuff
-        """
-        if isinstance(stuff.__class__, Card) \
-                or issubclass(stuff.__class__, Card):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
-
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Steps(BaseTool, DataClassJsonMixin):
     """Game steps order object
 
@@ -632,6 +746,21 @@ class Steps(BaseTool, DataClassJsonMixin):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.c = Component()
+
+    def add(self, stuff: Step) -> None:
+        """Add stuff to component
+
+        Args:
+            stuff (Step): game stuff
+        """
+        if isinstance(stuff.__class__, Step) \
+                or issubclass(stuff.__class__, Step):
+            self.c.update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
+        else:
+            raise ComponentClassError(stuff, self._logger)
 
     def clear(self) -> None:
         """Clear the current and last of Steps
@@ -691,18 +820,3 @@ class Steps(BaseTool, DataClassJsonMixin):
             List[str]: list ids of current
         """
         return [item[1].id for item in self.current]
-
-    def add(self, stuff: Step) -> None:
-        """Add stuff to component
-
-        Args:
-            stuff (Step): game stuff
-        """
-        if isinstance(stuff.__class__, Step) \
-                or issubclass(stuff.__class__, Step):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)

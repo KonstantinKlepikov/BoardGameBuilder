@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from bgameb import (
     Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
     Bag, log_enable
-)
+        )
 
 
 if __name__ == '__main__':
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # add player
     G.add(Player('Player'))
 
-    # The players object is in attribute p, items -> i, tools -> t.
+    # The stuff objects are saved in attribute c.
     # Names are converted to snake case
     player = G.c.player
 
@@ -41,14 +41,21 @@ if __name__ == '__main__':
     # Specific arguments is stored to dict attribute `other`
     description = G.c.deck.c.first.other['description']
 
-    # If you need more clear schema, inherite from any class
-    @dataclass(repr=False)
+    # If you need more clear schema, inherite from any class.
+    # Additional, we can define _to_relocate mapping -this
+    # help move values from some attrs to another or convert some
+    # values to related with Game outsade-hosted schema
+    @dataclass
     class MyCard(Card):
         description: Optional[str] = None
         some_text: Optional[str] = 'some texts'
+        is_open: Optional[bool] = None
 
         def __post_init__(self) -> None:
             super().__post_init__()
+            self._to_relocate = {
+                'is_open': 'opened'
+                    }
 
     G.c.deck.add(
         MyCard('Thierd', description='story', count=12)
@@ -57,6 +64,9 @@ if __name__ == '__main__':
     # Use default counters of cards
     G.c.deck.c.first.counter['yellow'] = 12
     G.c.deck.c.second.counter['banana'] = 0
+
+    # relocate values
+    G.c.deck.c.thierd.relocate()
 
     # Deal and shuffle deck
     G.c.deck.deal().shuffle()
@@ -79,26 +89,9 @@ if __name__ == '__main__':
     G.c.bag.add(Dice('dice'))
     G.c.bag.add(Card('card'))
 
-    # get the schema
-    schema = G.to_json()
-
     # components and technical attrs not added to shcema.
-    # You can reconstruct this, if you need
-    import json
-
-    game = G.to_dict()
-    game['players'] = [val.to_dict() for val in G.get_players().values()]
-    game['decks'] = [
-        val.to_dict() for val
-        in G.get_tools().values()
-        if isinstance(val, Deck)
-            ]
-    game['cards'] = [
-        val.to_dict() for val
-        in G.c.deck.c.values()
-        if isinstance(val, MyCard)
-            ]
-    schema = json.dumps(game)
+    # You can reconstruct full schema fit build_json() method
+    schema = G.relocate_all().build_json()
 
     print('='*20 + '\n')
     print(f'Repr: {G}')

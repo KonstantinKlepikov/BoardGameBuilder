@@ -1,7 +1,7 @@
 """Game dices, coins, cards and other items
 """
 import random
-from typing import Optional, NoReturn
+from typing import Optional, NoReturn, Any
 from dataclasses import dataclass, field
 from dataclasses_json import (
     config, DataClassJsonMixin, dataclass_json, Undefined
@@ -11,7 +11,7 @@ from bgameb.errors import StuffDefineError
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class BaseItem(Base, DataClassJsonMixin):
     """Base class for game items (like dices or cards)
     """
@@ -21,7 +21,7 @@ class BaseItem(Base, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(order=True, repr=False)
+@dataclass(order=True)
 class Step(BaseItem, DataClassJsonMixin):
     """Game steps or turns
 
@@ -35,7 +35,7 @@ class Step(BaseItem, DataClassJsonMixin):
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Dice(BaseItem, DataClassJsonMixin):
     """Rolled or fliped objects, like dices or coins.
 
@@ -50,18 +50,35 @@ class Dice(BaseItem, DataClassJsonMixin):
     Attr:
         - count (int): count of items. Default to 1.
         - sides (int): sides of dice or coin. Default to 2.
+        - mapping(dict[int, Any]): nonnumerik mapping of roll result.
 
     Raises:
-        StuffDefineError: number of sides less than 2
+        StuffDefineError: number of sides less than 2.
+        StuffDefineError: mapping keys is not equal of roll range.
     """
     count: int = 1
     sides: int = 2
+    mapping: dict[int, Any] = field(
+        default_factory=dict,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
+    last: Optional[list[int]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
+    last_mapped: Optional[list[Any]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
     _range: list[int] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         init=False,
         repr=False
-        )
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -72,6 +89,11 @@ class Dice(BaseItem, DataClassJsonMixin):
                 logger=self._logger
                 )
         self._range = list(range(1, self.sides + 1))
+        if self.mapping and set(self.mapping.keys()) ^ set(self._range):
+            raise StuffDefineError(
+                message='Mapping must define values for each side.',
+                logger=self._logger
+                    )
 
     def roll(self) -> list[int]:
         """Roll and return result
@@ -79,15 +101,27 @@ class Dice(BaseItem, DataClassJsonMixin):
         Returns:
             List[int]: result of roll
         """
-        roll = [
+        self.last = [
             random.choices(self._range, k=1)[0] for _
             in list(range(self.count))
-            ]
-        return roll
+                ]
+        return self.last
+
+    def roll_mapped(self) -> list[Any]:
+        """Roll and return mapped result
+
+        Returns:
+            list[Any]: result of roll
+        """
+        self.last_mapped = [
+            self.mapping[roll] for roll in self.roll()
+            if self.mapping.get(roll)
+                ]
+        return self.last_mapped
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(repr=False)
+@dataclass
 class Card(BaseItem, DataClassJsonMixin):
     """Card object
 

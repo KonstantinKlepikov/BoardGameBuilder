@@ -1,27 +1,12 @@
 import json
 import pytest
-import random
 from typing import Union
 from collections import deque
 from bgameb.base import Component
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
 from bgameb.errors import ArrangeIndexError
-
-
-class FixedSeed:
-    """Context manager to set random seed
-    """
-    def __init__(self, seed):
-        self.seed = seed
-        self.state = None
-
-    def __enter__(self):
-        self.state = random.getstate()
-        random.seed(self.seed)
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        random.setstate(self.state)
+from tests.conftest import FixedSeed
 
 
 class TestTool:
@@ -49,6 +34,14 @@ class TestTool:
         assert len(obj_.current) == 0, 'wrong current len'
         assert obj_.id == 'this', 'not set ID for instance'
         assert len(obj_.c) == 2, 'wrong items'
+
+    def test_get_items(self, obj_: BaseTool) -> None:
+        """Test get items
+        """
+        result = obj_.get_items()
+        assert len(result) == 2, 'wrong number of items'
+        assert result['dice'], 'wrong item'
+        assert result['card'], 'wrong item'
 
     def test_stuff_classes_are_converted_to_json(self, obj_: BaseTool) -> None:
         """Test to json convertatrion
@@ -243,6 +236,15 @@ class TestShaker:
         obj_.deal()
         return obj_
 
+    def test_shaker_instanciation(self, obj_: Shaker) -> None:
+        """Test deck correct created
+        """
+        assert obj_.id == 'shaker', 'wrong id'
+        assert isinstance(obj_.current, list), 'wrong type of current'
+        assert len(obj_.current) == 0, 'nonempty current'
+        assert obj_.last is None, 'wrong last'
+        assert obj_.last_mapped is None, 'wrong last'
+
     def test_add_new_item_to_shaker(self, obj_: Bag) -> None:
         """Test add new item to bag
         """
@@ -255,12 +257,26 @@ class TestShaker:
         roll = dealt_obj_.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
+        assert len(dealt_obj_.last) == 2, 'wrong last'
+
+    def test_roll_mapped_shaker(self, obj_: Shaker) -> None:
+        """Test roll mapped shaker
+        """
+        obj_.c.dice.mapping = {n: str(n) for n in obj_.c.dice._range}
+        obj_.deal()
+        roll = obj_.roll_mapped()
+        assert len(roll) == 2, 'wrong roll result'
+        assert len(roll['dice']) == 5, 'wrong roll result'
+        assert len(roll['dice_nice']) == 0, 'wrong roll result'
+        assert len(obj_.last_mapped) == 2, 'wrong last_mapped'
 
     def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
         """
         obj_ = Shaker('shaker')
         roll = obj_.roll()
+        assert roll == {}, 'wrong roll result'
+        roll = obj_.roll_mapped()
         assert roll == {}, 'wrong roll result'
 
 
@@ -398,6 +414,98 @@ class TestDeck:
             obj_.shuffle()
             assert obj_.current != current0, 'not changed order'
 
+    def test_check_order_len(self, dealt_obj_: Deck) -> None:
+        """Test _check_order_len()
+        """
+        assert dealt_obj_._check_order_len(10) is None, 'not checked'
+        with pytest.raises(
+            ArrangeIndexError,
+            match='len of current deque'
+                ):
+            dealt_obj_._check_order_len(11)
+        with pytest.raises(
+            ArrangeIndexError,
+            match='Given empty order'
+                ):
+            dealt_obj_._check_order_len(0)
+
+    def test_check_is_to_arrange_valid(self, dealt_obj_: Deck) -> None:
+        """Test _check_is_to_arrange_valid()
+        """
+        order = dealt_obj_.current_ids()
+        order1 = order.copy()
+        order1.reverse()
+        assert dealt_obj_._check_is_to_arrange_valid(order1, order) is None, \
+            'not checked'
+        order1[0] = 'uncown'
+        with pytest.raises(
+            ArrangeIndexError,
+            match='ids not match'
+                ):
+            dealt_obj_._check_is_to_arrange_valid(order1, order)
+
+    def test_deck_reorder(self, dealt_obj_: Deck) -> None:
+        """Test deck reorder()
+        """
+        order = dealt_obj_.current_ids()
+        order.reverse()
+        dealt_obj_.reorder(order)
+        assert dealt_obj_.current_ids() == order, 'wrong order'
+
+        with FixedSeed(42):
+            dealt_obj_.shuffle()
+            old_oder = dealt_obj_.current_ids().copy()
+            order = dealt_obj_.current_ids()[5:]
+            order.reverse()
+            dealt_obj_.reorder(order)
+            assert dealt_obj_.current_ids()[5:] == order, 'wrong order'
+            assert dealt_obj_.current_ids()[0:5] == old_oder[0:5], \
+                'wrong order'
+
+    def test_deck_reorderleft(self, dealt_obj_: Deck) -> None:
+        """Test deck reorderleft()
+        """
+        order = dealt_obj_.current_ids()
+        order.reverse()
+        dealt_obj_.reorderleft(order)
+        assert dealt_obj_.current_ids() == order, 'wrong order'
+
+        with FixedSeed(42):
+            dealt_obj_.shuffle()
+            old_oder = dealt_obj_.current_ids().copy()
+            order = dealt_obj_.current_ids()[0:5]
+            order.reverse()
+            dealt_obj_.reorderleft(order)
+            assert dealt_obj_.current_ids()[0:5] == order, 'wrong order'
+            assert dealt_obj_.current_ids()[5:0] == old_oder[5:0], \
+                'wrong order'
+
+    def test_deck_reorderfrom(self, dealt_obj_: Deck) -> None:
+        """Test deck reorderfrom()
+        """
+        with FixedSeed(42):
+            dealt_obj_.shuffle()
+            old_oder = dealt_obj_.current_ids().copy()
+            order = dealt_obj_.current_ids()[2:6]
+            order.reverse()
+            dealt_obj_.reorderfrom(order, 2)
+            assert dealt_obj_.current_ids()[2:6] == order, 'wrong order'
+            assert dealt_obj_.current_ids()[0:2] == old_oder[0:2], \
+                'wrong order'
+            assert dealt_obj_.current_ids()[6:] == old_oder[6:], 'wrong order'
+
+            with pytest.raises(
+                ArrangeIndexError,
+                match='range is out of current index'
+                    ):
+                dealt_obj_.reorderfrom(order, 0)
+
+            with pytest.raises(
+                ArrangeIndexError,
+                match='range is out of current index'
+                    ):
+                dealt_obj_.reorderfrom(order, 7)
+
     def test_search(self, obj_: Deck) -> None:
         """Test deck search() one or many or no one cards
         """
@@ -427,74 +535,6 @@ class TestDeck:
         search = obj_.search(query={'wrong_card': 1})
         assert len(search) == 0, 'wrong search len'
         assert len(obj_.current) == 4, 'wrong current len'
-
-    def test_to_arrange(self, obj_: Deck) -> None:
-        """Test to_arrange() deck
-        """
-        obj_.c.card.count = 2
-        obj_.c.card_nice.count = 2
-        obj_.deal()
-
-        arranged, last = obj_.to_arrange(0, 1)
-        assert len(last) == 2, 'wrong last len'
-        assert isinstance(last[0], list), 'wrong left'
-        assert isinstance(last[1], list), 'wrong right'
-        assert isinstance(arranged, list), 'wrong center'
-        assert arranged[0].id == obj_.current[0].id, 'wrong arranged'
-        assert last[0] == [], 'wrong split'
-        assert len(last[1]) == 3, 'wrong split'
-
-        arranged, last = obj_.to_arrange(1, 2)
-        assert len(last[0]) == 1, 'wrong split'
-        assert len(last[1]) == 2, 'wrong split'
-        assert len(arranged) == 1, 'wrong center'
-
-        arranged, last = obj_.to_arrange(1, 50)
-        assert len(last[0]) == 1, 'wrong split'
-        assert len(last[1]) == 0, 'wrong split'
-        assert len(arranged) == 3, 'wrong center'
-
-        with pytest.raises(
-            ArrangeIndexError,
-            match='Nonpositive or broken'
-                ):
-            arranged, last = obj_.to_arrange(-3, 0)
-        with pytest.raises(
-            ArrangeIndexError,
-            match='Nonpositive or broken'
-                ):
-            arranged, last = obj_.to_arrange(5, -55)
-        with pytest.raises(
-            ArrangeIndexError,
-            match='Nonpositive or broken'
-                ):
-            arranged, last = obj_.to_arrange(5, 3)
-
-    def test_arrrange_random(self, obj_: Deck) -> None:
-        """Test arrange()
-        """
-        with FixedSeed(42):
-            obj_.deal(['Card_nice', 'card', 'card'])
-            arranged, last = obj_.to_arrange(0, 2)
-            arranged.reverse()
-            before = [stuff.id for stuff in obj_.current]
-            result = obj_.arrange(arranged, last).current
-            after = [stuff.id for stuff in result]
-            assert after != before, 'not arranged'
-
-    def test_arrrange_returns_same_len(self, obj_: Deck) -> None:
-        """Test arrange() returns same len
-        """
-        obj_.c.card.count = 2
-        obj_.c.card_nice.count = 2
-        obj_.deal().shuffle()
-        arranged, last = obj_.to_arrange(0, 4)
-        arranged.pop()
-        with pytest.raises(
-            ArrangeIndexError,
-            match="Wrong to_arranged parts"
-                ):
-            obj_.arrange(arranged, last)
 
     def test_get_random_from_empty_current(self, obj_: Deck) -> None:
         """Test get_random from empty current

@@ -7,5 +7,5 @@ Provides bgameb version information.
 
 from incremental import Version
 
-__version__ = Version("bgameb", 0, 0, 35)
+__version__ = Version("bgameb", 0, 0, 36)
 __all__ = ["__version__"]
