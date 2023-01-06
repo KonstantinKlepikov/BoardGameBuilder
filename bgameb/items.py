@@ -62,13 +62,23 @@ class Dice(BaseItem, DataClassJsonMixin):
         default_factory=dict,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
-    )
+            )
+    last: Optional[list[int]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
+    last_mapped: Optional[list[Any]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+            )
     _range: list[int] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
         init=False,
         repr=False
-        )
+            )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -91,10 +101,11 @@ class Dice(BaseItem, DataClassJsonMixin):
         Returns:
             List[int]: result of roll
         """
-        return [
+        self.last = [
             random.choices(self._range, k=1)[0] for _
             in list(range(self.count))
-            ]
+                ]
+        return self.last
 
     def roll_mapped(self) -> list[Any]:
         """Roll and return mapped result
@@ -102,10 +113,11 @@ class Dice(BaseItem, DataClassJsonMixin):
         Returns:
             list[Any]: result of roll
         """
-        return [
+        self.last_mapped = [
             self.mapping[roll] for roll in self.roll()
             if self.mapping.get(roll)
                 ]
+        return self.last_mapped
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)

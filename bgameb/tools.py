@@ -232,6 +232,16 @@ class Shaker(BaseTool, DataClassJsonMixin):
         default_factory=Component,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
+    last: Optional[dict[str, list[int]]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+    )
+    last_mapped: Optional[dict[str, list[Any]]] = field(
+        default=None,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+        repr=False,
+    )
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -288,14 +298,14 @@ class Shaker(BaseTool, DataClassJsonMixin):
                     "twenty_dice": {2, 12, 4},
                 }
         """
-        roll = {}
+        self.last = {}
 
         for item in self.current:
-            roll[item.id] = item.roll()
+            self.last[item.id] = item.roll()
 
-        self._logger.debug(f'Result of roll: {roll}')
+        self._logger.debug(f'Result of roll: {self.last}')
 
-        return roll
+        return self.last
 
     def roll_mapped(self) -> dict[str, list[Any]]:
         """Roll all stuff in shaker and return mapped results.
@@ -304,14 +314,14 @@ class Shaker(BaseTool, DataClassJsonMixin):
         Returns:
             dict[str, list[Any]]: result of roll
         """
-        roll = {}
+        self.last_mapped = {}
 
         for item in self.current:
-            roll[item.id] = item.roll_mapped()
+            self.last_mapped[item.id] = item.roll_mapped()
 
-        self._logger.debug(f'Result of roll: {roll}')
+        self._logger.debug(f'Result of roll: {self.last_mapped}')
 
-        return roll
+        return self.last_mapped
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
