@@ -3,6 +3,59 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.36 (2023-01-06)
+============================
+
+Features
+--------
+
+- #29:
+      - added mapping attr to Dice - as a dict with int keys and Any values
+      - added roll_mapped() to Dice object
+      - added roll_maped() to shaker
+      - tested all
+      - docs changed
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/29)
+- #250:
+       - added reorder() ,reorderleft() and reorderfrom() methods to Deck object
+       - added _check_order_len() and _check_is_to_arrange_valid() methods
+       - tested all
+       - readme changed
+       - docs changed
+       - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/250)
+- #253:
+      - added _to_relocate attr to Base class. Is a dict with str keys and str/Calable values
+      - addede relocate() function to Base class
+      - is changed check.py example
+      - test all
+      - changes in docs and README
+      - "NEW game" now is logged in BaseGame class
+      - is removed repr=False from @dataclass declaration
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/253)
+- #254:
+      - added get_items_val(), get_tools_val() and get_players_val() methods to game - they returns a lists of dict representation of nested dataclasses
+      - added build_json() method to Game
+      - added relocate_all() to Game
+      - relocate() and reloacate_all() returns self
+      - tested all
+      - added example, changed docs and README
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/254)
+- #256:
+      - added last and last_mapped to Dice and Shaker object
+      - roll() and roll_mapped() write values to last and last_mapped and returns this result
+      - tests all
+      - dock changes
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/256)
+
+
+Deprecations and Removals
+-------------------------
+
+- #250:
+      - to_arrange() and arrange() methods of Deck object are removed
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/250)
+
+
 Release v0.0.35 (2022-12-22)
 ============================
 
