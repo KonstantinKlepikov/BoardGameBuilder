@@ -86,10 +86,14 @@
 
 
 <div class="viewcode-block" id="BaseTool"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">BaseTool</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game tools (like decks or shakers)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="p">)</span>
     <span class="n">current</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
@@ -98,6 +102,18 @@
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseTool.get_items"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.get_items">[docs]</a>    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get items from Component</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, BaseItem]: items mapping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
+            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">)</span>
+                <span class="p">}</span></div>
 
     <span class="k">def</span> <span class="nf">_item_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">BaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseItem</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Replace item in a current</span>
@@ -222,7 +238,7 @@
 
 
 <div class="viewcode-block" id="Bag"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Bag</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Bag object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -234,13 +250,6 @@
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Bag.get_items"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag.get_items">[docs]</a>    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
-            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">)</span>
-                <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Bag.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Bag&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Deal new bag current</span>
@@ -281,7 +290,7 @@
 
 
 <div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Shaker</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create shaker for roll dices or flip coins</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -321,6 +330,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is deal current: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_ids</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
+<div class="viewcode-block" id="Shaker.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Dice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stuff (Dice): game stuff</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Shaker.roll"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.roll">[docs]</a>    <span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;Roll all stuff in shaker and return results</span>
 
@@ -358,26 +382,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="n">roll</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">roll</span></div>
-
-<div class="viewcode-block" id="Shaker.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Dice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (Dice): game stuff</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">roll</span></div></div>
 
 
 <div class="viewcode-block" id="Deck"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Deck</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Deck object</span>
 
@@ -416,6 +425,21 @@
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Deck.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Card</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stuff (Card): game stuff</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_item_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Card</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Card</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
         <span class="sd">&quot;&quot;&quot;Replace item in a current</span>
@@ -525,7 +549,7 @@
 <span class="sd">            Deck</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is shuffled: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is shuffled: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_ids</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_check_order_len</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">len_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -753,26 +777,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;Random choised cards with remove: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="p">)</span>
-            <span class="k">return</span> <span class="n">result</span></div>
-
-<div class="viewcode-block" id="Deck.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Card</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (Card): game stuff</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div></div>
+            <span class="k">return</span> <span class="n">result</span></div></div>
 
 
 <div class="viewcode-block" id="Steps"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Steps</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Game steps order object</span>
 
@@ -798,6 +807,21 @@
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">Component</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Steps.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Step</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            stuff (Step): game stuff</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Steps.clear"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Clear the current and last of Steps</span>
@@ -856,22 +880,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            List[str]: list ids of current</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="Steps.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Step</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (Step): game stuff</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">]</span></div></div>
 </pre></div>
 
            </div>
@@ -881,7 +890,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Konstantin Klepikov.</p>
+    <p>&#169; Copyright 2023, Konstantin Klepikov.</p>
   </div>
 
    

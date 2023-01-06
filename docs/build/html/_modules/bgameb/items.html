@@ -82,7 +82,7 @@
 
 
 <div class="viewcode-block" id="BaseItem"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.BaseItem">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">BaseItem</span><span class="p">(</span><span class="n">Base</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for game items (like dices or cards)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -92,7 +92,7 @@
 
 
 <div class="viewcode-block" id="Step"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Step">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Step</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Game steps or turns</span>
 
@@ -106,7 +106,7 @@
 
 
 <div class="viewcode-block" id="Dice"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Dice">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Dice</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Rolled or fliped objects, like dices or coins.</span>
 
@@ -131,6 +131,8 @@
     <span class="n">sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">config</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">_range</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
@@ -178,7 +180,7 @@
 
 
 <div class="viewcode-block" id="Card"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Card">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Card object</span>
 
@@ -279,7 +281,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Konstantin Klepikov.</p>
+    <p>&#169; Copyright 2023, Konstantin Klepikov.</p>
   </div>
 
    

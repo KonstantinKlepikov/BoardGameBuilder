@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.players &mdash; bgameb 0.0.32 documentation</title>
+  <title>bgameb.players &mdash; bgameb 0.0.35 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.32
+                0.0.35
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -82,7 +82,7 @@
 
 
 <div class="viewcode-block" id="BasePlayer"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.BasePlayer">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">BasePlayer</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 
     <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
@@ -131,7 +131,7 @@
 
 
 <div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../bgameb.html#bgameb.players.Player">[docs]</a><span class="nd">@dataclass_json</span><span class="p">(</span><span class="n">undefined</span><span class="o">=</span><span class="n">Undefined</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">BasePlayer</span><span class="p">,</span> <span class="n">DataClassJsonMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Player or bot</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -147,7 +147,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Konstantin Klepikov.</p>
+    <p>&#169; Copyright 2023, Konstantin Klepikov.</p>
   </div>
 
    

@@ -60,6 +60,7 @@ class Dice(BaseItem, DataClassJsonMixin):
     sides: int = 2
     mapping: dict[int, Any] = field(
         default_factory=dict,
+        metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
     )
     _range: list[int] = field(

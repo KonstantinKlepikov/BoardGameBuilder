@@ -180,7 +180,7 @@ class TestBaseClass:
                 }
 
         obj_ = BaseMe('9 this is Fine #')
-        obj_.relocate()
+        assert isinstance(obj_.relocate(), BaseMe), 'wrong return'
         assert obj_.this == obj_.id, 'not relocated'
 
     def test_relocate_calable(self) -> None:
