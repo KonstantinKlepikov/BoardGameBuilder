@@ -1,6 +1,7 @@
 """Main engine to create game
 """
-from typing import Union
+import json
+from typing import Union, Any
 from dataclasses import dataclass, field
 from dataclasses_json import (
     DataClassJsonMixin, dataclass_json, Undefined, config
@@ -75,6 +76,93 @@ class BaseGame(Base):
             in self.c.items()
             if issubclass(val.__class__, BasePlayer)
                 }
+
+    @staticmethod
+    def get_items_val(
+        obj_: Union['BaseGame', BaseTool, BasePlayer]
+            ) -> list[dict[str, Any]]:
+        """Get items values represented as list of dicts
+
+        Args:
+            obj_ (Union['BaseGame', BaseTool, BasePlayer]): parrent class
+
+        Returns:
+            list[dict[str, Any]]: items
+        """
+        return [val.to_dict() for val in obj_.get_items().values()]
+
+    def get_tools_val(
+        self,
+        obj_: Union['BaseGame', BasePlayer],
+            ) -> list[dict[str, Any]]:
+        """Get tools values represented as list of dicts
+
+        Args:
+            obj_ (Union[BaseTool, BasePlayer]): parrent class
+
+        Returns:
+            list[dict[str, Any]]: tools
+        """
+        result = []
+        for tool in obj_.get_tools().values():
+            t = tool.to_dict()
+            t['items'] = self.get_items_val(tool)
+            result.append(t)
+        return result
+
+    def get_players_val(self, obj_: 'BaseGame') -> list[dict[str, Any]]:
+        """Get players values represented as list of dicts
+
+        Args:
+            obj_ (BaseGame): parrent class
+
+        Returns:
+            list[dict[str, Any]]: players
+        """
+        result = []
+        for player in obj_.get_players().values():
+            p = player.to_dict()
+            p['tools'] = self.get_tools_val(player)
+            p['items'] = self.get_items_val(player)
+            result.append(p)
+        return result
+
+    def build_json(self) -> str:
+        """Build json from nested objects
+
+        Returns:
+            str: json object
+        """
+        build = self.to_dict()
+        build['players'] = self.get_players_val(self)
+        build['tools'] = self.get_tools_val(self)
+        build['items'] = self.get_items_val(self)
+        return json.dumps(build)
+
+    def relocate_all(self) -> 'BaseGame':
+        """Relocate all objects in game
+
+        Returns:
+            BaseGame
+        """
+        for item in self.get_items().values():
+            item.relocate()
+
+        for tool in self.get_tools().values():
+            tool.relocate()
+            for item in tool.get_items().values():
+                item.relocate()
+
+        for player in self.get_players().values():
+            player.relocate()
+            for tool in player.get_tools().values():
+                tool.relocate()
+                for item in tool.get_items().values():
+                    item.relocate()
+
+        self.relocate()
+
+        return self
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)

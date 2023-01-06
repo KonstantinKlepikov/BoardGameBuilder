@@ -102,26 +102,9 @@ if __name__ == '__main__':
     G.c.bag.add(Dice('dice'))
     G.c.bag.add(Card('card'))
 
-    # get the schema
-    schema = G.to_json()
-
     # components and technical attrs not added to shcema.
-    # You can reconstruct this, if you need
-    import json
-
-    game = G.to_dict()
-    game['players'] = [val.to_dict() for val in G.get_players().values()]
-    game['decks'] = [
-        val.to_dict() for val
-        in G.get_tools().values()
-        if isinstance(val, Deck)
-            ]
-    game['cards'] = [
-        val.to_dict() for val
-        in G.c.deck.c.values()
-        if isinstance(val, MyCard)
-            ]
-    schema = json.dumps(game)
+    # You can reconstruct full schema fit build_json() method
+    schema = G.relocate_all().build_json()
 ```
 
 ## Documentation

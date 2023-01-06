@@ -97,9 +97,12 @@ class Base(DataClassJsonMixin):
         items = {f"{k}={v!r}" for k, v in self._inclusion.items()}
         return f"{type(self).__name__}({', '.join(items)})"
 
-    def relocate(self) -> None:
+    def relocate(self) -> 'Base':
         """Relocate data. For this vall is used mapping from
         _to_relocate attribute
+
+        Returns:
+            Base
         """
         for key, val in self._to_relocate.items():
             if key in self._inclusion:
@@ -111,6 +114,7 @@ class Base(DataClassJsonMixin):
                 elif callable(val):
                     self.__dict__[key] = val()
                     self._logger.info(f'Is used "{val}" to fill "{key}".')
+        return self
 
 
 V = TypeVar('V', bound=Base)

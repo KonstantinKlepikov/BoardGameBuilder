@@ -1,6 +1,7 @@
 import json
 import pytest
 from typing import Union
+from dataclasses import dataclass, field
 from collections import Counter
 from bgameb.game import Game
 from bgameb.items import Dice, Card, Step
@@ -105,3 +106,71 @@ class TestGame:
         assert len(game.get_items()) == 3, 'wrong items'
         assert len(game.get_tools()) == 4, 'wrong tools'
         assert len(game.get_players()) == 1, 'wrong players'
+
+    def test_get_items_val(self, game: Game) -> None:
+        """Test get_items_val
+        """
+        game.add(Dice('why'))
+        result = game.get_items_val(game)
+        assert len(result) == 1, 'wrong number of items'
+        assert result[0]['id'] == 'why', 'wrong item'
+
+    def test_get_tools_val(self, game: Game) -> None:
+        """Test get_tools_val
+        """
+        game.add(Shaker('what'))
+        game.c.what.add(Dice('why'))
+        result = game.get_tools_val(game)
+        assert len(result) == 1, 'wrong number of tools'
+        assert result[0]['id'] == 'what', 'wrong tool'
+        assert len(result[0]['items']) == 1, 'wrong number of items'
+        assert result[0]['items'][0]['id'] == 'why', 'wrong item'
+
+    def test_get_players_val(self, game: Game) -> None:
+        """Test get_playerss_val
+        """
+        game.add(Player('billy'))
+        game.c.billy.add(Shaker('what'))
+        game.c.billy.add(Dice('hey'))
+        game.c.billy.c.what.add(Dice('why'))
+        result = game.get_players_val(game)
+        assert len(result) == 1, 'wrong number of players'
+        assert result[0]['id'] == 'billy', 'wrong player'
+        assert len(result[0]['items']) == 1, 'wrong number of items'
+        assert result[0]['items'][0]['id'] == 'hey', 'wrong item'
+        assert len(result[0]['tools']) == 1, 'wrong number of tools'
+        assert result[0]['tools'][0]['id'] == 'what', 'wrong item'
+        assert len(result[0]['tools'][0]['items']) == 1, \
+            'wrong number of items'
+        assert result[0]['tools'][0]['items'][0]['id'] == 'why', 'wrong item'
+
+    def test_build_json(self, game: Game) -> None:
+        """Test build_json
+        """
+        game.add(Player('billy'))
+        game.c.billy.add(Shaker('what'))
+        game.c.billy.add(Dice('hey'))
+        game.c.billy.c.what.add(Dice('why'))
+        result = game.build_json()
+        assert isinstance(result, str), 'wrong result'
+        assert 'billy' in result, 'no player'
+        assert 'what' in result, 'no tools'
+        assert 'why' in result, 'no dices'
+        assert 'hey' in result, 'no dices'
+
+    def test_relocate_all(self, game: Game) -> None:
+        """Test relocations of attrs in game class
+        """
+        @dataclass
+        class PlayMe(Player):
+            this: str = field(default_factory=str)
+
+            def __post_init__(self) -> None:
+                super().__post_init__()
+                self._to_relocate = {
+                    'this': 'id'
+                }
+
+        game.add(PlayMe('billy'))
+        assert isinstance(game.relocate_all(), Game), 'wrong return'
+        assert game.c.billy.this == game.c.billy.id, 'not relocated'

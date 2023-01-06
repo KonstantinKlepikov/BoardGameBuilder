@@ -35,6 +35,14 @@ class TestTool:
         assert obj_.id == 'this', 'not set ID for instance'
         assert len(obj_.c) == 2, 'wrong items'
 
+    def test_get_items(self, obj_: BaseTool) -> None:
+        """Test get items
+        """
+        result = obj_.get_items()
+        assert len(result) == 2, 'wrong number of items'
+        assert result['dice'], 'wrong item'
+        assert result['card'], 'wrong item'
+
     def test_stuff_classes_are_converted_to_json(self, obj_: BaseTool) -> None:
         """Test to json convertatrion
         """

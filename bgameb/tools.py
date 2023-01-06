@@ -19,6 +19,10 @@ from bgameb.errors import ArrangeIndexError, ComponentClassError
 class BaseTool(Base, DataClassJsonMixin):
     """Base class for game tools (like decks or shakers)
     """
+    c: Component[BaseItem] = field(
+        default_factory=Component,
+        metadata=config(exclude=lambda x: True),  # type: ignore
+            )
     current: list[BaseItem] = field(
         default_factory=list,
         metadata=config(exclude=lambda x: True),  # type: ignore
@@ -27,6 +31,18 @@ class BaseTool(Base, DataClassJsonMixin):
 
     def __post_init__(self) -> None:
         super().__post_init__()
+
+    def get_items(self) -> dict[str, BaseItem]:
+        """Get items from Component
+
+        Returns:
+            dict[str, BaseItem]: items mapping
+        """
+        return {
+            key: val for key, val
+            in self.c.items()
+            if issubclass(val.__class__, BaseItem)
+                }
 
     def _item_replace(self, item: BaseItem) -> BaseItem:
         """Replace item in a current
@@ -164,13 +180,6 @@ class Bag(BaseTool, DataClassJsonMixin):
         super().__post_init__()
         self.c = Component()
 
-    def get_items(self) -> dict[str, BaseItem]:
-        return {
-            key: val for key, val
-            in self.c.items()
-            if issubclass(val.__class__, BaseItem)
-                }
-
     def deal(self, items: Optional[list[str]] = None) -> 'Bag':
         """Deal new bag current
 
@@ -250,6 +259,21 @@ class Shaker(BaseTool, DataClassJsonMixin):
         self._logger.debug(f'Is deal current: {self.current_ids()}')
         return self
 
+    def add(self, stuff: Dice) -> None:
+        """Add stuff to component
+
+        Args:
+            stuff (Dice): game stuff
+        """
+        if isinstance(stuff.__class__, Dice) \
+                or issubclass(stuff.__class__, Dice):
+            self.c.update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
+        else:
+            raise ComponentClassError(stuff, self._logger)
+
     def roll(self) -> dict[str, list[int]]:
         """Roll all stuff in shaker and return results
 
@@ -288,21 +312,6 @@ class Shaker(BaseTool, DataClassJsonMixin):
         self._logger.debug(f'Result of roll: {roll}')
 
         return roll
-
-    def add(self, stuff: Dice) -> None:
-        """Add stuff to component
-
-        Args:
-            stuff (Dice): game stuff
-        """
-        if isinstance(stuff.__class__, Dice) \
-                or issubclass(stuff.__class__, Dice):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
@@ -345,6 +354,21 @@ class Deck(BaseTool, DataClassJsonMixin):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.c = Component()
+
+    def add(self, stuff: Card) -> None:
+        """Add stuff to component
+
+        Args:
+            stuff (Card): game stuff
+        """
+        if isinstance(stuff.__class__, Card) \
+                or issubclass(stuff.__class__, Card):
+            self.c.update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
+        else:
+            raise ComponentClassError(stuff, self._logger)
 
     def _item_replace(self, item: Card) -> Card:  # type: ignore[override]
         """Replace item in a current
@@ -684,21 +708,6 @@ class Deck(BaseTool, DataClassJsonMixin):
                     )
             return result
 
-    def add(self, stuff: Card) -> None:
-        """Add stuff to component
-
-        Args:
-            stuff (Card): game stuff
-        """
-        if isinstance(stuff.__class__, Card) \
-                or issubclass(stuff.__class__, Card):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
-
 
 @dataclass_json(undefined=Undefined.INCLUDE)
 @dataclass
@@ -727,6 +736,21 @@ class Steps(BaseTool, DataClassJsonMixin):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.c = Component()
+
+    def add(self, stuff: Step) -> None:
+        """Add stuff to component
+
+        Args:
+            stuff (Step): game stuff
+        """
+        if isinstance(stuff.__class__, Step) \
+                or issubclass(stuff.__class__, Step):
+            self.c.update(stuff)
+            self._logger.info(
+                f'Component updated by stuff with id="{stuff.id}".'
+                    )
+        else:
+            raise ComponentClassError(stuff, self._logger)
 
     def clear(self) -> None:
         """Clear the current and last of Steps
@@ -786,18 +810,3 @@ class Steps(BaseTool, DataClassJsonMixin):
             List[str]: list ids of current
         """
         return [item[1].id for item in self.current]
-
-    def add(self, stuff: Step) -> None:
-        """Add stuff to component
-
-        Args:
-            stuff (Step): game stuff
-        """
-        if isinstance(stuff.__class__, Step) \
-                or issubclass(stuff.__class__, Step):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
