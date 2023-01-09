@@ -1,6 +1,6 @@
 import json
 import pytest
-from typing import Union
+from typing import Union, Optional
 from dataclasses import dataclass, field
 from collections import Counter
 from bgameb.game import Game
@@ -171,6 +171,23 @@ class TestGame:
                     'this': 'id'
                 }
 
+        @dataclass
+        class ShakeMe(Shaker):
+            ups: list = field(default_factory=list)
+            this: Optional[dict[str, list[int]]] = None
+
+            def __post_init__(self) -> None:
+                super().__post_init__()
+                self._to_relocate = {
+                    'ups': 'current',
+                    'this': 'last'
+                        }
+
         game.add(PlayMe('billy'))
+        game.add(ShakeMe('some'))
+        game.c.some.add(Dice('six'))
+        game.c.some.deal()
         assert isinstance(game.relocate_all(), Game), 'wrong return'
         assert game.c.billy.this == game.c.billy.id, 'not relocated'
+        assert game.c.some.ups == game.c.some.current, 'not relocated'
+        assert game.c.some.this == game.c.some.last, 'not relocated'
