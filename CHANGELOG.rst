@@ -3,6 +3,19 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.37 (2023-01-10)
+============================
+
+Bugfixes
+--------
+
+- #260:
+      - is changed _to_relocate type - now values in dict sre a string and we uses only methods of class to meke something to relocation
+      - is fixed relovate() method to use methods of class or attributes
+      - _to_relocate is exclude from init
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/260)
+
+
 Release v0.0.36 (2023-01-06)
 ============================
 

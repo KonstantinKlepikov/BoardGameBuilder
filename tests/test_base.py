@@ -17,7 +17,6 @@ class TestComponent:
     def test_components_access_to_attr(self, comp: Component) -> None:
         """Test components acces to attrs
         """
-        print(comp)
         assert comp.some.id == 'some', 'not set or cant get'
         assert comp['some'].id == 'some', 'not set or cant get'
 
@@ -171,31 +170,44 @@ class TestBaseClass:
         """
         @dataclass
         class BaseMe(Base):
+            num: int = 5
             this: str = field(default_factory=str)
+            that: dict = field(default_factory=dict)
 
             def __post_init__(self) -> None:
                 super().__post_init__()
                 self._to_relocate = {
-                    'this': 'id'
+                    'this': 'id',
+                    'that': 'num'
                 }
 
         obj_ = BaseMe('9 this is Fine #')
         assert isinstance(obj_.relocate(), BaseMe), 'wrong return'
         assert obj_.this == obj_.id, 'not relocated'
+        assert obj_.that == obj_.num, 'not relocated'
 
     def test_relocate_calable(self) -> None:
-        """Test relocations with calable in dataclass
+        """Test relocations with bound in dataclass
         """
         @dataclass
         class BaseMe(Base):
             this: str = field(default_factory=str)
+            that: int = field(default_factory=int)
 
             def __post_init__(self) -> None:
                 super().__post_init__()
                 self._to_relocate = {
-                    'this': self.id.upper
+                    'this': 'make_it',
+                    'that': 'get_len'
                         }
+
+            def make_it(self):
+                return 'ohohoh'
+
+            def get_len(self):
+                return len(self.this)
 
         obj_ = BaseMe('9 this is Fine #')
         obj_.relocate()
-        assert obj_.this == obj_.id.upper(), 'not relocated'
+        assert obj_.this == 'ohohoh', 'not relocated'
+        assert obj_.that == len('ohohoh'), 'not relocated'

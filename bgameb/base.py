@@ -2,7 +2,7 @@
 """
 import re
 import string
-from typing import Optional, Iterator, TypeVar, Any, Callable, Union
+from typing import Optional, Iterator, TypeVar, Any
 from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
 from dataclasses import dataclass, field
@@ -50,8 +50,10 @@ class Base(DataClassJsonMixin):
         - other (Dict[str, Any]): all other data, added to instance
                                   at declaration
         - counter (Counter): counter object
-        - _to_relocate (Union[str, Callable]): mapping for relocation any data
-                                         to attributes inside dataclass
+        - _to_relocate (dict[str, str): mapping for relocation any data
+                                         to attributes inside dataclass. You
+                                         can use names of attributes or methods
+                                         of class for this mapping.
 
     Counter is a `collection.Counter
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
@@ -65,10 +67,11 @@ class Base(DataClassJsonMixin):
         default_factory=Counter,
         metadata=config(exclude=lambda x: True),  # type: ignore
             )
-    _to_relocate: dict[str, Union[str, Callable]] = field(
+    _to_relocate: dict[str, str] = field(
         default_factory=dict,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
+        init=False,
     )
 
     def __post_init__(self) -> None:
@@ -98,22 +101,22 @@ class Base(DataClassJsonMixin):
         return f"{type(self).__name__}({', '.join(items)})"
 
     def relocate(self) -> 'Base':
-        """Relocate data. For this vall is used mapping from
+        """Relocate data. For this is used mapping from
         _to_relocate attribute
 
         Returns:
             Base
         """
         for key, val in self._to_relocate.items():
-            if key in self._inclusion:
+            if key in self._inclusion.keys() and val in dir(self):
 
-                if isinstance(val, str) and val in self._inclusion:
-                    self.__dict__[key] = self.__dict__[val]
+                if callable(getattr(self, val)):
+                    self.__dict__[key] = getattr(self, val)()
+                    self._logger.info(f'Is used "{val}" to fill "{key}".')
+                else:
+                    self.__dict__[key] = self.__dict__.get(val)
                     self._logger.info(f'"{val}" is relocated to "{key}".')
 
-                elif callable(val):
-                    self.__dict__[key] = val()
-                    self._logger.info(f'Is used "{val}" to fill "{key}".')
         return self
 
 
