@@ -1,0 +1,5 @@
+#260:
+    - is changed _to_relocate type - now values in dict sre a string and we uses only methods of class to meke something to relocation
+    - is fixed relovate() method to use methods of class or attributes
+    - _to_relocate is exclude from init
+    - ->
