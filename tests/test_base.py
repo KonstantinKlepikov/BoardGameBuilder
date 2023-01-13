@@ -211,3 +211,24 @@ class TestBaseClass:
         obj_.relocate()
         assert obj_.this == 'ohohoh', 'not relocated'
         assert obj_.that == len('ohohoh'), 'not relocated'
+
+    def test_relocate_property(self) -> None:
+        """Test relocate property
+        """
+        @dataclass
+        class BaseMe(Base):
+            this: int = field(default=int)
+
+            def __post_init__(self) -> None:
+                super().__post_init__()
+                self._to_relocate = {
+                    'this': 'that',
+                }
+
+            @property
+            def that(self):
+                return 5
+
+        obj_ = BaseMe('9 this is Fine #')
+        obj_.relocate()
+        assert obj_.this == 5, 'not relocated'

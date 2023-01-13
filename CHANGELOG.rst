@@ -3,6 +3,18 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.39 (2023-01-14)
+============================
+
+Bugfixes
+--------
+
+- #257:
+      - get(0 from __dict__ is changed to __geattribute__ for relocate() method of Base class)
+      - tests
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/267)
+
+
 Release v0.0.38 (2023-01-13)
 ============================
 
