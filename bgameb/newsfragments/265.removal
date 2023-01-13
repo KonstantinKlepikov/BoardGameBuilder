@@ -1,3 +1,0 @@
-#263:
-    - build_json() is removed from Game object
-    - ->

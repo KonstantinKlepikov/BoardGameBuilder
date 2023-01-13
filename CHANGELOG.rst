@@ -3,6 +3,35 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.0.38 (2023-01-13)
+============================
+
+Features
+--------
+
+- #263:
+      - current_ids() is a property now
+      - get_items(), get_players(), get_rools() property to
+      - last is added to BaseTool - is available to Bag
+      - clear() now clear last
+      - pull() is renamed to pop() in Steps class
+      - result of pop() is added to last
+      - last_id property added in to tools
+      - by_id() is added to get item from current by id
+      - test all
+      - check.py changes
+      - docs and readme changes
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/263)
+
+
+Deprecations and Removals
+-------------------------
+
+- #263:
+      - build_json() is removed from Game object
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/265)
+
+
 Release v0.0.37 (2023-01-10)
 ============================
 
