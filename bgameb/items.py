@@ -50,7 +50,9 @@ class Dice(BaseItem, DataClassJsonMixin):
     Attr:
         - count (int): count of items. Default to 1.
         - sides (int): sides of dice or coin. Default to 2.
-        - mapping(dict[int, Any]): nonnumerik mapping of roll result.
+        - mapping (dict[int, Any]): nonnumerik mapping of roll result.
+        - last_roll (Optional[list[int]]): last roll value.
+        - last_roll_mapped: (Optional[list[Any]]): last maped roll value.
 
     Raises:
         StuffDefineError: number of sides less than 2.
@@ -63,12 +65,12 @@ class Dice(BaseItem, DataClassJsonMixin):
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
             )
-    last: Optional[list[int]] = field(
+    last_roll: Optional[list[int]] = field(
         default=None,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
             )
-    last_mapped: Optional[list[Any]] = field(
+    last_roll_mapped: Optional[list[Any]] = field(
         default=None,
         metadata=config(exclude=lambda x: True),  # type: ignore
         repr=False,
@@ -101,11 +103,11 @@ class Dice(BaseItem, DataClassJsonMixin):
         Returns:
             List[int]: result of roll
         """
-        self.last = [
+        self.last_roll = [
             random.choices(self._range, k=1)[0] for _
             in list(range(self.count))
                 ]
-        return self.last
+        return self.last_roll
 
     def roll_mapped(self) -> list[Any]:
         """Roll and return mapped result
@@ -113,11 +115,11 @@ class Dice(BaseItem, DataClassJsonMixin):
         Returns:
             list[Any]: result of roll
         """
-        self.last_mapped = [
+        self.last_roll_mapped = [
             self.mapping[roll] for roll in self.roll()
             if self.mapping.get(roll)
                 ]
-        return self.last_mapped
+        return self.last_roll_mapped
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)

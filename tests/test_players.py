@@ -36,5 +36,5 @@ class TestPlayer:
         obj_.add(Shaker('width'))
         obj_.add(Steps('err'))
         obj_.add(Bag('pff'))
-        assert len(obj_.get_items()) == 3, 'wrong items'
-        assert len(obj_.get_tools()) == 4, 'wrong tools'
+        assert len(obj_.get_items) == 3, 'wrong items'
+        assert len(obj_.get_tools) == 4, 'wrong tools'

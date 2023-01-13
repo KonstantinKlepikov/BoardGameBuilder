@@ -1,6 +1,6 @@
 """Main engine to create game
 """
-import json
+# import json
 from typing import Union, Any
 from dataclasses import dataclass, field
 from dataclasses_json import (
@@ -30,17 +30,7 @@ class BaseGame(Base):
             f'{self.__class__.__name__} created with id="{self.id}".'
                 )
 
-    def add(self, stuff: Union[BaseItem, BaseTool, BasePlayer]) -> None:
-        """Add stuff to component
-
-        Args:
-            stuff (BaseItem|BaseTool|BasePlayer): game stuff
-        """
-        self.c.update(stuff)
-        self._logger.info(
-            f'Component updated by stuff with id="{stuff.id}".'
-                )
-
+    @property
     def get_items(self) -> dict[str, BaseItem]:
         """Get items from Component
 
@@ -53,6 +43,7 @@ class BaseGame(Base):
             if issubclass(val.__class__, BaseItem)
                 }
 
+    @property
     def get_tools(self) -> dict[str, BaseTool]:
         """Get tools from Component
 
@@ -65,6 +56,7 @@ class BaseGame(Base):
             if issubclass(val.__class__, BaseTool)
                 }
 
+    @property
     def get_players(self) -> dict[str, BasePlayer]:
         """Get players from Component
 
@@ -76,6 +68,17 @@ class BaseGame(Base):
             in self.c.items()
             if issubclass(val.__class__, BasePlayer)
                 }
+
+    def add(self, stuff: Union[BaseItem, BaseTool, BasePlayer]) -> None:
+        """Add stuff to component
+
+        Args:
+            stuff (BaseItem|BaseTool|BasePlayer): game stuff
+        """
+        self.c.update(stuff)
+        self._logger.info(
+            f'Component updated by stuff with id="{stuff.id}".'
+                )
 
     @staticmethod
     def get_items_val(
@@ -89,7 +92,7 @@ class BaseGame(Base):
         Returns:
             list[dict[str, Any]]: items
         """
-        return [val.to_dict() for val in obj_.get_items().values()]
+        return [val.to_dict() for val in obj_.get_items.values()]
 
     def get_tools_val(
         self,
@@ -104,7 +107,7 @@ class BaseGame(Base):
             list[dict[str, Any]]: tools
         """
         result = []
-        for tool in obj_.get_tools().values():
+        for tool in obj_.get_tools.values():
             t = tool.to_dict()
             t['items'] = self.get_items_val(tool)
             result.append(t)
@@ -120,24 +123,12 @@ class BaseGame(Base):
             list[dict[str, Any]]: players
         """
         result = []
-        for player in obj_.get_players().values():
+        for player in obj_.get_players.values():
             p = player.to_dict()
             p['tools'] = self.get_tools_val(player)
             p['items'] = self.get_items_val(player)
             result.append(p)
         return result
-
-    def build_json(self) -> str:
-        """Build json from nested objects
-
-        Returns:
-            str: json object
-        """
-        build = self.to_dict()
-        build['players'] = self.get_players_val(self)
-        build['tools'] = self.get_tools_val(self)
-        build['items'] = self.get_items_val(self)
-        return json.dumps(build)
 
     def relocate_all(self) -> 'BaseGame':
         """Relocate all objects in game
@@ -145,19 +136,19 @@ class BaseGame(Base):
         Returns:
             BaseGame
         """
-        for item in self.get_items().values():
+        for item in self.get_items.values():
             item.relocate()
 
-        for tool in self.get_tools().values():
+        for tool in self.get_tools.values():
             tool.relocate()
-            for item in tool.get_items().values():
+            for item in tool.get_items.values():
                 item.relocate()
 
-        for player in self.get_players().values():
+        for player in self.get_players.values():
             player.relocate()
-            for tool in player.get_tools().values():
+            for tool in player.get_tools.values():
                 tool.relocate()
-                for item in tool.get_items().values():
+                for item in tool.get_items.values():
                     item.relocate()
 
         self.relocate()
