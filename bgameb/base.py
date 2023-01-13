@@ -108,13 +108,14 @@ class Base(DataClassJsonMixin):
             Base
         """
         for key, val in self._to_relocate.items():
+
             if key in self._inclusion.keys() and val in dir(self):
 
                 if callable(getattr(self, val)):
                     self.__dict__[key] = getattr(self, val)()
                     self._logger.info(f'Is used "{val}" to fill "{key}".')
                 else:
-                    self.__dict__[key] = self.__dict__.get(val)
+                    self.__dict__[key] = self.__getattribute__(val)
                     self._logger.info(f'"{val}" is relocated to "{key}".')
 
         return self

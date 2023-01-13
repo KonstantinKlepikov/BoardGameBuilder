@@ -1,0 +1,4 @@
+#257:
+    - get(0 from __dict__ is changed to __geattribute__ for relocate() method of Base class)
+    - tests
+    - ->
