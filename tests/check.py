@@ -29,7 +29,7 @@ if __name__ == '__main__':
     current_steps = G.c.steps.deal()
 
     # Game_steps is a priority queue, linked with priority attribute
-    last = G.c.steps.pull()
+    last = G.c.steps.pop()
 
     # add deck object and cards
     G.add(Deck('Deck'))
@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     # components and technical attrs not added to shcema.
     # You can reconstruct full schema fit build_json() method
-    schema = G.relocate_all().build_json()
+    schema = G.relocate_all().to_json()
 
     print('='*20 + '\n')
     print(f'Repr: {G}')

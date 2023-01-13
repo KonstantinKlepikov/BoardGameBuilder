@@ -23,17 +23,7 @@ class BasePlayer(Base):
         super().__post_init__()
         self.c = Component()
 
-    def add(self, stuff: Union[BaseItem, BaseTool]) -> None:
-        """Add stuff to component
-
-        Args:
-            stuff (BaseItem|BaseTool): game stuff
-        """
-        self.c.update(stuff)
-        self._logger.info(
-            f'Component updated by stuff with id="{stuff.id}".'
-                )
-
+    @property
     def get_items(self) -> dict[str, BaseItem]:
         """Get items from Component
 
@@ -46,6 +36,7 @@ class BasePlayer(Base):
             if issubclass(val.__class__, BaseItem)
                 }
 
+    @property
     def get_tools(self) -> dict[str, BaseTool]:
         """Get tools from Component
 
@@ -57,6 +48,17 @@ class BasePlayer(Base):
             in self.c.items()
             if issubclass(val.__class__, BaseTool)
                 }
+
+    def add(self, stuff: Union[BaseItem, BaseTool]) -> None:
+        """Add stuff to component
+
+        Args:
+            stuff (BaseItem|BaseTool): game stuff
+        """
+        self.c.update(stuff)
+        self._logger.info(
+            f'Component updated by stuff with id="{stuff.id}".'
+                )
 
 
 @dataclass_json(undefined=Undefined.INCLUDE)
