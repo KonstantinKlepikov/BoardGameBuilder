@@ -34,11 +34,12 @@ class TestTool:
         assert len(obj_.current) == 0, 'wrong current len'
         assert obj_.id == 'this', 'not set ID for instance'
         assert len(obj_.c) == 2, 'wrong items'
+        assert obj_.last is None, 'wrong last'
 
     def test_get_items(self, obj_: BaseTool) -> None:
         """Test get items
         """
-        result = obj_.get_items()
+        result = obj_.get_items
         assert len(result) == 2, 'wrong number of items'
         assert result['dice'], 'wrong item'
         assert result['card'], 'wrong item'
@@ -67,18 +68,35 @@ class TestTool:
     def test_clear(self, dealt_obj_: BaseTool) -> None:
         """Test current clear
         """
-        assert len(dealt_obj_.current) == 2, 'wrong current len'
+        dealt_obj_.pop()
         dealt_obj_.clear()
         assert isinstance(dealt_obj_.current, list), 'wrong current'
         assert len(dealt_obj_.current) == 0, 'wrong current len'
+        assert dealt_obj_.last is None, 'wrong last'
 
     def test_current_ids(self, dealt_obj_: BaseTool) -> None:
-        """Test get_curren_names()
+        """Test get_curren_ids
         """
-        assert len(dealt_obj_.current_ids()) == 2, \
+        assert len(dealt_obj_.current_ids) == 2, \
             'wrong current names len'
-        assert dealt_obj_.current_ids()[0] == 'dice', \
+        assert dealt_obj_.current_ids[0] == 'dice', \
             'wrong current names'
+
+    def test_last_id(self, dealt_obj_: BaseTool) -> None:
+        """Test get_last_id
+        """
+        dealt_obj_.pop()
+        assert dealt_obj_.last_id == 'card', 'wrong id'
+        dealt_obj_.last = None
+        assert dealt_obj_.last_id is None, 'wrong id'
+
+    def test_by_id(self, dealt_obj_: BaseTool) -> None:
+        """Test by_id()
+        """
+        assert dealt_obj_.by_id('card').id == 'card', 'wrong search'
+        assert dealt_obj_.by_id('why') is None, 'wrong search'
+        dealt_obj_.clear()
+        assert dealt_obj_.by_id('card') is None, 'wrong search'
 
     def test_append(self, dealt_obj_: BaseTool) -> None:
         """Test curent append
@@ -133,6 +151,7 @@ class TestTool:
         """Test pop
         """
         assert dealt_obj_.pop().id == 'card', 'wrong pop'
+        assert dealt_obj_.last.id == 'card', 'not added to last'
         dealt_obj_.current.clear()
         with pytest.raises(IndexError):
             dealt_obj_.pop()
@@ -192,14 +211,14 @@ class TestBag:
         """Test obj_ deal()
         """
         assert len(dealt_obj_.current) == 2, 'wrong current len'
-        ids1 = dealt_obj_.current_ids()
+        ids1 = dealt_obj_.current_ids
         assert 'card' in ids1, 'wrong cards ids inside current'
         assert 'Dice' in ids1, 'wrong dice ids inside current'
         dealt_obj_.deal()
         comp = [id(item) for item in dealt_obj_.c.values()]
         cur = [id(item) for item in dealt_obj_.current]
         assert comp != cur, 'dont created new instances'
-        ids2 = dealt_obj_.current_ids()
+        ids2 = dealt_obj_.current_ids
         assert ids1 == ids2, 'wrong order'
 
     def test_bag_deal_from_list(self, obj_: Bag) -> None:
@@ -208,7 +227,7 @@ class TestBag:
         items = ['card', 'card', 'card', 'Dice']
         result = obj_.deal(items).current
         assert len(result) == 4, 'wrong current len'
-        ids = obj_.current_ids()
+        ids = obj_.current_ids
         assert ids == items, 'wrong deal'
         assert 'card' in ids, 'wrong cards ids inside current'
         assert 'Dice' in ids, 'wrong dice id inside current'
@@ -242,8 +261,8 @@ class TestShaker:
         assert obj_.id == 'shaker', 'wrong id'
         assert isinstance(obj_.current, list), 'wrong type of current'
         assert len(obj_.current) == 0, 'nonempty current'
-        assert obj_.last is None, 'wrong last'
-        assert obj_.last_mapped is None, 'wrong last'
+        assert obj_.last_roll is None, 'wrong last'
+        assert obj_.last_roll_mapped is None, 'wrong last'
 
     def test_add_new_item_to_shaker(self, obj_: Bag) -> None:
         """Test add new item to bag
@@ -257,7 +276,7 @@ class TestShaker:
         roll = dealt_obj_.roll()
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
-        assert len(dealt_obj_.last) == 2, 'wrong last'
+        assert len(dealt_obj_.last_roll) == 2, 'wrong last'
 
     def test_roll_mapped_shaker(self, obj_: Shaker) -> None:
         """Test roll mapped shaker
@@ -268,7 +287,7 @@ class TestShaker:
         assert len(roll) == 2, 'wrong roll result'
         assert len(roll['dice']) == 5, 'wrong roll result'
         assert len(roll['dice_nice']) == 0, 'wrong roll result'
-        assert len(obj_.last_mapped) == 2, 'wrong last_mapped'
+        assert len(obj_.last_roll_mapped) == 2, 'wrong last_mapped'
 
     def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
@@ -432,7 +451,7 @@ class TestDeck:
     def test_check_is_to_arrange_valid(self, dealt_obj_: Deck) -> None:
         """Test _check_is_to_arrange_valid()
         """
-        order = dealt_obj_.current_ids()
+        order = dealt_obj_.current_ids
         order1 = order.copy()
         order1.reverse()
         assert dealt_obj_._check_is_to_arrange_valid(order1, order) is None, \
@@ -447,37 +466,37 @@ class TestDeck:
     def test_deck_reorder(self, dealt_obj_: Deck) -> None:
         """Test deck reorder()
         """
-        order = dealt_obj_.current_ids()
+        order = dealt_obj_.current_ids
         order.reverse()
         dealt_obj_.reorder(order)
-        assert dealt_obj_.current_ids() == order, 'wrong order'
+        assert dealt_obj_.current_ids == order, 'wrong order'
 
         with FixedSeed(42):
             dealt_obj_.shuffle()
-            old_oder = dealt_obj_.current_ids().copy()
-            order = dealt_obj_.current_ids()[5:]
+            old_oder = dealt_obj_.current_ids.copy()
+            order = dealt_obj_.current_ids[5:]
             order.reverse()
             dealt_obj_.reorder(order)
-            assert dealt_obj_.current_ids()[5:] == order, 'wrong order'
-            assert dealt_obj_.current_ids()[0:5] == old_oder[0:5], \
+            assert dealt_obj_.current_ids[5:] == order, 'wrong order'
+            assert dealt_obj_.current_ids[0:5] == old_oder[0:5], \
                 'wrong order'
 
     def test_deck_reorderleft(self, dealt_obj_: Deck) -> None:
         """Test deck reorderleft()
         """
-        order = dealt_obj_.current_ids()
+        order = dealt_obj_.current_ids
         order.reverse()
         dealt_obj_.reorderleft(order)
-        assert dealt_obj_.current_ids() == order, 'wrong order'
+        assert dealt_obj_.current_ids == order, 'wrong order'
 
         with FixedSeed(42):
             dealt_obj_.shuffle()
-            old_oder = dealt_obj_.current_ids().copy()
-            order = dealt_obj_.current_ids()[0:5]
+            old_oder = dealt_obj_.current_ids.copy()
+            order = dealt_obj_.current_ids[0:5]
             order.reverse()
             dealt_obj_.reorderleft(order)
-            assert dealt_obj_.current_ids()[0:5] == order, 'wrong order'
-            assert dealt_obj_.current_ids()[5:0] == old_oder[5:0], \
+            assert dealt_obj_.current_ids[0:5] == order, 'wrong order'
+            assert dealt_obj_.current_ids[5:0] == old_oder[5:0], \
                 'wrong order'
 
     def test_deck_reorderfrom(self, dealt_obj_: Deck) -> None:
@@ -485,14 +504,14 @@ class TestDeck:
         """
         with FixedSeed(42):
             dealt_obj_.shuffle()
-            old_oder = dealt_obj_.current_ids().copy()
-            order = dealt_obj_.current_ids()[2:6]
+            old_oder = dealt_obj_.current_ids.copy()
+            order = dealt_obj_.current_ids[2:6]
             order.reverse()
             dealt_obj_.reorderfrom(order, 2)
-            assert dealt_obj_.current_ids()[2:6] == order, 'wrong order'
-            assert dealt_obj_.current_ids()[0:2] == old_oder[0:2], \
+            assert dealt_obj_.current_ids[2:6] == order, 'wrong order'
+            assert dealt_obj_.current_ids[0:2] == old_oder[0:2], \
                 'wrong order'
-            assert dealt_obj_.current_ids()[6:] == old_oder[6:], 'wrong order'
+            assert dealt_obj_.current_ids[6:] == old_oder[6:], 'wrong order'
 
             with pytest.raises(
                 ArrangeIndexError,
@@ -613,7 +632,7 @@ class TestSteps:
         """Test clear() clear last
         """
         obj_.deal()
-        obj_.pull()
+        obj_.pop()
         assert obj_.last, 'empty last'
         obj_.clear()
         assert obj_.last is None, 'nonempty last'
@@ -624,6 +643,15 @@ class TestSteps:
         obj_.add(Step('omg', priority=42))
         assert obj_.c.omg.id == 'omg', 'stuff not added'
 
+    def test_by_id(self, obj_: Steps) -> None:
+        """Test by_id()
+        """
+        obj_.deal()
+        assert obj_.by_id('step1').id == 'step1', 'wrong search'
+        assert obj_.by_id('why') is None, 'wrong search'
+        obj_.clear()
+        assert obj_.by_id('step1') is None, 'wrong search'
+
     def test_push(self, obj_: Steps) -> None:
         """Test push to steps
         """
@@ -633,12 +661,12 @@ class TestSteps:
         assert obj_.current[0][1].id == 'omg', 'wrong id'
         assert id(obj_.current[0][1].id) != id(s), 'not replaced'
 
-    def test_pull(self, obj_: Steps) -> None:
+    def test_pop(self, obj_: Steps) -> None:
         """Test pull step from steps
         """
         s = Step('omg', priority=42)
         obj_.push(s)
-        step = obj_.pull()
+        step = obj_.pop()
         assert step.id == 'omg', 'wrong step'
         assert obj_.last.id == 'omg', 'wrong step'
         assert id(step) == id(obj_.last), 'wrong steps ids'
@@ -648,13 +676,13 @@ class TestSteps:
         """
         result = obj_.deal().current
         assert len(result) == 2, 'wrong len'
-        assert len(obj_.current_ids()) == 2, 'wrong current names len'
-        assert obj_.current_ids()[0] == 'step1', 'wrong current names'
-        current = obj_.pull()
+        assert len(obj_.current_ids) == 2, 'wrong current names len'
+        assert obj_.current_ids[0] == 'step1', 'wrong current names'
+        current = obj_.pop()
         assert len(obj_.current) == 1, 'wrong len'
         assert current.id == 'step1', 'wrong current step'
         assert obj_.last.id == 'step1', 'wrong current step'
-        current = obj_.pull()
+        current = obj_.pop()
         assert len(obj_.current) == 0, 'wrong len'
         assert current.id == 'asteP', 'wrong current step'
         assert obj_.last.id == 'asteP', 'wrong current step'
@@ -662,7 +690,7 @@ class TestSteps:
             IndexError,
             match='index out of range'
                 ):
-            obj_.pull()
+            obj_.pop()
         result = obj_.deal().current
         assert len(result) == 2, 'turn not clean'
 
@@ -672,8 +700,8 @@ class TestSteps:
         items = ['step1', 'asteP', 'asteP']
         result = obj_.deal(items).current
         assert len(result) == 3, 'wrong current len'
-        assert len(obj_.current_ids()) == 3, 'wrong current names len'
-        assert obj_.current_ids()[0] == 'step1', 'wrong current names'
-        obj_.pull()
+        assert len(obj_.current_ids) == 3, 'wrong current names len'
+        assert obj_.current_ids[0] == 'step1', 'wrong current names'
+        obj_.pop()
         assert len(result) == 2, 'wrong current len'
-        assert obj_.current_ids()[0] == 'asteP', 'wrong current names'
+        assert obj_.current_ids[0] == 'asteP', 'wrong current names'

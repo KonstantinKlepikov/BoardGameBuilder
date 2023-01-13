@@ -103,9 +103,9 @@ class TestGame:
         game.add(Shaker('width'))
         game.add(Steps('err'))
         game.add(Bag('pff'))
-        assert len(game.get_items()) == 3, 'wrong items'
-        assert len(game.get_tools()) == 4, 'wrong tools'
-        assert len(game.get_players()) == 1, 'wrong players'
+        assert len(game.get_items) == 3, 'wrong items'
+        assert len(game.get_tools) == 4, 'wrong tools'
+        assert len(game.get_players) == 1, 'wrong players'
 
     def test_get_items_val(self, game: Game) -> None:
         """Test get_items_val
@@ -143,20 +143,6 @@ class TestGame:
         assert len(result[0]['tools'][0]['items']) == 1, \
             'wrong number of items'
         assert result[0]['tools'][0]['items'][0]['id'] == 'why', 'wrong item'
-
-    def test_build_json(self, game: Game) -> None:
-        """Test build_json
-        """
-        game.add(Player('billy'))
-        game.c.billy.add(Shaker('what'))
-        game.c.billy.add(Dice('hey'))
-        game.c.billy.c.what.add(Dice('why'))
-        result = game.build_json()
-        assert isinstance(result, str), 'wrong result'
-        assert 'billy' in result, 'no player'
-        assert 'what' in result, 'no tools'
-        assert 'why' in result, 'no dices'
-        assert 'hey' in result, 'no dices'
 
     def test_relocate_all(self, game: Game) -> None:
         """Test relocations of attrs in game class

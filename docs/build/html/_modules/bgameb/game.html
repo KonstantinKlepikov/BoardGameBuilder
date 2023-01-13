@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.game &mdash; bgameb 0.0.36 documentation</title>
+  <title>bgameb.game &mdash; bgameb 0.0.37 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,7 +28,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.36
+                0.0.37
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,7 +71,7 @@
   <h1>Source code for bgameb.game</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Main engine to create game</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="c1"># import json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_json</span> <span class="kn">import</span> <span class="p">(</span>
@@ -101,6 +101,45 @@
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> created with id=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
                 <span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get items from Component</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, BaseItem]: items mapping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
+            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">)</span>
+                <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get tools from Component</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, BaseTool]: tools mapping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
+            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">)</span>
+                <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">get_players</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BasePlayer</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get players from Component</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict[str, BasePlayer]: players mapping</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
+            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BasePlayer</span><span class="p">)</span>
+                <span class="p">}</span>
+
 <div class="viewcode-block" id="BaseGame.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">BasePlayer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add stuff to component</span>
 
@@ -111,42 +150,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
                 <span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaseGame.get_items"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.get_items">[docs]</a>    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get items from Component</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict[str, BaseItem]: items mapping</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
-            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">)</span>
-                <span class="p">}</span></div>
-
-<div class="viewcode-block" id="BaseGame.get_tools"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.get_tools">[docs]</a>    <span class="k">def</span> <span class="nf">get_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get tools from Component</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict[str, BaseTool]: tools mapping</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
-            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseTool</span><span class="p">)</span>
-                <span class="p">}</span></div>
-
-<div class="viewcode-block" id="BaseGame.get_players"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.get_players">[docs]</a>    <span class="k">def</span> <span class="nf">get_players</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BasePlayer</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get players from Component</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict[str, BasePlayer]: players mapping</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
-            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BasePlayer</span><span class="p">)</span>
-                <span class="p">}</span></div>
 
 <div class="viewcode-block" id="BaseGame.get_items_val"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.get_items_val">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_items_val</span><span class="p">(</span>
@@ -160,7 +163,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list[dict[str, Any]]: items</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">val</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj_</span><span class="o">.</span><span class="n">get_items</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">val</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">obj_</span><span class="o">.</span><span class="n">get_items</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
 
 <div class="viewcode-block" id="BaseGame.get_tools_val"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.get_tools_val">[docs]</a>    <span class="k">def</span> <span class="nf">get_tools_val</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -175,7 +178,7 @@
 <span class="sd">            list[dict[str, Any]]: tools</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">obj_</span><span class="o">.</span><span class="n">get_tools</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">obj_</span><span class="o">.</span><span class="n">get_tools</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">t</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
             <span class="n">t</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_items_val</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -191,24 +194,12 @@
 <span class="sd">            list[dict[str, Any]]: players</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">obj_</span><span class="o">.</span><span class="n">get_players</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">obj_</span><span class="o">.</span><span class="n">get_players</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
             <span class="n">p</span><span class="p">[</span><span class="s1">&#39;tools&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tools_val</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
             <span class="n">p</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_items_val</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
-
-<div class="viewcode-block" id="BaseGame.build_json"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.build_json">[docs]</a>    <span class="k">def</span> <span class="nf">build_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Build json from nested objects</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            str: json object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">build</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">build</span><span class="p">[</span><span class="s1">&#39;players&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_players_val</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">build</span><span class="p">[</span><span class="s1">&#39;tools&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tools_val</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">build</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_items_val</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">build</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseGame.relocate_all"><a class="viewcode-back" href="../../bgameb.html#bgameb.game.BaseGame.relocate_all">[docs]</a>    <span class="k">def</span> <span class="nf">relocate_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseGame&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Relocate all objects in game</span>
@@ -216,19 +207,19 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            BaseGame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_items</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_items</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">item</span><span class="o">.</span><span class="n">relocate</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tools</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tools</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">tool</span><span class="o">.</span><span class="n">relocate</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tool</span><span class="o">.</span><span class="n">get_items</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tool</span><span class="o">.</span><span class="n">get_items</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">relocate</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_players</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_players</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">player</span><span class="o">.</span><span class="n">relocate</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">player</span><span class="o">.</span><span class="n">get_tools</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">player</span><span class="o">.</span><span class="n">get_tools</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">tool</span><span class="o">.</span><span class="n">relocate</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tool</span><span class="o">.</span><span class="n">get_items</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">tool</span><span class="o">.</span><span class="n">get_items</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">relocate</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">relocate</span><span class="p">()</span>
