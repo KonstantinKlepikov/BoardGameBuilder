@@ -1,9 +1,12 @@
 import pytest
 import json
+from loguru._logger import Logger
 from collections import Counter
 from dataclasses import dataclass, field
 from bgameb.base import Component, Base
+from bgameb.base_ import Base_
 from bgameb.errors import ComponentNameError
+from pydantic import BaseModel
 
 
 class TestComponent:
@@ -232,3 +235,21 @@ class TestBaseClass:
         obj_ = BaseMe('9 this is Fine #')
         obj_.relocate()
         assert obj_.this == 5, 'not relocated'
+
+
+class TestBaseClass_:
+    """Test Base class
+    """
+
+    def test_base_class_creation(self) -> None:
+        """Test Base instancing
+        """
+        obj_ = Base_(id='9 this is Fine #')
+        assert isinstance(obj_, BaseModel), 'wrong instance'
+        assert obj_.id == '9 this is Fine #', 'not set id for instance'
+        assert isinstance(obj_.counter, Counter), 'wrong counter type'
+        assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_._to_relocate, dict), 'wrong _to_relocate'
+        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
+        assert json.loads(obj_.json())['id'] == '9 this is Fine #', \
+            'not converted to json'
