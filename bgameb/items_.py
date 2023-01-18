@@ -2,7 +2,7 @@
 """
 import random
 from typing import Optional, NoReturn, Any
-from pydantic import Field, conint, PositiveInt, NonNegativeInt
+from pydantic import conint, PositiveInt, NonNegativeInt, ValidationError, validator
 from bgameb.base_ import Base_
 from bgameb.errors import StuffDefineError
 
@@ -20,6 +20,24 @@ class Step_(BaseItem_):
     """
     priority: NonNegativeInt = 0
 
+    def __eq__(self, other: 'Step_'):
+        return self.priority == other.priority
+
+    def __lt__(self, other: 'Step_'):
+        return self.priority < other.priority
+
+    def __le__(self, other: 'Step_'):
+        return self.priority <= other.priority
+
+    def __ne__(self, other: 'Step_'):
+        return self.priority != other.priority
+
+    def __gt__(self, other: 'Step_'):
+        return self.priority > other.priority
+
+    def __ge__(self, other: 'Step_'):
+        return self.priority >= other.priority
+
 
 class Dice_(BaseItem_):
     """Rolled or fliped objects, like dices or coins.
@@ -35,9 +53,10 @@ class Dice_(BaseItem_):
     Attr:
         - count (PositiveInt): count of items. Default to 1.
         - sides (ositiveInt): sides of dice or coin. Default to 2.
-        - mapping (dict[int, Any]): nonnumerik mapping of roll result.
-        - last_roll (Optional[list[int]]): last roll value.
-        - last_roll_mapped: (Optional[list[Any]]): last maped roll value.
+        - mapping (dict[PositiveInt, Any]): nonnumerik mapping of roll result.
+        - last_roll (Optional[list[PositiveInt]]): last roll value.
+        - last_roll_mapped (Optional[list[Any]]): last maped roll value.
+        - _range list[PositiveInt] - nonpytonic range of roll
 
     Raises:
         StuffDefineError: number of sides less than 2.
@@ -45,10 +64,10 @@ class Dice_(BaseItem_):
     """
     count: PositiveInt = 1
     sides: conint(gt=1) = 2
-    mapping: dict[int, Any] = {}
-    last_roll: list[int] = []
-    last_roll_mapped: Optional[list[Any]] = {}
-    _range: list[int] = []
+    mapping: dict[PositiveInt, Any] = {}
+    last_roll: list[PositiveInt] = []
+    last_roll_mapped: list[Any] = []
+    _range: list[PositiveInt] = []
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -60,11 +79,29 @@ class Dice_(BaseItem_):
                 logger=self._logger
                     )
 
-    def roll(self) -> list[int]:
+    def __eq__(self, other: 'Dice_'):
+        return self.sides == other.sides
+
+    def __lt__(self, other: 'Dice_'):
+        return self.sides < other.sides
+
+    def __le__(self, other: 'Dice_'):
+        return self.sides <= other.sides
+
+    def __ne__(self, other: 'Dice_'):
+        return self.sides != other.sides
+
+    def __gt__(self, other: 'Dice_'):
+        return self.sides > other.sides
+
+    def __ge__(self, other: 'Dice_'):
+        return self.sides >= other.sides
+
+    def roll(self) -> list[PositiveInt]:
         """Roll and return result
 
         Returns:
-            List[int]: result of roll
+            List[PositiveInt]: result of roll
         """
         self.last_roll = [
             random.choices(self._range, k=1)[0] for _

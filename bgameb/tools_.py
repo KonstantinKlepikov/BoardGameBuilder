@@ -14,12 +14,14 @@ from bgameb.errors import ArrangeIndexError, ComponentClassError
 class BaseTool_(Base_):
     """Base class for game tools (like decks or shakers)
     """
-    c: Component[BaseItem_] = Field(default_factory=Component)
+    c: Component[str, BaseItem_] = Field(default_factory=Component)
     current: list[BaseItem_] = []
     last: Optional[BaseItem_] = None
 
-    def __init__(self, **data):
-        super().__init__(**data)
+    class Config(Base_.Config):
+        json_encoders = {
+            Component: lambda c: c.to_json()
+                }
 
     @property
     def current_ids(self) -> list[str]:
@@ -41,14 +43,14 @@ class BaseTool_(Base_):
             return self.last.id
         return None
 
-    # @property
-    # def get_items(self) -> dict[str, BaseItem_]:
-    #     """Get items from Component
+    @property
+    def get_items(self) -> dict[str, BaseItem_]:
+        """Get items from Component
 
-    #     Returns:
-    #         dict[str, BaseItem]: items mapping
-    #     """
-    #     return {item.id for item in self.items}
+        Returns:
+            dict[str, BaseItem]: items mapping
+        """
+        return {item.id: item for item in self.c.values()}
 
     def _item_replace(self, item: BaseItem_) -> BaseItem_:
         """Replace item in a current
@@ -179,9 +181,10 @@ class BaseTool_(Base_):
         self._logger.debug('Current is reversed')
 
 
-class Bag(BaseTool_):
+class Bag_(Base_):
     """Bag object
     """
+    c: Component[str, BaseItem_] = Field(default_factory=Component)
 
     def add(self, stuff: BaseItem_) -> None:
         """Add stuff to Bag component
@@ -197,31 +200,8 @@ class Bag(BaseTool_):
         else:
             raise ComponentClassError(stuff, self._logger)
 
-    def deal(self, items: Optional[list[str]] = None) -> 'Bag':
-        """Deal new bag current
 
-        Args:
-            items (Optional[List[str]]): list of items ids
-
-        Returns:
-            Bag
-        """
-        self.clear()
-
-        if not items:
-            for stuff in self.c.values():
-                self.append(stuff)
-        else:
-            for id in items:
-                comp = self.c.by_id(id)
-                if comp:
-                    self.append(comp)
-
-        self._logger.debug(f'Is deal current: {self.current_ids}')
-        return self
-
-
-class Shaker(BaseTool_):
+class Shaker_(BaseTool_):
     """Create shaker for roll dices or flip coins
 
     Attr:
@@ -232,14 +212,11 @@ class Shaker(BaseTool_):
         - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped
                                                              roll result.
     """
-    c: Component[Dice_] = Field(default_factory=Component)
+    c: Component[str, Dice_] = Field(default_factory=Component)
     current: list[Dice_] = []
     last: Optional[Dice_] = None
     last_roll: dict[str, list[int]] = {}
     last_roll_mapped: dict[str, list[Any]] = {}
-
-    def __init__(self, **data):
-        super().__init__(**data)
 
     def add(self, stuff: Dice_) -> None:
         """Add dice to component
@@ -256,7 +233,7 @@ class Shaker(BaseTool_):
         else:
             raise ComponentClassError(stuff, self._logger)
 
-    def deal(self, items: Optional[list[str]] = None) -> 'Shaker':
+    def deal(self, items: Optional[list[str]] = None) -> 'Shaker_':
         """Deal new shaker current
 
         Args:
@@ -318,7 +295,7 @@ class Shaker(BaseTool_):
         return self.last_roll_mapped
 
 
-class Deck(BaseTool_):
+class Deck_(BaseTool_):
     """Deck object
 
     Deck ia a Bag subclass that contains Cards for
@@ -340,12 +317,9 @@ class Deck(BaseTool_):
 
             deque(Card1, Card3, Card2, Card4)
     """
-    c: Component[Card_] = Field(default_factory=Component)
+    c: Component[str, Card_] = Field(default_factory=Component)
     current: deque[Card_] = Field(default_factory=deque)
     last: Optional[Card_] = None
-
-    def __init__(self, **data):
-        super().__init__(**data)
 
     def add(self, stuff: Card_) -> None:
         """Add card to component
@@ -362,7 +336,7 @@ class Deck(BaseTool_):
         else:
             raise ComponentClassError(stuff, self._logger)
 
-    def deal(self, items: Optional[list[str]] = None) -> 'Deck':
+    def deal(self, items: Optional[list[str]] = None) -> 'Deck_':
         """Deal new deck current
 
         Args:
@@ -445,7 +419,7 @@ class Deck(BaseTool_):
         self.current.rotate(n)
         self._logger.debug(f'Current is rotate by {n}')
 
-    def shuffle(self) -> 'Deck':
+    def shuffle(self) -> 'Deck_':
         """Random shuffle current deck
 
         Returns:
@@ -501,7 +475,7 @@ class Deck(BaseTool_):
     def reorder(
         self,
         order: list[str],
-            ) -> 'Deck':
+            ) -> 'Deck_':
         """Reorder current deque from right side.
 
         Args:
@@ -533,7 +507,7 @@ class Deck(BaseTool_):
     def reorderleft(
         self,
         order: list[str],
-            ) -> 'Deck':
+            ) -> 'Deck_':
         """Reorder current deque from left side.
 
         Args:
@@ -566,7 +540,7 @@ class Deck(BaseTool_):
         self,
         order: list[str],
         start: int,
-            ) -> 'Deck':
+            ) -> 'Deck_':
         """Reorder current deque from left side.
 
         Args:
@@ -691,12 +665,9 @@ class Steps_(BaseTool_):
         - current (List[Tuple[int, Step]]): current order of steps.
         - last (Step): last pulled from current step
     """
-    c: Component[Step_] = Field(default_factory=Component)
+    c: Component[str, Step_] = Field(default_factory=Component)
     current: list[tuple[int, Step_]] = []
     last: Optional[Step_] = None
-
-    def __init__(self, **data):
-        super().__init__(**data)
 
     @property
     def current_ids(self) -> list[str]:

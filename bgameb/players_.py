@@ -1,9 +1,6 @@
 """Game players classes
 """
-from typing import Union
 from bgameb.base_ import Base_
-# from bgameb.items import BaseItem
-# from bgameb.tools import BaseTool
 
 
 class BasePlayer_(Base_):

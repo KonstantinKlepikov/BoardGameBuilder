@@ -1,11 +1,6 @@
 """Main engine to create game
 """
-# import json
-from typing import Union, Any
 from bgameb.base_ import Base_
-# from bgameb.players import BasePlayer
-# from bgameb.items import BaseItem
-# from bgameb.tools import BaseTool
 
 
 class BaseGame_(Base_):
@@ -17,106 +12,6 @@ class BaseGame_(Base_):
         self._logger.info(
             f'{self.__class__.__name__} created with id="{self.id}".'
                 )
-
-    # @property
-    # def get_items(self) -> dict[str, BaseItem]:
-    #     """Get items from Component
-
-    #     Returns:
-    #         dict[str, BaseItem]: items mapping
-    #     """
-    #     return {
-    #         key: val for key, val
-    #         in self.c.items()
-    #         if issubclass(val.__class__, BaseItem)
-    #             }
-
-    # @property
-    # def get_tools(self) -> dict[str, BaseTool]:
-    #     """Get tools from Component
-
-    #     Returns:
-    #         dict[str, BaseTool]: tools mapping
-    #     """
-    #     return {
-    #         key: val for key, val
-    #         in self.c.items()
-    #         if issubclass(val.__class__, BaseTool)
-    #             }
-
-    # @property
-    # def get_players(self) -> dict[str, BasePlayer]:
-    #     """Get players from Component
-
-    #     Returns:
-    #         dict[str, BasePlayer]: players mapping
-    #     """
-    #     return {
-    #         key: val for key, val
-    #         in self.c.items()
-    #         if issubclass(val.__class__, BasePlayer)
-    #             }
-
-    # def add(self, stuff: Union[BaseItem, BaseTool, BasePlayer]) -> None:
-    #     """Add stuff to component
-
-    #     Args:
-    #         stuff (BaseItem|BaseTool|BasePlayer): game stuff
-    #     """
-    #     self.c.update(stuff)
-    #     self._logger.info(
-    #         f'Component updated by stuff with id="{stuff.id}".'
-    #             )
-
-    # @staticmethod
-    # def get_items_val(
-    #     obj_: Union['BaseGame', BaseTool, BasePlayer]
-    #         ) -> list[dict[str, Any]]:
-    #     """Get items values represented as list of dicts
-
-    #     Args:
-    #         obj_ (Union['BaseGame', BaseTool, BasePlayer]): parrent class
-
-    #     Returns:
-    #         list[dict[str, Any]]: items
-    #     """
-    #     return [val.to_dict() for val in obj_.get_items.values()]
-
-    # def get_tools_val(
-    #     self,
-    #     obj_: Union['BaseGame', BasePlayer],
-    #         ) -> list[dict[str, Any]]:
-    #     """Get tools values represented as list of dicts
-
-    #     Args:
-    #         obj_ (Union[BaseTool, BasePlayer]): parrent class
-
-    #     Returns:
-    #         list[dict[str, Any]]: tools
-    #     """
-    #     result = []
-    #     for tool in obj_.get_tools.values():
-    #         t = tool.to_dict()
-    #         t['items'] = self.get_items_val(tool)
-    #         result.append(t)
-    #     return result
-
-    # def get_players_val(self, obj_: 'BaseGame') -> list[dict[str, Any]]:
-    #     """Get players values represented as list of dicts
-
-    #     Args:
-    #         obj_ (BaseGame): parrent class
-
-    #     Returns:
-    #         list[dict[str, Any]]: players
-    #     """
-    #     result = []
-    #     for player in obj_.get_players.values():
-    #         p = player.to_dict()
-    #         p['tools'] = self.get_tools_val(player)
-    #         p['items'] = self.get_items, DataClassJsonMixin_val(player)
-    #         result.append(p)
-    #     return result
 
     # def relocate_all(self) -> 'BaseGame':
     #     """Relocate all objects in game

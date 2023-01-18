@@ -3,12 +3,11 @@
 # from __future__ import annotations
 import re
 import string
+import json
 from typing import Optional, Iterator, TypeVar, Any
 from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
-from bgameb.errors import (
-    ComponentNameError, ComponentClassError, ComponentIdError
-        )
+from bgameb.errors import ComponentNameError, ComponentClassError
 
 
 from loguru._logger import Logger
@@ -55,7 +54,7 @@ class Base_(BaseModel):
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
-    counter: Counter = Field(default_factory=Counter)
+    counter: Counter = Field(default_factory=Counter, exclude=True) # TODO: test exclude
     _to_relocate: dict[str, str] = {}
     _logger: Logger = Field(default_factory=Logger)
 
@@ -72,7 +71,6 @@ class Base_(BaseModel):
 
     class Config:
         underscore_attrs_are_private = True
-        fields = {'counter': {'exclude': True}}
 
 
 V = TypeVar('V', bound=Base_)
@@ -150,6 +148,10 @@ class Component(Mapping[str, V]):
 
     def items(self) -> ItemsView[str, V]:
         return self.__inclusion__.items()
+
+    # TODO: test me
+    def to_json(self):
+        return json.dumps(self.__inclusion__, default=lambda c: c.json())
 
     def _is_unique(self, name: str) -> bool:
         """Chek is name of nested stuff is unique
