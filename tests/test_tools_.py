@@ -7,7 +7,7 @@ from loguru._logger import Logger
 from bgameb.base_ import Component_
 from bgameb.items_ import Dice_, Card_, Step_, BaseItem_
 from bgameb.tools_ import Shaker_, Deck_, Steps_, Bag_, BaseTool_
-from bgameb.errors import ArrangeIndexError, ComponentNameError
+from bgameb.errors import ArrangeIndexError
 from tests.conftest import FixedSeed
 
 
@@ -68,7 +68,7 @@ class TestTool:
     def test_get_items(self, obj_: BaseTool_) -> None:
         """Test get items
         """
-        result = obj_.get_items
+        result = obj_.get_items()
         assert len(result) == 2, 'wrong number of items'
         assert result['dice'], 'wrong item'
         assert result['card'], 'wrong item'
@@ -294,7 +294,8 @@ class TestDeck:
     def obj_(self) -> Deck_:
         obj_ = Deck_(id='deck')
         obj_.c = Component_(
-            card=Card_(id='card', count=5), card_nice=Card_(id='Card_nice', count=5)
+            card=Card_(id='card', count=5),
+            card_nice=Card_(id='Card_nice', count=5)
                 )
         return obj_
 
@@ -603,7 +604,8 @@ class TestSteps:
     def obj_(self) -> Steps_:
         obj_ = Steps_(id='game_turns')
         obj_.c = Component_(
-            step1=Step_(id='step1', priority=1), astep=Step_(id='asteP', priority=2)
+            step1=Step_(id='step1', priority=1),
+            astep=Step_(id='asteP', priority=2)
                 )
         return obj_
 

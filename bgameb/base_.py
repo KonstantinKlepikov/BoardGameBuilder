@@ -3,14 +3,13 @@
 import re
 import string
 import json
-from typing import Optional, Iterator, TypeVar, Any, Generic
+from typing import Optional, Iterator, TypeVar, Generic, Any, Union, AbstractSet
 from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
-from bgameb.errors import ComponentNameError, ComponentClassError
-
-
-from loguru._logger import Logger
 from pydantic import BaseModel, Field
+from pydantic.generics import GenericModel
+from bgameb.errors import ComponentNameError
+from loguru._logger import Logger
 from loguru import logger
 
 
@@ -38,7 +37,58 @@ def log_enable(
     logger.enable('bgameb')
 
 
-class Base_(BaseModel):
+IntStr = Union[int, str]
+AbstractSetIntStr = AbstractSet[IntStr]
+MappingIntStrAny = Mapping[IntStr, Any]
+
+
+# TODO: test me
+class PropertyBaseModel(BaseModel):
+    """
+    Workaround for serializing properties with pydantic
+    https://github.com/samuelcolvin/pydantic/issues/935
+    https://github.com/pydantic/pydantic/issues/935#issuecomment-554378904
+    https://github.com/pydantic/pydantic/issues/935#issuecomment-1152457432
+    """
+    @classmethod
+    def get_properties(cls):
+        return [prop for prop in dir(cls) if isinstance(getattr(cls, prop), property) and prop not in ("__values__", "fields")]
+
+    def dict(
+        self,
+        *,
+        include: Union[AbstractSetIntStr, MappingIntStrAny] = None,
+        exclude: Union[AbstractSetIntStr, MappingIntStrAny] = None,
+        by_alias: bool = False,
+        skip_defaults: bool = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+    ) -> dict[str, Any]:
+        attribs = super().dict(
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            skip_defaults=skip_defaults,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none
+        )
+        props = self.get_properties()
+        # Include and exclude properties
+        if include:
+            props = [prop for prop in props if prop in include]
+        if exclude:
+            props = [prop for prop in props if prop not in exclude]
+
+        # Update the attribute dict with the properties
+        if props:
+            attribs.update({prop: getattr(self, prop) for prop in props})
+
+        return attribs
+
+
+class Base_(PropertyBaseModel):
     """Base class for game, stuff, tools players and other stuff
 
     Attr:
@@ -76,193 +126,6 @@ K = TypeVar('K', bound=str)
 V = TypeVar('V', bound=Base_)
 
 
-# class Component(Mapping[K, V]):
-#     """Component mapping
-#     """
-#     __inclusion__: dict[K, V]
-
-#     def __init__(
-#         self,
-#         *args,
-#         **kwargs
-#             ) -> None:
-#         """Args must be a dicts
-#         """
-#         self.__dict__.update(__inclusion__={})
-
-#         for arg in args:
-#             if isinstance(arg, dict):
-#                 for k, v, in arg.items():
-#                     self.update(stuff=v, name=k)
-#             else:
-#                 raise AttributeError('Args must be a dict of dicts')
-#         if kwargs:
-#             for k, v, in kwargs.items():
-#                 self.update(stuff=v, name=k)
-
-#         # set logger
-#         self.__dict__.update({'_logger': logger.bind(
-#             classname=self.__class__.__name__,
-#             name='component'
-#                 )})
-
-#     def __iter__(self) -> Iterator:
-#         return iter(self.__inclusion__)
-
-#     def __setattr__(self, attr: str, value: V) -> None:
-#         raise NotImplementedError
-
-#     def __getattr__(self, attr: str) -> V:
-#         try:
-#             return self.__getitem__(attr)
-#         except KeyError:
-#             raise AttributeError(attr)
-
-#     def __delattr__(self, attr: str) -> None:
-#         try:
-#             self.__delitem__(attr)
-#         except KeyError:
-#             raise AttributeError(attr)
-
-#     def __setitem__(self, attr: K, value: V) -> None:
-#         raise NotImplementedError
-
-#     def __getitem__(self, attr: K) -> V:
-#         return self.__inclusion__[attr]
-
-#     def __delitem__(self, attr: K) -> None:
-#         del self.__inclusion__[attr]
-
-#     def __repr__(self) -> str:
-#         items = list(
-#             {f"{k}: {v!r}" for k, v in self.items()}
-#                 )
-#         return f"{{{', '.join(items)}}}"
-
-#     def __len__(self) -> int:
-#         return len(self.__inclusion__)
-
-#     def keys(self) -> KeysView[K]:
-#         return self.__inclusion__.keys()
-
-#     def values(self) -> ValuesView[V]:
-#         return self.__inclusion__.values()
-
-#     def items(self) -> ItemsView[K, V]:
-#         return self.__inclusion__.items()
-
-#     def to_json(self) -> str:
-#         return json.dumps(self.__inclusion__, default=lambda c: c.dict())
-
-#     def _is_unique(self, name: str) -> bool:
-#         """Chek is name of nested stuff is unique
-
-#         Args:
-#             name (str): name of stuff
-
-#         Raises:
-#             ComponentNameError: name not unique
-
-#         Returns:
-#             True: is unique
-#         """
-#         if name in self.keys():
-#             raise ComponentNameError(name)
-#         return True
-
-#     def _is_valid(self, name: str) -> bool:
-#         """Chek is name of stuff contains correct symbols
-#         match [a-zA-Z_][a-zA-Z0-9_]*$ expression:
-
-#             * a-z, A-Z, 0-9 symbols
-#             * first letter not a number amd not a _
-#             * can be used _ symbol in subsequent symbols
-
-#         Args:
-#             name (str): name of stuff
-
-#         Raises:
-#             ComponentNameError: name is not valid
-
-#         Returns:
-#             Trye: is valid
-#         """
-#         if not re.match("[a-z][a-z0-9_]*$", str(name)):
-#             raise ComponentNameError(name)
-#         return True
-
-#     def _make_name(self, name: str) -> str:
-#         """
-#         Replace spaces and other specific characters
-#         in the name with _
-
-#         Args:
-#             name (str): name of stuff
-
-#         Returns:
-#             name (str): safe name of stuff
-#         """
-#         name = str(name).lower()
-#         available = set(string.ascii_letters.lower() + string.digits + '_')
-
-#         if " " in name:
-#             name = name.replace(' ', '_')
-
-#         diff = set(name).difference(available)
-#         if diff:
-#             for char in diff:
-#                 name = name.replace(char, '_')
-
-#         self._is_valid(name)
-#         self._is_unique(name)
-
-#         return name
-
-#     def update(
-#         self,
-#         stuff: V,
-#         name: Optional[str] = None,
-#             ) -> None:
-#         """Update Component dict with safe name
-
-#         Args:
-#             stuff (Type[Base]): Base subclass instance
-#             name (Optional[str]). key to update dict. Defult to None.
-#         """
-#         if not issubclass(stuff.__class__,  Base_):
-#             raise ComponentClassError(stuff, self._logger)
-
-#         if name is None:
-#             name = self._make_name(stuff.id)
-#         else:
-#             name = self._make_name(name)
-
-#         comp = stuff.__class__(**stuff.dict())  # type: ignore
-#         self.__inclusion__.update({name: comp})
-
-#     def ids(self) -> list[str]:
-#         """Get ids of all added stuff in Component
-
-#         Returns:
-#             List[str]: list of stuff ids
-#         """
-#         return [stuff.id for stuff in self.values()]
-
-#     def by_id(self, id: str) -> Optional[V]:
-#         """Get stuff object by its id
-
-#         Args:
-#             id (str): stuff id
-
-#         Returns:
-#             V, optional: stuff object
-#         """
-#         for comp in self.values():
-#             if comp.id == id:
-#                 return comp
-#         return None
-
-
 from pydantic.generics import GenericModel
 
 
@@ -270,17 +133,15 @@ class Component_(GenericModel, Generic[K, V], Mapping[K, V]):
     """Component mapping
     """
 
-    def __init__(self, **data) -> None:
-        super().__init__(**data)
-
-        # for arg in args:
-        #     if isinstance(arg, dict):
-        #         for k, v, in arg.items():
-        #             self.update(stuff=v, name=k)
-        #     else:
-        #         raise AttributeError('Args must be a dict of dicts')
-        if data:
-            for k, v, in data.items():
+    def __init__(self, *args, **kwargs) -> None:
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v, in arg.items():
+                    self.__dict__[k] = v
+            else:
+                raise AttributeError('Args must be a dict of dicts')
+        if kwargs:
+            for k, v, in kwargs.items():
                 self.__dict__[k] = v
 
     def __iter__(self) -> Iterator:
@@ -419,4 +280,3 @@ class Component_(GenericModel, Generic[K, V], Mapping[K, V]):
             if comp.id == id:
                 return comp
         return None
-

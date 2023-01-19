@@ -45,7 +45,6 @@ class BaseTool_(Base_):
             return self.last.id
         return None
 
-    @property
     def get_items(self) -> dict[str, BaseItem_]:
         """Get items from Component
 

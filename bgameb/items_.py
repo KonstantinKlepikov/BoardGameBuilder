@@ -2,7 +2,7 @@
 """
 import random
 from typing import Optional, NoReturn, Any
-from pydantic import conint, PositiveInt, NonNegativeInt, ValidationError, validator
+from pydantic import conint, PositiveInt, NonNegativeInt
 from bgameb.base_ import Base_
 from bgameb.errors import StuffDefineError
 

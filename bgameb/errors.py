@@ -9,6 +9,7 @@ class CustomRuntimeError(RuntimeError):
     """
 
 
+# FIXME: del me
 class ComponentIdError(CustomRuntimeError):
     """Given id of component is wrong.
     """

@@ -1,10 +1,6 @@
 from pprint import pprint
 from typing import Optional
-from dataclasses import dataclass
-# from bgameb import (
-#     Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
-#     Bag, log_enable
-#         )
+from pydantic import Field
 from bgameb import (
     Game_, Player_, Steps_, Step_, Deck_, Card_, Shaker_, Dice_,
     Bag_, log_enable
@@ -51,7 +47,7 @@ if __name__ == '__main__':
     # Adding of cards to deck. "count" parameter define how mutch
     # copies of card we must deal.
     G.deck.add(
-        Card_(id='First', description='story', count=3)
+        Card_(id='First', description='story', count=2)
             )
     G.deck.add(Card_(id='Second', count=1))
 
@@ -68,25 +64,32 @@ if __name__ == '__main__':
     # You can get item by its id
     card = G.deck.c.by_id('First')
 
-    # If you need more clear schema, inherite from any class.
-    # Additional, you can define _to_relocate mapping -this
-    # help move values from some attrs to another or convert some
-    # values to related with Game outsade-hosted schema
+    # If you relocate some bult-in attrs, inherite from stuff classes,
+    # then define aliases for attributes. In this example we use two
+    # different solution: Field aliase and config.
+    # Dont forget use G.dict(by_alias=True) to get aliases.
+    # More infoshere:
+    # https://docs.pydantic.dev/usage/model_config/#alias-generator
+    # Finaly, if you need use callbacs to export data from some
+    # function as field values - define properties.
     class MyCard(Card_):
-        description: Optional[str] = None
+        description: Optional[str] = Field(None, alias='some_bla_bla')
         some_text: Optional[str] = 'some texts'
-        is_open: Optional[bool] = None
+
+        class Config(Card_.Config):
+            fields = {'opened': 'is_open'}
+
+        @property
+        def my_calculated_field(self) -> str:
+            return self.some_text.upper()
 
     G.deck.add(
-        MyCard(id='Thierd', description='story', count=12)
+        MyCard(id='Thierd', description='story', count=3)
             )
 
     # Use default counters of any objects - counters not added to schema
     G.deck.c.first.counter['yellow'] = 12
     G.deck.c.second.counter['banana'] = 0
-
-    # # relocate values
-    # G.c.deck.c.thierd.relocate()
 
     # Dealing and shuffling of deck
     G.deck.deal().shuffle()
@@ -103,17 +106,12 @@ if __name__ == '__main__':
     G.bag.add(Dice_(id='dice'))
     G.bag.add(Card_(id='card'))
 
-    # # components and technical attrs not added to shcema.
-    # # You can reconstruct full schema fit build_json() method
-    # schema = G.relocate_all().to_json()
 
     print('='*20 + '\n')
     print(f'Repr: {G}')
     print('='*20 + '\n')
-    pprint(G.dict())
-    # print('='*20 + '\n')
-    # print(f'Schema: {schema}')
-    # print('='*20 + '\n')
+    pprint(G.dict(by_alias=True))
+    print('='*20 + '\n')
     print(f'Result of shake: {result}')
     print('='*20 + '\n')
     print(f'Dir: {dir(G)}')

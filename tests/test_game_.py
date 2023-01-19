@@ -27,37 +27,3 @@ class TestGame:
         assert j.get('counter') is None, 'counter not excluded'
         assert j.get('_to_relocate') is None, '_to_relocat not excluded'
         assert j.get('_logger') is None, '_logger not excluded'
-
-    # def test_relocate_all(self, game: Game) -> None:
-    #     """Test relocations of attrs in game class
-    #     """
-    #     @dataclass
-    #     class PlayMe(Player):
-    #         this: str = field(default_factory=str)
-
-    #         def __post_init__(self) -> None:
-    #             super().__post_init__()
-    #             self._to_relocate = {
-    #                 'this': 'id'
-    #             }
-
-    #     @dataclass
-    #     class ShakeMe(Shaker):
-    #         ups: list = field(default_factory=list)
-    #         this: Optional[dict[str, list[int]]] = None
-
-    #         def __post_init__(self) -> None:
-    #             super().__post_init__()
-    #             self._to_relocate = {
-    #                 'ups': 'current',
-    #                 'this': 'last'
-    #                     }
-
-    #     game.add(PlayMe('billy'))
-    #     game.add(ShakeMe('some'))
-    #     game.c.some.add(Dice('six'))
-    #     game.c.some.deal()
-    #     assert isinstance(game.relocate_all(), Game), 'wrong return'
-    #     assert game.c.billy.this == game.c.billy.id, 'not relocated'
-    #     assert game.c.some.ups == game.c.some.current, 'not relocated'
-    #     assert game.c.some.this == game.c.some.last, 'not relocated'
