@@ -3,7 +3,7 @@
 import re
 import string
 import json
-from typing import Optional, Iterator, TypeVar, Any
+from typing import Optional, Iterator, TypeVar, Any, Generic
 from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
 from bgameb.errors import ComponentNameError, ComponentClassError
@@ -53,7 +53,7 @@ class Base_(BaseModel):
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
-    counter: Counter = Field(default_factory=Counter, exclude=True)
+    counter: Counter = Field(default_factory=Counter, exclude=True, repr=False)
     _to_relocate: dict[str, str] = {}
     _logger: Logger = Field(default_factory=Logger)
 
@@ -76,41 +76,218 @@ K = TypeVar('K', bound=str)
 V = TypeVar('V', bound=Base_)
 
 
-class Component(Mapping[K, V]):
+# class Component(Mapping[K, V]):
+#     """Component mapping
+#     """
+#     __inclusion__: dict[K, V]
+
+#     def __init__(
+#         self,
+#         *args,
+#         **kwargs
+#             ) -> None:
+#         """Args must be a dicts
+#         """
+#         self.__dict__.update(__inclusion__={})
+
+#         for arg in args:
+#             if isinstance(arg, dict):
+#                 for k, v, in arg.items():
+#                     self.update(stuff=v, name=k)
+#             else:
+#                 raise AttributeError('Args must be a dict of dicts')
+#         if kwargs:
+#             for k, v, in kwargs.items():
+#                 self.update(stuff=v, name=k)
+
+#         # set logger
+#         self.__dict__.update({'_logger': logger.bind(
+#             classname=self.__class__.__name__,
+#             name='component'
+#                 )})
+
+#     def __iter__(self) -> Iterator:
+#         return iter(self.__inclusion__)
+
+#     def __setattr__(self, attr: str, value: V) -> None:
+#         raise NotImplementedError
+
+#     def __getattr__(self, attr: str) -> V:
+#         try:
+#             return self.__getitem__(attr)
+#         except KeyError:
+#             raise AttributeError(attr)
+
+#     def __delattr__(self, attr: str) -> None:
+#         try:
+#             self.__delitem__(attr)
+#         except KeyError:
+#             raise AttributeError(attr)
+
+#     def __setitem__(self, attr: K, value: V) -> None:
+#         raise NotImplementedError
+
+#     def __getitem__(self, attr: K) -> V:
+#         return self.__inclusion__[attr]
+
+#     def __delitem__(self, attr: K) -> None:
+#         del self.__inclusion__[attr]
+
+#     def __repr__(self) -> str:
+#         items = list(
+#             {f"{k}: {v!r}" for k, v in self.items()}
+#                 )
+#         return f"{{{', '.join(items)}}}"
+
+#     def __len__(self) -> int:
+#         return len(self.__inclusion__)
+
+#     def keys(self) -> KeysView[K]:
+#         return self.__inclusion__.keys()
+
+#     def values(self) -> ValuesView[V]:
+#         return self.__inclusion__.values()
+
+#     def items(self) -> ItemsView[K, V]:
+#         return self.__inclusion__.items()
+
+#     def to_json(self) -> str:
+#         return json.dumps(self.__inclusion__, default=lambda c: c.dict())
+
+#     def _is_unique(self, name: str) -> bool:
+#         """Chek is name of nested stuff is unique
+
+#         Args:
+#             name (str): name of stuff
+
+#         Raises:
+#             ComponentNameError: name not unique
+
+#         Returns:
+#             True: is unique
+#         """
+#         if name in self.keys():
+#             raise ComponentNameError(name)
+#         return True
+
+#     def _is_valid(self, name: str) -> bool:
+#         """Chek is name of stuff contains correct symbols
+#         match [a-zA-Z_][a-zA-Z0-9_]*$ expression:
+
+#             * a-z, A-Z, 0-9 symbols
+#             * first letter not a number amd not a _
+#             * can be used _ symbol in subsequent symbols
+
+#         Args:
+#             name (str): name of stuff
+
+#         Raises:
+#             ComponentNameError: name is not valid
+
+#         Returns:
+#             Trye: is valid
+#         """
+#         if not re.match("[a-z][a-z0-9_]*$", str(name)):
+#             raise ComponentNameError(name)
+#         return True
+
+#     def _make_name(self, name: str) -> str:
+#         """
+#         Replace spaces and other specific characters
+#         in the name with _
+
+#         Args:
+#             name (str): name of stuff
+
+#         Returns:
+#             name (str): safe name of stuff
+#         """
+#         name = str(name).lower()
+#         available = set(string.ascii_letters.lower() + string.digits + '_')
+
+#         if " " in name:
+#             name = name.replace(' ', '_')
+
+#         diff = set(name).difference(available)
+#         if diff:
+#             for char in diff:
+#                 name = name.replace(char, '_')
+
+#         self._is_valid(name)
+#         self._is_unique(name)
+
+#         return name
+
+#     def update(
+#         self,
+#         stuff: V,
+#         name: Optional[str] = None,
+#             ) -> None:
+#         """Update Component dict with safe name
+
+#         Args:
+#             stuff (Type[Base]): Base subclass instance
+#             name (Optional[str]). key to update dict. Defult to None.
+#         """
+#         if not issubclass(stuff.__class__,  Base_):
+#             raise ComponentClassError(stuff, self._logger)
+
+#         if name is None:
+#             name = self._make_name(stuff.id)
+#         else:
+#             name = self._make_name(name)
+
+#         comp = stuff.__class__(**stuff.dict())  # type: ignore
+#         self.__inclusion__.update({name: comp})
+
+#     def ids(self) -> list[str]:
+#         """Get ids of all added stuff in Component
+
+#         Returns:
+#             List[str]: list of stuff ids
+#         """
+#         return [stuff.id for stuff in self.values()]
+
+#     def by_id(self, id: str) -> Optional[V]:
+#         """Get stuff object by its id
+
+#         Args:
+#             id (str): stuff id
+
+#         Returns:
+#             V, optional: stuff object
+#         """
+#         for comp in self.values():
+#             if comp.id == id:
+#                 return comp
+#         return None
+
+
+from pydantic.generics import GenericModel
+
+
+class Component_(GenericModel, Generic[K, V], Mapping[K, V]):
     """Component mapping
     """
-    __inclusion__: dict[K, V]
 
-    def __init__(
-        self,
-        *args,
-        **kwargs
-            ) -> None:
-        """Args must be a dicts
-        """
-        self.__dict__.update(__inclusion__={})
+    def __init__(self, **data) -> None:
+        super().__init__(**data)
 
-        for arg in args:
-            if isinstance(arg, dict):
-                for k, v, in arg.items():
-                    self.update(stuff=v, name=k)
-            else:
-                raise AttributeError('Args must be a dict of dicts')
-        if kwargs:
-            for k, v, in kwargs.items():
-                self.update(stuff=v, name=k)
-
-        # set logger
-        self.__dict__.update({'_logger': logger.bind(
-            classname=self.__class__.__name__,
-            name='component'
-                )})
+        # for arg in args:
+        #     if isinstance(arg, dict):
+        #         for k, v, in arg.items():
+        #             self.update(stuff=v, name=k)
+        #     else:
+        #         raise AttributeError('Args must be a dict of dicts')
+        if data:
+            for k, v, in data.items():
+                self.__dict__[k] = v
 
     def __iter__(self) -> Iterator:
-        return iter(self.__inclusion__)
+        return iter(self.__dict__)
 
     def __setattr__(self, attr: str, value: V) -> None:
-        raise NotImplementedError
+        self.__setitem__(attr, value)
 
     def __getattr__(self, attr: str) -> V:
         try:
@@ -125,48 +302,34 @@ class Component(Mapping[K, V]):
             raise AttributeError(attr)
 
     def __setitem__(self, attr: K, value: V) -> None:
-        raise NotImplementedError
+        self.__dict__[attr] = value
 
     def __getitem__(self, attr: K) -> V:
-        return self.__inclusion__[attr]
+        return self.__dict__[attr]
 
     def __delitem__(self, attr: K) -> None:
-        del self.__inclusion__[attr]
+        del self.__dict__[attr]
 
     def __repr__(self) -> str:
-        items = list({f"{k}={v!r}" for k, v in self.items()})
+        items = list(
+            {f"{k}: {v!r}" for k, v in self.items()}
+                )
         return f"{{{', '.join(items)}}}"
 
     def __len__(self) -> int:
-        return len(self.__inclusion__)
+        return len(self.__dict__)
 
     def keys(self) -> KeysView[K]:
-        return self.__inclusion__.keys()
+        return self.__dict__.keys()
 
     def values(self) -> ValuesView[V]:
-        return self.__inclusion__.values()
+        return self.__dict__.values()
 
     def items(self) -> ItemsView[K, V]:
-        return self.__inclusion__.items()
+        return self.__dict__.items()
 
     def to_json(self) -> str:
-        return json.dumps(self.__inclusion__, default=lambda c: c.dict())
-
-    def _is_unique(self, name: str) -> bool:
-        """Chek is name of nested stuff is unique
-
-        Args:
-            name (str): name of stuff
-
-        Raises:
-            ComponentNameError: name not unique
-
-        Returns:
-            True: is unique
-        """
-        if name in self.keys():
-            raise ComponentNameError(name)
-        return True
+        return json.dumps(self.__dict__, default=lambda c: c.dict())
 
     def _is_valid(self, name: str) -> bool:
         """Chek is name of stuff contains correct symbols
@@ -212,7 +375,6 @@ class Component(Mapping[K, V]):
                 name = name.replace(char, '_')
 
         self._is_valid(name)
-        self._is_unique(name)
 
         return name
 
@@ -227,17 +389,15 @@ class Component(Mapping[K, V]):
             stuff (Type[Base]): Base subclass instance
             name (Optional[str]). key to update dict. Defult to None.
         """
-        if not issubclass(stuff.__class__,  Base_):
-            raise ComponentClassError(stuff, self._logger)
-
         if name is None:
             name = self._make_name(stuff.id)
         else:
             name = self._make_name(name)
 
         comp = stuff.__class__(**stuff.dict())  # type: ignore
-        self.__inclusion__.update({name: comp})
+        self.__dict__[name] = comp
 
+    @property
     def ids(self) -> list[str]:
         """Get ids of all added stuff in Component
 

@@ -4,7 +4,7 @@ from typing import Union
 from collections import deque, Counter
 from pydantic import BaseModel
 from loguru._logger import Logger
-from bgameb.base_ import Component
+from bgameb.base_ import Component_
 from bgameb.items_ import Dice_, Card_, Step_, BaseItem_
 from bgameb.tools_ import Shaker_, Deck_, Steps_, Bag_, BaseTool_
 from bgameb.errors import ArrangeIndexError, ComponentNameError
@@ -18,7 +18,7 @@ class TestTool:
     @pytest.fixture
     def obj_(self) -> BaseTool_:
         tool = BaseTool_(id='this')
-        tool.c = Component(
+        tool.c = Component_(
             dice=BaseItem_(id='dice'), card=BaseItem_(id='card')
                 )
         return tool
@@ -36,7 +36,7 @@ class TestTool:
         assert isinstance(obj_.current, list), 'wrong type of current'
         assert len(obj_.current) == 0, 'wrong current len'
         assert obj_.id == 'this', 'not set ID for instance'
-        assert isinstance(obj_.c, Component), 'wrong component type'
+        assert isinstance(obj_.c, Component_), 'wrong component type'
         assert len(obj_.c) == 2, 'wrong items'
         assert obj_.last is None, 'wrong last'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
@@ -181,7 +181,7 @@ class TestBag:
     @pytest.fixture(scope='function')
     def obj_(self) -> Bag_:
         obj_ = Bag_(id='bag')
-        obj_.c = Component(
+        obj_.c = Component_(
             card=Card_(id='card'), dice=Dice_(id='Dice')
                 )
         return obj_
@@ -191,7 +191,7 @@ class TestBag:
         """
         assert isinstance(obj_, BaseModel), 'wrong instance'
         assert obj_.id == 'bag', 'not set ID for instance'
-        assert isinstance(obj_.c, Component), 'wrong component type'
+        assert isinstance(obj_.c, Component_), 'wrong component type'
         assert len(obj_.c) == 2, 'wrong items'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
@@ -222,10 +222,8 @@ class TestBag:
     def test_add_double_to_bag(self, obj_: Bag_) -> None:
         """Test add double of item to bag
         """
-        with pytest.raises(
-            ComponentNameError
-                ):
-             obj_.add(Card_(id='card'))
+        obj_.add(Card_(id='card'))
+        assert len(obj_.c) == 2, 'not added'
 
 
 class TestShaker:
@@ -235,7 +233,7 @@ class TestShaker:
     @pytest.fixture
     def obj_(self) -> Shaker_:
         obj_ = Shaker_(id='shaker')
-        obj_.c = Component(
+        obj_.c = Component_(
             dice=Dice_(id='dice', count=5), dice_nice=Dice_(id='dice_nice', count=5)
                 )
         return obj_
@@ -295,7 +293,7 @@ class TestDeck:
     @pytest.fixture
     def obj_(self) -> Deck_:
         obj_ = Deck_(id='deck')
-        obj_.c = Component(
+        obj_.c = Component_(
             card=Card_(id='card', count=5), card_nice=Card_(id='Card_nice', count=5)
                 )
         return obj_
@@ -597,100 +595,100 @@ class TestDeck:
             assert len(obj_.current) == 0, 'wrong result'
 
 
-# class TestSteps:
-#     """Test Steps class
-#     """
+class TestSteps:
+    """Test Steps class
+    """
 
-#     @pytest.fixture
-#     def obj_(self) -> Steps:
-#         obj_ = Steps('game_turns')
-#         obj_.c = Component(
-#             step1=Step('step1', priority=1), astep=Step('asteP', priority=2)
-#                 )
-#         return obj_
+    @pytest.fixture
+    def obj_(self) -> Steps_:
+        obj_ = Steps_(id='game_turns')
+        obj_.c = Component_(
+            step1=Step_(id='step1', priority=1), astep=Step_(id='asteP', priority=2)
+                )
+        return obj_
 
-#     def test_steps_instance(self) -> None:
-#         """Test Steps class instance
-#         """
-#         obj_ = Steps('game_turns')
-#         assert isinstance(obj_.current, list), 'wrong current type'
-#         assert len(obj_.current) == 0, 'wrong current len'
-#         assert obj_.last is None, 'wrong last'
+    def test_steps_instance(self) -> None:
+        """Test Steps class instance
+        """
+        obj_ = Steps_(id='game_turns')
+        assert isinstance(obj_.current, list), 'wrong current type'
+        assert len(obj_.current) == 0, 'wrong current len'
+        assert obj_.last is None, 'wrong last'
 
-#     def test_steps_clear_last(self, obj_: Steps) -> None:
-#         """Test clear() clear last
-#         """
-#         obj_.deal()
-#         obj_.pop()
-#         assert obj_.last, 'empty last'
-#         obj_.clear()
-#         assert obj_.last is None, 'nonempty last'
+    def test_steps_clear_last(self, obj_: Steps_) -> None:
+        """Test clear() clear last
+        """
+        obj_.deal()
+        obj_.pop()
+        assert obj_.last, 'empty last'
+        obj_.clear()
+        assert obj_.last is None, 'nonempty last'
 
-#     def test_steps_add_step(self, obj_: Steps) -> None:
-#         """Test add step to steps
-#         """
-#         obj_.add(Step('omg', priority=42))
-#         assert obj_.c.omg.id == 'omg', 'stuff not added'
+    def test_steps_add_step(self, obj_: Steps_) -> None:
+        """Test add step to steps
+        """
+        obj_.add(Step_(id='omg', priority=42))
+        assert obj_.c.omg.id == 'omg', 'stuff not added'
 
-#     def test_by_id(self, obj_: Steps) -> None:
-#         """Test by_id()
-#         """
-#         obj_.deal()
-#         assert obj_.by_id('step1').id == 'step1', 'wrong search'
-#         assert obj_.by_id('why') is None, 'wrong search'
-#         obj_.clear()
-#         assert obj_.by_id('step1') is None, 'wrong search'
+    def test_by_id(self, obj_: Steps_) -> None:
+        """Test by_id()
+        """
+        obj_.deal()
+        assert obj_.by_id('step1').id == 'step1', 'wrong search'
+        assert obj_.by_id('why') is None, 'wrong search'
+        obj_.clear()
+        assert obj_.by_id('step1') is None, 'wrong search'
 
-#     def test_push(self, obj_: Steps) -> None:
-#         """Test push to steps
-#         """
-#         s = Step('omg', priority=42)
-#         obj_.push(s)
-#         assert len(obj_.current) == 1, 'not pushed'
-#         assert obj_.current[0][1].id == 'omg', 'wrong id'
-#         assert id(obj_.current[0][1].id) != id(s), 'not replaced'
+    def test_push(self, obj_: Steps_) -> None:
+        """Test push to steps
+        """
+        s = Step_(id='omg', priority=42)
+        obj_.push(s)
+        assert len(obj_.current) == 1, 'not pushed'
+        assert obj_.current[0][1].id == 'omg', 'wrong id'
+        assert id(obj_.current[0][1].id) != id(s), 'not replaced'
 
-#     def test_pop(self, obj_: Steps) -> None:
-#         """Test pull step from steps
-#         """
-#         s = Step('omg', priority=42)
-#         obj_.push(s)
-#         step = obj_.pop()
-#         assert step.id == 'omg', 'wrong step'
-#         assert obj_.last.id == 'omg', 'wrong step'
-#         assert id(step) == id(obj_.last), 'wrong steps ids'
+    def test_pop(self, obj_: Steps_) -> None:
+        """Test pull step from steps
+        """
+        s = Step_(id='omg', priority=42)
+        obj_.push(s)
+        step = obj_.pop()
+        assert step.id == 'omg', 'wrong step'
+        assert obj_.last.id == 'omg', 'wrong step'
+        assert id(step) == id(obj_.last), 'wrong steps ids'
 
-#     def test_steps_deal(self, obj_: Steps) -> None:
-#         """Test start new cycle of turn
-#         """
-#         result = obj_.deal().current
-#         assert len(result) == 2, 'wrong len'
-#         assert len(obj_.current_ids) == 2, 'wrong current names len'
-#         assert obj_.current_ids[0] == 'step1', 'wrong current names'
-#         current = obj_.pop()
-#         assert len(obj_.current) == 1, 'wrong len'
-#         assert current.id == 'step1', 'wrong current step'
-#         assert obj_.last.id == 'step1', 'wrong current step'
-#         current = obj_.pop()
-#         assert len(obj_.current) == 0, 'wrong len'
-#         assert current.id == 'asteP', 'wrong current step'
-#         assert obj_.last.id == 'asteP', 'wrong current step'
-#         with pytest.raises(
-#             IndexError,
-#             match='index out of range'
-#                 ):
-#             obj_.pop()
-#         result = obj_.deal().current
-#         assert len(result) == 2, 'turn not clean'
+    def test_steps_deal(self, obj_: Steps_) -> None:
+        """Test start new cycle of turn
+        """
+        result = obj_.deal().current
+        assert len(result) == 2, 'wrong len'
+        assert len(obj_.current_ids) == 2, 'wrong current names len'
+        assert obj_.current_ids[0] == 'step1', 'wrong current names'
+        current = obj_.pop()
+        assert len(obj_.current) == 1, 'wrong len'
+        assert current.id == 'step1', 'wrong current step'
+        assert obj_.last.id == 'step1', 'wrong current step'
+        current = obj_.pop()
+        assert len(obj_.current) == 0, 'wrong len'
+        assert current.id == 'asteP', 'wrong current step'
+        assert obj_.last.id == 'asteP', 'wrong current step'
+        with pytest.raises(
+            IndexError,
+            match='index out of range'
+                ):
+            obj_.pop()
+        result = obj_.deal().current
+        assert len(result) == 2, 'turn not clean'
 
-#     def test_steps_deal_from_list(self, obj_: Steps) -> None:
-#         """Test steps deal() from items
-#         """
-#         items = ['step1', 'asteP', 'asteP']
-#         result = obj_.deal(items).current
-#         assert len(result) == 3, 'wrong current len'
-#         assert len(obj_.current_ids) == 3, 'wrong current names len'
-#         assert obj_.current_ids[0] == 'step1', 'wrong current names'
-#         obj_.pop()
-#         assert len(result) == 2, 'wrong current len'
-#         assert obj_.current_ids[0] == 'asteP', 'wrong current names'
+    def test_steps_deal_from_list(self, obj_: Steps_) -> None:
+        """Test steps deal() from items
+        """
+        items = ['step1', 'asteP', 'asteP']
+        result = obj_.deal(items).current
+        assert len(result) == 3, 'wrong current len'
+        assert len(obj_.current_ids) == 3, 'wrong current names len'
+        assert obj_.current_ids[0] == 'step1', 'wrong current names'
+        obj_.pop()
+        assert len(result) == 2, 'wrong current len'
+        assert obj_.current_ids[0] == 'asteP', 'wrong current names'

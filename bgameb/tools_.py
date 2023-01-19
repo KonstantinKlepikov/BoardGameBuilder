@@ -6,7 +6,7 @@ from collections import deque
 from collections.abc import KeysView
 from heapq import heappop, heappush
 from typing import Optional, Iterable, Union, Any
-from bgameb.base_ import Base_, Component
+from bgameb.base_ import Base_, Component_
 from bgameb.items_ import Card_, Dice_, Step_, BaseItem_
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
@@ -14,13 +14,15 @@ from bgameb.errors import ArrangeIndexError, ComponentClassError
 class BaseTool_(Base_):
     """Base class for game tools (like decks or shakers)
     """
-    c: Component[str, BaseItem_] = Field(default_factory=Component)
+    c: Component_[str, BaseItem_] = Field(
+        default_factory=Component_, exclude=True, repr=False
+            )
     current: list[BaseItem_] = []
     last: Optional[BaseItem_] = None
 
     class Config(Base_.Config):
         json_encoders = {
-            Component: lambda c: c.to_json()
+            Component_: lambda c: c.to_json()
                 }
 
     @property
@@ -184,11 +186,13 @@ class BaseTool_(Base_):
 class Bag_(Base_):
     """Bag object
     """
-    c: Component[str, BaseItem_] = Field(default_factory=Component)
+    c: Component_[str, BaseItem_] = Field(
+        default_factory=Component_, exclude=True, repr=False
+            )
 
     class Config(Base_.Config):
         json_encoders = {
-            Component: lambda c: c.to_json()
+            Component_: lambda c: c.to_json()
                 }
 
     def add(self, stuff: BaseItem_) -> None:
@@ -217,7 +221,9 @@ class Shaker_(BaseTool_):
         - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped
                                                              roll result.
     """
-    c: Component[str, Dice_] = Field(default_factory=Component)
+    c: Component_[str, Dice_] = Field(
+        default_factory=Component_, exclude=True, repr=False
+            )
     current: list[Dice_] = []
     last: Optional[Dice_] = None
     last_roll: dict[str, list[PositiveInt]] = {}
@@ -322,7 +328,9 @@ class Deck_(BaseTool_):
 
             deque(Card1, Card3, Card2, Card4)
     """
-    c: Component[str, Card_] = Field(default_factory=Component)
+    c: Component_[str, Card_] = Field(
+        default_factory=Component_, exclude=True, repr=False
+            )
     current: deque[Card_] = Field(default_factory=deque)
     last: Optional[Card_] = None
 
@@ -670,7 +678,9 @@ class Steps_(BaseTool_):
         - current (List[Tuple[int, Step]]): current order of steps.
         - last (Step): last pulled from current step
     """
-    c: Component[str, Step_] = Field(default_factory=Component)
+    c: Component_[str, Step_] = Field(
+        default_factory=Component_, exclude=True, repr=False
+            )
     current: list[tuple[int, Step_]] = []
     last: Optional[Step_] = None
 
