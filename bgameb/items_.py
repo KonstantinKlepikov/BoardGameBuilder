@@ -3,16 +3,16 @@
 import random
 from typing import Optional, NoReturn, Any
 from pydantic import conint, PositiveInt, NonNegativeInt
-from bgameb.base_ import Base_
+from bgameb.base_ import Base
 from bgameb.errors import StuffDefineError
 
 
-class BaseItem_(Base_):
+class BaseItem(Base):
     """Base class for game items (like dices or cards)
     """
 
 
-class Step_(BaseItem_):
+class Step_(BaseItem):
     """Game steps or turns
 
     Attr:
@@ -39,7 +39,7 @@ class Step_(BaseItem_):
         return self.priority >= other.priority
 
 
-class Dice_(BaseItem_):
+class Dice(BaseItem):
     """Rolled or fliped objects, like dices or coins.
 
     Sides attr define number of sides of roller. Default to 2.
@@ -79,22 +79,22 @@ class Dice_(BaseItem_):
                 logger=self._logger
                     )
 
-    def __eq__(self, other: 'Dice_'):
+    def __eq__(self, other: 'Dice'):
         return self.sides == other.sides
 
-    def __lt__(self, other: 'Dice_'):
+    def __lt__(self, other: 'Dice'):
         return self.sides < other.sides
 
-    def __le__(self, other: 'Dice_'):
+    def __le__(self, other: 'Dice'):
         return self.sides <= other.sides
 
-    def __ne__(self, other: 'Dice_'):
+    def __ne__(self, other: 'Dice'):
         return self.sides != other.sides
 
-    def __gt__(self, other: 'Dice_'):
+    def __gt__(self, other: 'Dice'):
         return self.sides > other.sides
 
-    def __ge__(self, other: 'Dice_'):
+    def __ge__(self, other: 'Dice'):
         return self.sides >= other.sides
 
     def roll(self) -> list[PositiveInt]:
@@ -122,7 +122,7 @@ class Dice_(BaseItem_):
         return self.last_roll_mapped
 
 
-class Card_(BaseItem_):
+class Card(BaseItem):
     """Card object
 
     Attr:
@@ -142,7 +142,7 @@ class Card_(BaseItem_):
     tapped: bool = False
     side: Optional[str] = None
 
-    def flip(self) -> 'Card_':
+    def flip(self) -> 'Card':
         """Face up or face down the card regardles of it condition
 
         Returns:
@@ -156,7 +156,7 @@ class Card_(BaseItem_):
             self._logger.debug('Card face up.')
         return self
 
-    def open(self) -> 'Card_':
+    def open(self) -> 'Card':
         """Face up the card
 
         Returns:
@@ -166,7 +166,7 @@ class Card_(BaseItem_):
         self._logger.debug('Card face up.')
         return self
 
-    def hide(self) -> 'Card_':
+    def hide(self) -> 'Card':
         """Face down the card
 
         Returns:
@@ -176,7 +176,7 @@ class Card_(BaseItem_):
         self._logger.debug('Card face down.')
         return self
 
-    def tap(self, side='right') -> 'Card_':
+    def tap(self, side='right') -> 'Card':
         """Tap the card to the given side
 
         Args:
@@ -190,7 +190,7 @@ class Card_(BaseItem_):
         self._logger.debug(f'Card taped to side {side}.')
         return self
 
-    def untap(self) -> 'Card_':
+    def untap(self) -> 'Card':
         """Untap the card
 
         Returns:

@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # start new turn
     current_steps = G.c.steps.deal()
 
-    # Game_steps is a priority queue, linked with priority attribute
+    # Game steps is a priority queue, linked with priority attribute
     last = G.c.steps.pop()
 
     # add deck object and cards

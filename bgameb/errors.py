@@ -9,15 +9,6 @@ class CustomRuntimeError(RuntimeError):
     """
 
 
-# FIXME: del me
-class ComponentIdError(CustomRuntimeError):
-    """Given id of component is wrong.
-    """
-    def __init__(self, id: str) -> None:
-        self.message = f'{id=} is not a string.'
-        super().__init__(self.message)
-
-
 class ComponentNameError(CustomRuntimeError):
     """Given name of component is wrong or name isn't unique.
     """

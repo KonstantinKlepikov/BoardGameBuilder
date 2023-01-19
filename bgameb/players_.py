@@ -1,13 +1,13 @@
 """Game players classes
 """
-from bgameb.base_ import Base_
+from bgameb.base_ import Base
 
 
-class BasePlayer_(Base_):
+class BasePlayer(Base):
     """Base class for players
     """
 
 
-class Player_(BasePlayer_):
+class Player(BasePlayer):
     """Player or bot
     """

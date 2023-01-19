@@ -2,8 +2,8 @@ from pprint import pprint
 from typing import Optional
 from pydantic import Field
 from bgameb import (
-    Game_, Player_, Steps_, Step_, Deck_, Card_, Shaker_, Dice_,
-    Bag_, log_enable
+    Game, Player, Steps, Step_, Deck, Card, Shaker, Dice,
+    Bag, log_enable
         )
 
 
@@ -11,23 +11,23 @@ if __name__ == '__main__':
     log_enable()
 
     # Creating of the game
-    class MyGame(Game_):
-        steps: Steps_
-        deck: Deck_
-        shaker: Shaker_
-        bag: Bag_
-        players: list[Player_] = []
+    class MyGame(Game):
+        steps: Steps
+        deck: Deck
+        shaker: Shaker
+        bag: Bag
+        players: list[Player] = []
 
     # The Player and Game are an obstract containeers for tools and stuff.
     # Deck, Bag, Shaker and Steps are tools. Dice, Card and Step are items.
 
     G = MyGame(
         id='one board game',
-        steps=Steps_(id='steps'),
-        deck=Deck_(id='deck'),
-        shaker=Shaker_(id='shaker'),
-        bag=Bag_(id='bag'),
-        players=[Player_(id='player1'), Player_(id='player2')]
+        steps=Steps(id='steps'),
+        deck=Deck(id='deck'),
+        shaker=Shaker(id='shaker'),
+        bag=Bag(id='bag'),
+        players=[Player(id='player1'), Player(id='player2')]
             )
 
     # The tool objects must be filled by items by method add().
@@ -41,15 +41,15 @@ if __name__ == '__main__':
     # Starting of new turn
     current_steps = G.steps.deal()
 
-    # Game_steps is a priority queue, ordered by "priority" attribute
+    # Game steps is a priority queue, ordered by "priority" attribute
     last = G.steps.pop()
 
     # Adding of cards to deck. "count" parameter define how mutch
     # copies of card we must deal.
     G.deck.add(
-        Card_(id='First', description='story', count=2)
+        Card(id='First', description='story', count=2)
             )
-    G.deck.add(Card_(id='Second', count=1))
+    G.deck.add(Card(id='Second', count=1))
 
     # All items in tools are saved in spetial object Component.
     # Is a dict-like class. Component is predefined as attribute "c".
@@ -72,11 +72,11 @@ if __name__ == '__main__':
     # https://docs.pydantic.dev/usage/model_config/#alias-generator
     # Finaly, if you need use callbacs to export data from some
     # function as field values - define properties.
-    class MyCard(Card_):
+    class MyCard(Card):
         description: Optional[str] = Field(None, alias='some_bla_bla')
         some_text: Optional[str] = 'some texts'
 
-        class Config(Card_.Config):
+        class Config(Card.Config):
             fields = {'opened': 'is_open'}
 
         @property
@@ -96,15 +96,15 @@ if __name__ == '__main__':
 
     # Adding dices to shaker
     G.shaker.add(
-        Dice_(id='dice#8', sides=8, count=10)
+        Dice(id='dice#8', sides=8, count=10)
             )
 
     # Roll dices
     result = G.shaker.c.dice_8.roll()
 
     # Use bag as collection of any items
-    G.bag.add(Dice_(id='dice'))
-    G.bag.add(Card_(id='card'))
+    G.bag.add(Dice(id='dice'))
+    G.bag.add(Card(id='card'))
 
 
     print('='*20 + '\n')

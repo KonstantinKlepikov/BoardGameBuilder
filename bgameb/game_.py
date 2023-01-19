@@ -1,9 +1,9 @@
 """Main engine to create game
 """
-from bgameb.base_ import Base_
+from bgameb.base_ import Base
 
 
-class BaseGame_(Base_):
+class BaseGame(Base):
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -14,6 +14,6 @@ class BaseGame_(Base_):
                 )
 
 
-class Game_(BaseGame_):
+class Game(BaseGame):
     """The main game object
     """

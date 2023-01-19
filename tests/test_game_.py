@@ -2,7 +2,7 @@ import json
 import pytest
 from loguru._logger import Logger
 from collections import Counter
-from bgameb.game_ import Game_
+from bgameb.game_ import Game
 
 
 class TestGame:
@@ -10,10 +10,10 @@ class TestGame:
     """
 
     @pytest.fixture(scope='function')
-    def game(self) -> Game_:
-        return Game_(id='game')
+    def game(self) -> Game:
+        return Game(id='game')
 
-    def test_game_class_created(self, game: Game_) -> None:
+    def test_game_class_created(self, game: Game) -> None:
         """Test Game instancing
         """
         assert game.id == 'game', 'not set id for instance'

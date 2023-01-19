@@ -88,7 +88,7 @@ class PropertyBaseModel(BaseModel):
         return attribs
 
 
-class Base_(PropertyBaseModel):
+class Base(PropertyBaseModel):
     """Base class for game, stuff, tools players and other stuff
 
     Attr:
@@ -123,13 +123,13 @@ class Base_(PropertyBaseModel):
 
 
 K = TypeVar('K', bound=str)
-V = TypeVar('V', bound=Base_)
+V = TypeVar('V', bound=Base)
 
 
 from pydantic.generics import GenericModel
 
 
-class Component_(GenericModel, Generic[K, V], Mapping[K, V]):
+class Component(GenericModel, Generic[K, V], Mapping[K, V]):
     """Component mapping
     """
 
