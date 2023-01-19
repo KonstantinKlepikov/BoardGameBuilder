@@ -15,7 +15,6 @@ click-default-group==1.2.2
 commonmark==0.9.1
 constantly==15.1.0
 cryptography==38.0.4
-dataclasses-json==0.5.7
 decorator==5.1.1
 docutils==0.17.1
 executing==1.0.0

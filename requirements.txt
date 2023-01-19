@@ -1,5 +1,4 @@
 incremental==21.3.0
-dataclasses-json==0.5.7
 loguru==0.6.0
 pydantic==1.10.4
 python-dotenv==0.20.0

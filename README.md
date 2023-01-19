@@ -147,4 +147,4 @@ Available fragmet naming:
 `make release` - to bump version, build changelog, commit, push tags and changes.
 
 \* for version management are used [incremental](https://github.com/twisted/incremental) and [towncrier](https://pypi.org/project/towncrier/) for changelog
-\* project based on [dataclasses-json](https://github.com/lidatong/dataclasses-json)
+\* project based on [pydantic](https://github.com/pydantic/pydantic)
