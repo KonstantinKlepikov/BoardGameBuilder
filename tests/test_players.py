@@ -2,7 +2,7 @@ import json
 from collections import Counter
 from pydantic import BaseModel
 from loguru._logger import Logger
-from bgameb.players_ import Player
+from bgameb.players import Player
 
 
 class TestPlayer:

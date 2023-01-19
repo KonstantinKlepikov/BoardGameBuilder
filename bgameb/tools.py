@@ -6,8 +6,8 @@ from collections import deque
 from collections.abc import KeysView
 from heapq import heappop, heappush
 from typing import Optional, Iterable, Union, Any
-from bgameb.base_ import Base, Component
-from bgameb.items_ import Card, Dice, Step_, BaseItem
+from bgameb.base import Base, Component
+from bgameb.items import Card, Dice, Step_, BaseItem
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 

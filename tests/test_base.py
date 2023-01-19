@@ -3,7 +3,7 @@ import json
 from pydantic import BaseModel
 from loguru._logger import Logger
 from collections import Counter
-from bgameb.base_ import Base, Component
+from bgameb.base import Base, Component
 from bgameb.errors import ComponentNameError
 
 

@@ -4,9 +4,9 @@ from typing import Union
 from collections import deque, Counter
 from pydantic import BaseModel
 from loguru._logger import Logger
-from bgameb.base_ import Component
-from bgameb.items_ import Dice, Card, Step_, BaseItem
-from bgameb.tools_ import Shaker, Deck, Steps, Bag, BaseTool
+from bgameb.base import Component
+from bgameb.items import Dice, Card, Step_, BaseItem
+from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
 from bgameb.errors import ArrangeIndexError
 from tests.conftest import FixedSeed
 

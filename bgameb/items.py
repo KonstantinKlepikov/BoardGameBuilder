@@ -3,7 +3,7 @@
 import random
 from typing import Optional, NoReturn, Any
 from pydantic import conint, PositiveInt, NonNegativeInt
-from bgameb.base_ import Base
+from bgameb.base import Base
 from bgameb.errors import StuffDefineError
 
 

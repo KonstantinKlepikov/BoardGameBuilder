@@ -4,7 +4,7 @@ from collections import Counter
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError
 from loguru._logger import Logger
-from bgameb.items_ import Dice, Card, Step_, BaseItem
+from bgameb.items import Dice, Card, Step_, BaseItem
 from bgameb.errors import StuffDefineError
 from tests.conftest import FixedSeed
 

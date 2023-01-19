@@ -1,6 +1,6 @@
 """Main engine to create game
 """
-from bgameb.base_ import Base
+from bgameb.base import Base
 
 
 class BaseGame(Base):

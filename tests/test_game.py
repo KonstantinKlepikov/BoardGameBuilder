@@ -2,7 +2,7 @@ import json
 import pytest
 from loguru._logger import Logger
 from collections import Counter
-from bgameb.game_ import Game
+from bgameb.game import Game
 
 
 class TestGame:
