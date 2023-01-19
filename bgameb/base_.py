@@ -1,6 +1,5 @@
 """Base constructs for build package objects
 """
-# from __future__ import annotations
 import re
 import string
 import json
@@ -54,7 +53,7 @@ class Base_(BaseModel):
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
-    counter: Counter = Field(default_factory=Counter, exclude=True) # TODO: test exclude
+    counter: Counter = Field(default_factory=Counter, exclude=True)
     _to_relocate: dict[str, str] = {}
     _logger: Logger = Field(default_factory=Logger)
 
@@ -73,13 +72,14 @@ class Base_(BaseModel):
         underscore_attrs_are_private = True
 
 
+K = TypeVar('K', bound=str)
 V = TypeVar('V', bound=Base_)
 
 
-class Component(Mapping[str, V]):
+class Component(Mapping[K, V]):
     """Component mapping
     """
-    __inclusion__: dict[str, V]
+    __inclusion__: dict[K, V]
 
     def __init__(
         self,
@@ -124,13 +124,13 @@ class Component(Mapping[str, V]):
         except KeyError:
             raise AttributeError(attr)
 
-    def __setitem__(self, attr: str, value: V) -> None:
+    def __setitem__(self, attr: K, value: V) -> None:
         raise NotImplementedError
 
-    def __getitem__(self, attr: str) -> V:
+    def __getitem__(self, attr: K) -> V:
         return self.__inclusion__[attr]
 
-    def __delitem__(self, attr: str) -> None:
+    def __delitem__(self, attr: K) -> None:
         del self.__inclusion__[attr]
 
     def __repr__(self) -> str:
@@ -140,18 +140,17 @@ class Component(Mapping[str, V]):
     def __len__(self) -> int:
         return len(self.__inclusion__)
 
-    def keys(self) -> KeysView[str]:
+    def keys(self) -> KeysView[K]:
         return self.__inclusion__.keys()
 
     def values(self) -> ValuesView[V]:
         return self.__inclusion__.values()
 
-    def items(self) -> ItemsView[str, V]:
+    def items(self) -> ItemsView[K, V]:
         return self.__inclusion__.items()
 
-    # TODO: test me
-    def to_json(self):
-        return json.dumps(self.__inclusion__, default=lambda c: c.json())
+    def to_json(self) -> str:
+        return json.dumps(self.__inclusion__, default=lambda c: c.dict())
 
     def _is_unique(self, name: str) -> bool:
         """Chek is name of nested stuff is unique

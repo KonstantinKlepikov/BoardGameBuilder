@@ -3,7 +3,7 @@ import json
 from pydantic import BaseModel
 from loguru._logger import Logger
 from collections import Counter
-from bgameb.base import Component, Base
+from bgameb.base_ import Component, Base_
 from bgameb.base_ import Base_
 from bgameb.errors import ComponentNameError
 
@@ -14,7 +14,7 @@ class TestComponent:
 
     @pytest.fixture(scope='function')
     def comp(self) -> Component:
-        return Component(some=Base('some'))
+        return Component(some=Base_(id='some'))
 
     def test_components_access_to_attr(self, comp: Component) -> None:
         """Test components acces to attrs
@@ -34,9 +34,9 @@ class TestComponent:
             del comp['newer']
 
         with pytest.raises(NotImplementedError):
-            comp.this = Base('this')
+            comp.this = Base_(id='this')
         with pytest.raises(NotImplementedError):
-            comp['this'] = Base('this')
+            comp['this'] = Base_(id='this')
 
     def test_components_repr(self, comp: Component) -> None:
         """Test components repr
@@ -107,7 +107,7 @@ class TestComponent:
         """Test update component
         """
         comp = Component()
-        cl = Base('that')
+        cl = Base_(id='that')
         comp.update(cl)
         comp['that'].id == 'that', 'wrong id'
         with pytest.raises(
@@ -122,9 +122,9 @@ class TestComponent:
         """
         comp = Component()
         assert comp.ids() == [], 'nonempty list of names'
-        comp.update(Base('that'))
+        comp.update(Base_(id='that'))
         assert comp.ids() == ['that', ], 'empty list of names'
-        comp.update(Base('this'))
+        comp.update(Base_(id='this'))
         assert comp.ids() == ['that', 'this'], 'empty list of names'
 
     def test_by_id(self, comp: Component) -> None:
@@ -132,6 +132,13 @@ class TestComponent:
         """
         assert comp.by_id('some').id == 'some', 'wrong returnt'
         assert comp.by_id('something') is None, 'wrong component'
+
+    def test_to_json_convertation(self, comp: Component) -> None:
+        """Test to_json() method
+        """
+        j = json.loads(comp.to_json())
+        assert isinstance(j['some'], dict), 'not converted'
+        assert j['some']['id'] == 'some', 'not converted'
 
 
 class TestBaseClass:
@@ -148,5 +155,9 @@ class TestBaseClass:
         assert len(obj_.counter) == 0, 'counter not empty'
         assert isinstance(obj_._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
-        assert json.loads(obj_.json())['id'] == '9 this is Fine #', \
+        j : dict = json.loads(obj_.json())
+        assert j['id'] == '9 this is Fine #', \
             'not converted to json'
+        assert j.get('counter') is None, 'counter not excluded'
+        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
+        assert j.get('_logger') is None, '_logger not excluded'

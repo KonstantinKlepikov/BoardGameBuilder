@@ -1,7 +1,7 @@
 """Game tools classes
 """
 import random
-from pydantic import Field
+from pydantic import Field, PositiveInt
 from collections import deque
 from collections.abc import KeysView
 from heapq import heappop, heappush
@@ -186,6 +186,11 @@ class Bag_(Base_):
     """
     c: Component[str, BaseItem_] = Field(default_factory=Component)
 
+    class Config(Base_.Config):
+        json_encoders = {
+            Component: lambda c: c.to_json()
+                }
+
     def add(self, stuff: BaseItem_) -> None:
         """Add stuff to Bag component
 
@@ -208,14 +213,14 @@ class Shaker_(BaseTool_):
         - c (Component[Dice]): components of Shaker
         - current (Deque[Dice]): current dice list.
         - last (Optional[Dice]): last poped from current.
-        - last_roll (Optional[dict[str, list[int]]]): last roll result.
+        - last_roll (Optional[dict[str, list[PositiveInt]]]): last roll result.
         - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped
                                                              roll result.
     """
     c: Component[str, Dice_] = Field(default_factory=Component)
     current: list[Dice_] = []
     last: Optional[Dice_] = None
-    last_roll: dict[str, list[int]] = {}
+    last_roll: dict[str, list[PositiveInt]] = {}
     last_roll_mapped: dict[str, list[Any]] = {}
 
     def add(self, stuff: Dice_) -> None:
@@ -336,6 +341,19 @@ class Deck_(BaseTool_):
         else:
             raise ComponentClassError(stuff, self._logger)
 
+    def _item_replace(self, item: Card_) -> Card_:  # type: ignore[override]
+        """Replace item in a current
+
+        Args:
+            item (Card): a card object
+
+        Returns:
+            Card: a card object
+        """
+        item = item.__class__(**item.dict())
+        item.count = 1
+        return item
+
     def deal(self, items: Optional[list[str]] = None) -> 'Deck_':
         """Deal new deck current
 
@@ -360,18 +378,15 @@ class Deck_(BaseTool_):
         self._logger.debug(f'Is deal current: {self.current_ids}')
         return self
 
-    # def _item_replace(self, item: Card) -> Card:  # type: ignore[override]
-    #     """Replace item in a current
+    def shuffle(self) -> 'Deck_':
+        """Random shuffle current deck
 
-    #     Args:
-    #         item (Card): a card object
-
-    #     Returns:
-    #         Card: a card object
-    #     """
-    #     item = replace(item)
-    #     del item.count
-    #     return item
+        Returns:
+            Deck
+        """
+        random.shuffle(self.current)
+        self._logger.debug(f'Is shuffled: {self.current_ids}')
+        return self
 
     def appendleft(self, item: Card_) -> None:
         """Add card to the left side of the current deck.
@@ -418,16 +433,6 @@ class Deck_(BaseTool_):
         """
         self.current.rotate(n)
         self._logger.debug(f'Current is rotate by {n}')
-
-    def shuffle(self) -> 'Deck_':
-        """Random shuffle current deck
-
-        Returns:
-            Deck
-        """
-        random.shuffle(self.current)
-        self._logger.debug(f'Is shuffled: {self.current_ids}')
-        return self
 
     def _check_order_len(self, len_: int) -> None:
         """Check is order len valid

@@ -21,8 +21,12 @@ class TestGame:
         assert len(game.counter) == 0, 'counter not empty'
         assert isinstance(game._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(game._logger, Logger), 'wrong _to_relocate'
+        j : dict = json.loads(game.json())
         assert json.loads(game.json())['id'] == 'game', \
             'not converted to json'
+        assert j.get('counter') is None, 'counter not excluded'
+        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
+        assert j.get('_logger') is None, '_logger not excluded'
 
     # def test_relocate_all(self, game: Game) -> None:
     #     """Test relocations of attrs in game class
