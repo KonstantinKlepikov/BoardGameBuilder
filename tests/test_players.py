@@ -1,8 +1,8 @@
 import json
 from collections import Counter
+from pydantic import BaseModel
+from loguru._logger import Logger
 from bgameb.players import Player
-from bgameb.items import Dice, Card, Step
-from bgameb.tools import Steps, Deck, Shaker, Bag
 
 
 class TestPlayer:
@@ -12,29 +12,15 @@ class TestPlayer:
     def test_players_classes_created(self) -> None:
         """Test players classes instancing
         """
-        obj_ = Player('player')
+        obj_ = Player(id='player')
+        assert isinstance(obj_, BaseModel), 'wrong instance'
         assert obj_.id == 'player', 'not set id for instance'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_.other, dict), 'wrong other'
-
-    def test_players_classes_are_converted_to_json(self) -> None:
-        """Test to json convertatrion
-        """
-        obj_ = Player('player')
-        j = json.loads(obj_.to_json())
-        assert j['id'] == 'player', 'not converted to json'
-
-    def test_player_get_from_component(self) -> None:
-        """Test Player get stuff from component
-        """
-        obj_ = Player('player')
-        obj_.add(Dice('this'))
-        obj_.add(Card('one'))
-        obj_.add(Step('fy'))
-        obj_.add(Deck('some'))
-        obj_.add(Shaker('width'))
-        obj_.add(Steps('err'))
-        obj_.add(Bag('pff'))
-        assert len(obj_.get_items) == 3, 'wrong items'
-        assert len(obj_.get_tools) == 4, 'wrong tools'
+        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
+        j: dict = json.loads(obj_.json())
+        assert j['id'] == 'player', \
+            'not converted to json'
+        assert j.get('counter') is None, 'counter not excluded'
+        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
+        assert j.get('_logger') is None, '_logger not excluded'

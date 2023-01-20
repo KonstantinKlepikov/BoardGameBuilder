@@ -2,17 +2,16 @@
 """
 import re
 import string
-from typing import Optional, Iterator, TypeVar, Any
+import json
+from typing import (
+    Optional, Iterator, TypeVar, Generic, Any, Union, AbstractSet
+        )
 from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
-from dataclasses import dataclass, field
-from dataclasses_json import (
-    dataclass_json, DataClassJsonMixin, Undefined, CatchAll,
-    config
-        )
-from bgameb.errors import (
-    ComponentNameError, ComponentClassError, ComponentIdError
-        )
+from pydantic import BaseModel, Field
+from pydantic.generics import GenericModel
+from bgameb.errors import ComponentNameError
+from loguru._logger import Logger
 from loguru import logger
 
 
@@ -40,46 +39,81 @@ def log_enable(
     logger.enable('bgameb')
 
 
-@dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass
-class Base(DataClassJsonMixin):
+IntStr = Union[int, str]
+AbstractSetIntStr = AbstractSet[IntStr]
+MappingIntStrAny = Mapping[IntStr, Any]
+
+
+# TODO: test me
+class PropertyBaseModel(BaseModel):
+    """
+    Workaround for serializing properties with pydantic
+    https://github.com/samuelcolvin/pydantic/issues/935
+    https://github.com/pydantic/pydantic/issues/935#issuecomment-554378904
+    https://github.com/pydantic/pydantic/issues/935#issuecomment-1152457432
+    """
+    @classmethod
+    def get_properties(cls):
+        return [
+            prop for prop
+            in dir(cls)
+            if isinstance(getattr(cls, prop), property)
+            and prop not in ("__values__", "fields")
+                ]
+
+    def dict(
+        self,
+        *,
+        include: Union[AbstractSetIntStr, MappingIntStrAny] = None,
+        exclude: Union[AbstractSetIntStr, MappingIntStrAny] = None,
+        by_alias: bool = False,
+        skip_defaults: bool = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+    ) -> dict[str, Any]:
+        attribs = super().dict(
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            skip_defaults=skip_defaults,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none
+        )
+        props = self.get_properties()
+        # Include and exclude properties
+        if include:
+            props = [prop for prop in props if prop in include]
+        if exclude:
+            props = [prop for prop in props if prop not in exclude]
+
+        # Update the attribute dict with the properties
+        if props:
+            attribs.update({prop: getattr(self, prop) for prop in props})
+
+        return attribs
+
+
+class Base(PropertyBaseModel):
     """Base class for game, stuff, tools players and other stuff
 
     Attr:
         - id (str): id of stuff
-        - other (Dict[str, Any]): all other data, added to instance
-                                  at declaration
         - counter (Counter): counter object
-        - _to_relocate (dict[str, str): mapping for relocation any data
-                                         to attributes inside dataclass. You
-                                         can use names of attributes or methods
-                                         of class for this mapping.
+        - _logger (Logger): loguru logger
 
     Counter is a `collection.Counter
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
-    other: CatchAll = field(
-        default_factory=dict,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-            )
-    counter: Counter = field(
-        default_factory=Counter,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-            )
-    _to_relocate: dict[str, str] = field(
-        default_factory=dict,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-        init=False,
-    )
+    counter: Counter = Field(default_factory=Counter, exclude=True, repr=False)
+    _logger: Logger = Field(...)
 
-    def __post_init__(self) -> None:
-        # check id
-        if not isinstance(self.id, str):
-            raise ComponentIdError(self.id)
+    def __init__(self, **data):
+        super().__init__(**data)
 
-        # int counter
+        # init counter
         self.counter = Counter()
 
         # set logger
@@ -87,131 +121,80 @@ class Base(DataClassJsonMixin):
             classname=self.__class__.__name__,
             name=self.id)
 
-    @property
-    def _inclusion(self) -> dict[str, Any]:
-        return {
-            k: v for k, v
-            in self.__dict__.items()
-            if not k.startswith('_')
-            and k not in ['current', 'last', 'other']
-                }
-
-    def __repr__(self) -> str:
-        items = {f"{k}={v!r}" for k, v in self._inclusion.items()}
-        return f"{type(self).__name__}({', '.join(items)})"
-
-    def relocate(self) -> 'Base':
-        """Relocate data. For this is used mapping from
-        _to_relocate attribute
-
-        Returns:
-            Base
-        """
-        for key, val in self._to_relocate.items():
-
-            if key in self._inclusion.keys() and val in dir(self):
-
-                if callable(getattr(self, val)):
-                    self.__dict__[key] = getattr(self, val)()
-                    self._logger.info(f'Is used "{val}" to fill "{key}".')
-                else:
-                    self.__dict__[key] = self.__getattribute__(val)
-                    self._logger.info(f'"{val}" is relocated to "{key}".')
-
-        return self
+    class Config:
+        underscore_attrs_are_private = True
 
 
+K = TypeVar('K', bound=str)
 V = TypeVar('V', bound=Base)
 
 
-class Component(Mapping[str, V]):
+class Component(GenericModel, Generic[K, V], Mapping[K, V]):
     """Component mapping
     """
-    __inclusion__: dict[str, V]
 
     def __init__(
         self,
-        *args,
-        **kwargs
+        *args: tuple[dict[K, V]],
+        **kwargs: dict[K, V]
             ) -> None:
-        """Args must be a dicts
-        """
-        self.__dict__.update(__inclusion__={})
-
         for arg in args:
             if isinstance(arg, dict):
                 for k, v, in arg.items():
-                    self.update(stuff=v, name=k)
+                    self.__dict__[k] = v
             else:
                 raise AttributeError('Args must be a dict of dicts')
         if kwargs:
             for k, v, in kwargs.items():
-                self.update(stuff=v, name=k)
+                self.__dict__[k] = v
 
-        # set logger
-        self.__dict__.update({'_logger': logger.bind(
-            classname=self.__class__.__name__,
-            name='component'
-                )})
+    def __iter__(self) -> Iterator:  # type: ignore
+        return iter(self.__dict__)
 
-    def __iter__(self) -> Iterator:
-        return iter(self.__inclusion__)
+    def __setattr__(self, attr: K, value: V) -> None:  # type: ignore
+        self.__setitem__(attr, value)
 
-    def __setattr__(self, attr: str, value: V) -> None:
-        raise NotImplementedError
-
-    def __getattr__(self, attr: str) -> V:
+    def __getattr__(self, attr: K) -> V:  # type: ignore
         try:
             return self.__getitem__(attr)
         except KeyError:
             raise AttributeError(attr)
 
-    def __delattr__(self, attr: str) -> None:
+    def __delattr__(self, attr: K) -> None:  # type: ignore
         try:
             self.__delitem__(attr)
         except KeyError:
             raise AttributeError(attr)
 
-    def __setitem__(self, attr: str, value: V) -> None:
-        raise NotImplementedError
+    def __setitem__(self, attr: K, value: V) -> None:
+        self.__dict__[attr] = value
 
-    def __getitem__(self, attr: str) -> V:
-        return self.__inclusion__[attr]
+    def __getitem__(self, attr: K) -> V:
+        return self.__dict__[attr]  # type: ignore
 
-    def __delitem__(self, attr: str) -> None:
-        del self.__inclusion__[attr]
+    def __delitem__(self, attr: K) -> None:
+        del self.__dict__[attr]
 
     def __repr__(self) -> str:
-        items = list({f"{k}={v!r}" for k, v in self.items()})
+        items = list(
+            {f"{k}: {v!r}" for k, v in self.items()}
+                )
         return f"{{{', '.join(items)}}}"
 
     def __len__(self) -> int:
-        return len(self.__inclusion__)
+        return len(self.__dict__)
 
-    def keys(self) -> KeysView[str]:
-        return self.__inclusion__.keys()
+    def keys(self) -> KeysView[K]:
+        return self.__dict__.keys()  # type: ignore
 
     def values(self) -> ValuesView[V]:
-        return self.__inclusion__.values()
+        return self.__dict__.values()
 
-    def items(self) -> ItemsView[str, V]:
-        return self.__inclusion__.items()
+    def items(self) -> ItemsView[K, V]:
+        return self.__dict__.items()  # type: ignore
 
-    def _is_unique(self, name: str) -> bool:
-        """Chek is name of nested stuff is unique
-
-        Args:
-            name (str): name of stuff
-
-        Raises:
-            ComponentNameError: name not unique
-
-        Returns:
-            True: is unique
-        """
-        if name in self.keys():
-            raise ComponentNameError(name)
-        return True
+    def to_json(self) -> str:
+        return json.dumps(self.__dict__, default=lambda c: c.dict())
 
     def _is_valid(self, name: str) -> bool:
         """Chek is name of stuff contains correct symbols
@@ -257,7 +240,6 @@ class Component(Mapping[str, V]):
                 name = name.replace(char, '_')
 
         self._is_valid(name)
-        self._is_unique(name)
 
         return name
 
@@ -272,17 +254,15 @@ class Component(Mapping[str, V]):
             stuff (Type[Base]): Base subclass instance
             name (Optional[str]). key to update dict. Defult to None.
         """
-        if not issubclass(stuff.__class__,  Base):
-            raise ComponentClassError(stuff, self._logger)
-
         if name is None:
             name = self._make_name(stuff.id)
         else:
             name = self._make_name(name)
 
-        comp = stuff.__class__(**stuff.to_dict())  # type: ignore
-        self.__inclusion__.update({name: comp})
+        comp = stuff.__class__(**stuff.dict())
+        self.__dict__[name] = comp
 
+    @property
     def ids(self) -> list[str]:
         """Get ids of all added stuff in Component
 
