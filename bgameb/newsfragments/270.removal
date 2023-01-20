@@ -1,0 +1,9 @@
+# 270:
+    - dataclasses-json dependecie is removed
+    - attr c is removed from all classes except tools
+    - some methods, that get stuff from Component in stuff classes are removed (like get_items())
+    - from Bag class removed current and last attributes. Bag cant be dealt
+    - Component now isnt set-like dict - we can add copies with identical keys, it replace old objects. Ids not check now.
+    - other attribute (for not defined in shcema data) is removed
+    - are removed relocate() and relocate_all() methods
+    - ->

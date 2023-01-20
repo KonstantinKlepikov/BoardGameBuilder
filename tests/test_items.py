@@ -1,7 +1,10 @@
 import json
 import pytest
 from collections import Counter
-from bgameb.items import Dice, Card, Step, BaseItem
+from pydantic import BaseModel
+from pydantic.error_wrappers import ValidationError
+from loguru._logger import Logger
+from bgameb.items import Dice, Card, Step_, BaseItem
 from bgameb.errors import StuffDefineError
 from tests.conftest import FixedSeed
 
@@ -10,21 +13,27 @@ class TestBaseStuff:
     """Test creation with id and json schemes
     """
 
-    def test_items_classes_created(self) -> None:
+    @pytest.mark.parametrize("_class,_id", [
+        (BaseItem, 'item'),
+        (Dice, 'dice'),
+        (Card, 'card'),
+        (Step_, 'step'),
+            ])
+    def test_items_classes_created(self, _class, _id: str) -> None:
         """Test items classes instancing
         """
-        obj_ = BaseItem('item')
-        assert obj_.id == 'item', 'not set id for instance'
+        obj_ = _class(id=_id)
+        assert isinstance(obj_, BaseModel), 'wrong instance'
+        assert obj_.id == _id, 'not set id for instance'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_.other, dict), 'wrong other'
-
-    def test_items_classes_are_converted_to_json(self) -> None:
-        """Test to json convertatrion
-        """
-        obj_ = BaseItem('item')
-        j = json.loads(obj_.to_json())
-        assert j['id'] == 'item', 'not converted to json'
+        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
+        j: dict = json.loads(obj_.json())
+        assert j['id'] == _id, \
+            'not converted to json'
+        assert j.get('counter') is None, 'counter not excluded'
+        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
+        assert j.get('_logger') is None, '_logger not excluded'
 
 
 class TestStep:
@@ -34,11 +43,15 @@ class TestStep:
     def test_step_instance(self) -> None:
         """Test Step class instance
         """
-        obj_ = Step('first_step')
+        obj_ = Step_(id='first_step')
         assert obj_.priority == 0, 'wrong priority'
-        obj1 = Step('first_step', priority=20)
+        obj1 = Step_(id='first_step', priority=20)
         assert obj1.priority == 20, 'wrong priority'
         assert obj1 > obj_, 'wong comparison'
+        assert obj1 >= obj_, 'wong comparison'
+        assert obj1 != obj_, 'wong comparison'
+        assert not obj1 < obj_, 'wong comparison'
+        assert not obj1 <= obj_, 'wong comparison'
 
 
 class TestDices:
@@ -48,29 +61,39 @@ class TestDices:
     def test_dice_instanciation(self) -> None:
         """Test dice correct created
         """
-        obj_ = Dice('dice nice')
-        assert obj_.id == 'dice nice', 'wrong id'
+        obj_ = Dice(id='dice nice')
         assert obj_.sides == 2, 'wrong sides'
         assert obj_.count == 1, 'wrong count'
         assert len(obj_._range) == 2, 'wrong range'
         assert isinstance(obj_.mapping, dict), 'wrong mapping'
         assert len(obj_.mapping) == 0, 'wrong maping len'
-        assert obj_.last_roll is None, 'wrong last'
-        assert obj_.last_roll_mapped is None, 'wrong last_mapped'
+        assert obj_.last_roll == [], 'wrong last'
+        assert obj_.last_roll_mapped == [], 'wrong last_mapped'
+
+    def test_comparison_of_dices(self) -> None:
+        """Test comparison of dices
+        """
+        obj_ = Dice(id='dice nice', sides=3)
+        obj1 = Dice(id='the_dice', sides=30)
+        assert obj1 > obj_, 'wong comparison'
+        assert obj1 >= obj_, 'wong comparison'
+        assert obj1 != obj_, 'wong comparison'
+        assert not obj1 < obj_, 'wong comparison'
+        assert not obj1 <= obj_, 'wong comparison'
 
     def test_dice_type_have_sides_defined_less_than_two(self) -> None:
         """Test dice class initialised with less than 2 sides
         """
         with pytest.raises(
-            StuffDefineError,
-            match='Needed >= 2'
+            ValidationError,
+            match='ensure this value is greater than 1'
                 ):
-            Dice('base', sides=1)
+            Dice(id='base', sides=1)
 
     def test_dice_roll(self) -> None:
         """Test dice roll()
         """
-        obj_ = Dice('dice', count=5)
+        obj_ = Dice(id='dice', count=5)
         with FixedSeed(42):
             result = obj_.roll()
             assert isinstance(result, list), 'roll returns not list'
@@ -87,19 +110,19 @@ class TestDices:
             StuffDefineError,
             match='Mapping must define values for each side.'
                 ):
-            Dice('base', mapping={1: 'this'})
+            Dice(id='base', mapping={1: 'this'})
         with pytest.raises(
             StuffDefineError,
             match='Mapping must define values for each side.'
                 ):
-            Dice('base', mapping={1: 'this', 3: 'that'})
-        dice = Dice('base', mapping={1: 'this', 2: 'that'})
+            Dice(id='base', mapping={1: 'this', 3: 'that'})
+        dice = Dice(id='base', mapping={1: 'this', 2: 'that'})
         assert dice.roll_mapped(), 'no result'
 
     def test_dice_roll_mapping(self) -> None:
         """Test roll_mapping()
         """
-        obj_ = Dice('dice', count=5, mapping={1: 'this', 2: 'that'})
+        obj_ = Dice(id='dice', count=5, mapping={1: 'this', 2: 'that'})
         with FixedSeed(42):
             result = obj_.roll_mapped()
             assert isinstance(result, list), 'roll returns not list'
@@ -112,7 +135,7 @@ class TestDices:
         """Test roll maped return only maped result. If no mapping
         - is empty list returned
         """
-        obj_ = Dice('dice', count=5)
+        obj_ = Dice(id='dice', count=5)
         result = obj_.roll_mapped()
         assert isinstance(result, list), 'roll returns not list'
         assert len(result) == 0, 'wrong count of rolls'
@@ -124,8 +147,7 @@ class TestCard:
     def test_card_instanciation(self) -> None:
         """Test card correct created
         """
-        obj_ = Card('card')
-        assert obj_.id == 'card', 'wrong name'
+        obj_ = Card(id='card')
         assert obj_.opened is False, 'card is opened'
         assert obj_.tapped is False, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
@@ -134,7 +156,7 @@ class TestCard:
     def test_flip(self) -> None:
         """Test flip card
         """
-        obj_ = Card('card')
+        obj_ = Card(id='card')
         obj_ = obj_.flip()
         assert isinstance(obj_, Card), 'wrong return'
         assert obj_.opened, 'card not oppened'
@@ -144,7 +166,7 @@ class TestCard:
     def test_open(self) -> None:
         """Test face up opened card
         """
-        obj_ = Card('card')
+        obj_ = Card(id='card')
         obj_ = obj_.open()
         assert isinstance(obj_, Card), 'wrong return'
         assert obj_.opened, 'card not opened'
@@ -152,7 +174,7 @@ class TestCard:
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
-        obj_ = Card('card')
+        obj_ = Card(id='card')
         obj_.opened = True
         obj_ = obj_.hide()
         assert isinstance(obj_, Card), 'wrong return'
@@ -161,7 +183,7 @@ class TestCard:
     def test_tap_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
         """
-        obj_ = Card('card')
+        obj_ = Card(id='card')
         obj_ = obj_.tap(side='left')
         assert isinstance(obj_, Card), 'wrong return'
         assert obj_.tapped, 'card not tapped'
@@ -170,7 +192,7 @@ class TestCard:
     def test_untap_card(self) -> None:
         """Test tap card tap and set side
         """
-        obj_ = Card('card')
+        obj_ = Card(id='card')
         obj_.tapped = True
         assert obj_.tapped, 'card not tapped'
         obj_.side = 'left'

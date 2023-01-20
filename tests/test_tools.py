@@ -1,9 +1,11 @@
 import json
 import pytest
 from typing import Union
-from collections import deque
+from collections import deque, Counter
+from pydantic import BaseModel
+from loguru._logger import Logger
 from bgameb.base import Component
-from bgameb.items import Dice, Card, Step, BaseItem
+from bgameb.items import Dice, Card, Step_, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
 from bgameb.errors import ArrangeIndexError
 from tests.conftest import FixedSeed
@@ -15,55 +17,71 @@ class TestTool:
 
     @pytest.fixture
     def obj_(self) -> BaseTool:
-        tool = BaseTool('this')
+        tool = BaseTool(id='this')
         tool.c = Component(
-            dice=Dice('dice'), card=Card('card')
+            dice=BaseItem(id='dice'), card=BaseItem(id='card')
                 )
         return tool
 
     @pytest.fixture
     def dealt_obj_(self, obj_: BaseTool) -> BaseTool:
-        obj_.current.append(Dice('dice'))
-        obj_.current.append(Card('card'))
+        obj_.current.append(BaseItem(id='dice'))
+        obj_.current.append(BaseItem(id='card'))
         return obj_
 
     def test_tool_init(self, obj_: BaseTool) -> None:
         """Test tool classes instancing
         """
+        assert isinstance(obj_, BaseModel), 'wrong instance'
         assert isinstance(obj_.current, list), 'wrong type of current'
         assert len(obj_.current) == 0, 'wrong current len'
         assert obj_.id == 'this', 'not set ID for instance'
+        assert isinstance(obj_.c, Component), 'wrong component type'
         assert len(obj_.c) == 2, 'wrong items'
         assert obj_.last is None, 'wrong last'
+        assert isinstance(obj_.counter, Counter), 'wrong counter type'
+        assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
+        j: dict = json.loads(obj_.json())
+        assert j['id'] == 'this', 'not converted to json'
+        assert j.get('counter') is None, 'counter not excluded'
+        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
+        assert j.get('_logger') is None, '_logger not excluded'
+
+    def test_last_id(self, dealt_obj_: BaseTool) -> None:
+        """Test get_last_id
+        """
+        dealt_obj_.pop()
+        assert dealt_obj_.last_id == 'card', 'wrong id'
+        dealt_obj_.last = None
+        assert dealt_obj_.last_id is None, 'wrong id'
+
+    def test_by_id(self, dealt_obj_: BaseTool) -> None:
+        """Test by_id()
+        """
+        dealt_obj_.append(BaseItem(id='card'))
+        assert isinstance(dealt_obj_.by_id('card'), list), 'wrong type'
+        assert len(dealt_obj_.by_id('card')) == 2, 'wrong len'
+        assert dealt_obj_.by_id('card')[0].id == 'card', 'wrong search'
+        assert dealt_obj_.by_id('why') == [], 'wrong search'
+        dealt_obj_.clear()
+        assert dealt_obj_.by_id('card') == [], 'wrong search'
 
     def test_get_items(self, obj_: BaseTool) -> None:
         """Test get items
         """
-        result = obj_.get_items
+        result = obj_.get_items()
         assert len(result) == 2, 'wrong number of items'
         assert result['dice'], 'wrong item'
         assert result['card'], 'wrong item'
 
-    def test_stuff_classes_are_converted_to_json(self, obj_: BaseTool) -> None:
-        """Test to json convertatrion
-        """
-        j = json.loads(obj_.to_json())
-        assert j['id'] == 'this', 'not converted to json'
-
     def test_item_replace(self, obj_: BaseTool) -> None:
         """Test _item_replace()
         """
-        card = Card('card')
+        card = BaseItem(id='card')
         item = obj_._item_replace(card)
         assert item.id == 'card', 'wrong id'
-        assert item.count == 1, 'wrong count'
         assert id(item) != id(card), 'not replaced'
-        dice = Dice('dice')
-        item = obj_._item_replace(dice)
-        assert item.id == 'dice', 'wrong id'
-        assert item.count == 1, 'wrong count'
-        assert item.sides == 2, 'wrong sides'
-        assert id(item) != id(dice), 'not replaced'
 
     def test_clear(self, dealt_obj_: BaseTool) -> None:
         """Test current clear
@@ -82,26 +100,10 @@ class TestTool:
         assert dealt_obj_.current_ids[0] == 'dice', \
             'wrong current names'
 
-    def test_last_id(self, dealt_obj_: BaseTool) -> None:
-        """Test get_last_id
-        """
-        dealt_obj_.pop()
-        assert dealt_obj_.last_id == 'card', 'wrong id'
-        dealt_obj_.last = None
-        assert dealt_obj_.last_id is None, 'wrong id'
-
-    def test_by_id(self, dealt_obj_: BaseTool) -> None:
-        """Test by_id()
-        """
-        assert dealt_obj_.by_id('card').id == 'card', 'wrong search'
-        assert dealt_obj_.by_id('why') is None, 'wrong search'
-        dealt_obj_.clear()
-        assert dealt_obj_.by_id('card') is None, 'wrong search'
-
     def test_append(self, dealt_obj_: BaseTool) -> None:
         """Test curent append
         """
-        card = Card('card')
+        card = BaseItem(id='card')
         dealt_obj_.append(card)
         assert len(dealt_obj_.current) == 3, 'wrong current len'
         assert dealt_obj_.current[1].id == 'card', 'wrong append'
@@ -116,7 +118,7 @@ class TestTool:
     def test_extend(self, dealt_obj_: BaseTool) -> None:
         """Test extend currend by items
         """
-        items = [Card('unique'), Dice('dice')]
+        items = [BaseItem(id='unique'), BaseItem(id='dice')]
         dealt_obj_.extend(items)
         assert len(dealt_obj_.current) == 4, 'wrong current len'
         assert dealt_obj_.current[2].id == 'unique', 'wrong append'
@@ -139,7 +141,7 @@ class TestTool:
     def test_insert(self, dealt_obj_: BaseTool) -> None:
         """Test insert into currend
         """
-        item = Card('unique')
+        item = BaseItem(id='unique')
         dealt_obj_.insert(item, 1)
         assert len(dealt_obj_.current) == 3, 'wrong len'
         assert dealt_obj_.current[1].id == 'unique', 'not inserted'
@@ -180,62 +182,49 @@ class TestBag:
 
     @pytest.fixture(scope='function')
     def obj_(self) -> Bag:
-        obj_ = Bag('bag')
+        obj_ = Bag(id='bag')
         obj_.c = Component(
-            card=Card('card'), dice=Dice('Dice')
+            card=Card(id='card'), dice=Dice(id='Dice')
                 )
         return obj_
 
-    @pytest.fixture(scope='function')
-    def dealt_obj_(self, obj_: Bag) -> Bag:
-        obj_.deal()
-        return obj_
+    def test_bag_init(self, obj_: Bag) -> None:
+        """Test Bag class instancing
+        """
+        assert isinstance(obj_, BaseModel), 'wrong instance'
+        assert obj_.id == 'bag', 'not set ID for instance'
+        assert isinstance(obj_.c, Component), 'wrong component type'
+        assert len(obj_.c) == 2, 'wrong items'
+        assert isinstance(obj_.counter, Counter), 'wrong counter type'
+        assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
+        j: dict = json.loads(obj_.json())
+        assert j['id'] == 'bag', 'not converted to json'
+        assert j.get('counter') is None, 'counter not excluded'
+        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
+        assert j.get('_logger') is None, '_logger not excluded'
 
     @pytest.mark.parametrize(
         "_class,_id",
-        [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step, 'next_step')]
+        [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step_, 'next_step')]
             )
     def test_add_new_item_to_bag(
         self,
-        _class: Union[Card, Dice, Step],
+        _class: Union[Card, Dice, Step_],
         _id: str,
         obj_: Bag
             ) -> None:
         """Test add new item to bag
         """
-        cl = _class(_id)
+        cl: Union[Card, Dice, Step_] = _class(id=_id)
         obj_.add(cl)
         assert obj_.c[cl.id].id == _id, 'stuff not added'
 
-    def test_bag_deal(self, dealt_obj_: Bag) -> None:
-        """Test obj_ deal()
+    def test_add_double_to_bag(self, obj_: Bag) -> None:
+        """Test add double of item to bag
         """
-        assert len(dealt_obj_.current) == 2, 'wrong current len'
-        ids1 = dealt_obj_.current_ids
-        assert 'card' in ids1, 'wrong cards ids inside current'
-        assert 'Dice' in ids1, 'wrong dice ids inside current'
-        dealt_obj_.deal()
-        comp = [id(item) for item in dealt_obj_.c.values()]
-        cur = [id(item) for item in dealt_obj_.current]
-        assert comp != cur, 'dont created new instances'
-        ids2 = dealt_obj_.current_ids
-        assert ids1 == ids2, 'wrong order'
-
-    def test_bag_deal_from_list(self, obj_: Bag) -> None:
-        """Test bag deal() from items
-        """
-        items = ['card', 'card', 'card', 'Dice']
-        result = obj_.deal(items).current
-        assert len(result) == 4, 'wrong current len'
-        ids = obj_.current_ids
-        assert ids == items, 'wrong deal'
-        assert 'card' in ids, 'wrong cards ids inside current'
-        assert 'Dice' in ids, 'wrong dice id inside current'
-        result = obj_.deal(items).current
-        comp = [id(item) for item in obj_.c.values()]
-        cur = [id(item) for item in result]
-        assert comp != cur, 'dont created new instances'
-        assert ids == items, 'wrong order'
+        obj_.add(Card(id='card'))
+        assert len(obj_.c) == 2, 'not added'
 
 
 class TestShaker:
@@ -244,9 +233,10 @@ class TestShaker:
 
     @pytest.fixture
     def obj_(self) -> Shaker:
-        obj_ = Shaker('shaker')
+        obj_ = Shaker(id='shaker')
         obj_.c = Component(
-            dice=Dice('dice', count=5), dice_nice=Dice('dice_nice', count=5)
+            dice=Dice(id='dice', count=5),
+            dice_nice=Dice(id='dice_nice', count=5)
                 )
         return obj_
 
@@ -258,16 +248,15 @@ class TestShaker:
     def test_shaker_instanciation(self, obj_: Shaker) -> None:
         """Test deck correct created
         """
-        assert obj_.id == 'shaker', 'wrong id'
         assert isinstance(obj_.current, list), 'wrong type of current'
         assert len(obj_.current) == 0, 'nonempty current'
-        assert obj_.last_roll is None, 'wrong last'
-        assert obj_.last_roll_mapped is None, 'wrong last'
+        assert isinstance(obj_.last_roll, dict), 'wrong last'
+        assert isinstance(obj_.last_roll_mapped, dict), 'wrong last mapped'
 
-    def test_add_new_item_to_shaker(self, obj_: Bag) -> None:
+    def test_add_new_item_to_shaker(self, obj_: Shaker) -> None:
         """Test add new item to bag
         """
-        obj_.add(Dice('omg'))
+        obj_.add(Dice(id='omg'))
         assert obj_.c.omg.id == 'omg', 'stuff not added'
 
     def test_roll_shaker(self, dealt_obj_: Shaker) -> None:
@@ -292,7 +281,7 @@ class TestShaker:
     def test_roll_empty_shaker(self) -> None:
         """Test roll empty shaker
         """
-        obj_ = Shaker('shaker')
+        obj_ = Shaker(id='shaker')
         roll = obj_.roll()
         assert roll == {}, 'wrong roll result'
         roll = obj_.roll_mapped()
@@ -305,9 +294,10 @@ class TestDeck:
 
     @pytest.fixture
     def obj_(self) -> Deck:
-        obj_ = Deck('deck')
+        obj_ = Deck(id='deck')
         obj_.c = Component(
-            card=Card('card', count=5), card_nice=Card('Card_nice', count=5)
+            card=Card(id='card', count=5),
+            card_nice=Card(id='Card_nice', count=5)
                 )
         return obj_
 
@@ -319,80 +309,24 @@ class TestDeck:
     def test_deck_instanciation(self, obj_: Deck) -> None:
         """Test deck correct created
         """
-        assert obj_.id == 'deck', 'wrong id'
         assert isinstance(obj_.current, deque), 'wrong type of current'
         assert len(obj_.current) == 0, 'nonempty current'
+        assert obj_.last is None, 'nonempty last'
 
-    def test_add_new_item_to_deck(self, obj_: Bag) -> None:
+    def test_add_new_item_to_deck(self, obj_: Deck) -> None:
         """Test add new item to bag
         """
-        obj_.add(Card('omg'))
+        obj_.add(Card(id='omg'))
         assert obj_.c.omg.id == 'omg', 'stuff not added'
 
     def test_item_replace(self, obj_: Deck) -> None:
         """Test _item_replace()
         """
-        c = Card('wow')
+        c = Card(id='wow', count=15)
         card = obj_._item_replace(c)
         assert card.id == 'wow', 'wrong id'
         assert card.count == 1, 'wrong count'
         assert id(card) != id(c), 'not replaced'
-
-    def test_steps_clear_last(self, dealt_obj_: Deck) -> None:
-        """Test clear() clear last
-        """
-        dealt_obj_.pop()
-        assert dealt_obj_.last, 'empty last'
-        dealt_obj_.clear()
-        assert dealt_obj_.last is None, 'nonempty last'
-
-    def test_appendleft(self, dealt_obj_: Deck) -> None:
-        """Test current append left
-        """
-        card = Card('unique')
-        dealt_obj_.appendleft(card)
-        assert len(dealt_obj_.current) == 11, 'wrong current len'
-        assert dealt_obj_.current[0].id == 'unique', 'wrong append'
-        assert id(card) != id(dealt_obj_.current[10]), 'not replaced'
-
-    def test_extendleft(self, dealt_obj_: Deck) -> None:
-        """Test extendleft currend by cards
-        """
-        cards = [Card('unique'), Card('another')]
-        dealt_obj_.extendleft(cards)
-        assert len(dealt_obj_.current) == 12, 'wrong current len'
-        assert dealt_obj_.current[1].id == 'unique', 'wrong append'
-        assert id(cards[1]) != id(dealt_obj_.current[1]), 'not replaced'
-        assert dealt_obj_.current[0].id == 'another', 'wrong append'
-
-    def test_popleft(self, dealt_obj_: Deck) -> None:
-        """Test pop left
-        """
-        assert dealt_obj_.popleft().id == 'card', 'wrong pop'
-        assert dealt_obj_.last.id == 'card', 'empty last'
-        dealt_obj_.current.clear()
-        with pytest.raises(IndexError):
-            dealt_obj_.pop()
-
-    def test_pop(self, dealt_obj_: Deck) -> None:
-        """Test pop left
-        """
-        assert dealt_obj_.pop().id == 'Card_nice', 'wrong pop'
-        assert dealt_obj_.last.id == 'Card_nice', 'empty last'
-        dealt_obj_.current.clear()
-        with pytest.raises(IndexError):
-            dealt_obj_.pop()
-
-    def test_rotate(self, dealt_obj_: Deck) -> None:
-        """Test rotate
-        """
-        dealt_obj_.rotate(1)
-        assert len(dealt_obj_.current) == 10, 'not rotated'
-        assert dealt_obj_.current[0].id == 'Card_nice', \
-            'wrong side of rotation'
-        dealt_obj_.rotate(-1)
-        assert len(dealt_obj_.current) == 10, 'not rotated'
-        assert dealt_obj_.current[0].id == 'card', 'wrong side of rotation'
 
     def test_deck_deal(self, obj_: Deck) -> None:
         """Test deck deal()
@@ -432,6 +366,62 @@ class TestDeck:
             current0 = obj_.deal().current.copy()
             obj_.shuffle()
             assert obj_.current != current0, 'not changed order'
+
+    def test_deck_clear_last(self, dealt_obj_: Deck) -> None:
+        """Test clear() clear last
+        """
+        dealt_obj_.pop()
+        assert dealt_obj_.last, 'empty last'
+        dealt_obj_.clear()
+        assert dealt_obj_.last is None, 'nonempty last'
+
+    def test_appendleft(self, dealt_obj_: Deck) -> None:
+        """Test current append left
+        """
+        card = Card(id='unique')
+        dealt_obj_.appendleft(card)
+        assert len(dealt_obj_.current) == 11, 'wrong current len'
+        assert dealt_obj_.current[0].id == 'unique', 'wrong append'
+        assert id(card) != id(dealt_obj_.current[10]), 'not replaced'
+
+    def test_extendleft(self, dealt_obj_: Deck) -> None:
+        """Test extendleft currend by cards
+        """
+        cards = [Card(id='unique'), Card(id='another')]
+        dealt_obj_.extendleft(cards)
+        assert len(dealt_obj_.current) == 12, 'wrong current len'
+        assert dealt_obj_.current[1].id == 'unique', 'wrong append'
+        assert id(cards[1]) != id(dealt_obj_.current[1]), 'not replaced'
+        assert dealt_obj_.current[0].id == 'another', 'wrong append'
+
+    def test_popleft(self, dealt_obj_: Deck) -> None:
+        """Test pop left
+        """
+        assert dealt_obj_.popleft().id == 'card', 'wrong pop'
+        assert dealt_obj_.last.id == 'card', 'empty last'
+        dealt_obj_.current.clear()
+        with pytest.raises(IndexError):
+            dealt_obj_.pop()
+
+    def test_pop(self, dealt_obj_: Deck) -> None:
+        """Test pop left
+        """
+        assert dealt_obj_.pop().id == 'Card_nice', 'wrong pop'
+        assert dealt_obj_.last.id == 'Card_nice', 'empty last'
+        dealt_obj_.current.clear()
+        with pytest.raises(IndexError):
+            dealt_obj_.pop()
+
+    def test_rotate(self, dealt_obj_: Deck) -> None:
+        """Test rotate
+        """
+        dealt_obj_.rotate(1)
+        assert len(dealt_obj_.current) == 10, 'not rotated'
+        assert dealt_obj_.current[0].id == 'Card_nice', \
+            'wrong side of rotation'
+        dealt_obj_.rotate(-1)
+        assert len(dealt_obj_.current) == 10, 'not rotated'
+        assert dealt_obj_.current[0].id == 'card', 'wrong side of rotation'
 
     def test_check_order_len(self, dealt_obj_: Deck) -> None:
         """Test _check_order_len()
@@ -533,7 +523,7 @@ class TestDeck:
         obj_.deal()
         search = obj_.search(query={'card': 1})
         assert len(search) == 1, 'wrong search len'
-        assert isinstance(search[0], BaseItem), 'wrong search type'
+        assert isinstance(search[0], Card), 'wrong search type'
         assert search[0].id == 'card', 'wrong finded id'
         assert len(obj_.current) == 3, 'wrong current len'
 
@@ -614,16 +604,17 @@ class TestSteps:
 
     @pytest.fixture
     def obj_(self) -> Steps:
-        obj_ = Steps('game_turns')
+        obj_ = Steps(id='game_turns')
         obj_.c = Component(
-            step1=Step('step1', priority=1), astep=Step('asteP', priority=2)
+            step1=Step_(id='step1', priority=1),
+            astep=Step_(id='asteP', priority=2)
                 )
         return obj_
 
     def test_steps_instance(self) -> None:
         """Test Steps class instance
         """
-        obj_ = Steps('game_turns')
+        obj_ = Steps(id='game_turns')
         assert isinstance(obj_.current, list), 'wrong current type'
         assert len(obj_.current) == 0, 'wrong current len'
         assert obj_.last is None, 'wrong last'
@@ -640,22 +631,24 @@ class TestSteps:
     def test_steps_add_step(self, obj_: Steps) -> None:
         """Test add step to steps
         """
-        obj_.add(Step('omg', priority=42))
+        obj_.add(Step_(id='omg', priority=42))
         assert obj_.c.omg.id == 'omg', 'stuff not added'
 
     def test_by_id(self, obj_: Steps) -> None:
         """Test by_id()
         """
         obj_.deal()
-        assert obj_.by_id('step1').id == 'step1', 'wrong search'
-        assert obj_.by_id('why') is None, 'wrong search'
+        assert isinstance(obj_.by_id('step1'), list), 'wrong type'
+        assert len(obj_.by_id('step1')) == 1, 'wrong len'
+        assert obj_.by_id('step1')[0].id == 'step1', 'wrong search'
+        assert obj_.by_id('why') == [], 'wrong search'
         obj_.clear()
-        assert obj_.by_id('step1') is None, 'wrong search'
+        assert obj_.by_id('step1') == [], 'wrong search'
 
     def test_push(self, obj_: Steps) -> None:
         """Test push to steps
         """
-        s = Step('omg', priority=42)
+        s = Step_(id='omg', priority=42)
         obj_.push(s)
         assert len(obj_.current) == 1, 'not pushed'
         assert obj_.current[0][1].id == 'omg', 'wrong id'
@@ -664,7 +657,7 @@ class TestSteps:
     def test_pop(self, obj_: Steps) -> None:
         """Test pull step from steps
         """
-        s = Step('omg', priority=42)
+        s = Step_(id='omg', priority=42)
         obj_.push(s)
         step = obj_.pop()
         assert step.id == 'omg', 'wrong step'

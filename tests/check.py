@@ -1,8 +1,8 @@
 from pprint import pprint
 from typing import Optional
-from dataclasses import dataclass
+from pydantic import Field
 from bgameb import (
-    Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
+    Game, Player, Steps, Step_, Deck, Card, Shaker, Dice,
     Bag, log_enable
         )
 
@@ -10,96 +10,106 @@ from bgameb import (
 if __name__ == '__main__':
     log_enable()
 
-    # create the game
-    G = Game('one board game')
+    # Creating of the game
+    class MyGame(Game):
+        steps: Steps
+        deck: Deck
+        shaker: Shaker
+        bag: Bag
+        players: list[Player] = []
 
-    # add player
-    G.add(Player('Player'))
+    # The Player and Game are an obstract containeers for tools and stuff.
+    # Deck, Bag, Shaker and Steps are tools. Dice, Card and Step are items.
 
-    # The stuff objects are saved in attribute c.
-    # Names are converted to snake case
-    player = G.c.player
-
-    # add game tuns order
-    G.add(Steps('Steps'))
-    G.c.steps.add(Step('step0'))
-    G.c.steps.add(Step('step1', priority=1))
-
-    # start new turn
-    current_steps = G.c.steps.deal()
-
-    # Game_steps is a priority queue, linked with priority attribute
-    last = G.c.steps.pop()
-
-    # add deck object and cards
-    G.add(Deck('Deck'))
-    G.c.deck.add(
-        Card('First', description='story', count=3)
+    G = MyGame(
+        id='one board game',
+        steps=Steps(id='steps'),
+        deck=Deck(id='deck'),
+        shaker=Shaker(id='shaker'),
+        bag=Bag(id='bag'),
+        players=[Player(id='player1'), Player(id='player2')]
             )
-    G.c.deck.add(Card('Second', count=1))
 
-    # Specific arguments is stored to dict attribute `other`
-    description = G.c.deck.c.first.other['description']
+    # The tool objects must be filled by items by method add().
+    # That because we use some other methods for check
+    # data types and makes some operations with items inside tool.
 
-    # If you need more clear schema, inherite from any class.
-    # Additional, we can define _to_relocate mapping -this
-    # help move values from some attrs to another or convert some
-    # values to related with Game outsade-hosted schema
-    @dataclass
+    # Adding game tuns order in Steps tool
+    G.steps.add(Step_(id='step0'))
+    G.steps.add(Step_(id='step1', priority=1))
+
+    # Starting of new turn
+    current_steps = G.steps.deal()
+
+    # Game steps is a priority queue, ordered by "priority" attribute
+    last = G.steps.pop()
+
+    # Adding of cards to deck. "count" parameter define how mutch
+    # copies of card we must deal.
+    G.deck.add(
+        Card(id='First', description='story', count=2)
+            )
+    G.deck.add(Card(id='Second', count=1))
+
+    # All items in tools are saved in spetial object Component.
+    # Is a dict-like class. Component is predefined as attribute "c".
+    # A component usied as base for other operations with items.
+    cards_component = G.deck.c
+
+    # Any item is available in Component with dot or classic dict
+    # notation. Names for that notation is transited from ids of items.
+    card = G.deck.c.first
+    card = G.deck.c['first']
+
+    # You can get item by its id
+    card = G.deck.c.by_id('First')
+
+    # If you relocate some bult-in attrs, inherite from stuff classes,
+    # then define aliases for attributes. In this example we use two
+    # different solution: Field aliase and config.
+    # Dont forget use G.dict(by_alias=True) to get aliases.
+    # More infoshere:
+    # https://docs.pydantic.dev/usage/model_config/#alias-generator
+    # Finaly, if you need use callbacs to export data from some
+    # function as field values - define properties.
     class MyCard(Card):
-        description: Optional[str] = None
+        description: Optional[str] = Field(None, alias='some_bla_bla')
         some_text: Optional[str] = 'some texts'
-        is_open: Optional[bool] = None
 
-        def __post_init__(self) -> None:
-            super().__post_init__()
-            self._to_relocate = {
-                'is_open': 'opened'
-                    }
+        class Config(Card.Config):
+            fields = {'opened': 'is_open'}
 
-    G.c.deck.add(
-        MyCard('Thierd', description='story', count=12)
+        @property
+        def my_calculated_field(self) -> str:
+            return self.some_text.upper()
+
+    G.deck.add(
+        MyCard(id='Thierd', description='story', count=3)
             )
 
-    # Use default counters of cards
-    G.c.deck.c.first.counter['yellow'] = 12
-    G.c.deck.c.second.counter['banana'] = 0
+    # Use default counters of any objects - counters not added to schema
+    G.deck.c.first.counter['yellow'] = 12
+    G.deck.c.second.counter['banana'] = 0
 
-    # relocate values
-    G.c.deck.c.thierd.relocate()
+    # Dealing and shuffling of deck
+    G.deck.deal().shuffle()
 
-    # Deal and shuffle deck
-    G.c.deck.deal().shuffle()
-
-    # You can add additional attributes directly, but
-    # this attributes can not added to the schema
-    G.IS_ACTIVE = True
-
-    # Add shaker and dices
-    G.add(Shaker('blue shaker'))
-    G.c.blue_shaker.add(
-        Dice('dice#8', info='some important', sides=8, count=10)
+    # Adding dices to shaker
+    G.shaker.add(
+        Dice(id='dice#8', sides=8, count=10)
             )
 
-    # and roll dices
-    result = G.c.blue_shaker.c.dice_8.roll()
+    # Roll dices
+    result = G.shaker.c.dice_8.roll()
 
     # Use bag as collection of any items
-    G.add(Bag('Bag'))
-    G.c.bag.add(Dice('dice'))
-    G.c.bag.add(Card('card'))
-
-    # components and technical attrs not added to shcema.
-    # You can reconstruct full schema fit build_json() method
-    schema = G.relocate_all().to_json()
+    G.bag.add(Dice(id='dice'))
+    G.bag.add(Card(id='card'))
 
     print('='*20 + '\n')
     print(f'Repr: {G}')
     print('='*20 + '\n')
-    pprint(G.to_dict())
-    pprint(G.c.deck.c.thierd.to_dict())
-    print('='*20 + '\n')
-    print(f'Schema: {schema}')
+    pprint(G.dict(by_alias=True))
     print('='*20 + '\n')
     print(f'Result of shake: {result}')
     print('='*20 + '\n')

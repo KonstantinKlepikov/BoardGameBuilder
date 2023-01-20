@@ -1,43 +1,52 @@
 """Game dices, coins, cards and other items
 """
 import random
-from typing import Optional, NoReturn, Any
-from dataclasses import dataclass, field
-from dataclasses_json import (
-    config, DataClassJsonMixin, dataclass_json, Undefined
-        )
+from typing import Optional, NoReturn, Any, cast
+from pydantic import PositiveInt, NonNegativeInt, ConstrainedInt
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
 
 
-@dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass
-class BaseItem(Base, DataClassJsonMixin):
+class BaseItem(Base):
     """Base class for game items (like dices or cards)
     """
 
-    def __post_init__(self) -> None:
-        super().__post_init__()
 
-
-@dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass(order=True)
-class Step(BaseItem, DataClassJsonMixin):
+class Step_(BaseItem):
     """Game steps or turns
 
     Attr:
-        - priority (int): priority queue number. Default to 0.
+        - priority (NonNegativeInt): priority queue number. Default to 0.
     """
-    priority: int = 0
+    priority: NonNegativeInt = 0
 
-    def __post_init__(self) -> None:
-        super().__post_init__()
+    def __eq__(self, other: 'Step_') -> bool:  # type: ignore[override]
+        return self.priority == other.priority
+
+    def __lt__(self, other: 'Step_') -> bool:
+        return self.priority < other.priority
+
+    def __le__(self, other: 'Step_') -> bool:
+        return self.priority <= other.priority
+
+    def __ne__(self, other: 'Step_') -> bool:  # type: ignore[override]
+        return self.priority != other.priority
+
+    def __gt__(self, other: 'Step_') -> bool:
+        return self.priority > other.priority
+
+    def __ge__(self, other: 'Step_') -> bool:
+        return self.priority >= other.priority
 
 
-@dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass
-class Dice(BaseItem, DataClassJsonMixin):
-    """Rolled or fliped objects, like dices or coins.
+class Sides(ConstrainedInt):
+    """Int subtipe to define sides of dices
+    """
+    gt = 1
+
+
+class Dice(BaseItem):
+    """Rolling or tossed objects, like dices or coins.
 
     Sides attr define number of sides of roller. Default to 2.
     Sides can't be less than 2.
@@ -45,63 +54,59 @@ class Dice(BaseItem, DataClassJsonMixin):
     .. code-block::
         :caption: Example:
 
-            dice = Dice('coin', sides=2)
+            dice = Dice(id='coin', sides=2)
 
     Attr:
-        - count (int): count of items. Default to 1.
-        - sides (int): sides of dice or coin. Default to 2.
-        - mapping (dict[int, Any]): nonnumerik mapping of roll result.
-        - last_roll (Optional[list[int]]): last roll value.
-        - last_roll_mapped: (Optional[list[Any]]): last maped roll value.
+        - count (PositiveInt): count of items. Default to 1.
+        - sides (Sides): sides of dice or coin. Default to 2.
+        - mapping (dict[PositiveInt, Any]): optional mapping of roll result.
+        - last_roll (Optional[list[PositiveInt]]): last roll values.
+        - last_roll_mapped (Optional[list[Any]]): last mapped roll values.
+        - _range list[PositiveInt] - range of roll, started from 1.
 
     Raises:
-        StuffDefineError: number of sides less than 2.
         StuffDefineError: mapping keys is not equal of roll range.
     """
-    count: int = 1
-    sides: int = 2
-    mapping: dict[int, Any] = field(
-        default_factory=dict,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-    last_roll: Optional[list[int]] = field(
-        default=None,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-    last_roll_mapped: Optional[list[Any]] = field(
-        default=None,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        repr=False,
-            )
-    _range: list[int] = field(
-        default_factory=list,
-        metadata=config(exclude=lambda x: True),  # type: ignore
-        init=False,
-        repr=False
-            )
+    count: PositiveInt = 1
+    sides: Sides = cast(Sides, 2)
+    mapping: dict[PositiveInt, Any] = {}
+    last_roll: list[PositiveInt] = []
+    last_roll_mapped: list[Any] = []
+    _range: list[PositiveInt] = []
 
-    def __post_init__(self) -> None:
-        super().__post_init__()
-        if self.sides < 2:
-            raise StuffDefineError(
-                message=f'Number of sides={self.sides} '
-                        f'for "{self.id}". Needed >= 2.',
-                logger=self._logger
-                )
+    def __init__(self, **data):
+        super().__init__(**data)
         self._range = list(range(1, self.sides + 1))
+
         if self.mapping and set(self.mapping.keys()) ^ set(self._range):
             raise StuffDefineError(
                 message='Mapping must define values for each side.',
                 logger=self._logger
                     )
 
-    def roll(self) -> list[int]:
+    def __eq__(self, other: 'Dice') -> bool:  # type: ignore[override]
+        return self.sides == other.sides
+
+    def __lt__(self, other: 'Dice') -> bool:
+        return self.sides < other.sides
+
+    def __le__(self, other: 'Dice') -> bool:
+        return self.sides <= other.sides
+
+    def __ne__(self, other: 'Dice') -> bool:  # type: ignore[override]
+        return self.sides != other.sides
+
+    def __gt__(self, other: 'Dice') -> bool:
+        return self.sides > other.sides
+
+    def __ge__(self, other: 'Dice') -> bool:
+        return self.sides >= other.sides
+
+    def roll(self) -> list[PositiveInt]:
         """Roll and return result
 
         Returns:
-            List[int]: result of roll
+            List[PositiveInt]: result of roll
         """
         self.last_roll = [
             random.choices(self._range, k=1)[0] for _
@@ -122,13 +127,11 @@ class Dice(BaseItem, DataClassJsonMixin):
         return self.last_roll_mapped
 
 
-@dataclass_json(undefined=Undefined.INCLUDE)
-@dataclass
-class Card(BaseItem, DataClassJsonMixin):
-    """Card object
+class Card(BaseItem):
+    """Card objects
 
     Attr:
-        - count (int): count of items. Default to 1.
+        - count (PositiveInt): count of items. Default to 1.
         - opened (bool): is card oppened. Default to False.
         - tapped (bool): is card tapped. Default to False.
         - side (str, optional): the side of tap. Default to None.
@@ -139,13 +142,10 @@ class Card(BaseItem, DataClassJsonMixin):
             card = CardType('unique_card')
             card.tap(side='left')
     """
-    count: int = 1
+    count: PositiveInt = 1
     opened: bool = False
     tapped: bool = False
     side: Optional[str] = None
-
-    def __post_init__(self) -> None:
-        super().__post_init__()
 
     def flip(self) -> 'Card':
         """Face up or face down the card regardles of it condition
