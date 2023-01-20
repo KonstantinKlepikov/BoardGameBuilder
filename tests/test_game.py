@@ -19,9 +19,8 @@ class TestGame:
         assert game.id == 'game', 'not set id for instance'
         assert isinstance(game.counter, Counter), 'wrong counter type'
         assert len(game.counter) == 0, 'counter not empty'
-        assert isinstance(game._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(game._logger, Logger), 'wrong _to_relocate'
-        j : dict = json.loads(game.json())
+        j: dict = json.loads(game.json())
         assert json.loads(game.json())['id'] == 'game', \
             'not converted to json'
         assert j.get('counter') is None, 'counter not excluded'

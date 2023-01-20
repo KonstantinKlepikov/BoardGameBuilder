@@ -1,0 +1,12 @@
+#270:
+    - Added pydantic
+    - Added PropertyBaseModel - is expanding subclass of pydantic BaseModel. It used for get properties as pydantic fields
+    - Component is a pydantic generic and mapping class with dict interface
+    - now we not check unique name of object in Component
+    - all classes are pydantic classes. dataclasses-json dependencies removed
+    - for relocate attrs is used pydantic aliaces of fields
+    - for fill shcemas by calable inside classes is used properties
+    - method by_id of tools return list of objects
+    - tests refactoring and tested all
+    - docs and readme changes
+    - ->

@@ -41,9 +41,8 @@ class TestTool:
         assert obj_.last is None, 'wrong last'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
-        j : dict = json.loads(obj_.json())
+        j: dict = json.loads(obj_.json())
         assert j['id'] == 'this', 'not converted to json'
         assert j.get('counter') is None, 'counter not excluded'
         assert j.get('_to_relocate') is None, '_to_relocat not excluded'
@@ -60,10 +59,13 @@ class TestTool:
     def test_by_id(self, dealt_obj_: BaseTool) -> None:
         """Test by_id()
         """
-        assert dealt_obj_.by_id('card').id == 'card', 'wrong search'
-        assert dealt_obj_.by_id('why') is None, 'wrong search'
+        dealt_obj_.append(BaseItem(id='card'))
+        assert isinstance(dealt_obj_.by_id('card'), list), 'wrong type'
+        assert len(dealt_obj_.by_id('card')) == 2, 'wrong len'
+        assert dealt_obj_.by_id('card')[0].id == 'card', 'wrong search'
+        assert dealt_obj_.by_id('why') == [], 'wrong search'
         dealt_obj_.clear()
-        assert dealt_obj_.by_id('card') is None, 'wrong search'
+        assert dealt_obj_.by_id('card') == [], 'wrong search'
 
     def test_get_items(self, obj_: BaseTool) -> None:
         """Test get items
@@ -195,9 +197,8 @@ class TestBag:
         assert len(obj_.c) == 2, 'wrong items'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
-        j : dict = json.loads(obj_.json())
+        j: dict = json.loads(obj_.json())
         assert j['id'] == 'bag', 'not converted to json'
         assert j.get('counter') is None, 'counter not excluded'
         assert j.get('_to_relocate') is None, '_to_relocat not excluded'
@@ -234,7 +235,8 @@ class TestShaker:
     def obj_(self) -> Shaker:
         obj_ = Shaker(id='shaker')
         obj_.c = Component(
-            dice=Dice(id='dice', count=5), dice_nice=Dice(id='dice_nice', count=5)
+            dice=Dice(id='dice', count=5),
+            dice_nice=Dice(id='dice_nice', count=5)
                 )
         return obj_
 
@@ -636,10 +638,12 @@ class TestSteps:
         """Test by_id()
         """
         obj_.deal()
-        assert obj_.by_id('step1').id == 'step1', 'wrong search'
-        assert obj_.by_id('why') is None, 'wrong search'
+        assert isinstance(obj_.by_id('step1'), list), 'wrong type'
+        assert len(obj_.by_id('step1')) == 1, 'wrong len'
+        assert obj_.by_id('step1')[0].id == 'step1', 'wrong search'
+        assert obj_.by_id('why') == [], 'wrong search'
         obj_.clear()
-        assert obj_.by_id('step1') is None, 'wrong search'
+        assert obj_.by_id('step1') == [], 'wrong search'
 
     def test_push(self, obj_: Steps) -> None:
         """Test push to steps

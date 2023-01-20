@@ -1,8 +1,8 @@
 """Game dices, coins, cards and other items
 """
 import random
-from typing import Optional, NoReturn, Any
-from pydantic import conint, PositiveInt, NonNegativeInt
+from typing import Optional, NoReturn, Any, cast
+from pydantic import PositiveInt, NonNegativeInt, ConstrainedInt
 from bgameb.base import Base
 from bgameb.errors import StuffDefineError
 
@@ -20,27 +20,33 @@ class Step_(BaseItem):
     """
     priority: NonNegativeInt = 0
 
-    def __eq__(self, other: 'Step_'):
+    def __eq__(self, other: 'Step_') -> bool:  # type: ignore[override]
         return self.priority == other.priority
 
-    def __lt__(self, other: 'Step_'):
+    def __lt__(self, other: 'Step_') -> bool:
         return self.priority < other.priority
 
-    def __le__(self, other: 'Step_'):
+    def __le__(self, other: 'Step_') -> bool:
         return self.priority <= other.priority
 
-    def __ne__(self, other: 'Step_'):
+    def __ne__(self, other: 'Step_') -> bool:  # type: ignore[override]
         return self.priority != other.priority
 
-    def __gt__(self, other: 'Step_'):
+    def __gt__(self, other: 'Step_') -> bool:
         return self.priority > other.priority
 
-    def __ge__(self, other: 'Step_'):
+    def __ge__(self, other: 'Step_') -> bool:
         return self.priority >= other.priority
 
 
+class Sides(ConstrainedInt):
+    """Int subtipe to define sides of dices
+    """
+    gt = 1
+
+
 class Dice(BaseItem):
-    """Rolled or fliped objects, like dices or coins.
+    """Rolling or tossed objects, like dices or coins.
 
     Sides attr define number of sides of roller. Default to 2.
     Sides can't be less than 2.
@@ -48,22 +54,21 @@ class Dice(BaseItem):
     .. code-block::
         :caption: Example:
 
-            dice = Dice('coin', sides=2)
+            dice = Dice(id='coin', sides=2)
 
     Attr:
         - count (PositiveInt): count of items. Default to 1.
-        - sides (ositiveInt): sides of dice or coin. Default to 2.
-        - mapping (dict[PositiveInt, Any]): nonnumerik mapping of roll result.
-        - last_roll (Optional[list[PositiveInt]]): last roll value.
-        - last_roll_mapped (Optional[list[Any]]): last maped roll value.
-        - _range list[PositiveInt] - nonpytonic range of roll
+        - sides (Sides): sides of dice or coin. Default to 2.
+        - mapping (dict[PositiveInt, Any]): optional mapping of roll result.
+        - last_roll (Optional[list[PositiveInt]]): last roll values.
+        - last_roll_mapped (Optional[list[Any]]): last mapped roll values.
+        - _range list[PositiveInt] - range of roll, started from 1.
 
     Raises:
-        StuffDefineError: number of sides less than 2.
         StuffDefineError: mapping keys is not equal of roll range.
     """
     count: PositiveInt = 1
-    sides: conint(gt=1) = 2
+    sides: Sides = cast(Sides, 2)
     mapping: dict[PositiveInt, Any] = {}
     last_roll: list[PositiveInt] = []
     last_roll_mapped: list[Any] = []
@@ -79,22 +84,22 @@ class Dice(BaseItem):
                 logger=self._logger
                     )
 
-    def __eq__(self, other: 'Dice'):
+    def __eq__(self, other: 'Dice') -> bool:  # type: ignore[override]
         return self.sides == other.sides
 
-    def __lt__(self, other: 'Dice'):
+    def __lt__(self, other: 'Dice') -> bool:
         return self.sides < other.sides
 
-    def __le__(self, other: 'Dice'):
+    def __le__(self, other: 'Dice') -> bool:
         return self.sides <= other.sides
 
-    def __ne__(self, other: 'Dice'):
+    def __ne__(self, other: 'Dice') -> bool:  # type: ignore[override]
         return self.sides != other.sides
 
-    def __gt__(self, other: 'Dice'):
+    def __gt__(self, other: 'Dice') -> bool:
         return self.sides > other.sides
 
-    def __ge__(self, other: 'Dice'):
+    def __ge__(self, other: 'Dice') -> bool:
         return self.sides >= other.sides
 
     def roll(self) -> list[PositiveInt]:
@@ -123,7 +128,7 @@ class Dice(BaseItem):
 
 
 class Card(BaseItem):
-    """Card object
+    """Card objects
 
     Attr:
         - count (PositiveInt): count of items. Default to 1.

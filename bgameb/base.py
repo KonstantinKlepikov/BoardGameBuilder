@@ -3,7 +3,9 @@
 import re
 import string
 import json
-from typing import Optional, Iterator, TypeVar, Generic, Any, Union, AbstractSet
+from typing import (
+    Optional, Iterator, TypeVar, Generic, Any, Union, AbstractSet
+        )
 from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 from collections import Counter
 from pydantic import BaseModel, Field
@@ -52,7 +54,12 @@ class PropertyBaseModel(BaseModel):
     """
     @classmethod
     def get_properties(cls):
-        return [prop for prop in dir(cls) if isinstance(getattr(cls, prop), property) and prop not in ("__values__", "fields")]
+        return [
+            prop for prop
+            in dir(cls)
+            if isinstance(getattr(cls, prop), property)
+            and prop not in ("__values__", "fields")
+                ]
 
     def dict(
         self,
@@ -94,18 +101,14 @@ class Base(PropertyBaseModel):
     Attr:
         - id (str): id of stuff
         - counter (Counter): counter object
-        - _to_relocate (dict[str, str): mapping for relocation any data
-                                         to attributes inside dataclass. You
-                                         can use names of attributes or methods
-                                         of class for this mapping.
+        - _logger (Logger): loguru logger
 
     Counter is a `collection.Counter
     <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     id: str
     counter: Counter = Field(default_factory=Counter, exclude=True, repr=False)
-    _to_relocate: dict[str, str] = {}
-    _logger: Logger = Field(default_factory=Logger)
+    _logger: Logger = Field(...)
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -126,14 +129,15 @@ K = TypeVar('K', bound=str)
 V = TypeVar('V', bound=Base)
 
 
-from pydantic.generics import GenericModel
-
-
 class Component(GenericModel, Generic[K, V], Mapping[K, V]):
     """Component mapping
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        *args: tuple[dict[K, V]],
+        **kwargs: dict[K, V]
+            ) -> None:
         for arg in args:
             if isinstance(arg, dict):
                 for k, v, in arg.items():
@@ -144,19 +148,19 @@ class Component(GenericModel, Generic[K, V], Mapping[K, V]):
             for k, v, in kwargs.items():
                 self.__dict__[k] = v
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterator:  # type: ignore
         return iter(self.__dict__)
 
-    def __setattr__(self, attr: str, value: V) -> None:
+    def __setattr__(self, attr: K, value: V) -> None:  # type: ignore
         self.__setitem__(attr, value)
 
-    def __getattr__(self, attr: str) -> V:
+    def __getattr__(self, attr: K) -> V:  # type: ignore
         try:
             return self.__getitem__(attr)
         except KeyError:
             raise AttributeError(attr)
 
-    def __delattr__(self, attr: str) -> None:
+    def __delattr__(self, attr: K) -> None:  # type: ignore
         try:
             self.__delitem__(attr)
         except KeyError:
@@ -166,7 +170,7 @@ class Component(GenericModel, Generic[K, V], Mapping[K, V]):
         self.__dict__[attr] = value
 
     def __getitem__(self, attr: K) -> V:
-        return self.__dict__[attr]
+        return self.__dict__[attr]  # type: ignore
 
     def __delitem__(self, attr: K) -> None:
         del self.__dict__[attr]
@@ -181,13 +185,13 @@ class Component(GenericModel, Generic[K, V], Mapping[K, V]):
         return len(self.__dict__)
 
     def keys(self) -> KeysView[K]:
-        return self.__dict__.keys()
+        return self.__dict__.keys()  # type: ignore
 
     def values(self) -> ValuesView[V]:
         return self.__dict__.values()
 
     def items(self) -> ItemsView[K, V]:
-        return self.__dict__.items()
+        return self.__dict__.items()  # type: ignore
 
     def to_json(self) -> str:
         return json.dumps(self.__dict__, default=lambda c: c.dict())
@@ -255,7 +259,7 @@ class Component(GenericModel, Generic[K, V], Mapping[K, V]):
         else:
             name = self._make_name(name)
 
-        comp = stuff.__class__(**stuff.dict())  # type: ignore
+        comp = stuff.__class__(**stuff.dict())
         self.__dict__[name] = comp
 
     @property

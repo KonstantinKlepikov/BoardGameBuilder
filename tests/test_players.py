@@ -17,9 +17,8 @@ class TestPlayer:
         assert obj_.id == 'player', 'not set id for instance'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
-        j : dict = json.loads(obj_.json())
+        j: dict = json.loads(obj_.json())
         assert j['id'] == 'player', \
             'not converted to json'
         assert j.get('counter') is None, 'counter not excluded'

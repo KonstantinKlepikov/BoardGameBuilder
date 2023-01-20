@@ -1,7 +1,6 @@
 """Custom error classes
 """
-from __future__ import annotations
-import loguru
+from loguru._logger import Logger
 
 
 class CustomRuntimeError(RuntimeError):
@@ -21,7 +20,7 @@ class ComponentNameError(CustomRuntimeError):
 class ComponentClassError(CustomRuntimeError):
     """Given class can't be a part of component.
     """
-    def __init__(self, obj_, logger: loguru.Logger) -> None:
+    def __init__(self, obj_, logger: Logger) -> None:
         self.message = f'Given: {obj_} cant be used as part of Component.'
         logger.exception(self.message)
         super().__init__(self.message)
@@ -30,7 +29,7 @@ class ComponentClassError(CustomRuntimeError):
 class StuffDefineError(AttributeError):
     """Bad definition of item.
     """
-    def __init__(self, message: str, logger: loguru.Logger) -> None:
+    def __init__(self, message: str, logger: Logger) -> None:
         self.message = message
         logger.exception(self.message)
         super().__init__(self.message)
@@ -39,7 +38,7 @@ class StuffDefineError(AttributeError):
 class ArrangeIndexError(IndexError):
     """Index error for arrange tool.
     """
-    def __init__(self, message: str, logger: loguru.Logger) -> None:
+    def __init__(self, message: str, logger: Logger) -> None:
         self.message = message
         logger.exception(self.message)
         super().__init__(self.message)

@@ -100,7 +100,6 @@ class TestComponent:
         """Test ids() method
         """
         comp = Component()
-        print(comp)
         assert comp.ids == [], 'nonempty list of names'
         comp.update(Base(id='that'))
         assert comp.ids == ['that', ], 'empty list of names'
@@ -133,9 +132,8 @@ class TestBaseClass:
         assert obj_.id == '9 this is Fine #', 'not set id for instance'
         assert isinstance(obj_.counter, Counter), 'wrong counter type'
         assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._to_relocate, dict), 'wrong _to_relocate'
         assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
-        j : dict = json.loads(obj_.json())
+        j: dict = json.loads(obj_.json())
         assert j['id'] == '9 this is Fine #', \
             'not converted to json'
         assert j.get('counter') is None, 'counter not excluded'

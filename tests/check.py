@@ -106,7 +106,6 @@ if __name__ == '__main__':
     G.bag.add(Dice(id='dice'))
     G.bag.add(Card(id='card'))
 
-
     print('='*20 + '\n')
     print(f'Repr: {G}')
     print('='*20 + '\n')
