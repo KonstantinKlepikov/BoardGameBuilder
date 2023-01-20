@@ -3,6 +3,40 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.1.0 (2023-01-20)
+===========================
+
+Features
+--------
+
+- #270:
+      - Added pydantic
+      - Added PropertyBaseModel - is expanding subclass of pydantic BaseModel. It used for get properties as pydantic fields
+      - Component is a pydantic generic and mapping class with dict interface
+      - now we not check unique name of object in Component
+      - all classes are pydantic classes. dataclasses-json dependencies removed
+      - for relocate attrs is used pydantic aliaces of fields
+      - for fill shcemas by calable inside classes is used properties
+      - method by_id of tools return list of objects
+      - tests refactoring and tested all
+      - docs and readme changes
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/270)
+
+
+Deprecations and Removals
+-------------------------
+
+- # 270:
+      - dataclasses-json dependecie is removed
+      - attr c is removed from all classes except tools
+      - some methods, that get stuff from Component in stuff classes are removed (like get_items())
+      - from Bag class removed current and last attributes. Bag cant be dealt
+      - Component now isnt set-like dict - we can add copies with identical keys, it replace old objects. Ids not check now.
+      - other attribute (for not defined in shcema data) is removed
+      - are removed relocate() and relocate_all() methods
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/270)
+
+
 Release v0.0.39 (2023-01-14)
 ============================
 
