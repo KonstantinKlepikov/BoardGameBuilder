@@ -15,7 +15,7 @@ Object-oriented framework for build board game logic in python
 from typing import Optional
 from pydantic import Field
 from bgameb import (
-    Game, Player, Steps, Step_, Deck, Card, Shaker, Dice,
+    Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
     Bag, log_enable
         )
 
@@ -48,8 +48,8 @@ if __name__ == '__main__':
     # data types and makes some operations with items inside tool.
 
     # Adding game tuns order in Steps tool
-    G.steps.add(Step_(id='step0'))
-    G.steps.add(Step_(id='step1', priority=1))
+    G.steps.add(Step(id='step0'))
+    G.steps.add(Step(id='step1', priority=1))
 
     # Starting of new turn
     current_steps = G.steps.deal()

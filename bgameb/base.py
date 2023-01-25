@@ -47,7 +47,7 @@ MappingIntStrAny = Mapping[IntStr, Any]
 # TODO: test me
 class PropertyBaseModel(BaseModel):
     """
-    Workaround for serializing properties with pydantic
+    Serializing properties with pydantic
     https://github.com/samuelcolvin/pydantic/issues/935
     https://github.com/pydantic/pydantic/issues/935#issuecomment-554378904
     https://github.com/pydantic/pydantic/issues/935#issuecomment-1152457432
@@ -98,15 +98,20 @@ class PropertyBaseModel(BaseModel):
 class Base(PropertyBaseModel):
     """Base class for game, stuff, tools players and other stuff
 
-    Attr:
+    ..
+        Attr:
         - id (str): id of stuff
-        - counter (Counter): counter object
+        - counter (Counter): counter object. Isn't represented in scheme.
         - _logger (Logger): loguru logger
-
-    Counter is a `collection.Counter
-    <https://docs.python.org/3/library/collections.html#collections.Counter>`_
+        Counter is a `collection.Counter
+        <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
+    #: Id of stuff
     id: str
+    #: Counter object. Isn't represented in scheme.
+    #: Is initialized automaticaly by __init__.
+    #: Counter is a `collection.Counter
+    #: <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     counter: Counter = Field(default_factory=Counter, exclude=True, repr=False)
     _logger: Logger = Field(...)
 

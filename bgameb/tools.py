@@ -7,17 +7,22 @@ from collections.abc import KeysView
 from heapq import heappop, heappush
 from typing import Optional, Iterable, Union, Any
 from bgameb.base import Base, Component
-from bgameb.items import Card, Dice, Step_, BaseItem
+from bgameb.items import Card, Dice, Step, BaseItem
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 
 class BaseTool(Base):
-    """Base class for game tools (like decks or shakers)
+    """Base class for game tools
     """
+    #: The basis of tool. Contains items.
     c: Component[str, BaseItem] = Field(
         default_factory=Component, exclude=True, repr=False
             )
+    #: Current items representation of tool
+    #: like dealed and shuffled deck of csrd.
+    #: This making from Component items.
     current: list[BaseItem] = []
+    #: Last item removed from current.
     last: Optional[BaseItem] = None
 
     class Config(Base.Config):
@@ -182,9 +187,12 @@ class BaseTool(Base):
 class Bag(Base):
     """Bag object
 
-    Attr:
-        - c (Component[BaseItem]) - items mapping
+    ..
+        Attr:
+            - c (Component[BaseItem]) - The basis of tool.
+                                        Contains items.
     """
+    #: The basis of tool. Contains items.
     c: Component[str, BaseItem] = Field(
         default_factory=Component, exclude=True, repr=False
             )
@@ -210,26 +218,33 @@ class Bag(Base):
 
 
 class Shaker(BaseTool):
-    """Create shaker for roll dices or flip coins
+    """Shaker object
 
-    Attr:
-        - c (Component[Dice]): dices mapping
-        - current (Deque[Dice]): current dice deque.
-        - last (Optional[Dice]): last poped from current.
-        - last_roll (Optional[dict[str, list[PositiveInt]]]): last roll result.
-        - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped
-                                                             roll result.
+    ..
+        Attr:
+            - c (Component[Dice]): the basis of shaker. Contains dices.
+            - current (Deque[Dice]): current dice list.
+            - last (Optional[Dice]): last dice removed from current.
+            - last_roll (Optional[dict[str, list[PositiveInt]]]): last roll result.
+            - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped
+                                                                roll result.
     """
+    #: The basis of shaker. Contains dices.
     c: Component[str, Dice] = Field(  # type: ignore
         default_factory=Component, exclude=True, repr=False
             )
+    #: Current dices representation of shaker.
+    #: This making from Component items.
     current: list[Dice] = []  # type: ignore
+    #: Last dice removed from current.
     last: Optional[Dice] = None
+    #: Last roll result
     last_roll: dict[str, list[PositiveInt]] = {}
+    #: Last mapped roll result
     last_roll_mapped: dict[str, list[Any]] = {}
 
     def add(self, stuff: Dice) -> None:
-        """Add dice to component
+        """Add dice to component of shaker
 
         Args:
             stuff (Dice): dice object
@@ -309,28 +324,26 @@ class Shaker(BaseTool):
 class Deck(BaseTool):
     """Deck object
 
-    Deck contains Cards for define curent game deque.
+    ..
+        You can add cards, define it counts and deal a deck.
+        Result is saved in current attr as deque object. This object
+        has all methods of
+        `python deque
+        <https://docs.python.org/3/library/collections.html#deque-objects>`_
 
-    You can add cards, define it counts and deal a deck.
-    Result is saved in current deck attr as deque object. This object
-    has all methods of
-    `python deque
-    <https://docs.python.org/3/library/collections.html#deque-objects>`_
-
-    Attr:
-        - c (Component[Card]): components of Deck
-        - current (Deque[Card]): current cards deque.
-        - last (Optional[Card]): last poped from current.
-
-    .. code-block::
-        :caption: Example:
-
-            deque(Card1, Card3, Card2, Card4)
+        Attr:
+            - c (Component[Card]): the basis of deck. Contains cards.
+            - current (Deque[Card]): current cards deque.
+            - last (Optional[Card]): last card, removed from current.
     """
+    #: the basis of deck. Contains cards.
     c: Component[str, Card] = Field(  # type: ignore
         default_factory=Component, exclude=True, repr=False
             )
+    #: Current cards representation of deck.
+    #: This making from Component items.
     current: deque[Card] = Field(default_factory=deque)  # type: ignore
+    # Last card, removed from current.
     last: Optional[Card] = None
 
     def add(self, stuff: Card) -> None:
@@ -674,16 +687,22 @@ class Deck(BaseTool):
 class Steps(BaseTool):
     """Game steps order object
 
-    Attr:
-        - c (Component[Step]): components of Steps.
-        - current (List[Tuple[int, Step]]): current order of steps.
-        - last (Step): last poped from current step.
+    ..
+        Attr:
+            - c (Component[Step]): the basis of steps. Contains steps.
+            - current (List[Tuple[int, Step]]): current representation
+                                                of order in steps.
+            - last (Step): last poped from current step.
     """
-    c: Component[str, Step_] = Field(  # type: ignore
+    #: The basis of steps. Contains steps.
+    c: Component[str, Step] = Field(  # type: ignore
         default_factory=Component, exclude=True, repr=False
             )
-    current: list[tuple[int, Step_]] = []  # type: ignore
-    last: Optional[Step_] = None
+    #: Current representation of order in steps.
+    #: This making from Component items.
+    current: list[tuple[int, Step]] = []  # type: ignore
+    #: Last step, removed from current.
+    last: Optional[Step] = None
 
     @property
     def current_ids(self) -> list[str]:
@@ -694,14 +713,14 @@ class Steps(BaseTool):
         """
         return [item[1].id for item in self.current]
 
-    def add(self, stuff: Step_) -> None:
+    def add(self, stuff: Step) -> None:
         """Add Step to component
 
         Args:
             stuff (Step): Step object
         """
-        if isinstance(stuff.__class__, Step_) \
-                or issubclass(stuff.__class__, Step_):
+        if isinstance(stuff.__class__, Step) \
+                or issubclass(stuff.__class__, Step):
             self.c.update(stuff)
             self._logger.info(
                 f'Component updated by stuff with id="{stuff.id}".'
@@ -746,16 +765,16 @@ class Steps(BaseTool):
         """
         return [item[1] for item in self.current if item[1].id == id]
 
-    def push(self, item: Step_) -> None:
+    def push(self, item: Step) -> None:
         """Push Step object to current
 
         Args:
             item (Step): Step class instance
         """
-        replaced: Step_ = self._item_replace(item)  # type: ignore
+        replaced: Step = self._item_replace(item)  # type: ignore
         heappush(self.current, (replaced.priority, replaced))
 
-    def pop(self) -> Step_:
+    def pop(self) -> Step:
         """Pop Step object from current with lowest priority
 
         Returns:

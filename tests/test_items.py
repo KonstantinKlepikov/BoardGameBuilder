@@ -4,7 +4,7 @@ from collections import Counter
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError
 from loguru._logger import Logger
-from bgameb.items import Dice, Card, Step_, BaseItem
+from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.errors import StuffDefineError
 from tests.conftest import FixedSeed
 
@@ -17,7 +17,7 @@ class TestBaseStuff:
         (BaseItem, 'item'),
         (Dice, 'dice'),
         (Card, 'card'),
-        (Step_, 'step'),
+        (Step, 'step'),
             ])
     def test_items_classes_created(self, _class, _id: str) -> None:
         """Test items classes instancing
@@ -43,9 +43,9 @@ class TestStep:
     def test_step_instance(self) -> None:
         """Test Step class instance
         """
-        obj_ = Step_(id='first_step')
+        obj_ = Step(id='first_step')
         assert obj_.priority == 0, 'wrong priority'
-        obj1 = Step_(id='first_step', priority=20)
+        obj1 = Step(id='first_step', priority=20)
         assert obj1.priority == 20, 'wrong priority'
         assert obj1 > obj_, 'wong comparison'
         assert obj1 >= obj_, 'wong comparison'

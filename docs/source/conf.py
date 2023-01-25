@@ -28,6 +28,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'myst_parser',
+    'sphinxcontrib.autodoc_pydantic',
     ]
 
 # Templates
@@ -63,11 +64,17 @@ add_function_parentheses = False
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-add_module_names = True
+add_module_names = False
 
 # Autodock config
 # Both the class’ and the __init__ method’s docstring are concatenated and inserted.
-autoclass_content = 'both'
+autoclass_content = 'class'
 
 # mthod sorting
 autodoc_member_order = 'bysource'
+
+# sphynx pydantic
+autodoc_pydantic_model_show_config_member = True
+autodoc_pydantic_model_show_validator_members = True
+autodoc_pydantic_model_show_json = True
+autodoc_pydantic_settings_show_json = False
