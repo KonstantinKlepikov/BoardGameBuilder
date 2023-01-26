@@ -3,6 +3,29 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.1.1 (2023-01-26)
+===========================
+
+Features
+--------
+
+- #277:
+      - counter noe is a _counter attr
+      - Step_ class renamed to Step
+      - test all
+      - docks changes
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/277)
+
+
+Improved Documentation
+----------------------
+
+- #277:
+      - added autodock-pydantic
+      - docks reconfiguration - more clear documentation and inherit
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/277)
+
+
 Release v0.1.0 (2023-01-20)
 ===========================
 
