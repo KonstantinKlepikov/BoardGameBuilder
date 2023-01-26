@@ -1,11 +1,10 @@
 import json
 import pytest
 from typing import Union
-from collections import deque, Counter
+from collections import deque
 from pydantic import BaseModel
-from loguru._logger import Logger
 from bgameb.base import Component
-from bgameb.items import Dice, Card, Step_, BaseItem
+from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
 from bgameb.errors import ArrangeIndexError
 from tests.conftest import FixedSeed
@@ -39,14 +38,8 @@ class TestTool:
         assert isinstance(obj_.c, Component), 'wrong component type'
         assert len(obj_.c) == 2, 'wrong items'
         assert obj_.last is None, 'wrong last'
-        assert isinstance(obj_.counter, Counter), 'wrong counter type'
-        assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
         j: dict = json.loads(obj_.json())
         assert j['id'] == 'this', 'not converted to json'
-        assert j.get('counter') is None, 'counter not excluded'
-        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
-        assert j.get('_logger') is None, '_logger not excluded'
 
     def test_last_id(self, dealt_obj_: BaseTool) -> None:
         """Test get_last_id
@@ -195,28 +188,22 @@ class TestBag:
         assert obj_.id == 'bag', 'not set ID for instance'
         assert isinstance(obj_.c, Component), 'wrong component type'
         assert len(obj_.c) == 2, 'wrong items'
-        assert isinstance(obj_.counter, Counter), 'wrong counter type'
-        assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
         j: dict = json.loads(obj_.json())
         assert j['id'] == 'bag', 'not converted to json'
-        assert j.get('counter') is None, 'counter not excluded'
-        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
-        assert j.get('_logger') is None, '_logger not excluded'
 
     @pytest.mark.parametrize(
         "_class,_id",
-        [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step_, 'next_step')]
+        [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step, 'next_step')]
             )
     def test_add_new_item_to_bag(
         self,
-        _class: Union[Card, Dice, Step_],
+        _class: Union[Card, Dice, Step],
         _id: str,
         obj_: Bag
             ) -> None:
         """Test add new item to bag
         """
-        cl: Union[Card, Dice, Step_] = _class(id=_id)
+        cl: Union[Card, Dice, Step] = _class(id=_id)
         obj_.add(cl)
         assert obj_.c[cl.id].id == _id, 'stuff not added'
 
@@ -606,8 +593,8 @@ class TestSteps:
     def obj_(self) -> Steps:
         obj_ = Steps(id='game_turns')
         obj_.c = Component(
-            step1=Step_(id='step1', priority=1),
-            astep=Step_(id='asteP', priority=2)
+            step1=Step(id='step1', priority=1),
+            astep=Step(id='asteP', priority=2)
                 )
         return obj_
 
@@ -631,7 +618,7 @@ class TestSteps:
     def test_steps_add_step(self, obj_: Steps) -> None:
         """Test add step to steps
         """
-        obj_.add(Step_(id='omg', priority=42))
+        obj_.add(Step(id='omg', priority=42))
         assert obj_.c.omg.id == 'omg', 'stuff not added'
 
     def test_by_id(self, obj_: Steps) -> None:
@@ -648,7 +635,7 @@ class TestSteps:
     def test_push(self, obj_: Steps) -> None:
         """Test push to steps
         """
-        s = Step_(id='omg', priority=42)
+        s = Step(id='omg', priority=42)
         obj_.push(s)
         assert len(obj_.current) == 1, 'not pushed'
         assert obj_.current[0][1].id == 'omg', 'wrong id'
@@ -657,7 +644,7 @@ class TestSteps:
     def test_pop(self, obj_: Steps) -> None:
         """Test pull step from steps
         """
-        s = Step_(id='omg', priority=42)
+        s = Step(id='omg', priority=42)
         obj_.push(s)
         step = obj_.pop()
         assert step.id == 'omg', 'wrong step'
