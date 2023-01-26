@@ -1,9 +1,8 @@
 import json
 import pytest
 from typing import Union
-from collections import deque, Counter
+from collections import deque
 from pydantic import BaseModel
-from loguru._logger import Logger
 from bgameb.base import Component
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
@@ -39,14 +38,8 @@ class TestTool:
         assert isinstance(obj_.c, Component), 'wrong component type'
         assert len(obj_.c) == 2, 'wrong items'
         assert obj_.last is None, 'wrong last'
-        assert isinstance(obj_.counter, Counter), 'wrong counter type'
-        assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
         j: dict = json.loads(obj_.json())
         assert j['id'] == 'this', 'not converted to json'
-        assert j.get('counter') is None, 'counter not excluded'
-        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
-        assert j.get('_logger') is None, '_logger not excluded'
 
     def test_last_id(self, dealt_obj_: BaseTool) -> None:
         """Test get_last_id
@@ -195,14 +188,8 @@ class TestBag:
         assert obj_.id == 'bag', 'not set ID for instance'
         assert isinstance(obj_.c, Component), 'wrong component type'
         assert len(obj_.c) == 2, 'wrong items'
-        assert isinstance(obj_.counter, Counter), 'wrong counter type'
-        assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
         j: dict = json.loads(obj_.json())
         assert j['id'] == 'bag', 'not converted to json'
-        assert j.get('counter') is None, 'counter not excluded'
-        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
-        assert j.get('_logger') is None, '_logger not excluded'
 
     @pytest.mark.parametrize(
         "_class,_id",

@@ -100,26 +100,29 @@ class Base(PropertyBaseModel):
 
     ..
         Attr:
-        - id (str): id of stuff
-        - counter (Counter): counter object. Isn't represented in scheme.
-        - _logger (Logger): loguru logger
+
+            id (str): id of stuff
+
+            _counter (Counter): counter object. Isn't represented in scheme.
+
+            _logger (Logger): loguru logger
+
         Counter is a `collection.Counter
         <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
     #: Id of stuff
     id: str
-    #: Counter object. Isn't represented in scheme.
+    #: Counter object. Isn't represented in final json or dict.
     #: Is initialized automaticaly by __init__.
-    #: Counter is a `collection.Counter
-    #: <https://docs.python.org/3/library/collections.html#collections.Counter>`_
-    counter: Counter = Field(default_factory=Counter, exclude=True, repr=False)
+    #: Counter is a collection.Counter
+    _counter: Counter = Field(default_factory=Counter)
     _logger: Logger = Field(...)
 
     def __init__(self, **data):
         super().__init__(**data)
 
         # init counter
-        self.counter = Counter()
+        self._counter = Counter()
 
         # set logger
         self._logger = logger.bind(

@@ -89,7 +89,8 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
-<span class="sd">            - priority (NonNegativeInt): priority queue number. Default to 0.</span>
+
+<span class="sd">            priority (NonNegativeInt): priority queue number. Default to 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: priority queue number. Default to 0.</span>
     <span class="n">priority</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">0</span>
@@ -130,16 +131,25 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
-<span class="sd">            - count (PositiveInt): count of dices. Default to 1.</span>
-<span class="sd">            - sides (Sides): sides of dice or coin. Default to 2.</span>
-<span class="sd">            - mapping (dict[PositiveInt, Any]): optional mapping of roll result.</span>
-<span class="sd">                                                Mapping must define values for</span>
-<span class="sd">                                                each side.</span>
-<span class="sd">            - last_roll (Optional[list[PositiveInt]]): last roll values.</span>
-<span class="sd">            - last_roll_mapped (Optional[list[Any]]): last mapped roll values.</span>
-<span class="sd">            - _range list[PositiveInt] - range of roll, started from 1.</span>
+
+<span class="sd">            count (PositiveInt): count of dices. Default to 1.</span>
+
+<span class="sd">            sides (Sides): sides of dice or coin. Default to 2.</span>
+
+<span class="sd">            mapping (dict[PositiveInt, Any]):</span>
+<span class="sd">                optional mapping of roll result. Mapping must define</span>
+<span class="sd">                values for each side.</span>
+
+<span class="sd">            last roll (list[PositiveInt]), optional:</span>
+<span class="sd">                last roll values.</span>
+
+<span class="sd">            last roll mapped (list[Any]), optional:</span>
+<span class="sd">                last mapped roll values.</span>
+
+<span class="sd">            _range (list[PositiveInt]): range of roll, started from 1.</span>
 
 <span class="sd">        Raises:</span>
+
 <span class="sd">            StuffDefineError: mapping keys is not equal of roll range.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: Count of dices.</span>
@@ -213,10 +223,14 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
-<span class="sd">            - count (PositiveInt): count of cards. Default to 1.</span>
-<span class="sd">            - opened (bool): is card oppened. Default to False.</span>
-<span class="sd">            - tapped (bool): is card tapped. Default to False.</span>
-<span class="sd">            - side (str, optional): the side of tap. Default to None.</span>
+
+<span class="sd">            count (PositiveInt): count of cards. Default to 1.</span>
+
+<span class="sd">            opened (bool): is card oppened. Default to False.</span>
+
+<span class="sd">            tapped (bool): is card tapped. Default to False.</span>
+
+<span class="sd">            side (str, optional): the side of tap. Default to None.</span>
 
 <span class="sd">    .. code-block::</span>
 <span class="sd">        :caption: Example:</span>

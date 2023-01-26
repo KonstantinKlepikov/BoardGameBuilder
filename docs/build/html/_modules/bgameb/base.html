@@ -172,26 +172,29 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
-<span class="sd">        - id (str): id of stuff</span>
-<span class="sd">        - counter (Counter): counter object. Isn&#39;t represented in scheme.</span>
-<span class="sd">        - _logger (Logger): loguru logger</span>
+
+<span class="sd">            id (str): id of stuff</span>
+
+<span class="sd">            _counter (Counter): counter object. Isn&#39;t represented in scheme.</span>
+
+<span class="sd">            _logger (Logger): loguru logger</span>
+
 <span class="sd">        Counter is a `collection.Counter</span>
 <span class="sd">        &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: Id of stuff</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="c1">#: Counter object. Isn&#39;t represented in scheme.</span>
+    <span class="c1">#: Counter object. Isn&#39;t represented in final json or dict.</span>
     <span class="c1">#: Is initialized automaticaly by __init__.</span>
-    <span class="c1">#: Counter is a `collection.Counter</span>
-    <span class="c1">#: &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_</span>
-    <span class="n">counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Counter</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1">#: Counter is a collection.Counter</span>
+    <span class="n">_counter</span><span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Counter</span><span class="p">)</span>
     <span class="n">_logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
 
         <span class="c1"># init counter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
 
         <span class="c1"># set logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>

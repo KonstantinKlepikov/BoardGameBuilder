@@ -46,12 +46,12 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">bgameb</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">bgameb package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.base">base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.game">game module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.players">players module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.items">items module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.tools">tools module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.errors">errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.base">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.game">game</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.players">players</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.items">items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.tools">tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bgameb.errors">errors</a></li>
 </ul>
 </li>
 </ul>
@@ -86,7 +86,7 @@
   <section id="bgameb-package">
 <h1>bgameb package<a class="headerlink" href="#bgameb-package" title="Permalink to this heading"></a></h1>
 <section id="module-bgameb.base">
-<span id="base-module"></span><h2>base module<a class="headerlink" href="#module-bgameb.base" title="Permalink to this heading"></a></h2>
+<span id="base"></span><h2>base<a class="headerlink" href="#module-bgameb.base" title="Permalink to this heading"></a></h2>
 <p>Base constructs for build package objects</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="bgameb.base.log_enable">
@@ -141,16 +141,12 @@ Defaults to ‘./logs/game.log’.</p></li>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base class for game, stuff, tools players and other stuff\n\n..\n    Attr:\n    - id (str): id of stuff\n    - counter (Counter): counter object. Isn&#39;t represented in scheme.\n    - _logger (Logger): loguru logger\n    Counter is a `collection.Counter\n    &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base class for game, stuff, tools players and other stuff\n\n..\n    Attr:\n\n        id (str): id of stuff\n\n        _counter (Counter): counter object. Isn&#39;t represented in scheme.\n\n        _logger (Logger): loguru logger\n\n    Counter is a `collection.Counter\n    &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">   </span><span class="p">},</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -167,23 +163,22 @@ Defaults to ‘./logs/game.log’.</p></li>
 </dd>
 <dt class="field-even">Fields</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="#bgameb.base.Base.counter" title="bgameb.base.Base.counter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">counter</span> <span class="pre">(collections.Counter)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#bgameb.base.Base.id" title="bgameb.base.Base.id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span> <span class="pre">(str)</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="bgameb.base.Base.counter">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">counter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Counter</span></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#bgameb.base.Base.counter" title="Permalink to this definition"></a></dt>
-<dd><p>Counter object. Isn’t represented in scheme.
-Is initialized automaticaly by __init__.
-Counter is a <a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.Counter">collection.Counter</a></p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="bgameb.base.Base.id">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#bgameb.base.Base.id" title="Permalink to this definition"></a></dt>
 <dd><p>Id of stuff</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bgameb.base.Base._counter">
+<span class="sig-name descname"><span class="pre">_counter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Counter</span></em><a class="headerlink" href="#bgameb.base.Base._counter" title="Permalink to this definition"></a></dt>
+<dd><p>Counter object. Isn’t represented in final json or dict.
+Is initialized automaticaly by __init__.
+Counter is a collection.Counter</p>
 </dd></dl>
 
 <dl class="py class pydantic_config">
@@ -282,7 +277,7 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 
 </section>
 <section id="module-bgameb.game">
-<span id="game-module"></span><h2>game module<a class="headerlink" href="#module-bgameb.game" title="Permalink to this heading"></a></h2>
+<span id="game"></span><h2>game<a class="headerlink" href="#module-bgameb.game" title="Permalink to this heading"></a></h2>
 <p>Main engine to create game</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="bgameb.game.BaseGame">
@@ -291,16 +286,12 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseGame&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base class for game, stuff, tools players and other stuff\n\n..\n    Attr:\n    - id (str): id of stuff\n    - counter (Counter): counter object. Isn&#39;t represented in scheme.\n    - _logger (Logger): loguru logger\n    Counter is a `collection.Counter\n    &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Base class for game, stuff, tools players and other stuff\n\n..\n    Attr:\n\n        id (str): id of stuff\n\n        _counter (Counter): counter object. Isn&#39;t represented in scheme.\n\n        _logger (Logger): loguru logger\n\n    Counter is a `collection.Counter\n    &lt;https://docs.python.org/3/library/collections.html#collections.Counter&gt;`_&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">   </span><span class="p">},</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -334,10 +325,6 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">   </span><span class="p">},</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -359,7 +346,7 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 
 </section>
 <section id="module-bgameb.players">
-<span id="players-module"></span><h2>players module<a class="headerlink" href="#module-bgameb.players" title="Permalink to this heading"></a></h2>
+<span id="players"></span><h2>players<a class="headerlink" href="#module-bgameb.players" title="Permalink to this heading"></a></h2>
 <p>Game players classes</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="bgameb.players.BasePlayer">
@@ -375,10 +362,6 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">   </span><span class="p">},</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -412,10 +395,6 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">   </span><span class="p">},</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -437,7 +416,7 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 
 </section>
 <section id="module-bgameb.items">
-<span id="items-module"></span><h2>items module<a class="headerlink" href="#module-bgameb.items" title="Permalink to this heading"></a></h2>
+<span id="items"></span><h2>items<a class="headerlink" href="#module-bgameb.items" title="Permalink to this heading"></a></h2>
 <p>Game dices, coins, cards and other items</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="bgameb.items.BaseItem">
@@ -453,10 +432,6 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">   </span><span class="p">},</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -484,16 +459,12 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Step&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Game steps or turns\n\n..\n    Attr:\n        - priority (NonNegativeInt): priority queue number. Default to 0.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Game steps or turns\n\n..\n    Attr:\n\n        priority (NonNegativeInt): priority queue number. Default to 0.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Priority&quot;</span><span class="p">,</span><span class="w"></span>
@@ -562,16 +533,12 @@ Counter is a <a class="reference external" href="https://docs.python.org/3/libra
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dice&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rolling or tossed objects, like dices or coins.\n\n.. code-block::\n    :caption: Example:\n\n        dice = Dice(id=&#39;coin&#39;, sides=2, mapping={1: &#39;this&#39;, 2: &#39;that&#39;})\n\n..\n    Attr:\n        - count (PositiveInt): count of dices. Default to 1.\n        - sides (Sides): sides of dice or coin. Default to 2.\n        - mapping (dict[PositiveInt, Any]): optional mapping of roll result.\n                                            Mapping must define values for\n                                            each side.\n        - last_roll (Optional[list[PositiveInt]]): last roll values.\n        - last_roll_mapped (Optional[list[Any]]): last mapped roll values.\n        - _range list[PositiveInt] - range of roll, started from 1.\n\n    Raises:\n        StuffDefineError: mapping keys is not equal of roll range.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rolling or tossed objects, like dices or coins.\n\n.. code-block::\n    :caption: Example:\n\n        dice = Dice(id=&#39;coin&#39;, sides=2, mapping={1: &#39;this&#39;, 2: &#39;that&#39;})\n\n..\n    Attr:\n\n        count (PositiveInt): count of dices. Default to 1.\n\n        sides (Sides): sides of dice or coin. Default to 2.\n\n        mapping (dict[PositiveInt, Any]):\n            optional mapping of roll result. Mapping must define\n            values for each side.\n\n        last roll (list[PositiveInt]), optional:\n            last roll values.\n\n        last roll mapped (list[Any]), optional:\n            last mapped roll values.\n\n        _range (list[PositiveInt]): range of roll, started from 1.\n\n    Raises:\n\n        StuffDefineError: mapping keys is not equal of roll range.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Count&quot;</span><span class="p">,</span><span class="w"></span>
@@ -718,16 +685,12 @@ Mapping must define values for each side.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n        - count (PositiveInt): count of cards. Default to 1.\n        - opened (bool): is card oppened. Default to False.\n        - tapped (bool): is card tapped. Default to False.\n        - side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n\n        count (PositiveInt): count of cards. Default to 1.\n\n        opened (bool): is card oppened. Default to False.\n\n        tapped (bool): is card tapped. Default to False.\n\n        side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Count&quot;</span><span class="p">,</span><span class="w"></span>
@@ -875,7 +838,7 @@ to each other.</p>
 
 </section>
 <section id="module-bgameb.tools">
-<span id="tools-module"></span><h2>tools module<a class="headerlink" href="#module-bgameb.tools" title="Permalink to this heading"></a></h2>
+<span id="tools"></span><h2>tools<a class="headerlink" href="#module-bgameb.tools" title="Permalink to this heading"></a></h2>
 <p>Game tools classes</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="bgameb.tools.BaseTool">
@@ -891,10 +854,6 @@ to each other.</p>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/definitions/Component_str__BaseItem_&quot;</span><span class="w"></span>
@@ -929,10 +888,6 @@ to each other.</p>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">            </span><span class="p">}</span><span class="w"></span>
 <span class="w">         </span><span class="p">},</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
@@ -946,7 +901,7 @@ to each other.</p>
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f33da5c4f70&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f7ebf24cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1185,16 +1140,12 @@ If not found, raises a ValueError.
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bag&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bag object\n\n..\n    Attr:\n        - c (Component[BaseItem]) - The basis of tool.\n                                    Contains items.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bag object\n\n..\n    Attr:\n\n        c (Component(BaseItem)):\n            The basis of tool. Contains items.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/definitions/Component_str__BaseItem_&quot;</span><span class="w"></span>
@@ -1217,7 +1168,7 @@ If not found, raises a ValueError.
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function Bag.Config.&lt;lambda&gt; at 0x7f33da5c57e0&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function Bag.Config.&lt;lambda&gt; at 0x7f7ebf24d750&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1265,16 +1216,12 @@ If not found, raises a ValueError.
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Shaker&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Shaker object\n\n..\n    Attr:\n        - c (Component[Dice]): the basis of shaker. Contains dices.\n        - current (Deque[Dice]): current dice list.\n        - last (Optional[Dice]): last dice removed from current.\n        - last_roll (Optional[dict[str, list[PositiveInt]]]): last roll result.\n        - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped\n                                                            roll result.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Shaker object\n\n..\n    Attr:\n\n        c (Component[Dice]): the basis of shaker. Contains dices.\n\n        current (Deque[Dice]): current dice list.\n\n        last (Dice), optional: last dice removed from current.\n\n        last_roll (dict[str, list[PositiveInt]), optional:\n            last roll result.\n\n        last_roll_mapped (dict[str, list[Any]]), optional:\n            last mapped roll result.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/definitions/Component_str__Dice_&quot;</span><span class="w"></span>
@@ -1324,16 +1271,12 @@ If not found, raises a ValueError.
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;Dice&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dice&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rolling or tossed objects, like dices or coins.\n\n.. code-block::\n    :caption: Example:\n\n        dice = Dice(id=&#39;coin&#39;, sides=2, mapping={1: &#39;this&#39;, 2: &#39;that&#39;})\n\n..\n    Attr:\n        - count (PositiveInt): count of dices. Default to 1.\n        - sides (Sides): sides of dice or coin. Default to 2.\n        - mapping (dict[PositiveInt, Any]): optional mapping of roll result.\n                                            Mapping must define values for\n                                            each side.\n        - last_roll (Optional[list[PositiveInt]]): last roll values.\n        - last_roll_mapped (Optional[list[Any]]): last mapped roll values.\n        - _range list[PositiveInt] - range of roll, started from 1.\n\n    Raises:\n        StuffDefineError: mapping keys is not equal of roll range.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rolling or tossed objects, like dices or coins.\n\n.. code-block::\n    :caption: Example:\n\n        dice = Dice(id=&#39;coin&#39;, sides=2, mapping={1: &#39;this&#39;, 2: &#39;that&#39;})\n\n..\n    Attr:\n\n        count (PositiveInt): count of dices. Default to 1.\n\n        sides (Sides): sides of dice or coin. Default to 2.\n\n        mapping (dict[PositiveInt, Any]):\n            optional mapping of roll result. Mapping must define\n            values for each side.\n\n        last roll (list[PositiveInt]), optional:\n            last roll values.\n\n        last roll mapped (list[Any]), optional:\n            last mapped roll values.\n\n        _range (list[PositiveInt]): range of roll, started from 1.\n\n    Raises:\n\n        StuffDefineError: mapping keys is not equal of roll range.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">            </span><span class="p">},</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Count&quot;</span><span class="p">,</span><span class="w"></span>
@@ -1379,7 +1322,7 @@ If not found, raises a ValueError.
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f33da5c4f70&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f7ebf24cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1498,16 +1441,12 @@ If any stuff unmaped - empty list returned for this item.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deck&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deck object\n\n..\n    You can add cards, define it counts and deal a deck.\n    Result is saved in current attr as deque object. This object\n    has all methods of\n    `python deque\n    &lt;https://docs.python.org/3/library/collections.html#deque-objects&gt;`_\n\n    Attr:\n        - c (Component[Card]): the basis of deck. Contains cards.\n        - current (Deque[Card]): current cards deque.\n        - last (Optional[Card]): last card, removed from current.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deck object\n\n..\n    You can add cards, define it counts and deal a deck.\n    Result is saved in current attr as deque object. This object\n    has all methods of\n    `python deque\n    &lt;https://docs.python.org/3/library/collections.html#deque-objects&gt;`_\n\n    Attr:\n\n        c (Component[Card]): the basis of deck. Contains cards.\n\n        current (Deque[Card]): current cards deque.\n\n        last (Card), optional: last card, removed from current.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/definitions/Component_str__Card_&quot;</span><span class="w"></span>
@@ -1535,16 +1474,12 @@ If any stuff unmaped - empty list returned for this item.</p>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;Card&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n        - count (PositiveInt): count of cards. Default to 1.\n        - opened (bool): is card oppened. Default to False.\n        - tapped (bool): is card tapped. Default to False.\n        - side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n\n        count (PositiveInt): count of cards. Default to 1.\n\n        opened (bool): is card oppened. Default to False.\n\n        tapped (bool): is card tapped. Default to False.\n\n        side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">            </span><span class="p">},</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Count&quot;</span><span class="p">,</span><span class="w"></span>
@@ -1578,7 +1513,7 @@ If any stuff unmaped - empty list returned for this item.</p>
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f33da5c4f70&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f7ebf24cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1865,16 +1800,12 @@ current deck. Default to True.</p></li>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Steps&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Game steps order object\n\n..\n    Attr:\n        - c (Component[Step]): the basis of steps. Contains steps.\n        - current (List[Tuple[int, Step]]): current representation\n                                            of order in steps.\n        - last (Step): last poped from current step.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Game steps order object\n\n..\n    Attr:\n\n        c (Component[Step]): the basis of steps. Contains steps.\n\n        current (List[Tuple[int, Step]]):\n            current representation of order in steps.\n\n        last (Step), optional: last poped from current step.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;c&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/definitions/Component_str__Step_&quot;</span><span class="w"></span>
@@ -1913,16 +1844,12 @@ current deck. Default to True.</p></li>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;Step&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Step&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Game steps or turns\n\n..\n    Attr:\n        - priority (NonNegativeInt): priority queue number. Default to 0.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Game steps or turns\n\n..\n    Attr:\n\n        priority (NonNegativeInt): priority queue number. Default to 0.&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Id&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"></span>
-<span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;counter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Counter&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="w"></span>
 <span class="w">            </span><span class="p">},</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Priority&quot;</span><span class="p">,</span><span class="w"></span>
@@ -1942,7 +1869,7 @@ current deck. Default to True.</p></li>
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f33da5c4f70&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f7ebf24cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -2133,7 +2060,7 @@ If not found, raises a ValueError.
 
 </section>
 <section id="module-bgameb.errors">
-<span id="errors-module"></span><h2>errors module<a class="headerlink" href="#module-bgameb.errors" title="Permalink to this heading"></a></h2>
+<span id="errors"></span><h2>errors<a class="headerlink" href="#module-bgameb.errors" title="Permalink to this heading"></a></h2>
 <p>Custom error classes</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="bgameb.errors.CustomRuntimeError">

@@ -100,9 +100,9 @@ if __name__ == '__main__':
         MyCard(id='Thierd', description='story', count=3)
             )
 
-    # Use default counters of any objects - counters not added to schema
-    G.deck.c.first.counter['yellow'] = 12
-    G.deck.c.second.counter['banana'] = 0
+    # Use default counters of any objects - counters not added to schema output
+    G.deck.c.first._counter['yellow'] = 12
+    G.deck.c.second._counter['banana'] = 0
 
     # Dealing and shuffling of deck
     G.deck.deal().shuffle()

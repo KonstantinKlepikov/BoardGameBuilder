@@ -17,7 +17,8 @@ class Step(BaseItem):
 
     ..
         Attr:
-            - priority (NonNegativeInt): priority queue number. Default to 0.
+
+            priority (NonNegativeInt): priority queue number. Default to 0.
     """
     #: priority queue number. Default to 0.
     priority: NonNegativeInt = 0
@@ -58,16 +59,25 @@ class Dice(BaseItem):
 
     ..
         Attr:
-            - count (PositiveInt): count of dices. Default to 1.
-            - sides (Sides): sides of dice or coin. Default to 2.
-            - mapping (dict[PositiveInt, Any]): optional mapping of roll result.
-                                                Mapping must define values for
-                                                each side.
-            - last_roll (Optional[list[PositiveInt]]): last roll values.
-            - last_roll_mapped (Optional[list[Any]]): last mapped roll values.
-            - _range list[PositiveInt] - range of roll, started from 1.
+
+            count (PositiveInt): count of dices. Default to 1.
+
+            sides (Sides): sides of dice or coin. Default to 2.
+
+            mapping (dict[PositiveInt, Any]):
+                optional mapping of roll result. Mapping must define
+                values for each side.
+
+            last roll (list[PositiveInt]), optional:
+                last roll values.
+
+            last roll mapped (list[Any]), optional:
+                last mapped roll values.
+
+            _range (list[PositiveInt]): range of roll, started from 1.
 
         Raises:
+
             StuffDefineError: mapping keys is not equal of roll range.
     """
     #: Count of dices.
@@ -141,10 +151,14 @@ class Card(BaseItem):
 
     ..
         Attr:
-            - count (PositiveInt): count of cards. Default to 1.
-            - opened (bool): is card oppened. Default to False.
-            - tapped (bool): is card tapped. Default to False.
-            - side (str, optional): the side of tap. Default to None.
+
+            count (PositiveInt): count of cards. Default to 1.
+
+            opened (bool): is card oppened. Default to False.
+
+            tapped (bool): is card tapped. Default to False.
+
+            side (str, optional): the side of tap. Default to None.
 
     .. code-block::
         :caption: Example:

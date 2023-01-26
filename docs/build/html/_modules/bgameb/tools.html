@@ -261,8 +261,9 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
-<span class="sd">            - c (Component[BaseItem]) - The basis of tool.</span>
-<span class="sd">                                        Contains items.</span>
+
+<span class="sd">            c (Component(BaseItem)):</span>
+<span class="sd">                The basis of tool. Contains items.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: The basis of tool. Contains items.</span>
     <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -294,12 +295,18 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
-<span class="sd">            - c (Component[Dice]): the basis of shaker. Contains dices.</span>
-<span class="sd">            - current (Deque[Dice]): current dice list.</span>
-<span class="sd">            - last (Optional[Dice]): last dice removed from current.</span>
-<span class="sd">            - last_roll (Optional[dict[str, list[PositiveInt]]]): last roll result.</span>
-<span class="sd">            - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped</span>
-<span class="sd">                                                                roll result.</span>
+
+<span class="sd">            c (Component[Dice]): the basis of shaker. Contains dices.</span>
+
+<span class="sd">            current (Deque[Dice]): current dice list.</span>
+
+<span class="sd">            last (Dice), optional: last dice removed from current.</span>
+
+<span class="sd">            last_roll (dict[str, list[PositiveInt]), optional:</span>
+<span class="sd">                last roll result.</span>
+
+<span class="sd">            last_roll_mapped (dict[str, list[Any]]), optional:</span>
+<span class="sd">                last mapped roll result.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: The basis of shaker. Contains dices.</span>
     <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dice</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
@@ -404,9 +411,12 @@
 <span class="sd">        &lt;https://docs.python.org/3/library/collections.html#deque-objects&gt;`_</span>
 
 <span class="sd">        Attr:</span>
-<span class="sd">            - c (Component[Card]): the basis of deck. Contains cards.</span>
-<span class="sd">            - current (Deque[Card]): current cards deque.</span>
-<span class="sd">            - last (Optional[Card]): last card, removed from current.</span>
+
+<span class="sd">            c (Component[Card]): the basis of deck. Contains cards.</span>
+
+<span class="sd">            current (Deque[Card]): current cards deque.</span>
+
+<span class="sd">            last (Card), optional: last card, removed from current.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: the basis of deck. Contains cards.</span>
     <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Card</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
@@ -761,10 +771,13 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
-<span class="sd">            - c (Component[Step]): the basis of steps. Contains steps.</span>
-<span class="sd">            - current (List[Tuple[int, Step]]): current representation</span>
-<span class="sd">                                                of order in steps.</span>
-<span class="sd">            - last (Step): last poped from current step.</span>
+
+<span class="sd">            c (Component[Step]): the basis of steps. Contains steps.</span>
+
+<span class="sd">            current (List[Tuple[int, Step]]):</span>
+<span class="sd">                current representation of order in steps.</span>
+
+<span class="sd">            last (Step), optional: last poped from current step.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: The basis of steps. Contains steps.</span>
     <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Step</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>  <span class="c1"># type: ignore</span>

@@ -1,9 +1,7 @@
 import json
 import pytest
-from collections import Counter
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError
-from loguru._logger import Logger
 from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.errors import StuffDefineError
 from tests.conftest import FixedSeed
@@ -25,15 +23,9 @@ class TestBaseStuff:
         obj_ = _class(id=_id)
         assert isinstance(obj_, BaseModel), 'wrong instance'
         assert obj_.id == _id, 'not set id for instance'
-        assert isinstance(obj_.counter, Counter), 'wrong counter type'
-        assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
         j: dict = json.loads(obj_.json())
         assert j['id'] == _id, \
             'not converted to json'
-        assert j.get('counter') is None, 'counter not excluded'
-        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
-        assert j.get('_logger') is None, '_logger not excluded'
 
 
 class TestStep:

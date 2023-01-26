@@ -189,8 +189,9 @@ class Bag(Base):
 
     ..
         Attr:
-            - c (Component[BaseItem]) - The basis of tool.
-                                        Contains items.
+
+            c (Component(BaseItem)):
+                The basis of tool. Contains items.
     """
     #: The basis of tool. Contains items.
     c: Component[str, BaseItem] = Field(
@@ -222,12 +223,18 @@ class Shaker(BaseTool):
 
     ..
         Attr:
-            - c (Component[Dice]): the basis of shaker. Contains dices.
-            - current (Deque[Dice]): current dice list.
-            - last (Optional[Dice]): last dice removed from current.
-            - last_roll (Optional[dict[str, list[PositiveInt]]]): last roll result.
-            - last_roll_mapped (Optional[dict[str, list[Any]]]): last mapped
-                                                                roll result.
+
+            c (Component[Dice]): the basis of shaker. Contains dices.
+
+            current (Deque[Dice]): current dice list.
+
+            last (Dice), optional: last dice removed from current.
+
+            last_roll (dict[str, list[PositiveInt]), optional:
+                last roll result.
+
+            last_roll_mapped (dict[str, list[Any]]), optional:
+                last mapped roll result.
     """
     #: The basis of shaker. Contains dices.
     c: Component[str, Dice] = Field(  # type: ignore
@@ -332,9 +339,12 @@ class Deck(BaseTool):
         <https://docs.python.org/3/library/collections.html#deque-objects>`_
 
         Attr:
-            - c (Component[Card]): the basis of deck. Contains cards.
-            - current (Deque[Card]): current cards deque.
-            - last (Optional[Card]): last card, removed from current.
+
+            c (Component[Card]): the basis of deck. Contains cards.
+
+            current (Deque[Card]): current cards deque.
+
+            last (Card), optional: last card, removed from current.
     """
     #: the basis of deck. Contains cards.
     c: Component[str, Card] = Field(  # type: ignore
@@ -689,10 +699,13 @@ class Steps(BaseTool):
 
     ..
         Attr:
-            - c (Component[Step]): the basis of steps. Contains steps.
-            - current (List[Tuple[int, Step]]): current representation
-                                                of order in steps.
-            - last (Step): last poped from current step.
+
+            c (Component[Step]): the basis of steps. Contains steps.
+
+            current (List[Tuple[int, Step]]):
+                current representation of order in steps.
+
+            last (Step), optional: last poped from current step.
     """
     #: The basis of steps. Contains steps.
     c: Component[str, Step] = Field(  # type: ignore
