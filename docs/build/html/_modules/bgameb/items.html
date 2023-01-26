@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.items &mdash; bgameb 0.0.39 documentation</title>
+  <title>bgameb.items &mdash; bgameb 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -28,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.0.39
+                0.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -83,65 +84,84 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="Step_"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Step_">[docs]</a><span class="k">class</span> <span class="nc">Step_</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
+<div class="viewcode-block" id="Step"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Step">[docs]</a><span class="k">class</span> <span class="nc">Step</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Game steps or turns</span>
 
-<span class="sd">    Attr:</span>
-<span class="sd">        - priority (NonNegativeInt): priority queue number. Default to 0.</span>
+<span class="sd">    ..</span>
+<span class="sd">        Attr:</span>
+
+<span class="sd">            priority (NonNegativeInt): priority queue number. Default to 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: priority queue number. Default to 0.</span>
     <span class="n">priority</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span>
 
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span>
 
-    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">&lt;=</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span>
 
-    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span>
 
-    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span>
 
-    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step_&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">&gt;=</span> <span class="n">other</span><span class="o">.</span><span class="n">priority</span></div>
 
 
 <div class="viewcode-block" id="Sides"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Sides">[docs]</a><span class="k">class</span> <span class="nc">Sides</span><span class="p">(</span><span class="n">ConstrainedInt</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Int subtipe to define sides of dices</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: greate than 1 constraint</span>
     <span class="n">gt</span> <span class="o">=</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="Dice"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Dice">[docs]</a><span class="k">class</span> <span class="nc">Dice</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Rolling or tossed objects, like dices or coins.</span>
 
-<span class="sd">    Sides attr define number of sides of roller. Default to 2.</span>
-<span class="sd">    Sides can&#39;t be less than 2.</span>
-
 <span class="sd">    .. code-block::</span>
 <span class="sd">        :caption: Example:</span>
 
-<span class="sd">            dice = Dice(id=&#39;coin&#39;, sides=2)</span>
+<span class="sd">            dice = Dice(id=&#39;coin&#39;, sides=2, mapping={1: &#39;this&#39;, 2: &#39;that&#39;})</span>
 
-<span class="sd">    Attr:</span>
-<span class="sd">        - count (PositiveInt): count of items. Default to 1.</span>
-<span class="sd">        - sides (Sides): sides of dice or coin. Default to 2.</span>
-<span class="sd">        - mapping (dict[PositiveInt, Any]): optional mapping of roll result.</span>
-<span class="sd">        - last_roll (Optional[list[PositiveInt]]): last roll values.</span>
-<span class="sd">        - last_roll_mapped (Optional[list[Any]]): last mapped roll values.</span>
-<span class="sd">        - _range list[PositiveInt] - range of roll, started from 1.</span>
+<span class="sd">    ..</span>
+<span class="sd">        Attr:</span>
 
-<span class="sd">    Raises:</span>
-<span class="sd">        StuffDefineError: mapping keys is not equal of roll range.</span>
+<span class="sd">            count (PositiveInt): count of dices. Default to 1.</span>
+
+<span class="sd">            sides (Sides): sides of dice or coin. Default to 2.</span>
+
+<span class="sd">            mapping (dict[PositiveInt, Any]):</span>
+<span class="sd">                optional mapping of roll result. Mapping must define</span>
+<span class="sd">                values for each side.</span>
+
+<span class="sd">            last roll (list[PositiveInt]), optional:</span>
+<span class="sd">                last roll values.</span>
+
+<span class="sd">            last roll mapped (list[Any]), optional:</span>
+<span class="sd">                last mapped roll values.</span>
+
+<span class="sd">            _range (list[PositiveInt]): range of roll, started from 1.</span>
+
+<span class="sd">        Raises:</span>
+
+<span class="sd">            StuffDefineError: mapping keys is not equal of roll range.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: Count of dices.</span>
     <span class="n">count</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1">#:  Sides of dice or coin.</span>
     <span class="n">sides</span><span class="p">:</span> <span class="n">Sides</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sides</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="c1">#: Optional mapping of roll result</span>
+    <span class="c1">#: Mapping must define values for each side.</span>
     <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1">#: Last roll values</span>
     <span class="n">last_roll</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1">#: Last mapped roll values</span>
     <span class="n">last_roll_mapped</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">_range</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -201,21 +221,30 @@
 <div class="viewcode-block" id="Card"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Card">[docs]</a><span class="k">class</span> <span class="nc">Card</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Card objects</span>
 
-<span class="sd">    Attr:</span>
-<span class="sd">        - count (PositiveInt): count of items. Default to 1.</span>
-<span class="sd">        - opened (bool): is card oppened. Default to False.</span>
-<span class="sd">        - tapped (bool): is card tapped. Default to False.</span>
-<span class="sd">        - side (str, optional): the side of tap. Default to None.</span>
+<span class="sd">    ..</span>
+<span class="sd">        Attr:</span>
+
+<span class="sd">            count (PositiveInt): count of cards. Default to 1.</span>
+
+<span class="sd">            opened (bool): is card oppened. Default to False.</span>
+
+<span class="sd">            tapped (bool): is card tapped. Default to False.</span>
+
+<span class="sd">            side (str, optional): the side of tap. Default to None.</span>
 
 <span class="sd">    .. code-block::</span>
 <span class="sd">        :caption: Example:</span>
 
-<span class="sd">            card = CardType(&#39;unique_card&#39;)</span>
+<span class="sd">            card = Card(id=&#39;unique_card&#39;)</span>
 <span class="sd">            card.tap(side=&#39;left&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: Count of cards.</span>
     <span class="n">count</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1">#: Is card oppened.</span>
     <span class="n">opened</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#: Is card tapped.</span>
     <span class="n">tapped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#: The side of tap.</span>
     <span class="n">side</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Card.flip"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Card.flip">[docs]</a>    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Card&#39;</span><span class="p">:</span>

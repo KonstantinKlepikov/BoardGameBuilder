@@ -2,7 +2,7 @@ from pprint import pprint
 from typing import Optional
 from pydantic import Field
 from bgameb import (
-    Game, Player, Steps, Step_, Deck, Card, Shaker, Dice,
+    Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
     Bag, log_enable
         )
 
@@ -35,8 +35,8 @@ if __name__ == '__main__':
     # data types and makes some operations with items inside tool.
 
     # Adding game tuns order in Steps tool
-    G.steps.add(Step_(id='step0'))
-    G.steps.add(Step_(id='step1', priority=1))
+    G.steps.add(Step(id='step0'))
+    G.steps.add(Step(id='step1', priority=1))
 
     # Starting of new turn
     current_steps = G.steps.deal()
@@ -88,8 +88,8 @@ if __name__ == '__main__':
             )
 
     # Use default counters of any objects - counters not added to schema
-    G.deck.c.first.counter['yellow'] = 12
-    G.deck.c.second.counter['banana'] = 0
+    G.deck.c.first._counter['yellow'] = 12
+    G.deck.c.second._counter['banana'] = 0
 
     # Dealing and shuffling of deck
     G.deck.deal().shuffle()

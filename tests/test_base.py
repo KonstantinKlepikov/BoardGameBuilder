@@ -130,12 +130,11 @@ class TestBaseClass:
         obj_ = Base(id='9 this is Fine #')
         assert isinstance(obj_, BaseModel), 'wrong instance'
         assert obj_.id == '9 this is Fine #', 'not set id for instance'
-        assert isinstance(obj_.counter, Counter), 'wrong counter type'
-        assert len(obj_.counter) == 0, 'counter not empty'
+        assert isinstance(obj_._counter, Counter), 'wrong counter type'
+        assert len(obj_._counter) == 0, 'counter not empty'
         assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
         j: dict = json.loads(obj_.json())
         assert j['id'] == '9 this is Fine #', \
             'not converted to json'
-        assert j.get('counter') is None, 'counter not excluded'
-        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
+        assert j.get('_counter') is None, 'counter not excluded'
         assert j.get('_logger') is None, '_logger not excluded'

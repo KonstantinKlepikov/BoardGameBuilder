@@ -1,48 +1,50 @@
 bgameb package
 ==============
 
-bgameb.base module
-------------------
+base
+----
 
 .. automodule:: bgameb.base
    :members:
    :undoc-members:
    :show-inheritance:
+   :private-members: _counter
 
-bgameb.game module
-------------------
+game
+----
 
 .. automodule:: bgameb.game
    :members:
    :undoc-members:
    :show-inheritance:
 
-bgameb.items module
--------------------
-
-.. automodule:: bgameb.items
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bgameb.tools module
--------------------
-
-.. automodule:: bgameb.tools
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bgameb.players module
----------------------
+players
+-------
 
 .. automodule:: bgameb.players
    :members:
    :undoc-members:
    :show-inheritance:
 
-bgameb.errors module
---------------------
+items
+-----
+
+.. automodule:: bgameb.items
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tools
+-----
+
+.. automodule:: bgameb.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members: _item_replace, _check_order_len, _check_is_to_arrange_valid
+
+errors
+------
 
 .. automodule:: bgameb.errors
    :members:

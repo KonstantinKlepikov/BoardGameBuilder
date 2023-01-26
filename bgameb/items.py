@@ -12,65 +12,84 @@ class BaseItem(Base):
     """
 
 
-class Step_(BaseItem):
+class Step(BaseItem):
     """Game steps or turns
 
-    Attr:
-        - priority (NonNegativeInt): priority queue number. Default to 0.
+    ..
+        Attr:
+
+            priority (NonNegativeInt): priority queue number. Default to 0.
     """
+    #: priority queue number. Default to 0.
     priority: NonNegativeInt = 0
 
-    def __eq__(self, other: 'Step_') -> bool:  # type: ignore[override]
+    def __eq__(self, other: 'Step') -> bool:  # type: ignore[override]
         return self.priority == other.priority
 
-    def __lt__(self, other: 'Step_') -> bool:
+    def __lt__(self, other: 'Step') -> bool:
         return self.priority < other.priority
 
-    def __le__(self, other: 'Step_') -> bool:
+    def __le__(self, other: 'Step') -> bool:
         return self.priority <= other.priority
 
-    def __ne__(self, other: 'Step_') -> bool:  # type: ignore[override]
+    def __ne__(self, other: 'Step') -> bool:  # type: ignore[override]
         return self.priority != other.priority
 
-    def __gt__(self, other: 'Step_') -> bool:
+    def __gt__(self, other: 'Step') -> bool:
         return self.priority > other.priority
 
-    def __ge__(self, other: 'Step_') -> bool:
+    def __ge__(self, other: 'Step') -> bool:
         return self.priority >= other.priority
 
 
 class Sides(ConstrainedInt):
     """Int subtipe to define sides of dices
     """
+    #: greate than 1 constraint
     gt = 1
 
 
 class Dice(BaseItem):
     """Rolling or tossed objects, like dices or coins.
 
-    Sides attr define number of sides of roller. Default to 2.
-    Sides can't be less than 2.
-
     .. code-block::
         :caption: Example:
 
-            dice = Dice(id='coin', sides=2)
+            dice = Dice(id='coin', sides=2, mapping={1: 'this', 2: 'that'})
 
-    Attr:
-        - count (PositiveInt): count of items. Default to 1.
-        - sides (Sides): sides of dice or coin. Default to 2.
-        - mapping (dict[PositiveInt, Any]): optional mapping of roll result.
-        - last_roll (Optional[list[PositiveInt]]): last roll values.
-        - last_roll_mapped (Optional[list[Any]]): last mapped roll values.
-        - _range list[PositiveInt] - range of roll, started from 1.
+    ..
+        Attr:
 
-    Raises:
-        StuffDefineError: mapping keys is not equal of roll range.
+            count (PositiveInt): count of dices. Default to 1.
+
+            sides (Sides): sides of dice or coin. Default to 2.
+
+            mapping (dict[PositiveInt, Any]):
+                optional mapping of roll result. Mapping must define
+                values for each side.
+
+            last roll (list[PositiveInt]), optional:
+                last roll values.
+
+            last roll mapped (list[Any]), optional:
+                last mapped roll values.
+
+            _range (list[PositiveInt]): range of roll, started from 1.
+
+        Raises:
+
+            StuffDefineError: mapping keys is not equal of roll range.
     """
+    #: Count of dices.
     count: PositiveInt = 1
+    #:  Sides of dice or coin.
     sides: Sides = cast(Sides, 2)
+    #: Optional mapping of roll result
+    #: Mapping must define values for each side.
     mapping: dict[PositiveInt, Any] = {}
+    #: Last roll values
     last_roll: list[PositiveInt] = []
+    #: Last mapped roll values
     last_roll_mapped: list[Any] = []
     _range: list[PositiveInt] = []
 
@@ -130,21 +149,30 @@ class Dice(BaseItem):
 class Card(BaseItem):
     """Card objects
 
-    Attr:
-        - count (PositiveInt): count of items. Default to 1.
-        - opened (bool): is card oppened. Default to False.
-        - tapped (bool): is card tapped. Default to False.
-        - side (str, optional): the side of tap. Default to None.
+    ..
+        Attr:
+
+            count (PositiveInt): count of cards. Default to 1.
+
+            opened (bool): is card oppened. Default to False.
+
+            tapped (bool): is card tapped. Default to False.
+
+            side (str, optional): the side of tap. Default to None.
 
     .. code-block::
         :caption: Example:
 
-            card = CardType('unique_card')
+            card = Card(id='unique_card')
             card.tap(side='left')
     """
+    #: Count of cards.
     count: PositiveInt = 1
+    #: Is card oppened.
     opened: bool = False
+    #: Is card tapped.
     tapped: bool = False
+    #: The side of tap.
     side: Optional[str] = None
 
     def flip(self) -> 'Card':

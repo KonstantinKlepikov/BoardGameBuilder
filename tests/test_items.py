@@ -1,10 +1,8 @@
 import json
 import pytest
-from collections import Counter
 from pydantic import BaseModel
 from pydantic.error_wrappers import ValidationError
-from loguru._logger import Logger
-from bgameb.items import Dice, Card, Step_, BaseItem
+from bgameb.items import Dice, Card, Step, BaseItem
 from bgameb.errors import StuffDefineError
 from tests.conftest import FixedSeed
 
@@ -17,7 +15,7 @@ class TestBaseStuff:
         (BaseItem, 'item'),
         (Dice, 'dice'),
         (Card, 'card'),
-        (Step_, 'step'),
+        (Step, 'step'),
             ])
     def test_items_classes_created(self, _class, _id: str) -> None:
         """Test items classes instancing
@@ -25,15 +23,9 @@ class TestBaseStuff:
         obj_ = _class(id=_id)
         assert isinstance(obj_, BaseModel), 'wrong instance'
         assert obj_.id == _id, 'not set id for instance'
-        assert isinstance(obj_.counter, Counter), 'wrong counter type'
-        assert len(obj_.counter) == 0, 'counter not empty'
-        assert isinstance(obj_._logger, Logger), 'wrong _to_relocate'
         j: dict = json.loads(obj_.json())
         assert j['id'] == _id, \
             'not converted to json'
-        assert j.get('counter') is None, 'counter not excluded'
-        assert j.get('_to_relocate') is None, '_to_relocat not excluded'
-        assert j.get('_logger') is None, '_logger not excluded'
 
 
 class TestStep:
@@ -43,9 +35,9 @@ class TestStep:
     def test_step_instance(self) -> None:
         """Test Step class instance
         """
-        obj_ = Step_(id='first_step')
+        obj_ = Step(id='first_step')
         assert obj_.priority == 0, 'wrong priority'
-        obj1 = Step_(id='first_step', priority=20)
+        obj1 = Step(id='first_step', priority=20)
         assert obj1.priority == 20, 'wrong priority'
         assert obj1 > obj_, 'wong comparison'
         assert obj1 >= obj_, 'wong comparison'
