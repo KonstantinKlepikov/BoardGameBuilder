@@ -90,7 +90,7 @@ if __name__ == '__main__':
         some_text: Optional[str] = 'some texts'
 
         class Config(Card.Config):
-            fields = {'opened': 'is_open'}
+            fields = {'is_revealed': 'is_open'}
 
         @property
         def my_calculated_field(self) -> str:
