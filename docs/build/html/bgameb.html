@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb package &mdash; bgameb 0.1.0 documentation</title>
+  <title>bgameb package &mdash; bgameb 0.1.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/autodoc_pydantic.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.1.0
+                0.1.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -685,7 +685,7 @@ Mapping must define values for each side.</p>
 <p><details  class="autodoc_pydantic_collapsable_json">
 <summary>Show JSON schema</summary><div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n\n        count (PositiveInt): count of cards. Default to 1.\n\n        opened (bool): is card oppened. Default to False.\n\n        tapped (bool): is card tapped. Default to False.\n\n        side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n\n        count (PositiveInt): count of cards. Default to 1.\n\n        is_revealed (bool): is card oppened. Default to False.\n\n        is_active (bool): is card tapped. Default to False.\n\n        side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -698,14 +698,14 @@ Mapping must define values for each side.</p>
 <span class="w">         </span><span class="nt">&quot;exclusiveMinimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;opened&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Opened&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;is_revealed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Is Revealed&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;tapped&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tapped&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Is Active&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="w"></span>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;side&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -728,9 +728,9 @@ Mapping must define values for each side.</p>
 <dt class="field-even">Fields</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference internal" href="#bgameb.items.Card.count" title="bgameb.items.Card.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span> <span class="pre">(pydantic.types.PositiveInt)</span></code></a></p></li>
-<li><p><a class="reference internal" href="#bgameb.items.Card.opened" title="bgameb.items.Card.opened"><code class="xref py py-obj docutils literal notranslate"><span class="pre">opened</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#bgameb.items.Card.is_active" title="bgameb.items.Card.is_active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_active</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#bgameb.items.Card.is_revealed" title="bgameb.items.Card.is_revealed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_revealed</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#bgameb.items.Card.side" title="bgameb.items.Card.side"><code class="xref py py-obj docutils literal notranslate"><span class="pre">side</span> <span class="pre">(Optional[str])</span></code></a></p></li>
-<li><p><a class="reference internal" href="#bgameb.items.Card.tapped" title="bgameb.items.Card.tapped"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tapped</span> <span class="pre">(bool)</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -748,8 +748,14 @@ Mapping must define values for each side.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="bgameb.items.Card.opened">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">opened</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#bgameb.items.Card.opened" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="bgameb.items.Card.is_active">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_active</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#bgameb.items.Card.is_active" title="Permalink to this definition"></a></dt>
+<dd><p>Is card is_active.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="bgameb.items.Card.is_revealed">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_revealed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#bgameb.items.Card.is_revealed" title="Permalink to this definition"></a></dt>
 <dd><p>Is card oppened.</p>
 </dd></dl>
 
@@ -757,12 +763,6 @@ Mapping must define values for each side.</p>
 <dt class="sig sig-object py" id="bgameb.items.Card.side">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">side</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#bgameb.items.Card.side" title="Permalink to this definition"></a></dt>
 <dd><p>The side of tap.</p>
-</dd></dl>
-
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="bgameb.items.Card.tapped">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tapped</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#bgameb.items.Card.tapped" title="Permalink to this definition"></a></dt>
-<dd><p>Is card tapped.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -901,7 +901,7 @@ to each other.</p>
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f217f1c4ee0&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7fb062a8cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1168,7 +1168,7 @@ If not found, raises a ValueError.
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function Bag.Config.&lt;lambda&gt; at 0x7f217f1c5750&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function Bag.Config.&lt;lambda&gt; at 0x7fb062a8d750&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1322,7 +1322,7 @@ If not found, raises a ValueError.
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f217f1c4ee0&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7fb062a8cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1474,7 +1474,7 @@ If any stuff unmaped - empty list returned for this item.</p>
 <span class="w">      </span><span class="p">},</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;Card&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n\n        count (PositiveInt): count of cards. Default to 1.\n\n        opened (bool): is card oppened. Default to False.\n\n        tapped (bool): is card tapped. Default to False.\n\n        side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Card objects\n\n..\n    Attr:\n\n        count (PositiveInt): count of cards. Default to 1.\n\n        is_revealed (bool): is card oppened. Default to False.\n\n        is_active (bool): is card tapped. Default to False.\n\n        side (str, optional): the side of tap. Default to None.\n\n.. code-block::\n    :caption: Example:\n\n        card = Card(id=&#39;unique_card&#39;)\n        card.tap(side=&#39;left&#39;)&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">         </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -1487,14 +1487,14 @@ If any stuff unmaped - empty list returned for this item.</p>
 <span class="w">               </span><span class="nt">&quot;exclusiveMinimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="w"></span>
 <span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;opened&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Opened&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;is_revealed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Is Revealed&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="w"></span>
 <span class="w">            </span><span class="p">},</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;tapped&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tapped&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;is_active&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Is Active&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">               </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"></span>
 <span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="w"></span>
 <span class="w">            </span><span class="p">},</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;side&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -1513,7 +1513,7 @@ If any stuff unmaped - empty list returned for this item.</p>
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f217f1c4ee0&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7fb062a8cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>
@@ -1869,7 +1869,7 @@ current deck. Default to True.</p></li>
 </details></p><dl class="field-list simple">
 <dt class="field-odd">Config</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7f217f1c4ee0&gt;}</em></p></li>
+<li><p><strong>json_encoders</strong>: <em>dict = {&lt;class ‘bgameb.base.Component’&gt;: &lt;function BaseTool.Config.&lt;lambda&gt; at 0x7fb062a8cee0&gt;}</em></p></li>
 <li><p><strong>underscore_attrs_are_private</strong>: <em>bool = True</em></p></li>
 </ul>
 </dd>

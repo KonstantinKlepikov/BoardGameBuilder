@@ -140,8 +140,8 @@ class TestCard:
         """Test card correct created
         """
         obj_ = Card(id='card')
-        assert obj_.opened is False, 'card is opened'
-        assert obj_.tapped is False, 'card is tapped'
+        assert obj_.is_revealed is False, 'card is opened'
+        assert obj_.is_active is True, 'card is tapped'
         assert obj_.side is None, 'defined wrong side'
         assert obj_.count == 1, 'wrong count'
 
@@ -151,44 +151,44 @@ class TestCard:
         obj_ = Card(id='card')
         obj_ = obj_.flip()
         assert isinstance(obj_, Card), 'wrong return'
-        assert obj_.opened, 'card not oppened'
+        assert obj_.is_revealed, 'card not oppened'
         obj_.flip()
-        assert not obj_.opened, 'card oppened'
+        assert not obj_.is_revealed, 'card oppened'
 
     def test_open(self) -> None:
-        """Test face up opened card
+        """Test face up is_revealed card
         """
         obj_ = Card(id='card')
         obj_ = obj_.open()
         assert isinstance(obj_, Card), 'wrong return'
-        assert obj_.opened, 'card not opened'
+        assert obj_.is_revealed, 'card not is_revealed'
 
     def test_fase_down(self) -> None:
         """Test face up hide card
         """
         obj_ = Card(id='card')
-        obj_.opened = True
+        obj_.is_revealed = True
         obj_ = obj_.hide()
         assert isinstance(obj_, Card), 'wrong return'
-        assert not obj_.opened, 'card not opened'
+        assert not obj_.is_revealed, 'card not is_revealed'
 
-    def test_tap_tap_card_and_set_side(self) -> None:
+    def test_tap_card_and_set_side(self) -> None:
         """Test tap card tap and set side
         """
         obj_ = Card(id='card')
         obj_ = obj_.tap(side='left')
         assert isinstance(obj_, Card), 'wrong return'
-        assert obj_.tapped, 'card not tapped'
+        assert obj_.is_active is False, 'card is not tapped'
         assert obj_.side == 'left', 'wrong side'
 
     def test_untap_card(self) -> None:
         """Test tap card tap and set side
         """
         obj_ = Card(id='card')
-        obj_.tapped = True
-        assert obj_.tapped, 'card not tapped'
+        obj_.is_active = False
+        assert obj_.is_active is False, 'card not tapped'
         obj_.side = 'left'
         obj_ = obj_.untap()
         assert isinstance(obj_, Card), 'wrong return'
-        assert not obj_.tapped, 'card not untapped'
+        assert obj_.is_active, 'card not untapped'
         assert obj_.side is None, 'wrong side'
