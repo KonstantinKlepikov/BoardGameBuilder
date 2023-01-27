@@ -3,6 +3,19 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v0.1.2 (2023-01-27)
+===========================
+
+Features
+--------
+
+- #280:
+      - oppened of Card switched ti is_revealed
+      - tapped is replaced by is_active
+      - change docs and tests all
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/280)
+
+
 Release v0.1.1 (2023-01-26)
 ===========================
 
