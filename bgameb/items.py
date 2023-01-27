@@ -154,9 +154,9 @@ class Card(BaseItem):
 
             count (PositiveInt): count of cards. Default to 1.
 
-            opened (bool): is card oppened. Default to False.
+            is_revealed (bool): is card oppened. Default to False.
 
-            tapped (bool): is card tapped. Default to False.
+            is_active (bool): is card tapped. Default to False.
 
             side (str, optional): the side of tap. Default to None.
 
@@ -169,9 +169,9 @@ class Card(BaseItem):
     #: Count of cards.
     count: PositiveInt = 1
     #: Is card oppened.
-    opened: bool = False
-    #: Is card tapped.
-    tapped: bool = False
+    is_revealed: bool = False
+    #: Is card is_active.
+    is_active: bool = True
     #: The side of tap.
     side: Optional[str] = None
 
@@ -181,11 +181,11 @@ class Card(BaseItem):
         Returns:
             Card
         """
-        if self.opened:
-            self.opened = False
+        if self.is_revealed:
+            self.is_revealed = False
             self._logger.debug('Card face down.')
         else:
-            self.opened = True
+            self.is_revealed = True
             self._logger.debug('Card face up.')
         return self
 
@@ -195,7 +195,7 @@ class Card(BaseItem):
         Returns:
             Card
         """
-        self.opened = True
+        self.is_revealed = True
         self._logger.debug('Card face up.')
         return self
 
@@ -205,7 +205,7 @@ class Card(BaseItem):
         Returns:
             Card
         """
-        self.opened = False
+        self.is_revealed = False
         self._logger.debug('Card face down.')
         return self
 
@@ -218,7 +218,7 @@ class Card(BaseItem):
         Returns:
             Card
         """
-        self.tapped = True
+        self.is_active = False
         self.side = side
         self._logger.debug(f'Card taped to side {side}.')
         return self
@@ -229,7 +229,7 @@ class Card(BaseItem):
         Returns:
             Card
         """
-        self.tapped = False
+        self.is_active = True
         self.side = None
         self._logger.debug('Card untaped. Side set to None.')
         return self
