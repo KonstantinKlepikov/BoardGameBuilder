@@ -23,7 +23,7 @@ from bgameb import (
 if __name__ == '__main__':
     log_enable()
 
-    # Creating of the game
+    # Creating a game
     class MyGame(Game):
         steps: Steps
         deck: Deck

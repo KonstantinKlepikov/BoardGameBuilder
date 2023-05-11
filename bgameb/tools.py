@@ -713,7 +713,7 @@ class Steps(BaseTool):
             )
     #: Current representation of order in steps.
     #: This making from Component items.
-    current: list[tuple[int, Step]] = []  # type: ignore
+    current: list[Step] = []  # type: ignore
     #: Last step, removed from current.
     last: Optional[Step] = None
 
@@ -724,7 +724,7 @@ class Steps(BaseTool):
         Returns:
             List[str]: list ids of current
         """
-        return [item[1].id for item in self.current]
+        return [item.id for item in self.current]
 
     def add(self, stuff: Step) -> None:
         """Add Step to component
@@ -776,7 +776,7 @@ class Steps(BaseTool):
         Returns:
             list[BaseItem]: items
         """
-        return [item[1] for item in self.current if item[1].id == id]
+        return [item for item in self.current if item.id == id]
 
     def push(self, item: Step) -> None:
         """Push Step object to current
@@ -785,7 +785,7 @@ class Steps(BaseTool):
             item (Step): Step class instance
         """
         replaced: Step = self._item_replace(item)  # type: ignore
-        heappush(self.current, (replaced.priority, replaced))
+        heappush(self.current, replaced)
 
     def pop(self) -> Step:
         """Pop Step object from current with lowest priority
@@ -793,7 +793,7 @@ class Steps(BaseTool):
         Returns:
             Step: Step instance object
         """
-        self.last = heappop(self.current)[1]
+        self.last = heappop(self.current)
         self._logger.debug(f'{self.last.id} is poped from current')
         return self.last
 

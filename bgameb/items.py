@@ -82,7 +82,7 @@ class Dice(BaseItem):
     """
     #: Count of dices.
     count: PositiveInt = 1
-    #:  Sides of dice or coin.
+    #: Sides of dice or coin.
     sides: Sides = cast(Sides, 2)
     #: Optional mapping of roll result
     #: Mapping must define values for each side.
