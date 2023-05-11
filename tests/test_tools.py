@@ -638,8 +638,8 @@ class TestSteps:
         s = Step(id='omg', priority=42)
         obj_.push(s)
         assert len(obj_.current) == 1, 'not pushed'
-        assert obj_.current[0][1].id == 'omg', 'wrong id'
-        assert id(obj_.current[0][1].id) != id(s), 'not replaced'
+        assert obj_.current[0].id == 'omg', 'wrong id'
+        assert id(obj_.current[0].id) != id(s), 'not replaced'
 
     def test_pop(self, obj_: Steps) -> None:
         """Test pull step from steps
