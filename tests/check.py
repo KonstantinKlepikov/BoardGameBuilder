@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import Field
 from bgameb import (
     Game, Player, Steps, Step, Deck, Card, Shaker, Dice,
-    Bag, log_enable
+    log_enable
         )
 
 
@@ -15,7 +15,6 @@ if __name__ == '__main__':
         steps: Steps
         deck: Deck
         shaker: Shaker
-        bag: Bag
         players: list[Player] = []
 
     # The Player and Game are an obstract containeers for tools and stuff.
@@ -26,7 +25,6 @@ if __name__ == '__main__':
         steps=Steps(id='steps'),
         deck=Deck(id='deck'),
         shaker=Shaker(id='shaker'),
-        bag=Bag(id='bag'),
         players=[Player(id='player1'), Player(id='player2')]
             )
 
@@ -101,10 +99,6 @@ if __name__ == '__main__':
 
     # Roll dices
     result = G.shaker.c.dice_8.roll()
-
-    # Use bag as collection of any items
-    G.bag.add(Dice(id='dice'))
-    G.bag.add(Card(id='card'))
 
     print('='*20 + '\n')
     print(f'Repr: {G}')

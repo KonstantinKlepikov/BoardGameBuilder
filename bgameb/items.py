@@ -3,13 +3,8 @@
 import random
 from typing import Optional, NoReturn, Any, cast
 from pydantic import PositiveInt, NonNegativeInt, ConstrainedInt
-from bgameb.base import Base
+from bgameb.base import BaseItem
 from bgameb.errors import StuffDefineError
-
-
-class BaseItem(Base):
-    """Base class for game items (like dices or cards)
-    """
 
 
 class Step(BaseItem):

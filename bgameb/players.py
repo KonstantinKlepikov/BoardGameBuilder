@@ -1,11 +1,6 @@
 """Game players classes
 """
-from bgameb.base import Base
-
-
-class BasePlayer(Base):
-    """Base class for players
-    """
+from bgameb.base import BasePlayer
 
 
 class Player(BasePlayer):

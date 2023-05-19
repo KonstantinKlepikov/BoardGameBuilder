@@ -1,11 +1,11 @@
 import json
 import pytest
-from typing import Union
+# from typing import Union
 from collections import deque
 from pydantic import BaseModel
 from bgameb.base import Component
 from bgameb.items import Dice, Card, Step, BaseItem
-from bgameb.tools import Shaker, Deck, Steps, Bag, BaseTool
+from bgameb.tools import Shaker, Deck, Steps, BaseTool
 from bgameb.errors import ArrangeIndexError
 from tests.conftest import FixedSeed
 
@@ -169,49 +169,49 @@ class TestTool:
         assert dealt_obj_.current == items, 'not reversed'
 
 
-class TestBag:
-    """Test Bag class
-    """
+# class TestBag:
+#     """Test Bag class
+#     """
 
-    @pytest.fixture(scope='function')
-    def obj_(self) -> Bag:
-        obj_ = Bag(id='bag')
-        obj_.c = Component(
-            card=Card(id='card'), dice=Dice(id='Dice')
-                )
-        return obj_
+#     @pytest.fixture(scope='function')
+#     def obj_(self) -> Bag:
+#         obj_ = Bag(id='bag')
+#         obj_.c = Component(
+#             card=Card(id='card'), dice=Dice(id='Dice')
+#                 )
+#         return obj_
 
-    def test_bag_init(self, obj_: Bag) -> None:
-        """Test Bag class instancing
-        """
-        assert isinstance(obj_, BaseModel), 'wrong instance'
-        assert obj_.id == 'bag', 'not set ID for instance'
-        assert isinstance(obj_.c, Component), 'wrong component type'
-        assert len(obj_.c) == 2, 'wrong items'
-        j: dict = json.loads(obj_.json())
-        assert j['id'] == 'bag', 'not converted to json'
+#     def test_bag_init(self, obj_: Bag) -> None:
+#         """Test Bag class instancing
+#         """
+#         assert isinstance(obj_, BaseModel), 'wrong instance'
+#         assert obj_.id == 'bag', 'not set ID for instance'
+#         assert isinstance(obj_.c, Component), 'wrong component type'
+#         assert len(obj_.c) == 2, 'wrong items'
+#         j: dict = json.loads(obj_.json())
+#         assert j['id'] == 'bag', 'not converted to json'
 
-    @pytest.mark.parametrize(
-        "_class,_id",
-        [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step, 'next_step')]
-            )
-    def test_add_new_item_to_bag(
-        self,
-        _class: Union[Card, Dice, Step],
-        _id: str,
-        obj_: Bag
-            ) -> None:
-        """Test add new item to bag
-        """
-        cl: Union[Card, Dice, Step] = _class(id=_id)
-        obj_.add(cl)
-        assert obj_.c[cl.id].id == _id, 'stuff not added'
+#     @pytest.mark.parametrize(
+#         "_class,_id",
+#         [(Dice, 'dice_nice'), (Card, 'card_ward'), (Step, 'next_step')]
+#             )
+#     def test_add_new_item_to_bag(
+#         self,
+#         _class: Union[Card, Dice, Step],
+#         _id: str,
+#         obj_: Bag
+#             ) -> None:
+#         """Test add new item to bag
+#         """
+#         cl: Union[Card, Dice, Step] = _class(id=_id)
+#         obj_.add(cl)
+#         assert obj_.c[cl.id].id == _id, 'stuff not added'
 
-    def test_add_double_to_bag(self, obj_: Bag) -> None:
-        """Test add double of item to bag
-        """
-        obj_.add(Card(id='card'))
-        assert len(obj_.c) == 2, 'not added'
+#     def test_add_double_to_bag(self, obj_: Bag) -> None:
+#         """Test add double of item to bag
+#         """
+#         obj_.add(Card(id='card'))
+#         assert len(obj_.c) == 2, 'not added'
 
 
 class TestShaker:
