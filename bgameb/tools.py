@@ -8,7 +8,7 @@ from collections.abc import KeysView
 from heapq import heappop, heappush
 from typing import Optional, Iterable, Union, Any
 from bgameb.base import BaseTool, K
-from bgameb.items import Card, Dice, Step, BaseItem
+from bgameb.items import Card, Dice, Step
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
 
@@ -17,8 +17,7 @@ GenCard = TypeVar('GenCard', bound=Card)
 GenStep = TypeVar('GenStep', bound=Step)
 
 
-# class Shaker(BaseTool[K, GenDice], Generic[K, GenDice]):
-class Shaker(BaseTool[str, Dice]):
+class Shaker(BaseTool[K, GenDice], Generic[K, GenDice]):
     """Shaker object
 
     ..
@@ -37,6 +36,8 @@ class Shaker(BaseTool[str, Dice]):
             last_roll_mapped (dict[str, list[Any]]), optional:
                 last mapped roll result.
     """
+    current: list[GenDice] = []
+    last: Optional[GenDice] = None
     last_roll: dict[str, list[PositiveInt]] = {}
     last_roll_mapped: dict[str, list[Any]] = {}
 
@@ -55,7 +56,7 @@ class Shaker(BaseTool[str, Dice]):
         else:
             raise ComponentClassError(stuff, self._logger)
 
-    def deal(self, items: Optional[list[str]] = None) -> 'Shaker':
+    def deal(self, items: Optional[list[str]] = None) -> 'Shaker[K, GenDice]':
         """Deal new shaker current. The current is cleared
         before deal.
 
@@ -137,9 +138,10 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
 
             last (Card), optional: last card, removed from current.
     """
-    current: deque[Card] = Field(default_factory=deque)  # type: ignore
+    current: deque[GenCard] = Field(default_factory=deque)  # type: ignore
+    last: Optional[GenCard] = None
 
-    def add(self, stuff: Card) -> None:
+    def add(self, stuff: GenCard) -> None:
         """Add card to component
 
         Args:
@@ -154,7 +156,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         else:
             raise ComponentClassError(stuff, self._logger)
 
-    def _item_replace(self, item: Card) -> Card:
+    def _item_replace(self, item: GenCard) -> GenCard:
         """Get replaced copy of card
 
         Args:
@@ -167,7 +169,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         item.count = 1
         return item
 
-    def deal(self, items: Optional[list[str]] = None) -> 'Deck':
+    def deal(self, items: Optional[list[str]] = None) -> 'Deck[K, GenCard]':
         """Deal new deck current. Cured is cleared
         before deal.
 
@@ -192,7 +194,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         self._logger.debug(f'Is deal current: {self.current_ids}')
         return self
 
-    def shuffle(self) -> 'Deck':
+    def shuffle(self) -> 'Deck[K, GenCard]':
         """Random shuffle current deck.
 
         Returns:
@@ -202,7 +204,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         self._logger.debug(f'Is shuffled: {self.current_ids}')
         return self
 
-    def appendleft(self, item: Card) -> None:
+    def appendleft(self, item: GenCard) -> None:
         """Add card to the left side of the current deck.
 
         Args:
@@ -212,7 +214,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         self.current.appendleft(item)
         self._logger.debug(f'To left of current is appended card: {item.id}')
 
-    def extendleft(self, items: Iterable[Card]) -> None:
+    def extendleft(self, items: Iterable[GenCard]) -> None:
         """Extend the left side of the current deck by appending
         cards started from the right side of iterable.
         The series of left appends results in reversing the order
@@ -227,7 +229,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
             f'Current are extended by {[item.id for item in items]} from left'
                 )
 
-    def popleft(self) -> Card:
+    def popleft(self) -> GenCard:
         """Remove and return a card from the left side of the current deck.
         If no cards are present, raises an IndexError.
 
@@ -294,7 +296,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
     def reorder(
         self,
         order: list[str],
-            ) -> 'Deck':
+            ) -> 'Deck[K, GenCard]':
         """Reorder current deque from right side.
 
         Args:
@@ -326,7 +328,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
     def reorderleft(
         self,
         order: list[str],
-            ) -> 'Deck':
+            ) -> 'Deck[K, GenCard]':
         """Reorder current deque from left side.
 
         Args:
@@ -359,7 +361,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         self,
         order: list[str],
         start: int,
-            ) -> 'Deck':
+            ) -> 'Deck[K, GenCard]':
         """Reorder current deque from right side started
         with given position.
 
@@ -395,7 +397,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         self,
         query: dict[str, int],
         remove: bool = True
-            ) -> list[Card]:
+            ) -> list[GenCard]:
         """Search for cards in current by its id.
 
         Args:
@@ -416,7 +418,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
                     remove=False
                     )
         """
-        for_deque: deque = deque()
+        for_deque: deque[GenCard] = deque()
         result = []
 
         while True:
@@ -440,7 +442,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         self,
         count: int = 1,
         remove: bool = True
-            ) -> list[Card]:
+            ) -> list[GenCard]:
         """Get random cards from current deck
 
         Args:
@@ -477,7 +479,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
             return result
 
 
-class Steps(BaseTool[Step], Generic[GenStep]):
+class Steps(BaseTool[K, GenStep], Generic[K, GenStep]):
     """Game steps order object
 
     ..
@@ -491,8 +493,10 @@ class Steps(BaseTool[Step], Generic[GenStep]):
 
             last (Step), optional: last poped from current step.
     """
+    current: list[GenStep] = []
+    last: Optional[GenStep] = None
 
-    def add(self, stuff: Step) -> None:
+    def add(self, stuff: GenStep) -> None:
         """Add Step to component
 
         Args:
@@ -510,7 +514,7 @@ class Steps(BaseTool[Step], Generic[GenStep]):
     def deal(
         self,
         items: Optional[list[str]] = None
-            ) -> 'Steps':
+            ) -> 'Steps[K, GenStep]':
         """Clear current order and create new current order
 
         Args:
@@ -533,16 +537,16 @@ class Steps(BaseTool[Step], Generic[GenStep]):
         self._logger.debug(f'Is deal current: {self.current_ids}')
         return self
 
-    def push(self, item: Step) -> None:
+    def push(self, item: GenStep) -> None:
         """Push Step object to current
 
         Args:
             item (Step): Step class instance
         """
-        replaced: Step = self._item_replace(item)
+        replaced = self._item_replace(item)
         heappush(self.current, replaced)
 
-    def pop(self) -> Step:
+    def pop(self) -> GenStep:
         """Pop Step object from current with lowest priority
 
         Returns:
@@ -552,10 +556,10 @@ class Steps(BaseTool[Step], Generic[GenStep]):
         self._logger.debug(f'{self.last.id} is poped from current')
         return self.last
 
-    def append(self, item: BaseItem) -> None:
+    def append(self, item: GenStep) -> None:
         raise NotImplementedError
 
-    def extend(self, items: Iterable[BaseItem]) -> None:
+    def extend(self, items: Iterable[GenStep]) -> None:
         raise NotImplementedError
 
     def index(
@@ -566,7 +570,7 @@ class Steps(BaseTool[Step], Generic[GenStep]):
             ) -> int:
         raise NotImplementedError
 
-    def insert(self, item: BaseItem, pos: int) -> None:
+    def insert(self, item: GenStep, pos: int) -> None:
         raise NotImplementedError
 
     def remove(self, item_id: str) -> None:
