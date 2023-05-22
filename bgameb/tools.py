@@ -7,7 +7,7 @@ from collections import deque
 from collections.abc import KeysView
 from heapq import heappop, heappush
 from typing import Optional, Iterable, Union, Any
-from bgameb.base import BaseTool, K
+from bgameb.base import BaseTool, BaseToolListMixin, K
 from bgameb.items import Card, Dice, Step
 from bgameb.errors import ArrangeIndexError, ComponentClassError
 
@@ -17,7 +17,7 @@ GenCard = TypeVar('GenCard', bound=Card)
 GenStep = TypeVar('GenStep', bound=Step)
 
 
-class Shaker(BaseTool[K, GenDice], Generic[K, GenDice]):
+class Shaker(BaseToolListMixin[K, GenDice]):
     """Shaker object
 
     ..
@@ -36,8 +36,6 @@ class Shaker(BaseTool[K, GenDice], Generic[K, GenDice]):
             last_roll_mapped (dict[str, list[Any]]), optional:
                 last mapped roll result.
     """
-    current: list[GenDice] = []
-    last: Optional[GenDice] = None
     last_roll: dict[str, list[PositiveInt]] = {}
     last_roll_mapped: dict[str, list[Any]] = {}
 
@@ -119,7 +117,7 @@ class Shaker(BaseTool[K, GenDice], Generic[K, GenDice]):
         return self.last_roll_mapped
 
 
-class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
+class Deck(BaseToolListMixin[K, GenCard], Generic[K, GenCard]):
     """Deck object
 
     ..
@@ -139,7 +137,6 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
             last (Card), optional: last card, removed from current.
     """
     current: deque[GenCard] = Field(default_factory=deque)  # type: ignore
-    last: Optional[GenCard] = None
 
     def add(self, stuff: GenCard) -> None:
         """Add card to component
@@ -165,7 +162,7 @@ class Deck(BaseTool[K, GenCard], Generic[K, GenCard]):
         Returns:
             Card: a card object
         """
-        item = item.__class__(**item.dict())
+        item = super()._item_replace(item)
         item.count = 1
         return item
 
@@ -546,8 +543,8 @@ class Steps(BaseTool[K, GenStep], Generic[K, GenStep]):
         replaced = self._item_replace(item)
         heappush(self.current, replaced)
 
-    def pop(self) -> GenStep:
-        """Pop Step object from current with lowest priority
+    def pops(self) -> GenStep:
+        """Pop Step object from current with smallest priority
 
         Returns:
             Step: Step instance object
@@ -555,26 +552,3 @@ class Steps(BaseTool[K, GenStep], Generic[K, GenStep]):
         self.last = heappop(self.current)
         self._logger.debug(f'{self.last.id} is poped from current')
         return self.last
-
-    def append(self, item: GenStep) -> None:
-        raise NotImplementedError
-
-    def extend(self, items: Iterable[GenStep]) -> None:
-        raise NotImplementedError
-
-    def index(
-        self,
-        item_id: str,
-        start: int = 0,
-        end: Optional[int] = None
-            ) -> int:
-        raise NotImplementedError
-
-    def insert(self, item: GenStep, pos: int) -> None:
-        raise NotImplementedError
-
-    def remove(self, item_id: str) -> None:
-        raise NotImplementedError
-
-    def reverse(self) -> None:
-        raise NotImplementedError

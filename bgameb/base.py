@@ -34,7 +34,7 @@ def log_enable(
     logger.add(
         sink=log_path,
         level=log_level,
-        format='{extra[classname]}: "{extra[name]}" -> func {function} | ' +
+        format='{extra[classname]} -> func {function} | ' +
         '{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}',
     )
     logger.enable('bgameb')
@@ -114,7 +114,6 @@ class Base(PropertyBaseModel):
         Counter is a `collection.Counter
         <https://docs.python.org/3/library/collections.html#collections.Counter>`_
     """
-    id: str
     _counter: Counter[Any] = Field(default_factory=Counter)
     _logger: Logger = Field(...)
 
@@ -122,9 +121,8 @@ class Base(PropertyBaseModel):
         super().__init__(**data)
 
         self._counter = Counter()
-        self._logger = logger.bind(
-            classname=self.__class__.__name__,
-            name=self.id)
+        self._logger = logger.bind(classname=self.__class__.__name__)
+
 
     class Config:
         underscore_attrs_are_private = True
@@ -136,9 +134,7 @@ class BaseGame(Base):
         super().__init__(**data)
 
         self._logger.info('===========NEW GAME============')
-        self._logger.info(
-            f'{self.__class__.__name__} created with id="{self.id}".'
-                )
+        self._logger.info(f'{self.__class__.__name__} created.')
 
 
 class BasePlayer(Base):
@@ -149,6 +145,7 @@ class BasePlayer(Base):
 class BaseItem(Base):
     """Base class for game items (like dices or cards)
     """
+    id: str
 
 
 K = TypeVar('K', bound=str)
@@ -195,6 +192,168 @@ class Component(GenericModel, Generic[K, V], Mapping[K, V]):
 
     def __setitem__(self, attr: K, value: V) -> None:
         self.__dict__[attr] = value
+
+    def __getitem__(self, attr: K) -> V:
+        return self.__dict__[attr]  # type: ignore
+
+    def __delitem__(self, attr: K) -> None:
+        del self.__dict__[attr]
+
+    def __repr__(self) -> str:
+        items = list(
+            {f"{k}: {v!r}" for k, v in self.items()}
+                )
+        return f"{{{', '.join(items)}}}"
+
+    def __len__(self) -> int:
+        return len(self.__dict__)
+
+    def keys(self) -> KeysView[K]:
+        return self.__dict__.keys()  # type: ignore
+
+    def values(self) -> ValuesView[V]:
+        return self.__dict__.values()
+
+    def items(self) -> ItemsView[K, V]:
+        return self.__dict__.items()  # type: ignore
+
+    def to_json(self) -> str:
+        return json.dumps(self.__dict__, default=lambda c: c.dict())
+
+    def _is_valid(self, name: str) -> bool:
+        """Chek is name of stuff contains correct symbols
+        match [a-zA-Z_][a-zA-Z0-9_]*$ expression:
+
+            * a-z, A-Z, 0-9 symbols
+            * first letter not a number amd not a _
+            * can be used _ symbol in subsequent symbols
+
+        Args:
+            name (str): name of stuff
+
+        Raises:
+            ComponentNameError: name is not valid
+
+        Returns:
+            Trye: is valid
+        """
+        if not re.match("[a-z][a-z0-9_]*$", str(name)):
+            raise ComponentNameError(name)
+        return True
+
+    def _make_name(self, name: str) -> str:
+        """
+        Replace spaces and other specific characters
+        in the name with _
+
+        Args:
+            name (str): name of stuff
+
+        Returns:
+            name (str): safe name of stuff
+        """
+        name = str(name).lower()
+        available = set(string.ascii_letters.lower() + string.digits + '_')
+
+        if " " in name:
+            name = name.replace(' ', '_')
+
+        diff = set(name).difference(available)
+        if diff:
+            for char in diff:
+                name = name.replace(char, '_')
+
+        self._is_valid(name)
+
+        return name
+
+    def update(
+        self,
+        stuff: V,
+        name: Optional[str] = None,
+            ) -> None:
+        """Update Component dict with safe name
+
+        Args:
+            stuff (Type[Base]): Base subclass instance
+            name (Optional[str]). key to update dict. Defult to None.
+        """
+        if name is None:
+            name = self._make_name(stuff.id)
+        else:
+            name = self._make_name(name)
+
+        comp = stuff.__class__(**stuff.dict())
+        self.__dict__[name] = comp
+
+    @property
+    def ids(self) -> list[str]:
+        """Get ids of all added stuff in Component
+
+        Returns:
+            List[str]: list of stuff ids
+        """
+        return [stuff.id for stuff in self.values()]
+
+    def by_id(self, id: str) -> Optional[V]:
+        """Get stuff object by its id
+
+        Args:
+            id (str): stuff id
+
+        Returns:
+            V, optional: stuff object
+        """
+        for comp in self.values():
+            if comp.id == id:
+                return comp
+        return None
+
+
+class Components(Base, Generic[K, V], Mapping[K, V]):
+    """Components mapping - this represents a collection of items or
+    tools, used for create instance of game objects, like dices or decks
+    """
+
+    def __init__(
+        self,
+        *args: tuple[dict[K, V]],
+        **kwargs: dict[K, V]
+            ) -> None:
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v, in arg.items():
+                    self.__dict__[k] = v
+            else:
+                raise AttributeError('Args must be a dict of dicts')
+        if kwargs:
+            for k, v, in kwargs.items():
+                self.__dict__[k] = v
+
+    def __iter__(self) -> Iterator:  # type: ignore
+        return iter(self.__dict__)
+
+    def __setattr__(self, attr: K, value: V) -> None:  # type: ignore
+        self.__setitem__(attr, value)
+
+    def __getattr__(self, attr: K) -> V:  # type: ignore
+        try:
+            return self.__getitem__(attr)
+        except KeyError:
+            raise AttributeError(attr)
+
+    def __delattr__(self, attr: K) -> None:  # type: ignore
+        try:
+            self.__delitem__(attr)
+        except KeyError:
+            raise AttributeError(attr)
+
+    def __setitem__(self, attr: K, value: V) -> None:
+        if isinstance(value.__class__, V):
+            self.__dict__[attr] = value
+        self._logger.info(
+            f'Component updated by item with id="{value.id}".'
+                )
 
     def __getitem__(self, attr: K) -> V:
         return self.__dict__[attr]  # type: ignore
@@ -381,16 +540,6 @@ class BaseTool(Base, GenericModel, Generic[K, V]):
         self.last = None
         self._logger.debug('Current and last clear!')
 
-    def append(self, item: V) -> None:
-        """Append item to current
-
-        Args:
-            item (Item): appended items
-        """
-        item = self._item_replace(item)
-        self.current.append(item)
-        self._logger.debug(f'To current is appended item: {item.id}')
-
     def count(self, item_id: str) -> int:
         """Count the number of current items with given id.
 
@@ -404,6 +553,32 @@ class BaseTool(Base, GenericModel, Generic[K, V]):
         self._logger.debug(f'Count of {item_id} in current is {count}')
         return count
 
+    def pop(self) -> V:
+        """Remove and return an item from the current.
+        If no items are present, raises an IndexError.
+
+        Returns:
+            Item: an item object
+        """
+        self.last = self.current.pop()
+        self._logger.debug(f'{self.last.id} is poped from current')
+        return self.last
+
+
+class BaseToolListMixin(BaseTool[K, V], Generic[K, V]):
+    """Extends BaseTool class by list-like methods
+    """
+
+    def append(self, item: V) -> None:
+        """Append item to current
+
+        Args:
+            item (Item): appended items
+        """
+        item = self._item_replace(item)
+        self.current.append(item)  # type: ignore
+        self._logger.debug(f'To current is appended item: {item.id}')
+
     def extend(self, items: Iterable[V]) -> None:
         """Extend the current by appending items
         started from the left side of iterable.
@@ -412,7 +587,7 @@ class BaseTool(Base, GenericModel, Generic[K, V]):
             items (Iterable[Item]): iterable with items
         """
         items = [self._item_replace(item) for item in items]
-        self.current.extend(items)
+        self.current.extend(items)  # type: ignore
         self._logger.debug(
             f'Current are extended by {[item.id for item in items]} from right'
                 )
@@ -449,19 +624,8 @@ class BaseTool(Base, GenericModel, Generic[K, V]):
             pos (int): position
         """
         item = self._item_replace(item)
-        self.current.insert(pos, item)
+        self.current.insert(pos, item)  # type: ignore
         self._logger.debug(f'To current is inserted {item.id} on {pos=}')
-
-    def pop(self) -> V:
-        """Remove and return an item from the current.
-        If no items are present, raises an IndexError.
-
-        Returns:
-            Item: an item object
-        """
-        self.last = self.current.pop()
-        self._logger.debug(f'{self.last.id} is poped from current')
-        return self.last
 
     def remove(self, item_id: str) -> None:
         """Remove the first occurrence of item from current.

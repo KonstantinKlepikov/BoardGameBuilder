@@ -35,7 +35,7 @@ follow_imports = "silent"
 warn_return_any = true
 warn_unused_configs = true
 warn_unused_ignores = true
-disallow_any_generics = true
+allow_redefinition = true
 ignore_missing_imports = true
 
 [tool.pydantic-mypy]
