@@ -4,122 +4,14 @@ from pydantic import BaseModel
 from loguru._logger import Logger
 from collections import Counter
 from bgameb.base import (
-    Base, Component, Components, BaseItem, BaseTool, BaseToolListMixin
+    Base,
+    Components,
+    BaseItem,
+    BaseTool,
+    BaseToolExtended,
         )
+from bgameb.items import Dice, Card, Step
 from bgameb.errors import ComponentNameError
-
-
-# class TestComponent:
-#     """Test CardText class
-#     """
-
-#     @pytest.fixture(scope='function')
-#     def comp(self) -> Component:
-#         return Component(some=BaseItem(id='some'))
-
-#     def test_components_access_to_attr(self, comp: Component) -> None:
-#         """Test components acces to attrs
-#         """
-#         assert comp.some.id == 'some', 'not set or cant get'
-#         assert comp['some'].id == 'some', 'not set or cant get'
-
-#         del comp.some
-#         with pytest.raises(AttributeError):
-#             comp.some
-#         with pytest.raises(KeyError):
-#             comp['some']
-
-#         with pytest.raises(AttributeError, match='newer'):
-#             del comp.newer
-#         with pytest.raises(KeyError, match='newer'):
-#             del comp['newer']
-
-#     def test_components_repr(self, comp: Component) -> None:
-#         """Test components repr
-#         """
-#         assert "'some'" in comp.__repr__(), 'wrong repr'
-
-#     def test_components_len(self, comp: Component) -> None:
-#         """Test components len
-#         """
-#         assert len(comp) == 1, 'wrong len'
-#         assert len(comp.__dict__) == 1, 'wrong dict len'
-
-#     def test_components_items(self, comp: Component) -> None:
-#         """Test components items access
-#         """
-#         assert len(comp.items()) == 1, 'items not accessed'
-#         assert len(comp.keys()) == 1, 'keys not accessed'
-#         assert len(comp.values()) == 1, 'values not accessed'
-
-#     @pytest.mark.parametrize("example", ['this', 'a222', 'a3b_'])
-#     def test_is_valid(self, example: str) -> None:
-#         """Test _is_valid()
-#         """
-#         comp = Component()
-#         assert comp._is_valid(example), 'not valid'
-
-#     @pytest.mark.parametrize(
-#         "example", ['###', '.', '222', '_ ', 'A2n_', 'e5E_', '_a']
-#             )
-#     def test_is_not_valid(self, example: str) -> None:
-#         """Test _is_valid() fail validation
-#         """
-#         comp = Component()
-#         with pytest.raises(ComponentNameError, match='wrong name'):
-#             comp._is_valid(example)
-
-#     def test_make_name(self) -> None:
-#         """Test _make_name()
-#         """
-#         comp = Component()
-#         assert comp._make_name('this') == 'this', 'not maked'
-#         assert comp._make_name('tHIs') == 'this', 'not maked'
-#         assert comp._make_name('this222') == 'this222', 'not maked'
-#         assert comp._make_name('This 2') == 'this_2', 'not maked'
-#         assert comp._make_name('this#2') == 'this_2', 'not maked'
-#         with pytest.raises(
-#             ComponentNameError,
-#             match='is exist in'
-#                 ):
-#             comp._make_name('_this')
-#         with pytest.raises(
-#             ComponentNameError,
-#             match='is exist in'
-#                 ):
-#             comp._make_name('123')
-
-#     def test_update_component(self) -> None:
-#         """Test update component
-#         """
-#         comp = Component()
-#         cl = BaseItem(id='that')
-#         comp.update(cl)
-#         comp['that'].id == 'that', 'wrong id'
-#         assert id(cl) != id(comp['that']), 'not a copy'
-
-#     def test_ids(self) -> None:
-#         """Test ids() method
-#         """
-#         comp = Component()
-#         assert comp.ids == [], 'nonempty list of names'
-#         comp.update(BaseItem(id='that'))
-#         assert comp.ids == ['that', ], 'empty list of names'
-#         comp.update(BaseItem(id='this'))
-#         assert comp.ids == ['that', 'this'], 'empty list of names'
-
-#     def test_by_id(self, comp: Component) -> None:
-#         """Test get stuff by id
-#         """
-#         assert comp.by_id('some').id == 'some', 'wrong returnt'
-#         assert comp.by_id('something') is None, 'wrong component'
-
-#     def test_to_json_convertation(self, comp: Component) -> None:
-#         """Test to_json() method
-#         """
-#         j = json.loads(comp.to_json())
-#         assert isinstance(j['some'], dict), 'not converted'
-#         assert j['some']['id'] == 'some', 'not converted'
 
 
 class TestComponents:
@@ -146,6 +38,31 @@ class TestComponents:
             del comp.newer
         with pytest.raises(KeyError, match='newer'):
             del comp['newer']
+
+    @pytest.mark.parametrize('item', [Dice, Card, Step, ])
+    def test_component_set_item(self, item: BaseItem) -> None:
+        """Test set item
+        """
+        comp = Components[str, item]()
+        comp['this'] = item(id='that')
+        assert comp.this, 'not exist'
+
+    @pytest.mark.parametrize('item', [Dice, Card, Step, ])
+    def test_component_set_attr(self, item: BaseItem) -> None:
+        """Test set attr
+        """
+        comp = Components[str, item]()
+        comp.this = item(id='that')
+        assert comp.this, 'not exist'
+
+    def test_component_add_item_with_existen_name(self, comp: Components) -> None:
+        """Test add item raise if exist
+        """
+        with pytest.raises(ComponentNameError):
+            comp['some'] = BaseItem(id='some')
+
+        with pytest.raises(ComponentNameError):
+            comp.some = BaseItem(id='some')
 
     def test_components_repr(self, comp: Components) -> None:
         """Test components repr
@@ -216,9 +133,9 @@ class TestComponents:
         """
         comp = Components()
         assert comp.ids == [], 'nonempty list of names'
-        comp.update(BaseItem(id='that'))
+        comp.thst = BaseItem(id='that')
         assert comp.ids == ['that', ], 'empty list of names'
-        comp.update(BaseItem(id='this'))
+        comp.this = BaseItem(id='this')
         assert comp.ids == ['that', 'this'], 'empty list of names'
 
     def test_by_id(self, comp: Components) -> None:
@@ -242,7 +159,7 @@ class TestBaseClass:
     def test_base_class_creation(self) -> None:
         """Test Base instancing
         """
-        obj_ = Base()
+        obj_ = Base(id='this')
         assert isinstance(obj_, BaseModel), 'wrong instance'
         assert isinstance(obj_._counter, Counter), 'wrong counter type'
         assert len(obj_._counter) == 0, 'counter not empty'
@@ -258,11 +175,7 @@ class TestBaseTool:
 
     @pytest.fixture
     def obj_(self) -> BaseTool:
-        tool = BaseTool()
-        tool.c = Component(
-            dice=BaseItem(id='dice'), card=BaseItem(id='card')
-                )
-        return tool
+        return BaseTool(id='this')
 
     @pytest.fixture
     def dealt_obj_(self, obj_: BaseTool) -> BaseTool:
@@ -276,8 +189,6 @@ class TestBaseTool:
         assert isinstance(obj_, BaseModel), 'wrong instance'
         assert isinstance(obj_.current, list), 'wrong type of current'
         assert len(obj_.current) == 0, 'wrong current len'
-        assert isinstance(obj_.c, Component), 'wrong component type'
-        assert len(obj_.c) == 2, 'wrong items'
         assert obj_.last is None, 'wrong last'
 
     def test_last_id(self, dealt_obj_: BaseTool) -> None:
@@ -298,14 +209,6 @@ class TestBaseTool:
         assert dealt_obj_.by_id('why') == [], 'wrong search'
         dealt_obj_.clear()
         assert dealt_obj_.by_id('card') == [], 'wrong search'
-
-    def test_get_items(self, obj_: BaseTool) -> None:
-        """Test get items
-        """
-        result = obj_.get_items()
-        assert len(result) == 2, 'wrong number of items'
-        assert result['dice'], 'wrong item'
-        assert result['card'], 'wrong item'
 
     def test_item_replace(self, obj_: BaseTool) -> None:
         """Test _item_replace()
@@ -348,25 +251,21 @@ class TestBaseTool:
             dealt_obj_.pop()
 
 
-class TestBaseToolListMixin:
-    """Test BaseToolListMixin
+class TestBaseToolExtended:
+    """Test BaseToolExtended
     """
 
     @pytest.fixture
-    def obj_(self) -> BaseToolListMixin:
-        tool = BaseToolListMixin(id='this')
-        tool.c = Component(
-            dice=BaseItem(id='dice'), card=BaseItem(id='card')
-                )
-        return tool
+    def obj_(self) -> BaseToolExtended:
+        return BaseToolExtended(id='this')
 
     @pytest.fixture
-    def dealt_obj_(self, obj_: BaseToolListMixin) -> BaseToolListMixin:
+    def dealt_obj_(self, obj_: BaseToolExtended) -> BaseToolExtended:
         obj_.current.append(BaseItem(id='dice'))
         obj_.current.append(BaseItem(id='card'))
         return obj_
 
-    def test_append(self, dealt_obj_: BaseTool) -> None:
+    def test_append(self, dealt_obj_: BaseToolExtended) -> None:
         """Test curent append
         """
         card = BaseItem(id='card')
@@ -375,7 +274,7 @@ class TestBaseToolListMixin:
         assert dealt_obj_.current[1].id == 'card', 'wrong append'
         assert id(card) != id(dealt_obj_.current[2]), 'not replaced'
 
-    def test_extend(self, dealt_obj_: BaseTool) -> None:
+    def test_extend(self, dealt_obj_: BaseToolExtended) -> None:
         """Test extend currend by items
         """
         items = [BaseItem(id='unique'), BaseItem(id='dice')]
@@ -385,7 +284,7 @@ class TestBaseToolListMixin:
         assert id(items[0]) != id(dealt_obj_.current[2]), 'not replaced'
         assert dealt_obj_.current[3].id == 'dice', 'wrong append'
 
-    def test_index(self, dealt_obj_: BaseTool) -> None:
+    def test_index(self, dealt_obj_: BaseToolExtended) -> None:
         """Test index currend
         """
         assert dealt_obj_.index('card') == 1, 'wrong index'
@@ -398,7 +297,7 @@ class TestBaseToolListMixin:
         with pytest.raises(ValueError):
             dealt_obj_.index('card', start=6, end=10)
 
-    def test_insert(self, dealt_obj_: BaseTool) -> None:
+    def test_insert(self, dealt_obj_: BaseToolExtended) -> None:
         """Test insert into currend
         """
         item = BaseItem(id='unique')
@@ -409,7 +308,7 @@ class TestBaseToolListMixin:
         dealt_obj_.insert(item, 55)
         assert dealt_obj_.current[3].id == 'unique', 'not inserted'
 
-    def test_remove(self, dealt_obj_: BaseTool) -> None:
+    def test_remove(self, dealt_obj_: BaseToolExtended) -> None:
         """Test remove
         """
         assert dealt_obj_.current[0].id == 'dice', 'wrong order'
@@ -418,7 +317,7 @@ class TestBaseToolListMixin:
         with pytest.raises(ValueError):
             dealt_obj_.remove('not_exist')
 
-    def test_reverse(self, dealt_obj_: BaseTool) -> None:
+    def test_reverse(self, dealt_obj_: BaseToolExtended) -> None:
         """Test reverse
         """
         items = dealt_obj_.current

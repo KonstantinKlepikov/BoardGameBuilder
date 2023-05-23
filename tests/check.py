@@ -12,7 +12,6 @@ if __name__ == '__main__':
 
     # Defining a classes
     class MyPlayer(Player):
-        name: str
         deck: Deck
 
     # Creating of the game
@@ -26,10 +25,11 @@ if __name__ == '__main__':
     # Deck, Bag, Shaker and Steps are tools. Dice, Card and Step are items.
 
     G = MyGame(
-        steps=Steps(),
-        shaker=Shaker(),
-        me = MyPlayer(name='Me', deck=Deck()),
-        opponent = MyPlayer(name='Opponent', deck=Deck()),
+        id="my game",
+        steps=Steps(id="game steps"),
+        shaker=Shaker(id="dice shaker"),
+        me = MyPlayer(id='Me', deck=Deck(id="my cards deck")),
+        opponent = MyPlayer(id='Opponent', deck=Deck(id="opponent cards deck")),
             )
 
     # The tool objects must be filled by items by method add().

@@ -26,6 +26,14 @@ class ComponentClassError(CustomRuntimeError):
         super().__init__(self.message)
 
 
+class ComponentClassError_(CustomRuntimeError):
+    """Given class can't be a part of components.
+    """
+    def __init__(self, obj_) -> None:
+        self.message = f'Given: {obj_} cant be used as part of Components.'
+        super().__init__(self.message)
+
+
 class StuffDefineError(AttributeError):
     """Bad definition of item.
     """
