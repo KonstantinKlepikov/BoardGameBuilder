@@ -26,3 +26,20 @@ pythonpath = [
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
+
+[tool.mypy]
+plugins = [
+  "pydantic.mypy"
+]
+follow_imports = "silent"
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+allow_redefinition = true
+ignore_missing_imports = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true

@@ -3,6 +3,34 @@ BoardGameBuilder changelog
 ==========================
 
 .. release notes
+Release v2.0.0 (2023-05-24)
+===========================
+
+Features
+--------
+
+- #284:
+      - move all base classes to base.py
+      - BaseTool is a genericmodel now
+      - all yools inherited from BaseModel with tipe of nested item
+      - remove id from all classes except items
+      - redefine logger
+      - remove add() method from tools. Rewrite setitemm in Component. Component now is Components
+      - Components are removed from all classes
+      - Components ias a Generic with BaseItem as TypeVar. Only subclasses can be used - Dice, Card, Step, etc
+      - now we have dict, dot and update interface for Components
+      - Components cant be used in Base class and subclasses
+      - all deal() method s now needs Components as arg
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/284)
+- #258:
+      - current of steps now is a list of Step. Is a heapq to
+      - test this
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/285)
+- #286:
+      - Components refactored as Generic and Mapping, bounded to items
+      - -> (https://github.com/KonstantinKlepikov/BoardGameBuilder/issues/286)
+
+
 Release v0.1.2 (2023-01-27)
 ===========================
 

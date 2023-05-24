@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.items &mdash; bgameb 0.1.1 documentation</title>
+  <title>bgameb.items &mdash; bgameb 0.1.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.1.1
+                0.1.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -75,13 +75,8 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">ConstrainedInt</span>
-<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">BaseItem</span>
 <span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">StuffDefineError</span>
-
-
-<div class="viewcode-block" id="BaseItem"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.BaseItem">[docs]</a><span class="k">class</span> <span class="nc">BaseItem</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for game items (like dices or cards)</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Step"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Step">[docs]</a><span class="k">class</span> <span class="nc">Step</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
@@ -92,7 +87,6 @@
 
 <span class="sd">            priority (NonNegativeInt): priority queue number. Default to 0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: priority queue number. Default to 0.</span>
     <span class="n">priority</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;Step&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
@@ -116,8 +110,12 @@
 
 <div class="viewcode-block" id="Sides"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Sides">[docs]</a><span class="k">class</span> <span class="nc">Sides</span><span class="p">(</span><span class="n">ConstrainedInt</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Int subtipe to define sides of dices</span>
+
+<span class="sd">    ..</span>
+<span class="sd">        Attr:</span>
+
+<span class="sd">            gt (int): greate than 1 constraint.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: greate than 1 constraint</span>
     <span class="n">gt</span> <span class="o">=</span> <span class="mi">1</span></div>
 
 
@@ -152,16 +150,10 @@
 
 <span class="sd">            StuffDefineError: mapping keys is not equal of roll range.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: Count of dices.</span>
     <span class="n">count</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="c1">#:  Sides of dice or coin.</span>
     <span class="n">sides</span><span class="p">:</span> <span class="n">Sides</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sides</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="c1">#: Optional mapping of roll result</span>
-    <span class="c1">#: Mapping must define values for each side.</span>
     <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="c1">#: Last roll values</span>
     <span class="n">last_roll</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1">#: Last mapped roll values</span>
     <span class="n">last_roll_mapped</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">_range</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -197,7 +189,7 @@
         <span class="sd">&quot;&quot;&quot;Roll and return result</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[PositiveInt]: result of roll</span>
+<span class="sd">            list[PositiveInt]: result of roll</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_roll</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_range</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span>
@@ -238,13 +230,9 @@
 <span class="sd">            card = Card(id=&#39;unique_card&#39;)</span>
 <span class="sd">            card.tap(side=&#39;left&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: Count of cards.</span>
     <span class="n">count</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="c1">#: Is card oppened.</span>
     <span class="n">is_revealed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="c1">#: Is card is_active.</span>
     <span class="n">is_active</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="c1">#: The side of tap.</span>
     <span class="n">side</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Card.flip"><a class="viewcode-back" href="../../bgameb.html#bgameb.items.Card.flip">[docs]</a>    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Card&#39;</span><span class="p">:</span>
