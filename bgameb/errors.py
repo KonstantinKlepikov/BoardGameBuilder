@@ -18,15 +18,6 @@ class ComponentNameError(CustomRuntimeError):
 
 
 class ComponentClassError(CustomRuntimeError):
-    """Given class can't be a part of component.
-    """
-    def __init__(self, obj_, logger: Logger) -> None:
-        self.message = f'Given: {obj_} cant be used as part of Component.'
-        logger.exception(self.message)
-        super().__init__(self.message)
-
-
-class ComponentClassError_(CustomRuntimeError):
     """Given class can't be a part of components.
     """
     def __init__(self, obj_) -> None:

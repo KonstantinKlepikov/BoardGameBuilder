@@ -4,5 +4,10 @@
     - all yools inherited from BaseModel with tipe of nested item
     - remove id from all classes except items
     - redefine logger
-    - remove add method from tools. Rewrite setitemm in Component. Componet now is Components
+    - remove add() method from tools. Rewrite setitemm in Component. Component now is Components
+    - Components are removed from all classes
+    - Components ias a Generic with BaseItem as TypeVar. Only subclasses can be used - Dice, Card, Step, etc
+    - now we have dict, dot and update interface for Components
+    - Components cant be used in Base class and subclasses
+    - all deal() method s now needs Components as arg
     - ->

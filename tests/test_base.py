@@ -43,7 +43,7 @@ class TestComponents:
     def test_component_set_item(self, item: BaseItem) -> None:
         """Test set item
         """
-        comp = Components[str, item]()
+        comp = Components[item]()
         comp['this'] = item(id='that')
         assert comp.this, 'not exist'
 
@@ -51,11 +51,14 @@ class TestComponents:
     def test_component_set_attr(self, item: BaseItem) -> None:
         """Test set attr
         """
-        comp = Components[str, item]()
+        comp = Components[item]()
         comp.this = item(id='that')
         assert comp.this, 'not exist'
 
-    def test_component_add_item_with_existen_name(self, comp: Components) -> None:
+    def test_component_add_item_with_existen_name(
+        self,
+        comp: Components
+            ) -> None:
         """Test add item raise if exist
         """
         with pytest.raises(ComponentNameError):
