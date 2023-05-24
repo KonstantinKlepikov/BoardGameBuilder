@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bgameb.tools &mdash; bgameb 0.1.0 documentation</title>
+  <title>bgameb.tools &mdash; bgameb 0.1.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/autodoc_pydantic.css" type="text/css" />
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> bgameb
           </a>
               <div class="version">
-                0.1.0
+                0.1.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -78,227 +78,19 @@
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">KeysView</span>
 <span class="kn">from</span> <span class="nn">heapq</span> <span class="kn">import</span> <span class="n">heappop</span><span class="p">,</span> <span class="n">heappush</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">bgameb.items</span> <span class="kn">import</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Dice</span><span class="p">,</span> <span class="n">Step</span><span class="p">,</span> <span class="n">BaseItem</span>
-<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span><span class="p">,</span> <span class="n">ComponentClassError</span>
+<span class="kn">from</span> <span class="nn">bgameb.base</span> <span class="kn">import</span> <span class="n">BaseTool</span><span class="p">,</span> <span class="n">BaseToolExtended</span><span class="p">,</span> <span class="n">Components</span>
+<span class="kn">from</span> <span class="nn">bgameb.items</span> <span class="kn">import</span> <span class="n">Card</span><span class="p">,</span> <span class="n">Dice</span><span class="p">,</span> <span class="n">Step</span>
+<span class="kn">from</span> <span class="nn">bgameb.errors</span> <span class="kn">import</span> <span class="n">ArrangeIndexError</span>
 
 
-<div class="viewcode-block" id="BaseTool"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool">[docs]</a><span class="k">class</span> <span class="nc">BaseTool</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for game tools</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: The basis of tool. Contains items.</span>
-    <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-    <span class="c1">#: Current items representation of tool</span>
-    <span class="c1">#: like dealed and shuffled deck of csrd.</span>
-    <span class="c1">#: This making from Component items.</span>
-    <span class="n">current</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1">#: Last item removed from current.</span>
-    <span class="n">last</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-<div class="viewcode-block" id="BaseTool.Config"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">Config</span><span class="p">):</span>
-        <span class="n">json_encoders</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">Component</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
-                <span class="p">}</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">current_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get ids of current objects</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[str]: list ids of current</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">last_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get id of last</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Optional[str]: id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">id</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-<div class="viewcode-block" id="BaseTool.get_items"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.get_items">[docs]</a>    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get items from Component</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            dict[str, BaseItem]: items mapping</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span></div>
-
-<div class="viewcode-block" id="BaseTool._item_replace"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool._item_replace">[docs]</a>    <span class="k">def</span> <span class="nf">_item_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">BaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get item replaced copy</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Item (BaseItem): an item object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span></div>
-
-<div class="viewcode-block" id="BaseTool.by_id"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.by_id">[docs]</a>    <span class="k">def</span> <span class="nf">by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get item from current by its id</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            id (str): item id</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            list[BaseItem]: items</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="BaseTool.clear"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Clear the current and last</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Current and last clear!&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaseTool.append"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">BaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Append item to current</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            item (Item): appended items</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_replace</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;To current is appended item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaseTool.count"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.count">[docs]</a>    <span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Count the number of current items with given id.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            item_id (str: an item id</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int: count of items</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_ids</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Count of </span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s1"> in current is </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">count</span></div>
-
-<div class="viewcode-block" id="BaseTool.extend"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Extend the current by appending items</span>
-<span class="sd">        started from the left side of iterable.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            items (Iterable[Item]): iterable with items</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_replace</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Current are extended by </span><span class="si">{</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span><span class="si">}</span><span class="s1"> from right&#39;</span>
-                <span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaseTool.index"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the position of item in the current</span>
-<span class="sd">        (after index start and before index stop).</span>
-<span class="sd">        Returns the first match or raises ValueError if not found.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            item_id (str): an item id</span>
-<span class="sd">            start (int): start index. Default to 0.</span>
-<span class="sd">            end (int, optional): stop index. Default to None.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int: index of the the first match</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_ids</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span> <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span> \
-            <span class="k">else</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Index of </span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s1"> in current is </span><span class="si">{</span><span class="n">ind</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ind</span></div>
-
-<div class="viewcode-block" id="BaseTool.insert"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">BaseItem</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Insert item into the current at given position.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            item (Item): an item object</span>
-<span class="sd">            pos (int): position</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_replace</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;To current is inserted </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="n">pos</span><span class="si">=}</span><span class="s1">&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaseTool.pop"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseItem</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove and return an item from the current.</span>
-<span class="sd">        If no items are present, raises an IndexError.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Item: an item object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> is poped from current&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span></div>
-
-<div class="viewcode-block" id="BaseTool.remove"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove the first occurrence of item from current.</span>
-<span class="sd">        If not found, raises a ValueError.</span>
-<span class="sd">        Args:</span>
-<span class="sd">            item_id (str): an item id</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">item_id</span><span class="p">)</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is removed from current </span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="BaseTool.reverse"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.BaseTool.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Reverse the items in the current.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Current is reversed&#39;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="Bag"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag">[docs]</a><span class="k">class</span> <span class="nc">Bag</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Bag object</span>
-
-<span class="sd">    ..</span>
-<span class="sd">        Attr:</span>
-
-<span class="sd">            c (Component(BaseItem)):</span>
-<span class="sd">                The basis of tool. Contains items.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: The basis of tool. Contains items.</span>
-    <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-
-<div class="viewcode-block" id="Bag.Config"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">Config</span><span class="p">):</span>
-        <span class="n">json_encoders</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">Component</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
-                <span class="p">}</span></div>
-
-<div class="viewcode-block" id="Bag.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Bag.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">BaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add stuff to Bag component</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (BaseItem): game stuff</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">BaseItem</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker">[docs]</a><span class="k">class</span> <span class="nc">Shaker</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
+<div class="viewcode-block" id="Shaker"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker">[docs]</a><span class="k">class</span> <span class="nc">Shaker</span><span class="p">(</span><span class="n">BaseToolExtended</span><span class="p">[</span><span class="n">Dice</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Shaker object</span>
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
 
-<span class="sd">            c (Component[Dice]): the basis of shaker. Contains dices.</span>
-
-<span class="sd">            current (Deque[Dice]): current dice list.</span>
+<span class="sd">            current (list[Dice]): Current dices representation of shaker.</span>
+<span class="sd">                                  This making from Components items.</span>
 
 <span class="sd">            last (Dice), optional: last dice removed from current.</span>
 
@@ -308,41 +100,20 @@
 <span class="sd">            last_roll_mapped (dict[str, list[Any]]), optional:</span>
 <span class="sd">                last mapped roll result.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: The basis of shaker. Contains dices.</span>
-    <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dice</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-    <span class="c1">#: Current dices representation of shaker.</span>
-    <span class="c1">#: This making from Component items.</span>
-    <span class="n">current</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Dice</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: ignore</span>
-    <span class="c1">#: Last dice removed from current.</span>
-    <span class="n">last</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dice</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="c1">#: Last roll result</span>
     <span class="n">last_roll</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="c1">#: Last mapped roll result</span>
     <span class="n">last_roll_mapped</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Shaker.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Dice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add dice to component of shaker</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (Dice): dice object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Shaker.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Shaker&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="Shaker.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Shaker.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">components</span><span class="p">:</span> <span class="n">Components</span><span class="p">[</span><span class="n">Dice</span><span class="p">],</span>
+        <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Shaker&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Deal new shaker current. The current is cleared</span>
 <span class="sd">        before deal.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            items (Optional[List[str]]): items ids</span>
+<span class="sd">            components (Components): game components</span>
+<span class="sd">            items (Optional[list[str]]): item ids</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Shaker</span>
@@ -350,12 +121,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">ids</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">ids</span><span class="p">:</span>
+                    <span class="n">comp</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Dice</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is deal current: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_ids</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -364,7 +138,7 @@
         <span class="sd">&quot;&quot;&quot;Roll all stuff in shaker and return results</span>
 
 <span class="sd">        Return:</span>
-<span class="sd">            Dict[str, list[int]]: result of roll</span>
+<span class="sd">            dict[str, list[int]]: result of roll</span>
 
 <span class="sd">        .. code-block::</span>
 <span class="sd">            :caption: Example:</span>
@@ -377,7 +151,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">last_roll</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">last_roll</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_roll</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_roll</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -393,14 +167,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">last_roll_mapped</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">last_roll_mapped</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll_mapped</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_roll_mapped</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">roll_mapped</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Result of roll: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_roll_mapped</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_roll_mapped</span></div></div>
 
 
-<div class="viewcode-block" id="Deck"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck">[docs]</a><span class="k">class</span> <span class="nc">Deck</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
+<div class="viewcode-block" id="Deck"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck">[docs]</a><span class="k">class</span> <span class="nc">Deck</span><span class="p">(</span><span class="n">BaseToolExtended</span><span class="p">[</span><span class="n">Card</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Deck object</span>
 
 <span class="sd">    ..</span>
@@ -412,56 +186,37 @@
 
 <span class="sd">        Attr:</span>
 
-<span class="sd">            c (Component[Card]): the basis of deck. Contains cards.</span>
-
-<span class="sd">            current (Deque[Card]): current cards deque.</span>
+<span class="sd">            current (Deque[Card]): Current cards representation of deck.</span>
+<span class="sd">                                   This making from Component items.</span>
 
 <span class="sd">            last (Card), optional: last card, removed from current.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: the basis of deck. Contains cards.</span>
-    <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Card</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-    <span class="c1">#: Current cards representation of deck.</span>
-    <span class="c1">#: This making from Component items.</span>
     <span class="n">current</span><span class="p">:</span> <span class="n">deque</span><span class="p">[</span><span class="n">Card</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">deque</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="c1"># Last card, removed from current.</span>
-    <span class="n">last</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Card</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Deck.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Card</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add card to component</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (Card): Card object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Deck._item_replace"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck._item_replace">[docs]</a>    <span class="k">def</span> <span class="nf">_item_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Card</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Card</span><span class="p">:</span>  <span class="c1"># type: ignore[override]</span>
+<div class="viewcode-block" id="Deck._item_replace"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck._item_replace">[docs]</a>    <span class="k">def</span> <span class="nf">_item_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Card</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Card</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get replaced copy of card</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            item (Card): a card object</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Card: a card object</span>
+<span class="sd">            Card</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_item_replace</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="n">item</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">item</span></div>
 
-<div class="viewcode-block" id="Deck.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Deck&#39;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Deal new deck current. Cured is cleared</span>
+<div class="viewcode-block" id="Deck.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">components</span><span class="p">:</span> <span class="n">Components</span><span class="p">[</span><span class="n">Card</span><span class="p">],</span>
+        <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Deck&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Deal new deck current. Curent is cleared</span>
 <span class="sd">        before deal.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            items (Optional[List[str]]): list of cards ids</span>
+<span class="sd">            components (Components): game components</span>
+<span class="sd">            items (Optional[list[str]]): list of cards ids</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Deck</span>
@@ -469,14 +224,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="n">count</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="n">count</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-                <span class="n">comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">comp</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">ids</span><span class="p">:</span>
+                    <span class="n">comp</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Card</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is deal current: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_ids</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -521,11 +278,14 @@
 <span class="sd">        If no cards are present, raises an IndexError.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Card: a card object</span>
+<span class="sd">            Card</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> is poped from left of current&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="k">else</span> <span class="kc">None</span><span class="si">}</span><span class="s1"> &#39;</span>
+            <span class="s1">&#39;is poped from left of current&#39;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span>  <span class="c1"># type: ignore</span></div>
 
 <div class="viewcode-block" id="Deck.rotate"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Deck.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Rotate the current deck n steps to the right.</span>
@@ -568,7 +328,7 @@
         <span class="sd">&quot;&quot;&quot;Chek is order and deque contains same elements</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            order (List[str]): ordered list of cards ids</span>
+<span class="sd">            order (list[str]): ordered list of cards ids</span>
 <span class="sd">            to_arrange (list[str]): list of deque ids</span>
 
 <span class="sd">        Raises:</span>
@@ -587,7 +347,7 @@
         <span class="sd">&quot;&quot;&quot;Reorder current deque from right side.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            order (List[str]): ordered list of cards ids</span>
+<span class="sd">            order (list[str]): ordered list of cards ids</span>
 <span class="sd">            ordered from left side to right</span>
 
 <span class="sd">        Returns:</span>
@@ -619,7 +379,7 @@
         <span class="sd">&quot;&quot;&quot;Reorder current deque from left side.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            order (List[str]): ordered list of cards ids</span>
+<span class="sd">            order (list[str]): ordered list of cards ids</span>
 <span class="sd">            ordered from left side to right</span>
 
 <span class="sd">        Returns:</span>
@@ -654,7 +414,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            start (int): start of reordering</span>
-<span class="sd">            order (List[str]): ordered list of cards ids</span>
+<span class="sd">            order (list[str]): ordered list of cards ids</span>
 <span class="sd">            ordered from right side to left</span>
 
 <span class="sd">        Returns:</span>
@@ -688,7 +448,7 @@
         <span class="sd">&quot;&quot;&quot;Search for cards in current by its id.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            query (Dict[str, int]): dict with id of searched</span>
+<span class="sd">            query (dict[str, int]): dict with id of searched</span>
 <span class="sd">                                    cards and count of searching</span>
 <span class="sd">            remove (bool): if True - remove searched cards from</span>
 <span class="sd">                           current deck. Default to True.</span>
@@ -705,7 +465,7 @@
 <span class="sd">                    remove=False</span>
 <span class="sd">                    )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">for_deque</span><span class="p">:</span> <span class="n">deque</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="n">for_deque</span><span class="p">:</span> <span class="n">deque</span><span class="p">[</span><span class="n">Card</span><span class="p">]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -738,7 +498,7 @@
 <span class="sd">                                     current deck. Default to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[Card]: list of random cards</span>
+<span class="sd">            list[Card]: list of random cards</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -766,61 +526,31 @@
             <span class="k">return</span> <span class="n">result</span></div></div>
 
 
-<div class="viewcode-block" id="Steps"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps">[docs]</a><span class="k">class</span> <span class="nc">Steps</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">):</span>
+<div class="viewcode-block" id="Steps"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps">[docs]</a><span class="k">class</span> <span class="nc">Steps</span><span class="p">(</span><span class="n">BaseTool</span><span class="p">[</span><span class="n">Step</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Game steps order object</span>
 
 <span class="sd">    ..</span>
 <span class="sd">        Attr:</span>
 
-<span class="sd">            c (Component[Step]): the basis of steps. Contains steps.</span>
-
-<span class="sd">            current (List[Tuple[int, Step]]):</span>
-<span class="sd">                current representation of order in steps.</span>
+<span class="sd">            current (list[Step]]):</span>
+<span class="sd">                Current representation of order in steps.</span>
+<span class="sd">                This making from Component items.</span>
 
 <span class="sd">            last (Step), optional: last poped from current step.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#: The basis of steps. Contains steps.</span>
-    <span class="n">c</span><span class="p">:</span> <span class="n">Component</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Step</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="n">Component</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-    <span class="c1">#: Current representation of order in steps.</span>
-    <span class="c1">#: This making from Component items.</span>
-    <span class="n">current</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Step</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: ignore</span>
-    <span class="c1">#: Last step, removed from current.</span>
+    <span class="n">current</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Step</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">last</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Step</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">current_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get ids of current objects</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            List[str]: list ids of current</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">]</span>
-
-<div class="viewcode-block" id="Steps.add"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stuff</span><span class="p">:</span> <span class="n">Step</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add Step to component</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            stuff (Step): Step object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Component updated by stuff with id=&quot;</span><span class="si">{</span><span class="n">stuff</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">&quot;.&#39;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ComponentClassError</span><span class="p">(</span><span class="n">stuff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Steps.deal"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.deal">[docs]</a>    <span class="k">def</span> <span class="nf">deal</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">components</span><span class="p">:</span> <span class="n">Components</span><span class="p">[</span><span class="n">Step</span><span class="p">],</span>
         <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Steps&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Clear current order and create new current order</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            items (Optional[List[str]]): list of stuff ids</span>
+<span class="sd">            components (Components): game components</span>
+<span class="sd">            items (Optional[list[str]]): list of stuff ids</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Steps</span>
@@ -828,27 +558,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">stuff</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">stuff</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">stuff</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-                <span class="n">comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="o">.</span><span class="n">by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">comp</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">components</span><span class="o">.</span><span class="n">ids</span><span class="p">:</span>
+                    <span class="n">comp</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">Step</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Is deal current: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_ids</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
-
-<div class="viewcode-block" id="Steps.by_id"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.by_id">[docs]</a>    <span class="k">def</span> <span class="nf">by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get items from current by its id</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            id (str): item id</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            list[BaseItem]: items</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="nb">id</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Steps.push"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Step</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Push Step object to current</span>
@@ -856,41 +577,18 @@
 <span class="sd">        Args:</span>
 <span class="sd">            item (Step): Step class instance</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">replaced</span><span class="p">:</span> <span class="n">Step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_replace</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="p">(</span><span class="n">replaced</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="n">replaced</span><span class="p">))</span></div>
+        <span class="n">replaced</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_replace</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">,</span> <span class="n">replaced</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Steps.pop"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Step</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Pop Step object from current with lowest priority</span>
+<div class="viewcode-block" id="Steps.pops"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.pops">[docs]</a>    <span class="k">def</span> <span class="nf">pops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Step</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Pop Step object from current with smallest priority</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Step: Step instance object</span>
+<span class="sd">            Step</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last</span> <span class="o">=</span> <span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> is poped from current&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span></div>
-
-<div class="viewcode-block" id="Steps.append"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">BaseItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Steps.extend"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">BaseItem</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Steps.index"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Steps.insert"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">BaseItem</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Steps.remove"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Steps.reverse"><a class="viewcode-back" href="../../bgameb.html#bgameb.tools.Steps.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last</span></div></div>
 </pre></div>
 
            </div>

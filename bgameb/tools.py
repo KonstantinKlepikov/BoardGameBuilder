@@ -6,227 +6,19 @@ from collections import deque
 from collections.abc import KeysView
 from heapq import heappop, heappush
 from typing import Optional, Iterable, Union, Any
-from bgameb.base import Base, Component
-from bgameb.items import Card, Dice, Step, BaseItem
-from bgameb.errors import ArrangeIndexError, ComponentClassError
+from bgameb.base import BaseTool, BaseToolExtended, Components
+from bgameb.items import Card, Dice, Step
+from bgameb.errors import ArrangeIndexError
 
 
-class BaseTool(Base):
-    """Base class for game tools
-    """
-    #: The basis of tool. Contains items.
-    c: Component[str, BaseItem] = Field(
-        default_factory=Component, exclude=True, repr=False
-            )
-    #: Current items representation of tool
-    #: like dealed and shuffled deck of csrd.
-    #: This making from Component items.
-    current: list[BaseItem] = []
-    #: Last item removed from current.
-    last: Optional[BaseItem] = None
-
-    class Config(Base.Config):
-        json_encoders = {
-            Component: lambda c: c.to_json()
-                }
-
-    @property
-    def current_ids(self) -> list[str]:
-        """Get ids of current objects
-
-        Returns:
-            List[str]: list ids of current
-        """
-        return [item.id for item in self.current]
-
-    @property
-    def last_id(self) -> Optional[str]:
-        """Get id of last
-
-        Returns:
-            Optional[str]: id
-        """
-        if self.last is not None:
-            return self.last.id
-        return None
-
-    def get_items(self) -> dict[str, BaseItem]:
-        """Get items from Component
-
-        Returns:
-            dict[str, BaseItem]: items mapping
-        """
-        return {item.id: item for item in self.c.values()}
-
-    def _item_replace(self, item: BaseItem) -> BaseItem:
-        """Get item replaced copy
-
-        Returns:
-            Item (BaseItem): an item object
-        """
-        return item.__class__(**item.dict())
-
-    def by_id(self, id: str) -> list[BaseItem]:
-        """Get item from current by its id
-
-        Args:
-            id (str): item id
-
-        Returns:
-            list[BaseItem]: items
-        """
-        return [item for item in self.current if item.id == id]
-
-    def clear(self) -> None:
-        """Clear the current and last
-        """
-        self.current.clear()
-        self.last = None
-        self._logger.debug('Current and last clear!')
-
-    def append(self, item: BaseItem) -> None:
-        """Append item to current
-
-        Args:
-            item (Item): appended items
-        """
-        item = self._item_replace(item)
-        self.current.append(item)
-        self._logger.debug(f'To current is appended item: {item.id}')
-
-    def count(self, item_id: str) -> int:
-        """Count the number of current items with given id.
-
-        Args:
-            item_id (str: an item id
-
-        Returns:
-            int: count of items
-        """
-        count = self.current_ids.count(item_id)
-        self._logger.debug(f'Count of {item_id} in current is {count}')
-        return count
-
-    def extend(self, items: Iterable[BaseItem]) -> None:
-        """Extend the current by appending items
-        started from the left side of iterable.
-
-        Args:
-            items (Iterable[Item]): iterable with items
-        """
-        items = [self._item_replace(item) for item in items]
-        self.current.extend(items)
-        self._logger.debug(
-            f'Current are extended by {[item.id for item in items]} from right'
-                )
-
-    def index(
-        self,
-        item_id: str,
-        start: int = 0,
-        end: Optional[int] = None
-            ) -> int:
-        """Return the position of item in the current
-        (after index start and before index stop).
-        Returns the first match or raises ValueError if not found.
-
-        Args:
-            item_id (str): an item id
-            start (int): start index. Default to 0.
-            end (int, optional): stop index. Default to None.
-
-        Returns:
-            int: index of the the first match
-        """
-        names = self.current_ids
-        ind = names.index(item_id, start) if end is None \
-            else names.index(item_id, start, end)
-        self._logger.debug(f'Index of {item_id} in current is {ind}')
-        return ind
-
-    def insert(self, item: BaseItem, pos: int) -> None:
-        """Insert item into the current at given position.
-
-        Args:
-            item (Item): an item object
-            pos (int): position
-        """
-        item = self._item_replace(item)
-        self.current.insert(pos, item)
-        self._logger.debug(f'To current is inserted {item.id} on {pos=}')
-
-    def pop(self) -> BaseItem:
-        """Remove and return an item from the current.
-        If no items are present, raises an IndexError.
-
-        Returns:
-            Item: an item object
-        """
-        self.last = self.current.pop()
-        self._logger.debug(f'{self.last.id} is poped from current')
-        return self.last
-
-    def remove(self, item_id: str) -> None:
-        """Remove the first occurrence of item from current.
-        If not found, raises a ValueError.
-        Args:
-            item_id (str): an item id
-        """
-        ind = self.index(item_id)
-        item = self.current[ind]
-        self.current.remove(item)
-        self._logger.debug(f'Is removed from current {item_id}')
-
-    def reverse(self) -> None:
-        """Reverse the items in the current.
-        """
-        self.current.reverse()
-        self._logger.debug('Current is reversed')
-
-
-class Bag(Base):
-    """Bag object
-
-    ..
-        Attr:
-
-            c (Component(BaseItem)):
-                The basis of tool. Contains items.
-    """
-    #: The basis of tool. Contains items.
-    c: Component[str, BaseItem] = Field(
-        default_factory=Component, exclude=True, repr=False
-            )
-
-    class Config(Base.Config):
-        json_encoders = {
-            Component: lambda c: c.to_json()
-                }
-
-    def add(self, stuff: BaseItem) -> None:
-        """Add stuff to Bag component
-
-        Args:
-            stuff (BaseItem): game stuff
-        """
-        if issubclass(stuff.__class__, BaseItem):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
-
-
-class Shaker(BaseTool):
+class Shaker(BaseToolExtended[Dice]):
     """Shaker object
 
     ..
         Attr:
 
-            c (Component[Dice]): the basis of shaker. Contains dices.
-
-            current (Deque[Dice]): current dice list.
+            current (list[Dice]): Current dices representation of shaker.
+                                  This making from Components items.
 
             last (Dice), optional: last dice removed from current.
 
@@ -236,41 +28,20 @@ class Shaker(BaseTool):
             last_roll_mapped (dict[str, list[Any]]), optional:
                 last mapped roll result.
     """
-    #: The basis of shaker. Contains dices.
-    c: Component[str, Dice] = Field(  # type: ignore
-        default_factory=Component, exclude=True, repr=False
-            )
-    #: Current dices representation of shaker.
-    #: This making from Component items.
-    current: list[Dice] = []  # type: ignore
-    #: Last dice removed from current.
-    last: Optional[Dice] = None
-    #: Last roll result
     last_roll: dict[str, list[PositiveInt]] = {}
-    #: Last mapped roll result
     last_roll_mapped: dict[str, list[Any]] = {}
 
-    def add(self, stuff: Dice) -> None:
-        """Add dice to component of shaker
-
-        Args:
-            stuff (Dice): dice object
-        """
-        if isinstance(stuff.__class__, Dice) \
-                or issubclass(stuff.__class__, Dice):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
-
-    def deal(self, items: Optional[list[str]] = None) -> 'Shaker':
+    def deal(
+        self,
+        components: Components[Dice],
+        items: Optional[list[str]] = None
+            ) -> 'Shaker':
         """Deal new shaker current. The current is cleared
         before deal.
 
         Args:
-            items (Optional[List[str]]): items ids
+            components (Components): game components
+            items (Optional[list[str]]): item ids
 
         Returns:
             Shaker
@@ -278,12 +49,15 @@ class Shaker(BaseTool):
         self.clear()
 
         if not items:
-            for stuff in self.c.values():
-                self.append(stuff)
+            for stuff in components.values():
+                if issubclass(stuff.__class__, Dice):
+                    self.append(stuff)
         else:
             for id in items:
-                if id in self.c.ids:
-                    self.append(self.c[id])
+                if id in components.ids:
+                    comp = components.by_id(id)
+                    if issubclass(comp.__class__, Dice):
+                        self.append(comp)
 
         self._logger.debug(f'Is deal current: {self.current_ids}')
         return self
@@ -292,7 +66,7 @@ class Shaker(BaseTool):
         """Roll all stuff in shaker and return results
 
         Return:
-            Dict[str, list[int]]: result of roll
+            dict[str, list[int]]: result of roll
 
         .. code-block::
             :caption: Example:
@@ -305,7 +79,7 @@ class Shaker(BaseTool):
         self.last_roll = {}
 
         for item in self.current:
-            self.last_roll[item.id] = item.roll()
+            self.last_roll[item.id] = item.roll()  # type: ignore
 
         self._logger.debug(f'Result of roll: {self.last_roll}')
 
@@ -321,14 +95,14 @@ class Shaker(BaseTool):
         self.last_roll_mapped = {}
 
         for item in self.current:
-            self.last_roll_mapped[item.id] = item.roll_mapped()
+            self.last_roll_mapped[item.id] = item.roll_mapped()  # type: ignore
 
         self._logger.debug(f'Result of roll: {self.last_roll_mapped}')
 
         return self.last_roll_mapped
 
 
-class Deck(BaseTool):
+class Deck(BaseToolExtended[Card]):
     """Deck object
 
     ..
@@ -340,56 +114,37 @@ class Deck(BaseTool):
 
         Attr:
 
-            c (Component[Card]): the basis of deck. Contains cards.
-
-            current (Deque[Card]): current cards deque.
+            current (Deque[Card]): Current cards representation of deck.
+                                   This making from Component items.
 
             last (Card), optional: last card, removed from current.
     """
-    #: the basis of deck. Contains cards.
-    c: Component[str, Card] = Field(  # type: ignore
-        default_factory=Component, exclude=True, repr=False
-            )
-    #: Current cards representation of deck.
-    #: This making from Component items.
     current: deque[Card] = Field(default_factory=deque)  # type: ignore
-    # Last card, removed from current.
-    last: Optional[Card] = None
 
-    def add(self, stuff: Card) -> None:
-        """Add card to component
-
-        Args:
-            stuff (Card): Card object
-        """
-        if isinstance(stuff.__class__, Card) \
-                or issubclass(stuff.__class__, Card):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
-
-    def _item_replace(self, item: Card) -> Card:  # type: ignore[override]
+    def _item_replace(self, item: Card) -> Card:
         """Get replaced copy of card
 
         Args:
             item (Card): a card object
 
         Returns:
-            Card: a card object
+            Card
         """
-        item = item.__class__(**item.dict())
+        item = super()._item_replace(item)
         item.count = 1
         return item
 
-    def deal(self, items: Optional[list[str]] = None) -> 'Deck':
-        """Deal new deck current. Cured is cleared
+    def deal(
+        self,
+        components: Components[Card],
+        items: Optional[list[str]] = None
+            ) -> 'Deck':
+        """Deal new deck current. Curent is cleared
         before deal.
 
         Args:
-            items (Optional[List[str]]): list of cards ids
+            components (Components): game components
+            items (Optional[list[str]]): list of cards ids
 
         Returns:
             Deck
@@ -397,14 +152,16 @@ class Deck(BaseTool):
         self.clear()
 
         if not items:
-            for stuff in self.c.values():
-                for _ in range(stuff.count):
-                    self.append(stuff)
+            for stuff in components.values():
+                if issubclass(stuff.__class__, Card):
+                    for _ in range(stuff.count):
+                        self.append(stuff)
         else:
             for id in items:
-                comp = self.c.by_id(id)
-                if comp:
-                    self.append(comp)
+                if id in components.ids:
+                    comp = components.by_id(id)
+                    if issubclass(comp.__class__, Card):
+                        self.append(comp)
 
         self._logger.debug(f'Is deal current: {self.current_ids}')
         return self
@@ -449,11 +206,14 @@ class Deck(BaseTool):
         If no cards are present, raises an IndexError.
 
         Returns:
-            Card: a card object
+            Card
         """
-        self.last = self.current.popleft()
-        self._logger.debug(f'{self.last.id} is poped from left of current')
-        return self.last
+        self.last = self.current.popleft()  # type: ignore
+        self._logger.debug(
+            f'{self.last.id if self.last else None} '
+            'is poped from left of current'
+                )
+        return self.last  # type: ignore
 
     def rotate(self, n: int) -> None:
         """Rotate the current deck n steps to the right.
@@ -496,7 +256,7 @@ class Deck(BaseTool):
         """Chek is order and deque contains same elements
 
         Args:
-            order (List[str]): ordered list of cards ids
+            order (list[str]): ordered list of cards ids
             to_arrange (list[str]): list of deque ids
 
         Raises:
@@ -515,7 +275,7 @@ class Deck(BaseTool):
         """Reorder current deque from right side.
 
         Args:
-            order (List[str]): ordered list of cards ids
+            order (list[str]): ordered list of cards ids
             ordered from left side to right
 
         Returns:
@@ -547,7 +307,7 @@ class Deck(BaseTool):
         """Reorder current deque from left side.
 
         Args:
-            order (List[str]): ordered list of cards ids
+            order (list[str]): ordered list of cards ids
             ordered from left side to right
 
         Returns:
@@ -582,7 +342,7 @@ class Deck(BaseTool):
 
         Args:
             start (int): start of reordering
-            order (List[str]): ordered list of cards ids
+            order (list[str]): ordered list of cards ids
             ordered from right side to left
 
         Returns:
@@ -616,7 +376,7 @@ class Deck(BaseTool):
         """Search for cards in current by its id.
 
         Args:
-            query (Dict[str, int]): dict with id of searched
+            query (dict[str, int]): dict with id of searched
                                     cards and count of searching
             remove (bool): if True - remove searched cards from
                            current deck. Default to True.
@@ -633,7 +393,7 @@ class Deck(BaseTool):
                     remove=False
                     )
         """
-        for_deque: deque = deque()
+        for_deque: deque[Card] = deque()
         result = []
 
         while True:
@@ -666,7 +426,7 @@ class Deck(BaseTool):
                                      current deck. Default to True.
 
         Returns:
-            List[Card]: list of random cards
+            list[Card]: list of random cards
         """
         if not self.current:
             self._logger.debug(
@@ -694,61 +454,31 @@ class Deck(BaseTool):
             return result
 
 
-class Steps(BaseTool):
+class Steps(BaseTool[Step]):
     """Game steps order object
 
     ..
         Attr:
 
-            c (Component[Step]): the basis of steps. Contains steps.
-
-            current (List[Tuple[int, Step]]):
-                current representation of order in steps.
+            current (list[Step]]):
+                Current representation of order in steps.
+                This making from Component items.
 
             last (Step), optional: last poped from current step.
     """
-    #: The basis of steps. Contains steps.
-    c: Component[str, Step] = Field(  # type: ignore
-        default_factory=Component, exclude=True, repr=False
-            )
-    #: Current representation of order in steps.
-    #: This making from Component items.
-    current: list[Step] = []  # type: ignore
-    #: Last step, removed from current.
+    current: list[Step] = []
     last: Optional[Step] = None
-
-    @property
-    def current_ids(self) -> list[str]:
-        """Get ids of current objects
-
-        Returns:
-            List[str]: list ids of current
-        """
-        return [item.id for item in self.current]
-
-    def add(self, stuff: Step) -> None:
-        """Add Step to component
-
-        Args:
-            stuff (Step): Step object
-        """
-        if isinstance(stuff.__class__, Step) \
-                or issubclass(stuff.__class__, Step):
-            self.c.update(stuff)
-            self._logger.info(
-                f'Component updated by stuff with id="{stuff.id}".'
-                    )
-        else:
-            raise ComponentClassError(stuff, self._logger)
 
     def deal(
         self,
+        components: Components[Step],
         items: Optional[list[str]] = None
             ) -> 'Steps':
         """Clear current order and create new current order
 
         Args:
-            items (Optional[List[str]]): list of stuff ids
+            components (Components): game components
+            items (Optional[list[str]]): list of stuff ids
 
         Returns:
             Steps
@@ -756,27 +486,18 @@ class Steps(BaseTool):
         self.clear()
 
         if not items:
-            for stuff in self.c.values():
-                self.push(stuff)
+            for stuff in components.values():
+                if issubclass(stuff.__class__, Step):
+                    self.push(stuff)
         else:
             for id in items:
-                comp = self.c.by_id(id)
-                if comp:
-                    self.push(comp)
+                if id in components.ids:
+                    comp = components.by_id(id)
+                    if issubclass(comp.__class__, Step):
+                        self.push(comp)
 
         self._logger.debug(f'Is deal current: {self.current_ids}')
         return self
-
-    def by_id(self, id: str) -> list[BaseItem]:
-        """Get items from current by its id
-
-        Args:
-            id (str): item id
-
-        Returns:
-            list[BaseItem]: items
-        """
-        return [item for item in self.current if item.id == id]
 
     def push(self, item: Step) -> None:
         """Push Step object to current
@@ -784,38 +505,15 @@ class Steps(BaseTool):
         Args:
             item (Step): Step class instance
         """
-        replaced: Step = self._item_replace(item)  # type: ignore
+        replaced = self._item_replace(item)
         heappush(self.current, replaced)
 
-    def pop(self) -> Step:
-        """Pop Step object from current with lowest priority
+    def pops(self) -> Step:
+        """Pop Step object from current with smallest priority
 
         Returns:
-            Step: Step instance object
+            Step
         """
         self.last = heappop(self.current)
         self._logger.debug(f'{self.last.id} is poped from current')
         return self.last
-
-    def append(self, item: BaseItem) -> None:
-        raise NotImplementedError
-
-    def extend(self, items: Iterable[BaseItem]) -> None:
-        raise NotImplementedError
-
-    def index(
-        self,
-        item_id: str,
-        start: int = 0,
-        end: Optional[int] = None
-            ) -> int:
-        raise NotImplementedError
-
-    def insert(self, item: BaseItem, pos: int) -> None:
-        raise NotImplementedError
-
-    def remove(self, item_id: str) -> None:
-        raise NotImplementedError
-
-    def reverse(self) -> None:
-        raise NotImplementedError

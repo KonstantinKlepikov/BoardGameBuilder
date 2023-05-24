@@ -3,13 +3,8 @@
 import random
 from typing import Optional, NoReturn, Any, cast
 from pydantic import PositiveInt, NonNegativeInt, ConstrainedInt
-from bgameb.base import Base
+from bgameb.base import BaseItem
 from bgameb.errors import StuffDefineError
-
-
-class BaseItem(Base):
-    """Base class for game items (like dices or cards)
-    """
 
 
 class Step(BaseItem):
@@ -20,7 +15,6 @@ class Step(BaseItem):
 
             priority (NonNegativeInt): priority queue number. Default to 0.
     """
-    #: priority queue number. Default to 0.
     priority: NonNegativeInt = 0
 
     def __eq__(self, other: 'Step') -> bool:  # type: ignore[override]
@@ -44,8 +38,12 @@ class Step(BaseItem):
 
 class Sides(ConstrainedInt):
     """Int subtipe to define sides of dices
+
+    ..
+        Attr:
+
+            gt (int): greate than 1 constraint.
     """
-    #: greate than 1 constraint
     gt = 1
 
 
@@ -80,16 +78,10 @@ class Dice(BaseItem):
 
             StuffDefineError: mapping keys is not equal of roll range.
     """
-    #: Count of dices.
     count: PositiveInt = 1
-    #: Sides of dice or coin.
     sides: Sides = cast(Sides, 2)
-    #: Optional mapping of roll result
-    #: Mapping must define values for each side.
     mapping: dict[PositiveInt, Any] = {}
-    #: Last roll values
     last_roll: list[PositiveInt] = []
-    #: Last mapped roll values
     last_roll_mapped: list[Any] = []
     _range: list[PositiveInt] = []
 
@@ -125,7 +117,7 @@ class Dice(BaseItem):
         """Roll and return result
 
         Returns:
-            List[PositiveInt]: result of roll
+            list[PositiveInt]: result of roll
         """
         self.last_roll = [
             random.choices(self._range, k=1)[0] for _
@@ -166,13 +158,9 @@ class Card(BaseItem):
             card = Card(id='unique_card')
             card.tap(side='left')
     """
-    #: Count of cards.
     count: PositiveInt = 1
-    #: Is card oppened.
     is_revealed: bool = False
-    #: Is card is_active.
     is_active: bool = True
-    #: The side of tap.
     side: Optional[str] = None
 
     def flip(self) -> 'Card':
